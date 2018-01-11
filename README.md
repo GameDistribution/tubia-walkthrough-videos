@@ -1,7 +1,7 @@
 [![npm](https://img.shields.io/npm/v/npm.svg)](https://nodejs.org/)
-[![GitHub version](https://img.shields.io/badge/version-0.0.9-blue.svg)](https://github.com/GameDistribution/GD-HTML5/)
+[![GitHub version](https://img.shields.io/badge/version-0.0.1-blue.svg)](https://github.com/GameDistribution/tubia-walkthrough-videos/)
 [![Built with Grunt](https://cdn.gruntjs.com/builtwith.svg)](http://gruntjs.com/)
-[![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/GameDistribution/GD-HTML5/blob/master/LICENSE)
+[![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/GameDistribution/tubia-walkthrough-videos/blob/master/LICENSE)
 
 
 # Tubia walkthrough video's
@@ -12,7 +12,7 @@ Gamedistribution.com is the biggest broker of high quality, cross-platform games
 Running into any issues? Check out the F.A.Q. within the Wiki of the github repository before mailing to <a href="support@gamedistribution.com" target="_blank">support@gamedistribution.com</a>
 
 ## Implementation within games
-The SDK should be integrated within HTML5 games by loading it through our CDN. Specific information of the SDK features and usages can be found at the <a href="https://github.com/GameDistribution/GD-HTML5/wiki" target="_blank">wiki</a>.
+The SDK should be integrated within HTML5 games by loading it through our CDN. Specific information of the SDK features and usages can be found at the <a href="https://github.com/GameDistribution/tubia-walkthrough-videos/wiki" target="_blank">wiki</a>.
 
 ### CDN
 Add the following script to your document.
@@ -67,7 +67,7 @@ The gdsdk namespace is set when creating the SDK instance. We can't change the n
 
 ## Repository
 The SDK is maintained on a public github repository.
-<a href="https://github.com/gamedistribution/GD-HTML5" target="_blank">https://github.com/gamedistribution/GD-HTML5</a>
+<a href="https://github.com/gamedistribution/tubia-walkthrough-videos" target="_blank">https://github.com/gamedistribution/tubia-walkthrough-videos</a>
 
 ## Deployment
 Deployment of the SDK to production environments is done through TeamCity.
