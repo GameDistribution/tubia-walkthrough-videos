@@ -102,7 +102,7 @@ module.exports = function(grunt) {
             },
             build: {
                 src: 'src/styles/**/*.scss',
-                dest: '.tmp/main.css',
+                dest: 'lib/main.css',
             },
         },
 
@@ -120,7 +120,7 @@ module.exports = function(grunt) {
                 ],
             },
             build: {
-                src: '.tmp/main.css',
+                src: 'lib/main.css',
                 dest: 'lib/main.min.css',
             },
         },
@@ -136,7 +136,7 @@ module.exports = function(grunt) {
             },
             lib: {
                 src: 'src/scripts/**/*.js',
-                dest: '.tmp/main.js',
+                dest: 'lib/main.js',
             },
         },
 
@@ -163,7 +163,7 @@ module.exports = function(grunt) {
                 warnings: false,
             },
             lib: {
-                src: '.tmp/main.js',
+                src: 'lib/main.js',
                 dest: 'lib/main.min.js',
             },
         },

@@ -58,6 +58,7 @@
             tooltips: {
                 controls: false,
                 seek: true,
+                thumbnails: false,
             },
             selectors: {
                 html5: 'video, audio',
@@ -915,7 +916,15 @@
 
                 // Seek tooltip
                 if (config.tooltips.seek) {
-                    html.push('<span class="plyr__tooltip">00:00</span>');
+                    if(config.tooltips.thumbnails) {
+                        // Todo: missing image src.
+                        html.push('<div class="plyr__tooltip">',
+                            '<img />',
+                            '<div>00:00</div>',
+                            '</div>');
+                    } else {
+                        html.push('<span class="plyr__tooltip">00:00</span>');
+                    }
                 }
 
                 // Close
@@ -1462,8 +1471,14 @@
                 plyr.progress.played = _getElement(config.selectors.progress.played);
 
                 // Seek tooltip
-                plyr.progress.tooltip = plyr.progress.container && plyr.progress.container.querySelector('.' + config.classes.tooltip);
+                plyr.progress.seek = {};
+                plyr.progress.seek.container = plyr.progress.container && plyr.progress.container.querySelector('.' + config.classes.tooltip);
+                plyr.progress.seek.tooltip = plyr.progress.seek.container && config.tooltips.thumbnails && plyr.progress.seek.container.getElementsByTagName('div')[0];
+                plyr.progress.seek.thumbnail = plyr.progress.seek.container && config.tooltips.thumbnails && plyr.progress.seek.container.getElementsByTagName('img')[0];
 
+                if(!config.tooltips.thumbnails) {
+                    plyr.progress.seek.tooltip = plyr.progress.seek.container
+                }
                 // Volume
                 plyr.volume = {};
                 plyr.volume.input = _getElement(config.selectors.volume.input);
@@ -2258,6 +2273,11 @@
 
         // Toggle fullscreen
         function _toggleFullscreen(event) {
+            // We don't allow fullscreen on audio player
+            if (plyr.type === 'audio') {
+                return
+            }
+
             // Check for native support
             var nativeSupport = fullscreen.supportsFullScreen;
 
@@ -2687,8 +2707,8 @@
 
             // Determine percentage, if already visible
             if (!event) {
-                if (_hasClass(plyr.progress.tooltip, visible)) {
-                    percent = plyr.progress.tooltip.style.left.replace('%', '');
+                if (_hasClass(plyr.progress.seek.container, visible)) {
+                    percent = plyr.progress.seek.container.style.left.replace('%', '');
                 } else {
                     return;
                 }
@@ -2704,15 +2724,31 @@
             }
 
             // Display the time a click would seek to
-            _updateTimeDisplay(duration / 100 * percent, plyr.progress.tooltip);
+            var time = parseInt(((duration / 100) * percent));
+
+            // Only send thumbnail event on time change
+            if (config.tooltips.thumbnails) {
+                var canvas = document.createElement('canvas');
+                canvas.width = 160;
+                canvas.height = 90;
+                canvas.getContext('2d').drawImage(plyr.media, 0, 0, 160, 90);
+
+                plyr.progress.seek.thumbnail.src = canvas.toDataURL();
+
+                _triggerEvent(plyr.media, 'thumbnail', true, {'time': time, 'img': plyr.progress.seek.thumbnail});
+            }
+            // Display the time a click would seek to
+            _updateTimeDisplay(time, plyr.progress.seek.tooltip);
+
+            plyr.time = time;
 
             // Set position
-            plyr.progress.tooltip.style.left = percent + '%';
+            plyr.progress.seek.container.style.left = percent + "%";
 
             // Show/hide the tooltip
             // If the event is a moues in/out and percentage is inside bounds
             if (event && _inArray(['mouseenter', 'mouseleave'], event.type)) {
-                _toggleClass(plyr.progress.tooltip, visible, event.type === 'mouseenter');
+                _toggleClass(plyr.progress.seek.container, visible, (event.type === 'mouseenter'));
             }
         }
 
@@ -3227,6 +3263,9 @@
 
             // Fullscreen
             _proxyListener(plyr.buttons.fullscreen, 'click', config.listeners.fullscreen, _toggleFullscreen);
+
+            // Toggle fullscreen when user double clicks on video wrapper
+            _proxyListener(plyr.container, 'dblclick', config.listeners.fullscreen, _toggleFullscreen);
 
             // Handle user exiting fullscreen by escaping etc
             if (fullscreen.supportsFullScreen) {

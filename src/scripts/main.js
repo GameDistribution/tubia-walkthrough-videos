@@ -338,51 +338,52 @@ class Tubia {
             this.eventBus.subscribe('AD_CANCELED', (error) => reject(error));
         });
 
-        this.videoAdPromise.then(() => {
-            // Setup the Plyr video player.
-            const instances = VideoPlayer.setup({
-                debug: true,
-                iconPrefix: 'icon',
-                iconUrl: 'sprite.svg',
-                tooltips: {
-                    controls: true,
-                },
-                captions: {
-                    defaultActive: true,
-                },
-            });
-            // Plyr video player returns an array regardless.
-            this.videoPlayer = instances[0];
-
-            // Setup a promise to tell our publisher that the player is ready.
-            this.videoPlayerPromise = new Promise((resolve, reject) => {
-                this.videoPlayer.on('ready', () => {
-                    resolve();
-                });
-                this.videoPlayer.on('error', (error) => {
-                    reject(error);
-                });
-            });
-
-            // Tell IMA SDK that our video content has ended.
-            this.videoPlayer.on('ended', () => {
-                console.log('CONTENT ENDED!!!!');
-                this.videoAdInstance.contentEnded();
-            });
-
-            // Tell IMA SDK that ad rules and advertisements can be started.
-            this.videoPlayer.on('play', () => {
-                if (!this.initialUserAction) {
-                    // The user clicked/tapped - inform the ads controller that
-                    // this code is being run in a user action thread.
-                    this.videoAdInstance.initialUserAction();
-                    this.initialUserAction = true;
-                }
-            });
-
-            // Todo: move playlist into plyr script.
-            this._createPlayList();
+        // this.videoAdPromise.then(() => {
+        // Setup the Plyr video player.
+        const instances = VideoPlayer.setup({
+            debug: true,
+            iconPrefix: 'icon',
+            iconUrl: 'sprite.svg',
+            tooltips: {
+                controls: true,
+                thumbnails: true,
+            },
+            captions: {
+                defaultActive: true,
+            },
         });
+        // Plyr video player returns an array regardless.
+        this.videoPlayer = instances[0];
+
+        // Setup a promise to tell our publisher that the player is ready.
+        this.videoPlayerPromise = new Promise((resolve, reject) => {
+            this.videoPlayer.on('ready', () => {
+                resolve();
+            });
+            this.videoPlayer.on('error', (error) => {
+                reject(error);
+            });
+        });
+
+        // Tell IMA SDK that our video content has ended.
+        this.videoPlayer.on('ended', () => {
+            console.log('CONTENT ENDED!!!!');
+            this.videoAdInstance.contentEnded();
+        });
+
+        // Tell IMA SDK that ad rules and advertisements can be started.
+        this.videoPlayer.on('play', () => {
+            if (!this.initialUserAction) {
+                // The user clicked/tapped - inform the ads controller that
+                // this code is being run in a user action thread.
+                this.videoAdInstance.initialUserAction();
+                this.initialUserAction = true;
+            }
+        });
+
+        // Todo: move playlist into plyr script.
+        this._createPlayList();
+        // });
 
         // Now check if everything is ready, so we can tell our publisher.
         Promise.all([

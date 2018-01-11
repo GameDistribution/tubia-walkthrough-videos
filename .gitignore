@@ -1,10 +1,10 @@
 # Folders
 node_modules/
 .idea/
-.tmp/
 .sass-cache/
 lib/
 googleads_ima_html5_samples/
+TUBIA_videoplayer.jpg
 
 # Files
 *.zip
