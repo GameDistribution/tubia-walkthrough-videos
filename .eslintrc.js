@@ -7,7 +7,11 @@ module.exports = {
         'browser': true,
         'es6': true,
     },
-    'globals': {'Plyr': false, 'jQuery': false},
+    'globals': {
+        'Plyr': false,
+        'jQuery': false,
+        'google': false,
+    },
     'rules': {
         'no-const-assign': 1,
         'no-this-before-super': 1,

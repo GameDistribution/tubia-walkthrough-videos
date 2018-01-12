@@ -227,8 +227,6 @@ class Tubia {
     }
 }
 
-export default Tubia;
-
 let settings = window.TUBIA_OPTIONS;
 settings = (typeof settings === 'object' && settings)
     ? settings

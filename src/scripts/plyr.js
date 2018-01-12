@@ -12,6 +12,7 @@ import utils from './utils';
 
 import Console from './console';
 import Storage from './storage';
+import Ads from './ads';
 
 import captions from './captions';
 import controls from './controls';
@@ -133,6 +134,44 @@ class Plyr {
             this.debug.error('Setup failed: no support');
             return;
         }
+
+        // Todo: not the best place to do this?
+        // Load advertisements using the Google IMA HTML5 SDK
+        const ads = new Ads(this.media);
+        ads.tag = 'https://pub.tunnl.com/opp?page_url=&player_width=640&player_height=480';
+        ads.start();
+
+        // Enable some debugging perks.
+        try {
+            if (this.debug) {
+                // Open a debugging console for ads.
+                ads.console();
+                // So we can set a custom tag.
+                if (localStorage.getItem(`${ads.prefix}tag`)) {
+                    ads.tag = localStorage.getItem(`${ads.prefix}tag`);
+                }
+            }
+        } catch (error) {
+            this.debug.error(error);
+        }
+        // Start our ads instance.
+        ads.start();
+        // Tell IMA SDK that our video content has ended.
+        // this.media.on('ended', () => {
+        // ads.contentEnded();
+        // });
+
+        this.initialUserAction = false;
+
+        // Tell IMA SDK that ad rules and advertisements can be started.
+        // this.media.on('play', () => {
+        // if (!this.initialUserAction) {
+        // The user clicked/tapped - inform the ads controller that
+        // this code is being run in a user action thread.
+        ads.initialUserAction();
+        this.initialUserAction = true;
+        // }
+        // });
 
         // Cache original element state for .destroy()
         this.elements.original = this.media.cloneNode(true);
