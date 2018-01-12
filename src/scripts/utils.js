@@ -68,6 +68,21 @@ const utils = {
         },
     },
 
+    extendDefaults(source, properties) {
+        /* eslint-disable */
+        let property;
+        for (property in properties) {
+            if (properties.hasOwnProperty(property)) {
+                if (properties[property] !== null &&
+                    typeof properties[property] !== 'undefined') {
+                    source[property] = properties[property];
+                }
+            }
+        }
+        return source;
+        /* eslint-enable */
+    },
+
     // Unfortunately, due to mixed support, UA sniffing is required
     getBrowser() {
         return {
@@ -570,7 +585,8 @@ const utils = {
         const event = new CustomEvent(type, {
             bubbles: utils.is.boolean(bubbles) ? bubbles : false,
             detail: Object.assign({}, detail, {
-                plyr: this instanceof Plyr ? this : null,
+                // Todo: Not working here.
+                plyr: this, // this instanceof Plyr ? this : null,
             }),
         });
 

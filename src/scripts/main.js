@@ -1,5 +1,6 @@
 import PackageJSON from '../../package.json';
 import Plyr from './plyr';
+import utils from './utils';
 
 const instance = null;
 
@@ -144,12 +145,39 @@ const myPlaylist = [
 class Tubia {
     /**
      * Constructor of Tubia.
+     * @param {Object} options
      * @return {*}
      */
-    constructor() {
+    constructor(options) {
         // Make this a singleton.
         if (instance) {
             return instance;
+        }
+
+        // Set some defaults. We replace them with real given
+        // values further down.
+        const defaults = {
+            debug: false,
+            gameId: '4f3d7d38d24b740c95da2b03dc3a2333',
+            userId: '31D29405-8D37-4270-BF7C-8D99CCF0177F-s1',
+            resumeVideo() {},
+            pauseVideo() {},
+            onEvent() {},
+        };
+
+        if (options) {
+            this.options = utils.extendDefaults(defaults, options);
+        } else {
+            this.options = defaults;
+        }
+
+        // Open the debug console when debugging is enabled.
+        try {
+            if (this.options.debug || localStorage.getItem('gd_debug')) {
+                this.openConsole();
+            }
+        } catch (error) {
+            // console.log(error);
         }
 
         // Set a version banner within the developer console.

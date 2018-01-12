@@ -54,13 +54,11 @@
 // Large play button (video only)
 .plyr__control--overlaid {
     display: none;
-    opacity: 0;
     position: absolute;
     z-index: 2;
     top: 50%;
     left: 50%;
-    transform: scale(1) translate(-50%, 0%);
-    color: $plyr-audio-control-bg-hover;
+    transform: scale(1) translate(-50%, -50%);
     cursor: pointer;
     outline: 0;
     border-top: 0;
@@ -69,10 +67,17 @@
     transition: all 0.2s ease;
     transform-origin: 0;
 
+    &:hover {
+        transform: scale(1.05) translate(-50%, -50%);
+    }
+    &:active {
+        transform: scale(1.1) translate(-50%, -50%);
+    }
+
     // http://csshexagon.com/
     width: 90px;
     height: 51.96px;
-    background-color: rgba($plyr-video-control-bg-hover, 0.8);
+    background-color: $plyr-video-control-bg-hover;
     border-left: solid 8px $plyr-audio-control-bg-hover;
     border-right: solid 8px $plyr-audio-control-bg-hover;
 
@@ -104,22 +109,13 @@
 
     svg {
         display: block;
-        z-index: 2;
-        height: $plyr-control-icon-size-large;
-        left: 2px; // Offset to make the play button look right
         position: relative;
+        z-index: 2;
+        left: 2px; // Offset to make the play button look right
+        margin: auto;
         width: $plyr-control-icon-size-large;
-    }
-}
-
-.plyr--ready .plyr__control--overlaid {
-    opacity: 1;
-    transform: scale(1) translate(-50%, -50%);
-    &:hover {
-        transform: scale(1.05) translate(-50%, -50%);
-    }
-    &:active {
-        transform: scale(1.1) translate(-50%, -50%);
+        height: $plyr-control-icon-size-large;
+        color: white;
     }
 }
 
