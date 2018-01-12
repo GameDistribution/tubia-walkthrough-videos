@@ -16,20 +16,20 @@
         "type": "git",
         "url": "git@github.com:gamedistribution/tubia.git"
     },
+    "dependencies": {
+        "es6-promise": "^4.2.2",
+        "whatwg-fetch": "^2.0.3"
+    },
     "devDependencies": {
         "autoprefixer": "^7.2.4",
         "babel-eslint": "^8.0.0",
         "babel-preset-env": "^1.6.1",
         "babelify": "^7.2.0",
         "cssnano": "^3.10.0",
-        "es6-promise": "^4.2.2",
-        "eslint": "^4.7.0",
-        "eslint-config-google": "^0.9.1",
-        "eslint-friendly-formatter": "^3.0.0",
-        "eslint-loader": "^1.7.1",
-        "eslint-plugin-html": "^3.0.0",
-        "eslint-plugin-promise": "^3.4.0",
-        "eslint-plugin-standard": "^2.0.1",
+        "eslint": "^4.15.0",
+        "eslint-config-airbnb-base": "^12.1.0",
+        "eslint-config-prettier": "^2.9.0",
+        "eslint-plugin-import": "^2.8.0",
         "grunt": "^1.0.1",
         "grunt-banner": "^0.6.0",
         "grunt-browser-sync": "^2.2.0",
@@ -42,8 +42,7 @@
         "grunt-exec": "^3.0.0",
         "grunt-google-cloud": "^1.0.7",
         "grunt-postcss": "^0.9.0",
-        "grunt-svgstore": "^1.0.0",
-        "whatwg-fetch": "^2.0.3"
+        "grunt-svgstore": "^1.0.0"
     },
     "engines": {
         "node": ">=6.0.0"

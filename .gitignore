@@ -1,9 +1,9 @@
 # Folders
-node_modules/
+/node_modules
 .idea/
 .sass-cache/
-lib/
-googleads_ima_html5_samples/
+/lib
+/googleads_ima_html5_samples
 TUBIA_videoplayer.jpg
 
 # Files

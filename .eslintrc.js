@@ -1,26 +1,42 @@
 // http://eslint.org/docs/user-guide/configuring
 
 module.exports = {
-    root: true,
-    parser: 'babel-eslint',
-    parserOptions: {
-        sourceType: 'module',
+    'parser': 'babel-eslint',
+    'extends': ['airbnb-base', 'prettier'],
+    'env': {
+        'browser': true,
+        'es6': true,
     },
-    env: {
-        es6: true,
-        node: true,
-        browser: true,
-    },
-    extends: ['google'],
-    // add your custom rules here
+    'globals': {'Plyr': false, 'jQuery': false},
     'rules': {
-        // enable console logs
-        'no-console': 0,
-        // change indentation to 4 spaces instead of 2
-        'indent': [2, 4],
-        // allow paren-less arrow functions
-        'arrow-parens': 0,
-        // allow async-await
-        'generator-star-spacing': 0,
+        'no-const-assign': 1,
+        'no-this-before-super': 1,
+        'no-undef': 1,
+        'no-unreachable': 1,
+        'no-unused-vars': 1,
+        'constructor-super': 1,
+        'valid-typeof': 1,
+        'indent': [2, 4, {'SwitchCase': 1}],
+        'quotes': [2, 'single', 'avoid-escape'],
+        'semi': [2, 'always'],
+        'eqeqeq': [2, 'always'],
+        'one-var': [2, 'never'],
+        'comma-dangle': [2, 'always-multiline'],
+        'no-restricted-globals': [
+            'error',
+            {
+                'name': 'event',
+                'message': 'Use local parameter instead.',
+            },
+            {
+                'name': 'error',
+                'message': 'Use local parameter instead.',
+            },
+        ],
+        'array-bracket-newline': [2, {'minItems': 2}],
+        'array-element-newline': [2, {'minItems': 2}],
+    },
+    'parserOptions': {
+        'sourceType': 'module',
     },
 };
