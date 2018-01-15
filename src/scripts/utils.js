@@ -50,6 +50,9 @@ const utils = {
         track(input) {
             return this.instanceof(input, TextTrack) || (!this.nullOrUndefined(input) && this.string(input.kind));
         },
+        url(input) {
+            return !this.nullOrUndefined(input) && /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-/]))?/.test(input);
+        },
         nullOrUndefined(input) {
             return input === null || typeof input === 'undefined';
         },
@@ -597,7 +600,6 @@ const utils = {
         const event = new CustomEvent(type, {
             bubbles: utils.is.boolean(bubbles) ? bubbles : false,
             detail: Object.assign({}, detail, {
-                // Todo: Not working here.
                 plyr: this, // this instanceof Plyr ? this : null,
             }),
         });

@@ -186,6 +186,9 @@ const defaults = {
         youtube: {
             api: 'https://www.youtube.com/iframe_api',
         },
+        googleIMA: {
+            api: 'https://imasdk.googleapis.com/js/sdkloader/ima3.js',
+        },
     },
 
     // Custom control listeners
@@ -299,6 +302,7 @@ const defaults = {
     classNames: {
         video: 'plyr__video-wrapper',
         embed: 'plyr__video-embed',
+        ads: 'plyr__ads',
         control: 'plyr__control',
         type: 'plyr--{0}',
         provider: 'plyr--{0}',
@@ -341,6 +345,11 @@ const defaults = {
     // API keys
     keys: {
         google: null,
+    },
+
+    // Ads
+    ads: {
+        tagUrl: null,
     },
 };
 
