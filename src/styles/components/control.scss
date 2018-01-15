@@ -1,0 +1,130 @@
+// --------------------------------------------------------------
+// Control buttons
+// --------------------------------------------------------------
+
+.plyr__control {
+    background: transparent;
+    border: 0;
+    border-radius: $plyr-control-radius;
+    color: inherit;
+    cursor: pointer;
+    flex-shrink: 0;
+    overflow: visible; // IE11
+    padding: $plyr-control-padding;
+    position: relative;
+    transition: all 0.3s ease;
+
+    svg {
+        display: block;
+        fill: currentColor;
+        height: $plyr-control-icon-size;
+        pointer-events: none;
+        width: $plyr-control-icon-size;
+    }
+
+    // Default focus
+    &:focus {
+        outline: 0;
+    }
+
+    // Tab focus
+    &.plyr__tab-focus {
+        @include plyr-tab-focus();
+    }
+}
+
+// Change icons on state change
+.plyr__control[aria-pressed='false'] .icon--pressed,
+.plyr__control[aria-pressed='true'] .icon--not-pressed,
+.plyr__control[aria-pressed='false'] .label--pressed,
+.plyr__control[aria-pressed='true'] .label--not-pressed {
+    display: none;
+}
+
+// Audio styles
+.plyr--audio .plyr__control {
+    &.plyr__tab-focus,
+    &:hover,
+    &[aria-expanded='true'] {
+        background: $plyr-audio-control-bg-hover;
+        color: $plyr-audio-control-color-hover;
+    }
+}
+
+// Large play button (video only)
+.plyr__control--overlaid {
+    display: none;
+    position: absolute;
+    z-index: 2;
+    top: 50%;
+    left: 50%;
+    transform: scale(1) translate(-50%, -50%);
+    cursor: pointer;
+    outline: 0;
+    border-top: 0;
+    border-bottom: 0;
+    will-change: transform;
+    transition: all 0.2s ease;
+    transform-origin: 0;
+
+    &:hover {
+        transform: scale(1.05) translate(-50%, -50%);
+    }
+    &:active {
+        transform: scale(1.1) translate(-50%, -50%);
+    }
+
+    // http://csshexagon.com/
+    width: 90px;
+    height: 51.96px;
+    background-color: $plyr-video-control-bg-hover;
+    border-left: solid 8px $plyr-audio-control-bg-hover;
+    border-right: solid 8px $plyr-audio-control-bg-hover;
+
+    &:before,
+    &:after {
+        content: "";
+        position: absolute;
+        z-index: 1;
+        width: 63.64px;
+        height: 63.64px;
+        -webkit-transform: scaleY(0.5774) rotate(-45deg);
+        -ms-transform: scaleY(0.5774) rotate(-45deg);
+        transform: scaleY(0.5774) rotate(-45deg);
+        background-color: inherit;
+        left: 5.1802px;
+    }
+
+    &:before {
+        top: -31.8198px;
+        border-top: solid 11.3137px $plyr-audio-control-bg-hover;
+        border-right: solid 11.3137px $plyr-audio-control-bg-hover;
+    }
+
+    &:after {
+        bottom: -31.8198px;
+        border-bottom: solid 11.3137px $plyr-audio-control-bg-hover;
+        border-left: solid 11.3137px $plyr-audio-control-bg-hover;
+    }
+
+    svg {
+        display: block;
+        position: relative;
+        z-index: 2;
+        left: 2px; // Offset to make the play button look right
+        margin: auto;
+        width: $plyr-control-icon-size-large;
+        height: $plyr-control-icon-size-large;
+        color: white;
+    }
+}
+
+.plyr--playing .plyr__control--overlaid {
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.9) translate(-50%, 0%);
+}
+
+.plyr--full-ui.plyr--video .plyr__control--overlaid {
+    display: block;
+}

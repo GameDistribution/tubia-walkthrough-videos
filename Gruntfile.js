@@ -1,3 +1,8 @@
+/**
+ * atob
+ * @param {String} str
+ * @return {*}
+ */
 function atob(str) {
     if (str) {
         return new Buffer(str, 'base64').toString('binary');
@@ -63,7 +68,8 @@ module.exports = function(grunt) {
 
         /**
          * A code block that will be added to orur minified code files.
-         * Gets the name and appVersion and other info from the above loaded 'package.json' file.
+         * Gets the name and appVersion and other info from the above loaded
+         * 'package.json' file.
          * @example <%= banner.join("\\n") %>
          */
         banner: [
@@ -72,7 +78,8 @@ module.exports = function(grunt) {
             '* Description: <%= pkg.description %>',
             '* Development By: <%= pkg.author %>',
             '* Copyright(c): <%= grunt.template.today("yyyy") %>',
-            '* Version: <%= pkg.version %> (<%= grunt.template.today("dd-mm-yyyy HH:MM") %>)',
+            '* Version: <%= pkg.version %> ' +
+            '(<%= grunt.template.today("dd-mm-yyyy HH:MM") %>)',
             '*/',
         ],
 
@@ -98,16 +105,17 @@ module.exports = function(grunt) {
         sass: {
             options: {
                 sourcemap: 'none',
-                style: 'nested' // no need for config.rb
+                style: 'nested', // no need for config.rb
             },
             build: {
-                src: 'src/styles/**/*.scss',
-                dest: '.tmp/main.css',
+                src: 'src/styles/plyr.scss',
+                dest: 'lib/main.css',
             },
         },
 
         /**
-         * Do some CSS post processing, like minifying, removing comments and adding cross browser prefixes.
+         * Do some CSS post processing, like minifying, removing comments and
+         * adding cross browser prefixes.
          */
         postcss: {
             options: {
@@ -120,7 +128,7 @@ module.exports = function(grunt) {
                 ],
             },
             build: {
-                src: '.tmp/main.css',
+                src: 'lib/main.css',
                 dest: 'lib/main.min.css',
             },
         },
@@ -136,12 +144,13 @@ module.exports = function(grunt) {
             },
             lib: {
                 src: 'src/scripts/**/*.js',
-                dest: '.tmp/main.js',
+                dest: 'lib/main.js',
             },
         },
 
         /**
-         * Do some javascript post processing, like minifying and removing comments.
+         * Do some javascript post processing, like minifying and
+         * removing comments.
          */
         uglify: {
             options: {
@@ -163,7 +172,7 @@ module.exports = function(grunt) {
                 warnings: false,
             },
             lib: {
-                src: '.tmp/main.js',
+                src: 'lib/main.js',
                 dest: 'lib/main.min.js',
             },
         },
@@ -194,8 +203,9 @@ module.exports = function(grunt) {
         },
 
         /**
-         * Start browser sync, which setups a local node server based on the server root location.
-         * This task helps with cross browser testing and general workflow.
+         * Start browser sync, which setups a local node server based on the
+         * server root location. This task helps with cross browser testing
+         * and general workflow.
          */
         browserSync: {
             bsFiles: {
@@ -252,11 +262,12 @@ module.exports = function(grunt) {
             grunt.config.set('uglify.options.sourceMapIncludeSources', true);
             grunt.config.set('postcss.options.map', {
                 inline: false,
-                annotation: 'build/styles/'
+                annotation: 'lib/styles/',
             });
         });
     grunt.registerTask('default',
-        'Start BrowserSync and watch for any changes so we can do live updates while developing.',
+        'Start BrowserSync and watch for any changes so we can do live ' +
+        'updates while developing.',
         function() {
             const tasksArray = [
                 'copy',
@@ -292,14 +303,15 @@ module.exports = function(grunt) {
     grunt.registerTask('deploy',
         'Upload the build files.',
         function() {
-            const project = grunt.option('project'), // vooxe-gamedistribution
-                bucket = grunt.option('bucket'), // gd-sdk-html5
-                folderIn = grunt.option('in'), //
-                folderOut = grunt.option('out'); //
+            const project = grunt.option('project');
+            const bucket = grunt.option('bucket');
+            const folderIn = grunt.option('in');
+            const folderOut = grunt.option('out');
 
             // The key is saved as a system parameter within Team City.
-            // The service account key of our google cloud account for uploading to
-            // storage is stringified and then encoded as base64 using btoa()
+            // The service account key of our google cloud account for
+            // uploading to storage is stringified and then encoded as
+            // base64 using btoa()
             console.log(grunt.option('key'));
             let keyObj = grunt.option('key');
             let key = JSON.parse(atob(keyObj));
