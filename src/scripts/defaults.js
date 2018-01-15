@@ -260,6 +260,10 @@ const defaults = {
         controls: {
             container: null,
             wrapper: '.plyr__controls',
+            top: '.plyr__controls-top',
+            bottom: '.plyr__controls-bottom',
+            left: '.plyr__controls-left',
+            right: '.plyr__controls-right',
         },
         labels: '[data-plyr]',
         buttons: {

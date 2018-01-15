@@ -218,8 +218,10 @@ class Tubia {
             controls: [
                 'play-large',
                 'play',
+                'restart',
                 'progress',
                 'current-time',
+                'duration',
                 'mute',
                 'volume',
                 'settings',
