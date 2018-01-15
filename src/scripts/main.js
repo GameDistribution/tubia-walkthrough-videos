@@ -222,7 +222,6 @@ class Tubia {
                 'current-time',
                 'mute',
                 'volume',
-                'captions',
                 'settings',
                 'fullscreen',
                 'pip',

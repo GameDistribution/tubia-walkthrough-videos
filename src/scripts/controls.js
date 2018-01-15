@@ -880,27 +880,6 @@ const controls = {
         // Create the container
         const container = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.wrapper));
 
-        // Restart button
-        if (this.config.controls.includes('restart')) {
-            container.appendChild(controls.createButton.call(this, 'restart'));
-        }
-
-        // Rewind button
-        if (this.config.controls.includes('rewind')) {
-            container.appendChild(controls.createButton.call(this, 'rewind'));
-        }
-
-        // Play/Pause button
-        if (this.config.controls.includes('play')) {
-            container.appendChild(controls.createButton.call(this, 'play'));
-            // container.appendChild(controls.createButton.call(this, 'pause'));
-        }
-
-        // Fast forward button
-        if (this.config.controls.includes('fast-forward')) {
-            container.appendChild(controls.createButton.call(this, 'fast-forward'));
-        }
-
         // Progress
         if (this.config.controls.includes('progress')) {
             const progress = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.progress));
@@ -934,6 +913,27 @@ const controls = {
 
             this.elements.progress = progress;
             container.appendChild(this.elements.progress);
+        }
+
+        // Restart button
+        if (this.config.controls.includes('restart')) {
+            container.appendChild(controls.createButton.call(this, 'restart'));
+        }
+
+        // Rewind button
+        if (this.config.controls.includes('rewind')) {
+            container.appendChild(controls.createButton.call(this, 'rewind'));
+        }
+
+        // Play/Pause button
+        if (this.config.controls.includes('play')) {
+            container.appendChild(controls.createButton.call(this, 'play'));
+            // container.appendChild(controls.createButton.call(this, 'pause'));
+        }
+
+        // Fast forward button
+        if (this.config.controls.includes('fast-forward')) {
+            container.appendChild(controls.createButton.call(this, 'fast-forward'));
         }
 
         // Media current time display

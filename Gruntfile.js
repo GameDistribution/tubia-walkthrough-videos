@@ -262,7 +262,7 @@ module.exports = function(grunt) {
             grunt.config.set('uglify.options.sourceMapIncludeSources', true);
             grunt.config.set('postcss.options.map', {
                 inline: false,
-                annotation: 'build/styles/',
+                annotation: 'lib/styles/',
             });
         });
     grunt.registerTask('default',
