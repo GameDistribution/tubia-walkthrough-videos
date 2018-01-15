@@ -75,13 +75,13 @@
     background: linear-gradient(rgba($plyr-video-controls-bg, 0), rgba($plyr-video-controls-bg, 0.7));
     border-bottom-left-radius: inherit;
     border-bottom-right-radius: inherit;
-    bottom: 0;
+    bottom: -10px;
     color: $plyr-video-control-color;
     left: 0;
-    padding: ($plyr-control-spacing * 3.5) $plyr-control-spacing $plyr-control-spacing;
+    padding: ($plyr-control-spacing * 3.5) $plyr-control-spacing $plyr-control-spacing + 10px ;
     position: absolute;
     right: 0;
-    transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+    transition: opacity 0.2s ease-in-out, transform 0.2s cubic-bezier(.51, .92, .24, 1.2);
     z-index: 2;
 
     .plyr__control {
