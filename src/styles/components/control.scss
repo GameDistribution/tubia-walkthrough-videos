@@ -64,8 +64,15 @@
     border-top: 0;
     border-bottom: 0;
     will-change: transform;
-    transition: all 0.2s ease;
+    transition: transform 0.2s ease, opacity 0.3s ease;
     transform-origin: 0;
+
+    // http://csshexagon.com/
+    width: 50px;
+    height: 28.87px;
+    background-color: $plyr-video-control-bg-hover;
+    border-left: solid 4px $plyr-audio-control-bg-hover;
+    border-right: solid 4px $plyr-audio-control-bg-hover;
 
     &:hover {
         transform: scale(1.05) translate(-50%, -50%);
@@ -74,48 +81,70 @@
         transform: scale(1.1) translate(-50%, -50%);
     }
 
-    // http://csshexagon.com/
-    width: 90px;
-    height: 51.96px;
-    background-color: $plyr-video-control-bg-hover;
-    border-left: solid 8px $plyr-audio-control-bg-hover;
-    border-right: solid 8px $plyr-audio-control-bg-hover;
-
     &:before,
     &:after {
         content: "";
         position: absolute;
         z-index: 1;
-        width: 63.64px;
-        height: 63.64px;
+        width: 35.36px;
+        height: 35.36px;
         -webkit-transform: scaleY(0.5774) rotate(-45deg);
         -ms-transform: scaleY(0.5774) rotate(-45deg);
         transform: scaleY(0.5774) rotate(-45deg);
         background-color: inherit;
-        left: 5.1802px;
+        left: 3.3223px;
     }
 
     &:before {
-        top: -31.8198px;
-        border-top: solid 11.3137px $plyr-audio-control-bg-hover;
-        border-right: solid 11.3137px $plyr-audio-control-bg-hover;
+        top: -17.6777px;
+        border-top: solid 5.6569px $plyr-audio-control-bg-hover;
+        border-right: solid 5.6569px $plyr-audio-control-bg-hover;
     }
 
     &:after {
-        bottom: -31.8198px;
-        border-bottom: solid 11.3137px $plyr-audio-control-bg-hover;
-        border-left: solid 11.3137px $plyr-audio-control-bg-hover;
+        bottom: -17.6777px;
+        border-bottom: solid 5.6569px $plyr-audio-control-bg-hover;
+        border-left: solid 5.6569px $plyr-audio-control-bg-hover;
     }
 
     svg {
         display: block;
         position: relative;
         z-index: 2;
-        left: 2px; // Offset to make the play button look right
+        top: -1px;
+        left: 1px; // Offset to make the play button look right
         margin: auto;
-        width: $plyr-control-icon-size-large;
-        height: $plyr-control-icon-size-large;
+        width: $plyr-control-icon-size;
+        height: $plyr-control-icon-size;
         color: white;
+    }
+
+    @media (min-width: $plyr-bp-md) {
+        width: 100px;
+        height: 57.74px;
+        border-width: 0 8px;
+
+        &:before,
+        &:after {
+            width: 70.71px;
+            height: 70.71px;
+            left: 6.6447px;
+        }
+
+        &:before {
+            top: -35.3553px;
+            border-width: 11.3137px 11.3137px 0 0;
+        }
+
+        &:after {
+            bottom: -35.3553px;
+            border-width: 0 0 11.3137px 11.3137px;
+        }
+
+        svg {
+            width: $plyr-control-icon-size-large;
+            height: $plyr-control-icon-size-large;
+        }
     }
 }
 

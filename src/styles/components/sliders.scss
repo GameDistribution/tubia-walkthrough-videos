@@ -9,11 +9,12 @@
     border: 0;
     border-radius: ($plyr-range-thumb-height * 2);
     // color is used in JS to populate lower fill for WebKit
-    color: $plyr-range-fill-bg;
     display: block;
+    color: $plyr-range-fill-bg;
     height: $plyr-range-max-height;
     margin: 0;
     padding: 0;
+    will-change: box-shadow;
     transition: box-shadow 0.3s ease;
     width: 100%;
 
