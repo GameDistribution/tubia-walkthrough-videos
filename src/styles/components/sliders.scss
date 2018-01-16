@@ -17,6 +17,7 @@
     will-change: box-shadow;
     transition: box-shadow 0.3s ease;
     width: 100%;
+    cursor: pointer;
 
     &::-webkit-slider-runnable-track {
         @include plyr-range-track();
@@ -90,6 +91,32 @@
 
         &::-ms-track {
             @include plyr-tab-focus();
+        }
+    }
+
+    // Hover styles
+    &:hover {
+        &::-webkit-slider-runnable-track {
+            transform: scaleY(1);
+        }
+
+        &::-moz-range-track {
+            transform: scaleY(1);
+        }
+
+        &::-ms-track {
+            transform: scaleY(1);
+        }
+        &::-webkit-slider-thumb {
+            transform: scale(1);
+        }
+
+        &::-moz-range-thumb {
+            transform: scale(1);
+        }
+
+        &::-ms-thumb {
+            transform: scale(1);
         }
     }
 

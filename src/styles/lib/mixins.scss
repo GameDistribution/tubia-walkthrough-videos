@@ -28,15 +28,10 @@
     border: 0;
     border-radius: ($plyr-range-track-height / 2);
     height: $plyr-range-track-height;
-    transition: all 0.3s ease, height 0.1s ease;
-    will-change: height;
+    transform: scaleY(0.6);
+    transition: all 0.2s ease, transform 0.1s cubic-bezier(0.4, 0.0, 1, 1);
+    will-change: transform;
     user-select: none;
-    cursor: pointer;
-    // Hover styles
-    // Todo: actually would like this behaviour when hovering over all controls. noob.
-    &:hover {
-        height: $plyr-range-track-height * 2;
-    }
 }
 
 @mixin plyr-range-thumb() {
@@ -47,7 +42,10 @@
     box-sizing: border-box;
     height: $plyr-range-thumb-height;
     position: relative;
-    transition: all 0.2s ease;
+    transform: scale(0);
+    transform-origin: center;
+    transition: all 0.2s ease, transform 0.1s cubic-bezier(0.4, 0.0, 1, 1);
+    will-change: transform;
     width: $plyr-range-thumb-height;
 }
 
