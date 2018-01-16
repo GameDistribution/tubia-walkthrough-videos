@@ -338,6 +338,9 @@ export default class Ads {
             this.adsLoaderPromise,
         ]).then(() => {
             this.setOnClickHandler(this.adsDisplayElement, this.playAds);
+
+            // Ready event at end of execution stack.
+            // utils.dispatchEvent.call(this.player, this.player.media, 'waiting');
         });
     }
 

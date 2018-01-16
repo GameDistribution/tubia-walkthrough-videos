@@ -58,90 +58,117 @@
     z-index: 2;
     top: 50%;
     left: 50%;
-    transform: scale(1) translate(-50%, -50%);
     cursor: pointer;
     outline: 0;
-    border-top: 0;
-    border-bottom: 0;
+    border: 0;
+
+    transform: scale(0.9) translate(-50%, -50%);
     will-change: transform;
-    transition: transform 0.2s ease, opacity 0.3s ease;
+    transition: all 0.1s cubic-bezier(0.4,0.0,1,1);
     transform-origin: 0;
 
-    // http://csshexagon.com/
-    width: 50px;
-    height: 28.87px;
-    background-color: $plyr-video-control-bg-hover;
-    border-left: solid 4px $plyr-audio-control-bg-hover;
-    border-right: solid 4px $plyr-audio-control-bg-hover;
-
     &:hover {
-        transform: scale(1.05) translate(-50%, -50%);
+        transform: scale(0.95) translate(-50%, -50%);
     }
     &:active {
-        transform: scale(1.1) translate(-50%, -50%);
+        transform: scale(1.0) translate(-50%, -50%);
     }
 
-    &:before,
-    &:after {
-        content: "";
-        position: absolute;
-        z-index: 1;
-        width: 35.36px;
-        height: 35.36px;
-        -webkit-transform: scaleY(0.5774) rotate(-45deg);
-        -ms-transform: scaleY(0.5774) rotate(-45deg);
-        transform: scaleY(0.5774) rotate(-45deg);
-        background-color: inherit;
-        left: 3.3223px;
-    }
-
-    &:before {
-        top: -17.6777px;
-        border-top: solid 5.6569px $plyr-audio-control-bg-hover;
-        border-right: solid 5.6569px $plyr-audio-control-bg-hover;
-    }
-
-    &:after {
-        bottom: -17.6777px;
-        border-bottom: solid 5.6569px $plyr-audio-control-bg-hover;
-        border-left: solid 5.6569px $plyr-audio-control-bg-hover;
-    }
-
-    svg {
-        display: block;
+    // Hexagons
+    > div {
         position: relative;
+        width: 50px;
+        height: 50px;
+
+        @media (min-width: $plyr-bp-sm) {
+            width: 100px;
+            height: 100px;
+        }
+
+        > svg:first-of-type {
+            position: absolute;
+            z-index: 2;
+            top: 4px;
+            left: 4px;
+            width: 42px;
+            height: 42px;
+            fill: darken($plyr-audio-control-bg-hover, 10%);
+
+            @media (min-width: $plyr-bp-sm) {
+                top: 8px;
+                left: 8px;
+                width: 84px;
+                height: 84px;
+            }
+        }
+
+        > svg:last-of-type {
+            position: absolute;
+            z-index: 1;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            fill: $plyr-audio-control-bg-hover;
+
+            transform: scale(1);
+            will-change: transform;
+            transition: transform 0.2s ease, opacity 0.3s ease;
+            transform-origin: 0;
+        }
+        > div {
+            position: absolute;
+            z-index: 0;
+            top: 0;
+            left: 0;
+            svg {
+                display: none;
+                position: absolute;
+                fill: $plyr-audio-control-bg-hover;
+                width: 50px;
+                height: 50px;
+                will-change: transform;
+                transition: transform 0.2s ease, opacity 0.3s ease;
+                transform-origin: center;
+
+                @media (min-width: $plyr-bp-sm) {
+                    width: 100px;
+                    height: 100px;
+                }
+
+                &:nth-child(1) {
+                    transform: scale(1.4);
+                    opacity: 0.4;
+                }
+                &:nth-child(2) {
+                    transform: scale(2.6);
+                    opacity: 0.3;
+                }
+                &:nth-child(3) {
+                    transform: scale(3.4);
+                    opacity: 0.2;
+                }
+                &:nth-child(4) {
+                    transform: scale(4.2);
+                    opacity: 0.1;
+                }
+            }
+        }
+    }
+
+    // Play icon
+    > svg:last-of-type {
+        position: absolute;
         z-index: 2;
-        top: -1px;
-        left: 1px; // Offset to make the play button look right
-        margin: auto;
+        top: 50%;
+        left: 50%;
+        margin-left: 1px;
+        color: white;
         width: $plyr-control-icon-size;
         height: $plyr-control-icon-size;
-        color: white;
-    }
+        transform: translate(-50%, -50%);
 
-    @media (min-width: $plyr-bp-md) {
-        width: 100px;
-        height: 57.74px;
-        border-width: 0 8px;
-
-        &:before,
-        &:after {
-            width: 70.71px;
-            height: 70.71px;
-            left: 6.6447px;
-        }
-
-        &:before {
-            top: -35.3553px;
-            border-width: 11.3137px 11.3137px 0 0;
-        }
-
-        &:after {
-            bottom: -35.3553px;
-            border-width: 0 0 11.3137px 11.3137px;
-        }
-
-        svg {
+        @media (min-width: $plyr-bp-sm) {
             width: $plyr-control-icon-size-large;
             height: $plyr-control-icon-size-large;
         }
@@ -151,9 +178,17 @@
 .plyr--playing .plyr__control--overlaid {
     opacity: 0;
     visibility: hidden;
-    transform: scale(0.9) translate(-50%, 0%);
+    transform: scale(0.8) translate(-50%, -50%);
 }
 
 .plyr--full-ui.plyr--video .plyr__control--overlaid {
     display: block;
+}
+
+// Loading state
+.plyr--loading .plyr__control--overlaid {
+    > div > div > svg {
+        display: block;
+        animation: plyr-progress-play 1.5s linear infinite;
+    }
 }

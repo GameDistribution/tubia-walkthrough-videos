@@ -192,6 +192,20 @@ const controls = {
                 icon = type;
         }
 
+        if (buttonType === 'play-large') {
+            const hexagon = utils.createElement('div');
+            hexagon.appendChild(controls.createIcon.call(this, 'hexagon'));
+            hexagon.appendChild(controls.createIcon.call(this, 'hexagon'));
+            const hexagons = utils.createElement('div');
+            hexagon.appendChild(hexagons);
+            hexagons.appendChild(controls.createIcon.call(this, 'hexagon'));
+            hexagons.appendChild(controls.createIcon.call(this, 'hexagon'));
+            hexagons.appendChild(controls.createIcon.call(this, 'hexagon'));
+            hexagons.appendChild(controls.createIcon.call(this, 'hexagon'));
+
+            button.appendChild(hexagon);
+        }
+
         // Setup toggle icon and labels
         if (toggle) {
             // Icon
