@@ -97,38 +97,6 @@
         }
     }
 
-    // Hover styles
-    &:hover {
-        &::-webkit-slider-runnable-track {
-            transform: scaleY(1);
-        }
-
-        &::-moz-range-track {
-            transform: scaleY(1);
-        }
-
-        &::-ms-track {
-            transform: scaleY(1);
-        }
-
-        &::-webkit-slider-thumb {
-            transform: scale(1);
-        }
-
-        &::-moz-range-thumb {
-            transform: scale(1);
-        }
-
-        &::-ms-thumb {
-            transform: scale(1);
-        }
-
-        // Transform mid-roll cue indicator.
-        .plyr__cue {
-            transform: scaleY(1);
-        }
-    }
-
     // Pressed styles
     &:active {
         &::-webkit-slider-thumb {
@@ -142,6 +110,33 @@
         &::-ms-thumb {
             @include plyr-range-thumb-active();
         }
+    }
+}
+
+// Hover styles
+.plyr--full-ui .plyr__progress input[type='range']:hover {
+    &::-webkit-slider-runnable-track {
+        transform: scaleY(1);
+    }
+
+    &::-moz-range-track {
+        transform: scaleY(1);
+    }
+
+    &::-ms-track {
+        transform: scaleY(1);
+    }
+
+    &::-webkit-slider-thumb {
+        transform: scale(1);
+    }
+
+    &::-moz-range-thumb {
+        transform: scale(1);
+    }
+
+    &::-ms-thumb {
+        transform: scale(1);
     }
 }
 

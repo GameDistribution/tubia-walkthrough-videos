@@ -17,6 +17,7 @@
     .plyr__tooltip {
         left: 0;
         bottom: $plyr-range-max-height / 3;
+        padding-bottom: $plyr-tooltip-padding - 3px;
     }
 }
 
@@ -24,14 +25,18 @@
     -webkit-appearance: none; /* stylelint-disable-line */
     background: transparent;
     border: 0;
-    border-radius: 100px;
+    border-radius: 0;
     height: $plyr-range-track-height;
     left: 0;
-    margin: -($plyr-range-track-height / 2) 0 0;
+    margin: 0;
     padding: 0;
     position: absolute;
     bottom: 0;
     width: 100%;
+    transform: scaleY(0.6);
+    transform-origin: bottom;
+    transition: all 0.2s ease, transform 0.1s cubic-bezier(0.4, 0.0, 1, 1);
+    will-change: transform;
 
     &::-webkit-progress-bar {
         background: transparent;
@@ -41,22 +46,31 @@
     &::-webkit-progress-value {
         display: none;
         background: currentColor;
-        border-radius: 100px;
+        border-radius: 0;
         min-width: $plyr-range-track-height;
     }
 
     // Mozilla
     &::-moz-progress-bar {
         background: currentColor;
-        border-radius: 100px;
+        border-radius: 0;
         min-width: $plyr-range-track-height;
         transition: width 0.2s ease;
     }
 
     // Microsoft
     &::-ms-fill {
-        border-radius: 100px;
+        border-radius: 0;
         transition: width 0.2s ease;
+    }
+}
+
+// Hover styles
+.plyr--full-ui  .plyr__progress {
+    &:hover {
+        .plyr__progress--buffer {
+            transform: scaleY(1);
+        }
     }
 }
 
