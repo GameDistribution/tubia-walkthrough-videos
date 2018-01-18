@@ -366,11 +366,15 @@ class Ads {
     play() {
         const {container} = this.player.elements;
 
-        // Initialize the container. Must be done via a user action on mobile devices.
-        this.adDisplayContainer.initialize();
+        if (!this.adsManagerPromise) {
+            return;
+        }
 
         // Play the requested advertisement whenever the adsManager is ready.
         this.adsManagerPromise.then(() => {
+            // Initialize the container. Must be done via a user action on mobile devices.
+            this.adDisplayContainer.initialize();
+
             try {
                 if (!this.initialized) {
 

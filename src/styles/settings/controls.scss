@@ -9,8 +9,8 @@ $plyr-control-padding: ($plyr-control-spacing * 0.7) !default;
 $plyr-control-radius: 3px !default;
 
 $plyr-video-controls-bg: #000 !default;
-$plyr-video-control-color: #fff !default;
-$plyr-video-control-color-hover: #fff !default;
+$plyr-video-control-color: rgba(255, 255, 255, 0.8) !default;
+$plyr-video-control-color-hover: rgba(255, 255, 255, 1.0) !default;
 $plyr-video-control-bg-hover: $plyr-color-main !default;
 
 $plyr-audio-controls-bg: #fff !default;

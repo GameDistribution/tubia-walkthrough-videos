@@ -10,17 +10,11 @@
 // Playback controls
 .plyr__controls {
     display: flex;
-    flex-direction: column;
-
-    .plyr__controls-top,
-    .plyr__controls-bottom {
-        display: flex;
-        flex-direction: row;
-        flex: 1;
-        width: 100%;
-        text-align: center;
-        align-items: center;
-    }
+    flex-direction: row;
+    text-align: center;
+    align-items: center;
+    width: 100%;
+    padding: ($plyr-control-spacing * 2) $plyr-control-spacing / 2 $plyr-control-spacing;
 
     .plyr__controls-left,
     .plyr__controls-right {
@@ -28,6 +22,7 @@
         flex-direction: row;
         justify-content: center;
         align-items: center;
+        z-index: 1;
     }
 
     .plyr__controls-right {
@@ -35,54 +30,54 @@
     }
 }
 
-.plyr__controls-top,
-.plyr__controls-bottom {
-    // Spacing
+// Spacing
+> .plyr__control,
+.plyr__time,
+.plyr__menu {
+    margin-left: ($plyr-control-spacing / 2);
+
+    &:first-child,
+    &:first-child + [data-plyr='pause'] {
+        margin-left: 0;
+    }
+}
+
+.plyr__volume {
+    margin-left: ($plyr-control-spacing / 2);
+}
+
+.plyr__progress {
+    z-index: 0;
+    bottom: $plyr-range-max-height;
+    margin-left: -($plyr-control-spacing / 2);
+}
+
+@media (min-width: $plyr-bp-sm) {
     > .plyr__control,
-    .plyr__progress,
     .plyr__time,
     .plyr__menu {
-        margin-left: ($plyr-control-spacing / 2);
-
-        &:first-child,
-        &:first-child + [data-plyr='pause'] {
-            margin-left: 0;
-        }
+        margin-left: $plyr-control-spacing;
     }
 
-    .plyr__volume {
+    > .plyr__control + .plyr__control,
+    .plyr__menu + .plyr__control,
+    > .plyr__control + .plyr__menu {
         margin-left: ($plyr-control-spacing / 2);
-    }
-
-    @media (min-width: $plyr-bp-sm) {
-        > .plyr__control,
-        .plyr__progress,
-        .plyr__time,
-        .plyr__menu {
-            margin-left: $plyr-control-spacing;
-        }
-
-        > .plyr__control + .plyr__control,
-        .plyr__menu + .plyr__control,
-        > .plyr__control + .plyr__menu {
-            margin-left: ($plyr-control-spacing / 2);
-        }
     }
 }
 
 // Video controls
 .plyr--video .plyr__controls {
+    position: absolute;
+    z-index: 2;
+    left: 0;
+    right: 0;
+    bottom: 0;
     background: linear-gradient(rgba($plyr-video-controls-bg, 0), rgba($plyr-video-controls-bg, 0.7));
     border-bottom-left-radius: inherit;
     border-bottom-right-radius: inherit;
-    bottom: -10px;
     color: $plyr-video-control-color;
-    left: 0;
-    padding: ($plyr-control-spacing * 3.5) $plyr-control-spacing $plyr-control-spacing + 10px ;
-    position: absolute;
-    right: 0;
-    transition: opacity 0.2s ease-in-out, transform 0.2s cubic-bezier(0.4,0.0,1,1);
-    z-index: 2;
+    transition: opacity 0.2s cubic-bezier(0.4,0.0,1,1);
 
     .plyr__control {
         svg {
@@ -93,7 +88,7 @@
         &.plyr__tab-focus,
         &:hover,
         &[aria-expanded='true'] {
-            background: $plyr-video-control-bg-hover;
+            // background: $plyr-video-control-bg-hover;
             color: $plyr-video-control-color-hover;
         }
     }
@@ -111,7 +106,7 @@
 .plyr--video.plyr--hide-controls .plyr__controls {
     opacity: 0;
     pointer-events: none;
-    transform: translateY(100%);
+    // transform: translateY(100%);
 }
 
 // Some options are hidden by default

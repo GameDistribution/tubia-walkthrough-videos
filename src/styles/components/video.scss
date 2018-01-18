@@ -3,7 +3,8 @@
 // --------------------------------------------------------------
 
 .plyr--video {
-    overflow: hidden;
+    // overflow: hidden;
+    background: #000;
 
     // Menu open
     &.plyr--menu-open {

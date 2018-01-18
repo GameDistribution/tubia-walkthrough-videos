@@ -894,14 +894,11 @@ const controls = {
         // Create the container
         const container = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.wrapper));
         const containerTop = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.top));
-        const containerBottom = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.bottom));
         const containerLeft = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.left));
         const containerRight = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.right));
 
-        container.appendChild(containerTop);
-        containerBottom.appendChild(containerLeft);
-        containerBottom.appendChild(containerRight);
-        container.appendChild(containerBottom);
+        container.appendChild(containerLeft);
+        container.appendChild(containerRight);
 
         // Progress
         if (this.config.controls.includes('progress')) {
@@ -935,7 +932,7 @@ const controls = {
             }
 
             this.elements.progress = progress;
-            containerTop.appendChild(this.elements.progress);
+            container.appendChild(this.elements.progress);
         }
 
         // Restart button

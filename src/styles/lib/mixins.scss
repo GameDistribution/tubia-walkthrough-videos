@@ -26,9 +26,10 @@
 @mixin plyr-range-track() {
     background: transparent;
     border: 0;
-    border-radius: ($plyr-range-track-height / 2);
+    border-radius: 0;
     height: $plyr-range-track-height;
     transform: scaleY(0.6);
+    transform-origin: bottom;
     transition: all 0.2s ease, transform 0.1s cubic-bezier(0.4, 0.0, 1, 1);
     will-change: transform;
     user-select: none;

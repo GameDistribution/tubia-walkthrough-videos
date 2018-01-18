@@ -3,9 +3,10 @@
 // --------------------------------------------------------------
 
 .plyr__progress {
-    display: flex;
-    flex: 1;
-    position: relative;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: $plyr-range-max-height;
 
     input[type='range'] {
         position: relative;
@@ -16,6 +17,7 @@
     .plyr__tooltip {
         font-size: $plyr-font-size-time;
         left: 0;
+        bottom: $plyr-range-max-height / 3;
     }
 }
 
@@ -29,7 +31,7 @@
     margin: -($plyr-range-track-height / 2) 0 0;
     padding: 0;
     position: absolute;
-    top: 50%;
+    bottom: 0;
     width: 100%;
 
     &::-webkit-progress-bar {
