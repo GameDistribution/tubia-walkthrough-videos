@@ -17,8 +17,8 @@
     svg {
         display: block;
         fill: currentColor;
-        height: $plyr-control-icon-size;
         pointer-events: none;
+        height: $plyr-control-icon-size;
         width: $plyr-control-icon-size;
     }
 
@@ -46,8 +46,8 @@
     &.plyr__tab-focus,
     &:hover,
     &[aria-expanded='true'] {
-        background: $plyr-audio-control-bg-hover;
-        color: $plyr-audio-control-color-hover;
+        background: $plyr-color-main;
+        color: $plyr-color-main;
     }
 }
 
@@ -92,7 +92,7 @@
             left: 4px;
             width: 42px;
             height: 42px;
-            fill: darken($plyr-audio-control-bg-hover, 10%);
+            fill: darken($plyr-color-main, 10%);
 
             @media (min-width: $plyr-bp-sm) {
                 top: 8px;
@@ -109,7 +109,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            fill: $plyr-audio-control-bg-hover;
+            fill: $plyr-color-main;
 
             transform: scale(1);
             will-change: transform;
@@ -124,7 +124,7 @@
             svg {
                 display: none;
                 position: absolute;
-                fill: $plyr-audio-control-bg-hover;
+                fill: $plyr-color-main;
                 width: 50px;
                 height: 50px;
                 will-change: transform;

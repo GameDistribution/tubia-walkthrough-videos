@@ -39,7 +39,7 @@
 
         > div {
             overflow: hidden;
-            transition: height 0.35s cubic-bezier(0.4, 0, 0.2, 1), width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: height 0.15s cubic-bezier(0.4, 0, 0.2, 1), width 0.15s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         // Arrow
@@ -129,6 +129,7 @@
         }
 
         label.plyr__control {
+            font-size: $plyr-font-size-base;
             padding-left: $plyr-control-padding;
 
             input[type='radio'] + span {
@@ -158,7 +159,7 @@
             }
 
             input[type='radio']:checked + span {
-                background: $plyr-color-main;
+                background: darken($plyr-color-main, 10%);
 
                 &::after {
                     opacity: 1;
