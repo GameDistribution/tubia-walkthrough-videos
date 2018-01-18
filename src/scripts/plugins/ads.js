@@ -1,6 +1,14 @@
 import utils from '../utils';
 
+/**
+ * Advertisements using Google IMA HTML5 SDK.
+ */
 class Ads {
+    /**
+     * Ads constructor.
+     * @param {object} player
+     * @return {Ads}
+     */
     constructor(player) {
         this.player = player;
         this.playing = false;
@@ -21,6 +29,9 @@ class Ads {
         }
     }
 
+    /**
+     * Get the ads instance ready.
+     */
     ready() {
         this.time = Date.now();
         this.adsContainer = null;
@@ -28,7 +39,6 @@ class Ads {
         this.adsManager = null;
         this.adsLoader = null;
         this.adsCuePoints = null;
-        this.currentAd = null;
         this.events = {};
         this.safetyTimer = null;
 
@@ -42,13 +52,17 @@ class Ads {
         // Setup a simple promise to resolve if the IMA loader is ready.
         this.adsLoaderPromise = new Promise((resolve) => {
             this.on('ADS_LOADER_LOADED', () => resolve());
-            this.player.debug.log(`[${(Date.now() - this.time) / 1000}s][IMA SDK] adsLoader resolved!`, this.adsLoader);
+        });
+        this.adsLoaderPromise.then(() => {
+            this.player.debug.log('Ads loader resolved!', this.adsLoader);
         });
 
         // Setup a promise to resolve if the IMA manager is ready.
         this.adsManagerPromise = new Promise((resolve) => {
             this.on('ADS_MANAGER_LOADED', () => resolve());
-            this.player.debug.log(`[${(Date.now() - this.time) / 1000}s][IMA SDK] adsManager resolved!`, this.adsManager);
+        });
+        this.adsManagerPromise.then(() => {
+            this.player.debug.log('Ads manager resolved!', this.adsManager);
 
             // Clear the safety timer.
             this.clearSafetyTimer('onAdsManagerLoaded()');
@@ -59,15 +73,12 @@ class Ads {
     }
 
     /**
-     * setupIMA
-     * In order for the SDK to display ads for our video, we need to tell it
-     * where to put them, so here we define our ad container. This div is set
-     * up to render on top of the video player. Using the code below, we tell
-     * the SDK to render ads within that div. We also provide a handle to the
-     * content video player - the SDK will poll the current time of our player
-     * to properly place mid-rolls. After we create the ad display container,
-     * we initialize it. On mobile devices, this initialization is done as the
-     * result of a user action.
+     * In order for the SDK to display ads for our video, we need to tell it where to put them,
+     * so here we define our ad container. This div is set up to render on top of the video player.
+     * Using the code below, we tell the SDK to render ads within that div. We also provide a
+     * handle to the content video player - the SDK will poll the current time of our player to
+     * properly place mid-rolls. After we create the ad display container, we initialize it. On
+     * mobile devices, this initialization is done as the result of a user action.
      */
     setupIMA() {
         // Create the container for our advertisements.
@@ -95,7 +106,7 @@ class Ads {
      * Request advertisements.
      */
     requestAds() {
-        const { container } = this.player.elements;
+        const {container} = this.player.elements;
 
         try {
             // Create ads loader.
@@ -132,12 +143,10 @@ class Ads {
     }
 
     /**
-     * This method is called whenever the ads are ready inside
-     * the AdDisplayContainer.
+     * This method is called whenever the ads are ready inside the AdDisplayContainer.
      * @param {Event} adsManagerLoadedEvent
      */
     onAdsManagerLoaded(adsManagerLoadedEvent) {
-
         // Get the ads manager.
         const settings = new google.ima.AdsRenderingSettings();
 
@@ -151,72 +160,98 @@ class Ads {
 
         // Get the cue points for any mid-rolls by filtering out the pre- and post-roll.
         this.adsCuePoints = this.adsManager.getCuePoints();
-        this.player.debug.log(this.adsCuePoints);
+
+        // Add advertisement cue's within the time line if available.
+        this.adsCuePoints.forEach((cuePoint) => {
+            if (cuePoint !== 0 && cuePoint !== -1) {
+                const seekElement = this.player.elements.progress;
+                if (seekElement) {
+                    const cuePercentage = 100 / this.player.duration * cuePoint;
+                    const cue = utils.createElement('span', {
+                        class: this.player.config.classNames.cues,
+                    });
+                    cue.style.left = `${cuePercentage.toString()}%`;
+                    seekElement.appendChild(cue);
+                }
+            }
+        });
 
         // Add listeners to the required events.
         // Advertisement error events.
-        this.adsManager.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR, error => this.onAdError(error));
+        this.adsManager.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR,
+            error => this.onAdError(error));
 
         // Advertisement regular events.
-        this.adsManager.addEventListener(google.ima.AdEvent.Type.AD_BREAK_READY, event => this.onAdEvent(event));
-        this.adsManager.addEventListener(google.ima.AdEvent.Type.AD_METADATA, event => this.onAdEvent(event));
-        this.adsManager.addEventListener(google.ima.AdEvent.Type.ALL_ADS_COMPLETED, event => this.onAdEvent(event));
-        this.adsManager.addEventListener(google.ima.AdEvent.Type.CLICK, event => this.onAdEvent(event));
-        this.adsManager.addEventListener(google.ima.AdEvent.Type.COMPLETE, event => this.onAdEvent(event));
-        this.adsManager.addEventListener(google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED, event => this.onAdEvent(event));
-        this.adsManager.addEventListener(google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED, event => this.onAdEvent(event));
-        this.adsManager.addEventListener(google.ima.AdEvent.Type.LOADED, event => this.onAdEvent(event));
-        this.adsManager.addEventListener(google.ima.AdEvent.Type.STARTED, event => this.onAdEvent(event));
-        this.adsManager.addEventListener(google.ima.AdEvent.Type.DURATION_CHANGE, event => this.onAdEvent(event));
-        this.adsManager.addEventListener(google.ima.AdEvent.Type.FIRST_QUARTILE, event => this.onAdEvent(event));
-        this.adsManager.addEventListener(google.ima.AdEvent.Type.IMPRESSION, event => this.onAdEvent(event));
-        this.adsManager.addEventListener(google.ima.AdEvent.Type.INTERACTION, event => this.onAdEvent(event));
-        this.adsManager.addEventListener(google.ima.AdEvent.Type.LINEAR_CHANGED, event => this.onAdEvent(event));
-        this.adsManager.addEventListener(google.ima.AdEvent.Type.MIDPOINT, event => this.onAdEvent(event));
-        this.adsManager.addEventListener(google.ima.AdEvent.Type.PAUSED, event => this.onAdEvent(event));
-        this.adsManager.addEventListener(google.ima.AdEvent.Type.RESUMED, event => this.onAdEvent(event));
-        this.adsManager.addEventListener(google.ima.AdEvent.Type.SKIPPABLE_STATE_CHANGED, event => this.onAdEvent(event));
-        this.adsManager.addEventListener(google.ima.AdEvent.Type.SKIPPED, event => this.onAdEvent(event));
-        this.adsManager.addEventListener(google.ima.AdEvent.Type.THIRD_QUARTILE, event => this.onAdEvent(event));
-        this.adsManager.addEventListener(google.ima.AdEvent.Type.USER_CLOSE, event => this.onAdEvent(event));
-        this.adsManager.addEventListener(google.ima.AdEvent.Type.VOLUME_CHANGED, event => this.onAdEvent(event));
-        this.adsManager.addEventListener(google.ima.AdEvent.Type.VOLUME_MUTED, event => this.onAdEvent(event));
+        this.adsManager.addEventListener(google.ima.AdEvent.Type.AD_BREAK_READY,
+            event => this.onAdEvent(event));
+        this.adsManager.addEventListener(google.ima.AdEvent.Type.AD_METADATA,
+            event => this.onAdEvent(event));
+        this.adsManager.addEventListener(google.ima.AdEvent.Type.ALL_ADS_COMPLETED,
+            event => this.onAdEvent(event));
+        this.adsManager.addEventListener(google.ima.AdEvent.Type.CLICK,
+            event => this.onAdEvent(event));
+        this.adsManager.addEventListener(google.ima.AdEvent.Type.COMPLETE,
+            event => this.onAdEvent(event));
+        this.adsManager.addEventListener(google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED,
+            event => this.onAdEvent(event));
+        this.adsManager.addEventListener(google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED,
+            event => this.onAdEvent(event));
+        this.adsManager.addEventListener(google.ima.AdEvent.Type.LOADED,
+            event => this.onAdEvent(event));
+        this.adsManager.addEventListener(google.ima.AdEvent.Type.STARTED,
+            event => this.onAdEvent(event));
+        this.adsManager.addEventListener(google.ima.AdEvent.Type.DURATION_CHANGE,
+            event => this.onAdEvent(event));
+        this.adsManager.addEventListener(google.ima.AdEvent.Type.FIRST_QUARTILE,
+            event => this.onAdEvent(event));
+        this.adsManager.addEventListener(google.ima.AdEvent.Type.IMPRESSION,
+            event => this.onAdEvent(event));
+        this.adsManager.addEventListener(google.ima.AdEvent.Type.INTERACTION,
+            event => this.onAdEvent(event));
+        this.adsManager.addEventListener(google.ima.AdEvent.Type.LINEAR_CHANGED,
+            event => this.onAdEvent(event));
+        this.adsManager.addEventListener(google.ima.AdEvent.Type.MIDPOINT,
+            event => this.onAdEvent(event));
+        this.adsManager.addEventListener(google.ima.AdEvent.Type.PAUSED,
+            event => this.onAdEvent(event));
+        this.adsManager.addEventListener(google.ima.AdEvent.Type.RESUMED,
+            event => this.onAdEvent(event));
+        this.adsManager.addEventListener(google.ima.AdEvent.Type.SKIPPABLE_STATE_CHANGED,
+            event => this.onAdEvent(event));
+        this.adsManager.addEventListener(google.ima.AdEvent.Type.SKIPPED,
+            event => this.onAdEvent(event));
+        this.adsManager.addEventListener(google.ima.AdEvent.Type.THIRD_QUARTILE,
+            event => this.onAdEvent(event));
+        this.adsManager.addEventListener(google.ima.AdEvent.Type.USER_CLOSE,
+            event => this.onAdEvent(event));
+        this.adsManager.addEventListener(google.ima.AdEvent.Type.VOLUME_CHANGED,
+            event => this.onAdEvent(event));
+        this.adsManager.addEventListener(google.ima.AdEvent.Type.VOLUME_MUTED,
+            event => this.onAdEvent(event));
 
         // Resolve our adsManager.
         this.handleEventListeners('ADS_MANAGER_LOADED');
     }
 
     /**
-     * This is where all the event handling takes place. Retrieve the ad from
-     * the event. Some events (e.g. ALL_ADS_COMPLETED) don't have ad
-     * object associated.
+     * This is where all the event handling takes place. Retrieve the ad from the event. Some
+     * events (e.g. ALL_ADS_COMPLETED) don't have the ad object associated.
      * @param {Event} event
      */
     onAdEvent(event) {
-        const { container } = this.player.elements;
+        const {container} = this.player.elements;
+
+        // Listen for events if debugging.
+        this.player.debug.log(`ads event: ${event.type}`);
 
         // Retrieve the ad from the event. Some events (e.g. ALL_ADS_COMPLETED)
         // don't have ad object associated.
         const ad = event.getAd();
 
-        // Set the currently played ad. This information could be used by callback
-        // events.
-        this.currentAd = ad;
-
-        // let intervalTimer;
-
         switch (event.type) {
-
-            case google.ima.AdEvent.Type.AD_BREAK_READY:
-                this.player.debug.log(`[${(Date.now() - this.time) / 1000}s][IMA SDK] AD_BREAK_READY |`, 'Fired when an ad rule or a VMAP ad break would have played if autoPlayAdBreaks is false.');
-                break;
-            case google.ima.AdEvent.Type.AD_METADATA:
-                this.player.debug.log(`[${(Date.now() - this.time) / 1000}s][IMA SDK] AD_METADATA |`, 'Fired when an ads list is loaded.');
-                break;
             case google.ima.AdEvent.Type.ALL_ADS_COMPLETED:
-                // All ads for the current videos are done. We can now
-                // request new advertisements in case the video is re-played.
-                this.player.debug.log(`[${(Date.now() - this.time) / 1000}s][IMA SDK] ALL_ADS_COMPLETED |`, 'Fired when the ads manager is done playing all the ads.');
+                // All ads for the current videos are done. We can now request new advertisements
+                // in case the video is re-played.
                 this.handleEventListeners('ALL_ADS_COMPLETED');
 
                 // Todo: Example for what happens when a next video in a playlist would be loaded.
@@ -229,57 +264,39 @@ class Ads {
                 //     type: 'video',
                 //     title: 'View From A Blue Moon',
                 //     sources: [{
-                //         src: 'https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-HD.mp4',
-                //         type: 'video/mp4',
-                //     }],
-                //     poster: 'https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-HD.jpg',
-                //     tracks: [
-                //         {
-                //             kind: 'captions',
-                //             label: 'English',
-                //             srclang: 'en',
-                //             src: 'https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-HD.en.vtt',
-                //             default: true,
-                //         },
-                //         {
-                //             kind: 'captions',
-                //             label: 'French',
-                //             srclang: 'fr',
-                //             src: 'https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-HD.fr.vtt',
-                //         },
-                //     ],
+                //         src:
+                // 'https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-HD.mp4', type:
+                // 'video/mp4', }], poster:
+                // 'https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-HD.jpg', tracks:
+                // [ { kind: 'captions', label: 'English', srclang: 'en', src:
+                // 'https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-HD.en.vtt',
+                // default: true, }, { kind: 'captions', label: 'French', srclang: 'fr', src:
+                // 'https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-HD.fr.vtt', }, ],
                 // };
 
-                // Todo: So there is still this thing where a video should only be allowed to start playing when the IMA SDK is ready or has failed.
+                // Todo: So there is still this thing where a video should only be allowed to start
+                // playing when the IMA SDK is ready or has failed.
 
                 this.loadAds();
                 break;
-            case google.ima.AdEvent.Type.CLICK:
-                this.player.debug.log(`[${(Date.now() - this.time) / 1000}s][IMA SDK] CLICK |`, 'Fired when the ad is clicked.');
-                break;
-            case google.ima.AdEvent.Type.COMPLETE:
-                this.player.debug.log(`[${(Date.now() - this.time) / 1000}s][IMA SDK] COMPLETE |`, 'Fired when the ad completes playing.');
-                break;
             case google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED:
-                // This event indicates the ad has started - the video player
-                // can adjust the UI, for example display a pause button and
-                // remaining time.
-                this.player.debug.log(`[${(Date.now() - this.time) / 1000}s][IMA SDK] CONTENT_PAUSE_REQUESTED |`, 'Fired when content should be paused. This usually happens right before an ad is about to cover the content.');
+                // This event indicates the ad has started - the video player can adjust the UI,
+                // for example display a pause button and remaining time. Fired when content should
+                // be paused. This usually happens right before an ad is about to cover the content.
                 this.handleEventListeners('CONTENT_PAUSE_REQUESTED');
-                this.contentPause();
+                this.pauseContent();
                 break;
             case google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED:
-                // This event indicates the ad has finished - the video player
-                // can perform appropriate UI actions, such as removing the timer for
-                // remaining time detection.
-                this.player.debug.log(`[${(Date.now() - this.time) / 1000}s][IMA SDK] CONTENT_RESUME_REQUESTED |`, 'Fired when content should be resumed. This usually happens when an ad finishes or collapses.');
+                // This event indicates the ad has finished - the video player can perform
+                // appropriate UI actions, such as removing the timer for remaining time detection.
+                // Fired when content should be resumed. This usually happens when an ad finishes
+                // or collapses.
                 this.handleEventListeners('CONTENT_RESUME_REQUESTED');
-                this.contentResume();
+                this.resumeContent();
                 break;
             case google.ima.AdEvent.Type.LOADED:
-                // This is the first event sent for an ad - it is possible to
-                // determine whether the ad is a video ad or an overlay.
-                this.player.debug.log(`[${(Date.now() - this.time) / 1000}s][IMA SDK] LOADED |`, event.getAd().getContentType());
+                // This is the first event sent for an ad - it is possible to determine whether the
+                // ad is a video ad or an overlay.
                 this.handleEventListeners('LOADED');
 
                 if (!ad.isLinear()) {
@@ -290,51 +307,6 @@ class Ads {
 
                 // console.info('Ad type: ' + event.getAd().getAdPodInfo().getPodIndex());
                 // console.info('Ad time: ' + event.getAd().getAdPodInfo().getTimeOffset());
-                break;
-            case google.ima.AdEvent.Type.STARTED:
-                this.player.debug.log(`[${(Date.now() - this.time) / 1000}s][IMA SDK] STARTED |`, 'Fired when the ad starts playing.');
-                break;
-            case google.ima.AdEvent.Type.DURATION_CHANGE:
-                this.player.debug.log(`[${(Date.now() - this.time) / 1000}s][IMA SDK] DURATION_CHANGE |`, 'Fired when the ad\'s duration changes.');
-                break;
-            case google.ima.AdEvent.Type.FIRST_QUARTILE:
-                this.player.debug.log(`[${(Date.now() - this.time) / 1000}s][IMA SDK] FIRST_QUARTILE |`, 'Fired when the ad playhead crosses first quartile.');
-                break;
-            case google.ima.AdEvent.Type.IMPRESSION:
-                this.player.debug.log(`[${(Date.now() - this.time) / 1000}s][IMA SDK] IMPRESSION |`, 'Fired when the impression URL has been pinged.');
-                break;
-            case google.ima.AdEvent.Type.INTERACTION:
-                this.player.debug.log(`[${(Date.now() - this.time) / 1000}s][IMA SDK] INTERACTION |`, 'Fired when an ad triggers the interaction callback. Ad interactions contain an interaction ID string in the ad data.');
-                break;
-            case google.ima.AdEvent.Type.LINEAR_CHANGED:
-                this.player.debug.log(`[${(Date.now() - this.time) / 1000}s][IMA SDK] LINEAR_CHANGED |`, 'Fired when the displayed ad changes from linear to nonlinear, or vice versa.');
-                break;
-            case google.ima.AdEvent.Type.MIDPOINT:
-                this.player.debug.log(`[${(Date.now() - this.time) / 1000}s][IMA SDK] MIDPOINT |`, 'Fired when the ad playhead crosses midpoint.');
-                break;
-            case google.ima.AdEvent.Type.PAUSED:
-                this.player.debug.log(`[${(Date.now() - this.time) / 1000}s][IMA SDK] PAUSED |`, 'Fired when the ad is paused.');
-                break;
-            case google.ima.AdEvent.Type.RESUMED:
-                this.player.debug.log(`[${(Date.now() - this.time) / 1000}s][IMA SDK] RESUMED |`, 'Fired when the ad is resumed.');
-                break;
-            case google.ima.AdEvent.Type.SKIPPABLE_STATE_CHANGED:
-                this.player.debug.log(`[${(Date.now() - this.time) / 1000}s][IMA SDK] SKIPPABLE_STATE_CHANGED |`, 'Fired when the displayed ads skippable state is changed.');
-                break;
-            case google.ima.AdEvent.Type.SKIPPED:
-                this.player.debug.log(`[${(Date.now() - this.time) / 1000}s][IMA SDK] SKIPPED |`, 'Fired when the ad is skipped by the user.');
-                break;
-            case google.ima.AdEvent.Type.THIRD_QUARTILE:
-                this.player.debug.log(`[${(Date.now() - this.time) / 1000}s][IMA SDK] THIRD_QUARTILE |`, 'Fired when the ad playhead crosses third quartile.');
-                break;
-            case google.ima.AdEvent.Type.USER_CLOSE:
-                this.player.debug.log(`[${(Date.now() - this.time) / 1000}s][IMA SDK] USER_CLOSE |`, 'Fired when the ad is closed by the user.');
-                break;
-            case google.ima.AdEvent.Type.VOLUME_CHANGED:
-                this.player.debug.log(`[${(Date.now() - this.time) / 1000}s][IMA SDK] VOLUME_CHANGED |`, 'Fired when the ad volume has changed.');
-                break;
-            case google.ima.AdEvent.Type.VOLUME_MUTED:
-                this.player.debug.log(`[${(Date.now() - this.time) / 1000}s][IMA SDK] VOLUME_MUTED |`, 'Fired when the ad volume has been muted.');
                 break;
 
             default:
@@ -348,7 +320,7 @@ class Ads {
      */
     onAdError(adErrorEvent) {
         this.cancel();
-        this.player.debug.log(`[${(Date.now() - this.time) / 1000}s][IMA SDK] ERROR |`, adErrorEvent);
+        this.player.debug.log('Ads error.', adErrorEvent);
     }
 
     /**
@@ -357,7 +329,7 @@ class Ads {
      * resize the advertisement when the player resizes.
      */
     setupListeners() {
-        const { container } = this.player.elements;
+        const {container} = this.player.elements;
         let time;
 
         // Add listeners to the required events.
@@ -383,7 +355,8 @@ class Ads {
 
         // Listen to the resizing of the window. And resize ad accordingly.
         window.addEventListener('resize', () => {
-            this.adsManager.resize(container.offsetWidth, container.offsetHeight, google.ima.ViewMode.NORMAL);
+            this.adsManager.resize(container.offsetWidth, container.offsetHeight,
+                google.ima.ViewMode.NORMAL);
         });
     }
 
@@ -391,7 +364,7 @@ class Ads {
      * Initialize the adsManager and start playing advertisements.
      */
     play() {
-        const { container } = this.player.elements;
+        const {container} = this.player.elements;
 
         // Initialize the container. Must be done via a user action on mobile devices.
         this.adDisplayContainer.initialize();
@@ -402,7 +375,8 @@ class Ads {
                 if (!this.initialized) {
 
                     // Initialize the ads manager. Ad rules playlist will start at this time.
-                    this.adsManager.init(container.offsetWidth, container.offsetHeight, google.ima.ViewMode.NORMAL);
+                    this.adsManager.init(container.offsetWidth, container.offsetHeight,
+                        google.ima.ViewMode.NORMAL);
 
                     // Call play to start showing the ad. Single video and overlay ads will
                     // start at this time; the call will be ignored for ad rules.
@@ -421,8 +395,8 @@ class Ads {
     /**
      * Resume our video.
      */
-    contentResume() {
-        this.player.debug.log(`[${(Date.now() - this.time) / 1000}s][IMA SDK]`, 'Resume video.');
+    resumeContent() {
+        this.player.debug.log('Resume video.');
 
         // Hide our ad container.
         this.adsContainer.style.display = 'none';
@@ -439,8 +413,8 @@ class Ads {
     /**
      * Pause our video.
      */
-    contentPause() {
-        this.player.debug.log(`[${(Date.now() - this.time) / 1000}s][IMA SDK]`, 'Pause video.');
+    pauseContent() {
+        this.player.debug.log('Pause video.');
 
         // Show our ad container.
         this.adsContainer.style.display = 'block';
@@ -453,17 +427,16 @@ class Ads {
     }
 
     /**
-     * Destroy the adsManager so we can grab new ads after this.
-     * If we don't then we're not allowed to call new ads based
-     * on google policies, as they interpret this as an accidental
+     * Destroy the adsManager so we can grab new ads after this. If we don't then we're not
+     * allowed to call new ads based on google policies, as they interpret this as an accidental
      * video requests. https://developers.google.com/interactive-
      * media-ads/docs/sdks/android/faq#8
      */
     cancel() {
-        this.player.debug.warn(`[${(Date.now() - this.time) / 1000}s][IMA SDK]`, 'Advertisement cancelled.');
+        this.player.debug.warn('Ad cancelled.');
 
         // Pause our video.
-        this.contentResume();
+        this.resumeContent();
 
         // Tell our instance that we're done for now.
         this.handleEventListeners('ERROR');
@@ -476,8 +449,6 @@ class Ads {
      * Re-create our adsManager.
      */
     loadAds() {
-        this.player.debug.log(`[${(Date.now() - this.time) / 1000}s][IMA SDK]`, 'Re-loading advertisements.');
-
         // Tell our adsManager to go bye bye.
         this.adsManagerPromise.then(() => {
             // Destroy our adsManager.
@@ -488,7 +459,7 @@ class Ads {
             // Re-set our adsManager promises.
             this.adsManagerPromise = new Promise((resolve) => {
                 this.on('ADS_MANAGER_LOADED', () => resolve());
-                this.player.debug.log(`[${(Date.now() - this.time) / 1000}s][IMA SDK] adsManager resolved!`, this.adsManager);
+                this.player.debug.log(this.adsManager);
             });
 
             // Make sure we can re-call advertisements.
@@ -501,6 +472,7 @@ class Ads {
 
     /**
      * Handles callbacks after an ad event was invoked.
+     * @param {string} event - Event type
      */
     handleEventListeners(event) {
         if (typeof this.events[event] !== 'undefined') {
@@ -512,6 +484,7 @@ class Ads {
      * Add event listeners
      * @param {string} event - Event type
      * @param {function} callback - Callback for when event occurs
+     * @return {Ads}
      */
     on(event, callback) {
         this.events[event] = callback;
@@ -519,15 +492,15 @@ class Ads {
     }
 
     /**
-     * Setup a safety timer for when the ad network doesn't respond for
-     * whatever reason. The advertisement has 12 seconds to get its things
-     * together. We stop this timer when the advertisement is playing, or when
-     * a user action is required to start, then we clear the timer on ad ready.
+     * Setup a safety timer for when the ad network doesn't respond for whatever reason.
+     * The advertisement has 12 seconds to get its things together. We stop this timer when the
+     * advertisement is playing, or when a user action is required to start, then we clear the
+     * timer on ad ready.
      * @param {Number} time
      * @param {String} from
      */
     startSafetyTimer(time, from) {
-        this.player.debug.log(`[${(Date.now() - this.time) / 1000}s][IMA SDK]`, `Safety timer invoked timer from: ${from}`);
+        this.player.debug.log(`Safety timer invoked from: ${from}.`);
         this.safetyTimer = window.setTimeout(() => {
             this.cancel();
             this.clearSafetyTimer('startSafetyTimer()');
@@ -540,7 +513,7 @@ class Ads {
      */
     clearSafetyTimer(from) {
         if (typeof this.safetyTimer !== 'undefined' && this.safetyTimer !== null) {
-            this.player.debug.log(`[${(Date.now() - this.time) / 1000}s][IMA SDK]`, `Safety timer cleared timer from: ${from}`);
+            this.player.debug.log(`Safety timer cleared from: ${from}.`);
             clearTimeout(this.safetyTimer);
             this.safetyTimer = undefined;
         }
@@ -548,4 +521,3 @@ class Ads {
 }
 
 export default Ads;
-

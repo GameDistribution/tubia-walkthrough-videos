@@ -38,6 +38,7 @@
     }
 
     &::-webkit-progress-value {
+        display: none;
         background: currentColor;
         border-radius: 100px;
         min-width: $plyr-range-track-height;
@@ -59,7 +60,7 @@
 }
 
 .plyr--video .plyr__progress--buffer {
-    box-shadow: 0 1px 1px rgba(#000, 0.15);
+    // box-shadow: 0 1px 1px rgba(#000, 0.15);
     color: $plyr-video-progress-buffered-bg;
 }
 

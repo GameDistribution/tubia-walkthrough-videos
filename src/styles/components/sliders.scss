@@ -14,8 +14,8 @@
     height: $plyr-range-max-height;
     margin: 0;
     padding: 0;
-    will-change: box-shadow;
-    transition: box-shadow 0.3s ease;
+    // will-change: box-shadow;
+    // transition: box-shadow 0.3s ease;
     width: 100%;
     cursor: pointer;
 
@@ -107,6 +107,7 @@
         &::-ms-track {
             transform: scaleY(1);
         }
+
         &::-webkit-slider-thumb {
             transform: scale(1);
         }
@@ -117,6 +118,11 @@
 
         &::-ms-thumb {
             transform: scale(1);
+        }
+
+        // Transform mid-roll cue indicator.
+        .plyr__cue {
+            transform: scaleY(1);
         }
     }
 
