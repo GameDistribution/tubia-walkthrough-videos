@@ -893,7 +893,6 @@ const controls = {
 
         // Create the container
         const container = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.wrapper));
-        const containerTop = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.top));
         const containerLeft = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.left));
         const containerRight = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.right));
 
@@ -933,6 +932,11 @@ const controls = {
 
             this.elements.progress = progress;
             container.appendChild(this.elements.progress);
+        }
+
+        // Media current time display
+        if (this.config.controls.includes('current-time')) {
+            containerLeft.appendChild(controls.createTime.call(this, 'currentTime'));
         }
 
         // Restart button
@@ -990,14 +994,9 @@ const controls = {
             containerLeft.appendChild(volume);
         }
 
-        // Media current time display
-        if (this.config.controls.includes('current-time')) {
-            containerLeft.appendChild(controls.createTime.call(this, 'currentTime'));
-        }
-
         // Media duration display
         if (this.config.controls.includes('duration')) {
-            containerLeft.appendChild(controls.createTime.call(this, 'duration'));
+            containerRight.appendChild(controls.createTime.call(this, 'duration'));
         }
 
         // Toggle captions button

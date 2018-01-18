@@ -216,8 +216,8 @@ class Tubia {
             },
             controls: [
                 'play-large',
-                'play',
-                'restart',
+                // 'play',
+                // 'restart',
                 'progress',
                 'current-time',
                 'duration',
