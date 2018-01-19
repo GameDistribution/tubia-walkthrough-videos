@@ -98,6 +98,37 @@ const ui = {
 
         // Set the title
         ui.setTitle.call(this);
+
+        // Set the theme
+        ui.setTheme.call(this);
+    },
+
+    // Setup the color theme
+    setTheme() {
+        const css = `
+            .plyr--video {
+                color: ${this.config.color};
+            }
+            .plyr--full-ui input[type=range] {
+                color: ${this.config.color};
+            }
+            .plyr__menu__container {
+                background: ${this.config.color};
+            }
+            .plyr__menu__container:after {
+                border-top-color: ${this.config.color};
+            }
+        `;
+        // Add css
+        const head = document.head || document.getElementsByTagName('head')[0];
+        const style = document.createElement('style');
+        style.type = 'text/css';
+        if (style.styleSheet) {
+            style.styleSheet.cssText = css;
+        } else {
+            style.appendChild(document.createTextNode(css));
+        }
+        head.appendChild(style);
     },
 
     // Setup aria attribute for play and iframe title

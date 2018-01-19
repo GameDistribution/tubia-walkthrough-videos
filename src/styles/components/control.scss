@@ -92,7 +92,7 @@
             left: 4px;
             width: 42px;
             height: 42px;
-            fill: darken($plyr-color-main, 10%);
+            fill: currentColor;
 
             @media (min-width: $plyr-bp-sm) {
                 top: 8px;
@@ -109,7 +109,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            fill: $plyr-color-main;
+            fill: currentColor;
+            filter: brightness(0.9);
 
             transform: scale(1);
             will-change: transform;
@@ -124,7 +125,7 @@
             svg {
                 display: none;
                 position: absolute;
-                fill: $plyr-color-main;
+                fill: currentColor;
                 width: 50px;
                 height: 50px;
                 will-change: transform;

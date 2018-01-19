@@ -198,6 +198,7 @@ class Tubia {
             debug: true,
             title: 'View From A Blue Moon',
             iconUrl: 'sprite.svg',
+            color: '#ff0080',
             ads: {
                 tagUrl: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480' +
                 '&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rul' +

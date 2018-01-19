@@ -4,7 +4,8 @@
 
 .plyr--video {
     // overflow: hidden;
-    background: #000;
+    color: $plyr-color-main;
+    background-color: #000;
 
     // Menu open
     &.plyr--menu-open {
@@ -13,7 +14,6 @@
 }
 
 .plyr__video-wrapper {
-    background: #000;
     border-radius: inherit;
     overflow: hidden;
     position: relative;

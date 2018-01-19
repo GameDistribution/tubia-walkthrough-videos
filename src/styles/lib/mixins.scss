@@ -4,8 +4,8 @@
 
 // Nicer focus styles
 // ---------------------------------------
-@mixin plyr-tab-focus($color: $plyr-tab-focus-default-color) {
-    box-shadow: 0 0 0 3px rgba($color, 0.35);
+@mixin plyr-tab-focus() {
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.15);
     outline: 0;
 }
 
