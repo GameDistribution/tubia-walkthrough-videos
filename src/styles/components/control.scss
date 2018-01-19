@@ -56,26 +56,36 @@
     display: none;
     position: absolute;
     z-index: 2;
-    top: 50%;
-    left: 50%;
-    cursor: pointer;
+    left: 0;
+    top: 0;
     outline: 0;
     border: 0;
 
-    transform: scale(0.95) translate(-50%, -50%);
-    will-change: transform;
-    transition: all 0.1s cubic-bezier(0.4, 0.0, 1, 1);
-    transform-origin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
 
-    &:hover {
-        transform: scale(0.98) translate(-50%, -50%);
-    }
-    &:active {
-        transform: scale(1.0) translate(-50%, -50%);
-    }
-
-    // Hexagons
     > div {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        cursor: pointer;
+
+        transform: scale(0.95) translate(-50%, -50%);
+        will-change: transform;
+        transition: all 0.1s cubic-bezier(0.4, 0.0, 1, 1);
+        transform-origin: 0;
+
+        &:hover {
+            transform: scale(0.98) translate(-50%, -50%);
+        }
+        &:active {
+            transform: scale(1.0) translate(-50%, -50%);
+        }
+    }
+
+    // Hexagon
+    > div > div {
         position: relative;
         width: 50px;
         height: 50px;
@@ -117,42 +127,44 @@
             transition: transform 0.2s ease, opacity 0.3s ease;
             transform-origin: 0;
         }
-        > div {
+    }
+
+    // Hexagons
+    > div > div > div {
+        position: absolute;
+        z-index: 0;
+        top: 0;
+        left: 0;
+        svg {
+            display: none;
             position: absolute;
-            z-index: 0;
-            top: 0;
-            left: 0;
-            svg {
-                display: none;
-                position: absolute;
-                fill: currentColor;
-                width: 50px;
-                height: 50px;
-                will-change: transform;
-                transition: transform 0.2s ease, opacity 0.3s ease;
-                transform-origin: center;
+            fill: currentColor;
+            width: 50px;
+            height: 50px;
+            will-change: transform;
+            transition: transform 0.2s ease, opacity 0.3s ease;
+            transform-origin: center;
 
-                @media (min-width: $plyr-bp-sm) {
-                    width: 100px;
-                    height: 100px;
-                }
+            @media (min-width: $plyr-bp-sm) {
+                width: 100px;
+                height: 100px;
+            }
 
-                &:nth-child(1) {
-                    transform: scale(1.4);
-                    opacity: 0.4;
-                }
-                &:nth-child(2) {
-                    transform: scale(2.6);
-                    opacity: 0.3;
-                }
-                &:nth-child(3) {
-                    transform: scale(3.4);
-                    opacity: 0.2;
-                }
-                &:nth-child(4) {
-                    transform: scale(4.2);
-                    opacity: 0.1;
-                }
+            &:nth-child(1) {
+                transform: scale(5);
+                filter: brightness(0.5);
+            }
+            &:nth-child(2) {
+                transform: scale(4);
+                filter: brightness(0.6);
+            }
+            &:nth-child(3) {
+                transform: scale(3);
+                filter: brightness(0.7);
+            }
+            &:nth-child(4) {
+                transform: scale(2);
+                filter: brightness(0.8);
             }
         }
     }
@@ -179,7 +191,9 @@
 .plyr--playing .plyr__control--overlaid {
     opacity: 0;
     visibility: hidden;
-    transform: scale(0.8) translate(-50%, -50%);
+    > div {
+        transform: scale(0.8) translate(-50%, -50%);
+    }
 }
 
 .plyr--full-ui.plyr--video .plyr__control--overlaid {
@@ -188,7 +202,16 @@
 
 // Loading state
 .plyr--loading .plyr__control--overlaid {
-    > div > div > svg {
+    > div {
+        cursor: default;
+        &:hover {
+            transform: scale(0.95) translate(-50%, -50%);
+        }
+        &:active {
+            transform: scale(0.95) translate(-50%, -50%);
+        }
+    }
+    > div > div > div > svg {
         display: block;
         animation: plyr-progress-play 1.5s linear infinite;
     }

@@ -193,7 +193,9 @@ const controls = {
         }
 
         if (buttonType === 'play-large') {
+            const hexagonContainer = utils.createElement('div');
             const hexagon = utils.createElement('div');
+            hexagonContainer.appendChild(hexagon);
             hexagon.appendChild(controls.createIcon.call(this, 'hexagon'));
             hexagon.appendChild(controls.createIcon.call(this, 'hexagon'));
             const hexagons = utils.createElement('div');
@@ -203,7 +205,7 @@ const controls = {
             hexagons.appendChild(controls.createIcon.call(this, 'hexagon'));
             hexagons.appendChild(controls.createIcon.call(this, 'hexagon'));
 
-            button.appendChild(hexagon);
+            button.appendChild(hexagonContainer);
         }
 
         // Setup toggle icon and labels
