@@ -113,8 +113,23 @@
     }
 }
 
+// Progress bar specific
+.plyr--full-ui .plyr__progress input[type='range'] {
+    &::-webkit-slider-runnable-track {
+        transform-origin: bottom;
+    }
+
+    &::-moz-range-track {
+        transform-origin: bottom;
+    }
+
+    &::-ms-track {
+        transform-origin: bottom;
+    }
+}
+
 // Hover styles
-.plyr--full-ui .plyr__progress input[type='range']:hover {
+.plyr--full-ui input[type='range']:hover {
     &::-webkit-slider-runnable-track {
         transform: scaleY(1);
     }

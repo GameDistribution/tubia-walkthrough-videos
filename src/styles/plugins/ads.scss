@@ -3,7 +3,7 @@
 // ==========================================================================
 
 .plyr__ads {
-    display: none; // Hide initially.
+    display: none;
     bottom: 0;
     cursor: pointer;
     left: 0;
@@ -12,8 +12,18 @@
     top: 0;
     z-index: 3; // Above the controls.
 
-    video {
-        left: 0;
+    &::after {
+        background: rgba($plyr-color-gunmetal, 0.8);
+        border-radius: 2px;
+        bottom: ($plyr-control-spacing * 2);
+        color: #fff;
+        content: attr(data-badge-text);
+        font-size: $plyr-font-size-captions-small;
+        padding: 2px 6px;
+        pointer-events: none;
+        position: absolute;
+        right: ($plyr-control-spacing * 2);
+        z-index: 3;
     }
 }
 
