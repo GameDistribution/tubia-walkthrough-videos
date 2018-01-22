@@ -1,3 +1,5 @@
+import 'es6-promise/auto';
+import 'whatwg-fetch';
 import PackageJSON from '../../package.json';
 import Plyr from './plyr';
 import utils from './utils';
@@ -137,6 +139,7 @@ const myPlaylist = [
             }],
         poster: '//img.gamedistribution.com/c035e676ef654227b1537dabbf194e00.jpg',
     }];
+
 /* eslint-enable */
 
 /**
@@ -158,11 +161,12 @@ class Tubia {
         // values further down.
         const defaults = {
             debug: false,
-            gameId: '4f3d7d38d24b740c95da2b03dc3a2333',
-            userId: '31D29405-8D37-4270-BF7C-8D99CCF0177F-s1',
-            resumeVideo() {},
-            pauseVideo() {},
-            onEvent() {},
+            gameId: '2c13796e0f2f4180a84bc64ed53d78e3',
+            publisherId: 'dc63a91fa184423482808bed4d782320',
+            color: '#ff0080',
+            onFound() {},
+            onError() {},
+            onReady() {},
         };
 
         if (options) {
@@ -177,7 +181,9 @@ class Tubia {
                 this.openConsole();
             }
         } catch (error) {
-            // console.log(error);
+            /* eslint-disable */
+            console.error(error);
+            /* eslint-enable */
         }
 
         // Set a version banner within the developer console.
@@ -192,13 +198,15 @@ class Tubia {
         console.log.apply(console, banner);
         /* eslint-enable */
 
+        // Load polyfills and range fix.
+        utils.loadScript('https://cdn.rangetouch.com/1.0.1/rangetouch.js');
+
         // Plyr video player returns an array regardless.
         // const videoPlayer = instances[0];
         const player = new Plyr('#player', {
-            debug: true,
-            title: 'View From A Blue Moon',
+            debug: false,
             iconUrl: 'sprite.svg',
-            color: '#ff0080',
+            color: this.options.color,
             ads: {
                 tagUrl: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480' +
                 '&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rul' +
@@ -231,14 +239,66 @@ class Tubia {
                 'airplay',
             ],
         });
+        // Return callbacks.
+        player.on('ready', () => {
+            this.options.onReady(player);
+            this.options.onFound();
+        });
+        player.on('error', () => {
+            this.options.onError();
+        });
 
-        // Expose for testing
-        window.player = player;
+        // Get us some video data.
+        const videoDataPromise = new Promise((resolve, reject) => {
+            const videoDataUrl = `http://walkthrough.gamedistribution.com/api/player/publish/?gameid=${this.options.gameId.replace(/-/g, '')}&publisherid=${this.options.publisherId.replace(/-/g, '')}&domain=spele.nl`;
+            const videoDataRequest = new Request(videoDataUrl, {method: 'GET'});
+            fetch(videoDataRequest).
+                then((response) => {
+                    const contentType = response.headers.get('content-type');
+                    if (!contentType ||
+                        !contentType.includes('application/json')) {
+                        reject();
+                        throw new TypeError('Oops, we didn\'t get JSON!');
+                    } else {
+                        return response.json();
+                    }
+                }).
+                then(json => {
+                    resolve(json);
+                }).catch(() => {
+                    reject();
+                });
+        });
+
+        videoDataPromise.then((json) => {
+            if (!json) return;
+            // Just grab the last video and poster image.
+            // Set the video data to our video player.
+            player.source = {
+                type: 'video',
+                title: json.detail[0].title,
+                sources: [{
+                    src: json.files[json.files.length - 1].linkSecure,
+                    type: json.files[json.files.length - 1].type,
+                }],
+                poster: json.pictures[json.pictures.length - 1].link,
+            };
+        }).catch(error => {
+            /* eslint-disable */
+            console.error(error);
+            /* eslint-enable */
+        });
     }
 }
 
-let settings = window.TUBIA_OPTIONS;
-settings = (typeof settings === 'object' && settings)
-    ? settings
-    : {};
+/* eslint-disable */
+const settings = (typeof TUBIA_OPTIONS === 'object' && TUBIA_OPTIONS)
+    ? TUBIA_OPTIONS
+    : (window.gdPlayer && typeof window.gdPlayer.q[0][0] === 'object' &&
+        window.gdPlayer.q[0][0])
+        ? window.gdPlayer.q[0][0]
+        : {};
+/* eslint-enable */
+
 window.tubia = new Tubia(settings);
+window.gdPlayer = window.tubia;

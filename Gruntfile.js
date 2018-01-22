@@ -38,7 +38,7 @@ module.exports = function(grunt) {
                 expand: true,
                 flatten: true,
                 cwd: './',
-                src: ['src/index.html'],
+                src: ['src/index.html', 'src/index_legacy.html'],
                 dest: './lib/',
             },
         },
