@@ -6,142 +6,6 @@ import utils from './utils';
 
 const instance = null;
 
-/* eslint-disable */
-const myPlaylist = [
-    {
-        type: 'video',
-        title: 'Level 1',
-        author: 'Gamedistribution',
-        sources: [
-            {
-                src: 'yY_wD7rg4o4',
-                type: 'youtube',
-            }],
-        poster: '//img.gamedistribution.com/09fefe9954da4aa5bb4923e662abd0d8.jpg',
-    }, {
-        type: 'video',
-        title: 'Level 2',
-        author: 'Gamedistribution',
-        sources: [
-            {
-                src: 'no4QliMYFaw',
-                type: 'youtube',
-            }],
-        poster: '//img.gamedistribution.com/4eda37038a3f4310b6330a1c7441f48a.jpg',
-    }, {
-        type: 'video',
-        title: 'Level 3 - Bonus!',
-        author: 'Gamedistribution',
-        sources: [
-            {
-                src: 'SotFIzMGU5Y',
-                type: 'youtube',
-            }],
-        poster: '//img.gamedistribution.com/268e2d230a4c4ee58c52bc9ddff62838.jpg',
-    }, {
-        type: 'video',
-        title: 'Level 4',
-        author: 'Gamedistribution',
-        sources: [
-            {
-                src: 'mpFiRTHBAWY',
-                type: 'youtube',
-            }],
-        poster: '//img.gamedistribution.com/0095b1d5dcb645d88971010491627362.jpg',
-    }, {
-        type: 'video',
-        title: 'Level 5',
-        author: 'Gamedistribution',
-        sources: [
-            {
-                src: 'mpFiRTHBAWY',
-                type: 'youtube',
-            }],
-        poster: '//img.gamedistribution.com/db770064d7cd45a798b096d4397a0870.jpg',
-    }, {
-        type: 'video',
-        title: 'Level 6',
-        author: 'Gamedistribution',
-        sources: [
-            {
-                src: 'pkzmQobvFy4',
-                type: 'youtube',
-            }],
-        poster: '//img.gamedistribution.com/f07403fb3a4e4278944d0b540a6de3ff.jpg',
-    }, {
-        type: 'video',
-        title: 'Level 7',
-        author: 'Gamedistribution',
-        sources: [
-            {
-                src: 'yigTl-Nz9bI',
-                type: 'youtube',
-            }],
-        poster: '//img.gamedistribution.com/6acda84726fe45b784e3a3afe23aaad4.jpg',
-    }, {
-        type: 'video',
-        title: 'Level 8',
-        author: 'Gamedistribution',
-        sources: [
-            {
-                src: '0JssWLS7MsQ',
-                type: 'youtube',
-            }],
-        poster: '//img.gamedistribution.com/de857b96d0a540e18b2a4037a8b7d6d8.jpg',
-    }, {
-        type: 'video',
-        title: 'Level 9',
-        author: 'Gamedistribution',
-        sources: [
-            {
-                src: 'pkzmQobvFy4&t',
-                type: 'youtube',
-            }],
-        poster: '//img.gamedistribution.com/f6f42e8013fe45df91d48689c63a08d1.jpg',
-    }, {
-        type: 'video',
-        title: 'Level 10',
-        author: 'Gamedistribution',
-        sources: [
-            {
-                src: 'nU0iGUkPDTc',
-                type: 'youtube',
-            }],
-        poster: '//img.gamedistribution.com/41bba635f3b94f118641f81b6632c347.jpg',
-    }, {
-        type: 'video',
-        title: 'Level 11',
-        author: 'Gamedistribution',
-        sources: [
-            {
-                src: 'BBVdUImE5N0',
-                type: 'youtube',
-            }],
-        poster: '//img.gamedistribution.com/024bd7264a574b4682d5640e9b0de8e0.jpg',
-    }, {
-        type: 'video',
-        title: 'Level 12',
-        author: 'Gamedistribution',
-        sources: [
-            {
-                src: 'dciY7yfCcjo',
-                type: 'youtube',
-            }],
-        poster: '//img.gamedistribution.com/2417f059ba0c43d1bfab9061a313343e.jpg',
-    }, {
-        type: 'video',
-        title: 'Level 13',
-        author: 'Gamedistribution',
-        sources: [
-            {
-                src: '1RUraQtNVo4',
-                type: 'youtube',
-            }],
-        poster: '//img.gamedistribution.com/c035e676ef654227b1537dabbf194e00.jpg',
-    }];
-
-/* eslint-enable */
-
 /**
  * Tubia
  */
@@ -161,6 +25,7 @@ class Tubia {
         // values further down.
         const defaults = {
             debug: false,
+            container: 'player',
             gameId: '2c13796e0f2f4180a84bc64ed53d78e3',
             publisherId: 'dc63a91fa184423482808bed4d782320',
             color: '#ff0080',
@@ -199,16 +64,17 @@ class Tubia {
         /* eslint-enable */
 
         // Load polyfills and range fix.
+        // Todo: check if we have missing polyfills. Rather get them as npm bundle.
         utils.loadScript('https://cdn.rangetouch.com/1.0.1/rangetouch.js');
 
-        // Plyr video player returns an array regardless.
-        // const videoPlayer = instances[0];
-        const player = new Plyr('#player', {
+        // Create the video player.
+        // Todo: create the markup up dynamically and append to real container.
+        const player = new Plyr(`#${this.options.container}`, {
             debug: false,
             iconUrl: 'sprite.svg',
             color: this.options.color,
             ads: {
-                tagUrl: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480' +
+                tag: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480' +
                 '&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rul' +
                 'e=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_sta' +
                 'rt=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpost' +
@@ -240,9 +106,11 @@ class Tubia {
             ],
         });
         // Return callbacks.
+        // Todo: add callback for pause, play and others.
         player.on('ready', () => {
             this.options.onReady(player);
-            this.options.onFound();
+            // Todo: do something with onFound.
+            this.options.onFound('some data here');
         });
         player.on('error', () => {
             this.options.onError();
@@ -250,7 +118,10 @@ class Tubia {
 
         // Get us some video data.
         const videoDataPromise = new Promise((resolve, reject) => {
-            const videoDataUrl = `http://walkthrough.gamedistribution.com/api/player/publish/?gameid=${this.options.gameId.replace(/-/g, '')}&publisherid=${this.options.publisherId.replace(/-/g, '')}&domain=spele.nl`;
+            // Todo: check if we dont want to use a tubia url.
+            // Todo: verify if tubia cdn urls are ssl ready.
+            // Todo: make sure to disable ads if enableAds is false. Also for addFreeActive :P
+            const videoDataUrl = `https://walkthrough.gamedistribution.com/api/player/publish/?gameid=${this.options.gameId.replace(/-/g, '')}&publisherid=${this.options.publisherId.replace(/-/g, '')}&domain=spele.nl`;
             const videoDataRequest = new Request(videoDataUrl, {method: 'GET'});
             fetch(videoDataRequest).
                 then((response) => {
@@ -283,6 +154,7 @@ class Tubia {
                 }],
                 poster: json.pictures[json.pictures.length - 1].link,
             };
+            // Todo: Create seeking cue's as playlist using json.files.cues something data.
         }).catch(error => {
             /* eslint-disable */
             console.error(error);

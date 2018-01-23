@@ -3,46 +3,49 @@
 // ==========================================================================
 
 .plyr__ads {
-    display: none;
     bottom: 0;
     cursor: pointer;
     left: 0;
     position: absolute;
     right: 0;
     top: 0;
-    z-index: 3; // Above the controls.
+    z-index: 3; // Above the controls
 
     &::after {
         background: rgba($plyr-color-gunmetal, 0.8);
         border-radius: 2px;
-        bottom: ($plyr-control-spacing * 2);
+        bottom: $plyr-control-spacing;
         color: #fff;
         content: attr(data-badge-text);
-        font-size: $plyr-font-size-captions-small;
+        font-size: 11px;
         padding: 2px 6px;
         pointer-events: none;
         position: absolute;
-        right: ($plyr-control-spacing * 2);
+        right: $plyr-control-spacing;
         z-index: 3;
+    }
+
+    &::after:empty {
+        display: none;
     }
 }
 
-// Advertisement cue's for the progress bar.
+// Advertisement cue's for the progress bar
 .plyr__cues {
+    background: currentColor;
     display: block;
-    position: absolute;
-    z-index: 2;
-    bottom: 0;
+    height: $plyr-range-track-height;
     left: 0;
     margin: 0;
-    width: 3px;
-    height: $plyr-range-track-height;
-    background: currentColor;
     opacity: 0.8;
     transform: scaleY(0.6);
     transform-origin: bottom;
-    transition: all 0.2s ease, transform 0.1s cubic-bezier(0.4, 0.0, 1, 1);
     will-change: transform;
+    transition: all 0.2s ease, transform 0.1s cubic-bezier(0.4, 0.0, 1, 1);
+    position: absolute;
+    bottom: 0;
+    width: 3px;
+    z-index: 3; // Between progress and thumb
 }
 
 // Hover styles

@@ -588,7 +588,7 @@ const utils = {
         const event = new CustomEvent(type, {
             bubbles: utils.is.boolean(bubbles) ? bubbles : false,
             detail: Object.assign({}, detail, {
-                plyr: this, // this instanceof Plyr ? this : null,
+                plyr: this,
             }),
         });
 
@@ -618,6 +618,37 @@ const utils = {
             return 0;
         }
         return (current / max * 100).toFixed(2);
+    },
+
+    // Time helpers
+    getHours(value) { return parseInt((value / 60 / 60) % 60, 10); },
+    getMinutes(value) { return parseInt((value / 60) % 60, 10); },
+    getSeconds(value) { return parseInt(value % 60, 10); },
+
+    // Format time to UI friendly string
+    formatTime(time = 0, displayHours = false, inverted = false) {
+        // Bail if the value isn't a number
+        if (!utils.is.number(time)) {
+            return this.formatTime(null, displayHours, inverted);
+        }
+
+        // Format time component to add leading zero
+        const format = value => `0${value}`.slice(-2);
+
+        // Breakdown to hours, mins, secs
+        let hours = this.getHours(time);
+        const mins = this.getMinutes(time);
+        const secs = this.getSeconds(time);
+
+        // Do we need to display hours?
+        if (displayHours || hours > 0) {
+            hours = `${hours}:`;
+        } else {
+            hours = '';
+        }
+
+        // Render
+        return `${inverted ? '-' : ''}${hours}${format(mins)}:${format(secs)}`;
     },
 
     // Deep extend destination object with N more objects
@@ -746,7 +777,7 @@ const utils = {
     },
 
     // Get the transition end event
-    transitionEnd: (() => {
+    get transitionEndEvent() {
         const element = document.createElement('span');
 
         const events = {
@@ -758,8 +789,8 @@ const utils = {
 
         const type = Object.keys(events).find(event => element.style[event] !== undefined);
 
-        return typeof type === 'string' ? type : false;
-    })(),
+        return utils.is.string(type) ? events[type] : false;
+    },
 
     // Force repaint of element
     repaint(element) {
