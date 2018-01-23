@@ -411,7 +411,7 @@ const listeners = {
             })
         );
 
-        // Rewind
+        // Forward
         utils.on(this.elements.buttons.forward, 'click', event =>
             proxy(event, 'forward', () => {
                 this.forward();

@@ -7,8 +7,15 @@
     display: none;
 }
 
-// Playback controls
 .plyr__controls {
+    display: flex;
+    flex-direction: column;
+}
+
+// Playback controls
+.plyr__controls-top,
+.plyr__controls-middle,
+.plyr__controls-bottom {
     display: flex;
     flex-direction: row;
     text-align: center;
@@ -17,7 +24,8 @@
     padding: ($plyr-control-spacing * 2) $plyr-control-spacing / 2 $plyr-control-spacing;
 
     .plyr__controls-left,
-    .plyr__controls-right {
+    .plyr__controls-right,
+    .plyr__controls-center {
         display: flex;
         flex-direction: row;
         justify-content: center;
@@ -28,6 +36,50 @@
     .plyr__controls-right {
         margin-left: auto;
     }
+}
+
+.plyr__controls-top {
+    margin-bottom: auto;
+    background: linear-gradient(rgba($plyr-video-controls-bg, 0.5), rgba($plyr-video-controls-bg, 0));
+}
+
+.plyr__controls-middle {
+    height: 100%;
+    padding-top: $plyr-control-spacing;
+    .plyr__controls-left,
+    .plyr__controls-right,
+    .plyr__controls-center {
+        flex: 1;
+    }
+    .plyr__controls-center {
+        max-width: 50px;
+
+        @media (min-width: $plyr-bp-sm) {
+            max-width: 100px;
+        }
+    }
+    .plyr__controls-left,
+    .plyr__controls-right {
+        button {
+            top: 50%;
+            position: absolute;
+            transform: translateY(-50%);
+        }
+        svg {
+            width: $plyr-control-icon-size-large;
+            height: $plyr-control-icon-size-large;
+
+            @media (min-width: $plyr-bp-sm) {
+                width: $plyr-control-icon-size-huge;
+                height: $plyr-control-icon-size-huge;
+            }
+        }
+    }
+}
+
+.plyr__controls-bottom {
+    margin-top: auto;
+    background: linear-gradient(rgba($plyr-video-controls-bg, 0), rgba($plyr-video-controls-bg, 0.5));
 }
 
 // Spacing
@@ -49,7 +101,6 @@
 .plyr__progress {
     z-index: 0;
     bottom: $plyr-range-max-height;
-    margin-left: -($plyr-control-spacing / 2);
 }
 
 @media (min-width: $plyr-bp-sm) {
@@ -72,18 +123,12 @@
     z-index: 2;
     left: 0;
     right: 0;
+    top: 0;
     bottom: 0;
-    background: linear-gradient(rgba($plyr-video-controls-bg, 0), rgba($plyr-video-controls-bg, 0.7));
-    border-bottom-left-radius: inherit;
-    border-bottom-right-radius: inherit;
     color: $plyr-video-control-color;
     transition: opacity 0.2s cubic-bezier(0.4, 0.0, 1, 1);
 
     .plyr__control {
-        svg {
-            filter: drop-shadow(0 1px 1px rgba(#000, 0.15));
-        }
-
         // Hover and tab focus
         &.plyr__tab-focus,
         &:hover,

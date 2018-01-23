@@ -18,7 +18,7 @@ const defaults = {
     // Only allow one media playing at once (vimeo only)
     autopause: true,
 
-    // Default time to skip when rewind/fast forward
+    // Default time to skip when rewind/ forward
     seekTime: 10,
 
     // Default volume
@@ -274,8 +274,12 @@ const defaults = {
         controls: {
             container: null,
             wrapper: '.plyr__controls',
+            top: '.plyr__controls-top',
+            middle: '.plyr__controls-middle',
+            bottom: '.plyr__controls-bottom',
             left: '.plyr__controls-left',
             right: '.plyr__controls-right',
+            center: '.plyr__controls-center',
         },
         labels: '[data-plyr]',
         buttons: {
@@ -283,7 +287,7 @@ const defaults = {
             pause: '[data-plyr="pause"]',
             restart: '[data-plyr="restart"]',
             rewind: '[data-plyr="rewind"]',
-            forward: '[data-plyr="fast-forward"]',
+            forward: '[data-plyr="forward"]',
             mute: '[data-plyr="mute"]',
             captions: '[data-plyr="captions"]',
             fullscreen: '[data-plyr="fullscreen"]',

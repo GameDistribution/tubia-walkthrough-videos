@@ -106,9 +106,6 @@ const ui = {
     // Setup the color theme
     setTheme() {
         const css = `
-            .plyr--video {
-                color: ${this.config.color};
-            }
             .plyr--full-ui input[type=range] {
                 color: ${this.config.color};
             }
@@ -117,6 +114,9 @@ const ui = {
             }
             .plyr__menu__container:after {
                 border-top-color: ${this.config.color};
+            }
+            .plyr__controls .plyr__control--overlaid > div > div svg {
+                color: ${this.config.color};
             }
         `;
         // Add css

@@ -183,8 +183,11 @@ const controls = {
             case 'play-large':
                 attributes.class += ` ${this.config.classNames.control}--overlaid`;
                 type = 'play';
+                toggle = true;
                 label = 'play';
+                labelPressed = 'pause';
                 icon = 'play';
+                iconPressed = 'pause';
                 break;
 
             default:
@@ -895,11 +898,29 @@ const controls = {
 
         // Create the container
         const container = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.wrapper));
-        const containerLeft = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.left));
-        const containerRight = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.right));
+        const containerTop = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.top));
+        const containerMiddle = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.middle));
+        const containerBottom = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.bottom));
+        container.appendChild(containerTop);
+        container.appendChild(containerMiddle);
+        container.appendChild(containerBottom);
 
-        container.appendChild(containerLeft);
-        container.appendChild(containerRight);
+        const containerTopLeft = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.left));
+        const containerTopRight = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.right));
+        containerTop.appendChild(containerTopLeft);
+        containerTop.appendChild(containerTopRight);
+
+        const containerMiddleLeft = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.left));
+        const containerMiddleRight = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.right));
+        const containerMiddleCenter = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.center));
+        containerMiddle.appendChild(containerMiddleLeft);
+        containerMiddle.appendChild(containerMiddleCenter);
+        containerMiddle.appendChild(containerMiddleRight);
+
+        const containerBottomLeft = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.left));
+        const containerBottomRight = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.right));
+        containerBottom.appendChild(containerBottomLeft);
+        containerBottom.appendChild(containerBottomRight);
 
         // Progress
         if (this.config.controls.includes('progress')) {
@@ -938,33 +959,33 @@ const controls = {
 
         // Media current time display
         if (this.config.controls.includes('current-time')) {
-            containerLeft.appendChild(controls.createTime.call(this, 'currentTime'));
+            containerBottomLeft.appendChild(controls.createTime.call(this, 'currentTime'));
         }
 
         // Restart button
         if (this.config.controls.includes('restart')) {
-            containerLeft.appendChild(controls.createButton.call(this, 'restart'));
+            containerBottomLeft.appendChild(controls.createButton.call(this, 'restart'));
         }
 
         // Rewind button
         if (this.config.controls.includes('rewind')) {
-            containerLeft.appendChild(controls.createButton.call(this, 'rewind'));
+            containerMiddleLeft.appendChild(controls.createButton.call(this, 'rewind'));
+        }
+
+        // Forward button
+        if (this.config.controls.includes('forward')) {
+            containerMiddleRight.appendChild(controls.createButton.call(this, 'forward'));
         }
 
         // Play/Pause button
         if (this.config.controls.includes('play')) {
-            containerLeft.appendChild(controls.createButton.call(this, 'play'));
-            // containerLeft.appendChild(controls.createButton.call(this, 'pause'));
-        }
-
-        // Fast forward button
-        if (this.config.controls.includes('fast-forward')) {
-            containerLeft.appendChild(controls.createButton.call(this, 'fast-forward'));
+            containerBottomLeft.appendChild(controls.createButton.call(this, 'play'));
+            // containerBottomLeft.appendChild(controls.createButton.call(this, 'pause'));
         }
 
         // Toggle mute button
         if (this.config.controls.includes('mute')) {
-            containerLeft.appendChild(controls.createButton.call(this, 'mute'));
+            containerBottomLeft.appendChild(controls.createButton.call(this, 'mute'));
         }
 
         // Volume range control
@@ -993,17 +1014,17 @@ const controls = {
 
             this.elements.volume = volume;
 
-            containerLeft.appendChild(volume);
+            containerBottomLeft.appendChild(volume);
         }
 
         // Media duration display
         if (this.config.controls.includes('duration')) {
-            containerRight.appendChild(controls.createTime.call(this, 'duration'));
+            containerBottomLeft.appendChild(controls.createTime.call(this, 'duration'));
         }
 
         // Toggle captions button
         if (this.config.controls.includes('captions')) {
-            containerRight.appendChild(controls.createButton.call(this, 'captions'));
+            containerBottomRight.appendChild(controls.createButton.call(this, 'captions'));
         }
 
         // Settings button / menu
@@ -1116,7 +1137,7 @@ const controls = {
 
             form.appendChild(inner);
             menu.appendChild(form);
-            containerRight.appendChild(menu);
+            containerBottomRight.appendChild(menu);
 
             this.elements.settings.form = form;
             this.elements.settings.menu = menu;
@@ -1124,22 +1145,22 @@ const controls = {
 
         // Picture in picture button
         if (this.config.controls.includes('pip') && support.pip) {
-            containerRight.appendChild(controls.createButton.call(this, 'pip'));
+            containerBottomRight.appendChild(controls.createButton.call(this, 'pip'));
         }
 
         // Airplay button
         if (this.config.controls.includes('airplay') && support.airplay) {
-            containerRight.appendChild(controls.createButton.call(this, 'airplay'));
+            containerBottomRight.appendChild(controls.createButton.call(this, 'airplay'));
         }
 
         // Toggle fullscreen button
         if (this.config.controls.includes('fullscreen')) {
-            containerRight.appendChild(controls.createButton.call(this, 'fullscreen'));
+            containerBottomRight.appendChild(controls.createButton.call(this, 'fullscreen'));
         }
 
         // Larger overlaid play button
         if (this.config.controls.includes('play-large')) {
-            this.elements.container.appendChild(controls.createButton.call(this, 'play-large'));
+            containerMiddle.appendChild(controls.createButton.call(this, 'play-large'));
         }
 
         this.elements.controls = container;

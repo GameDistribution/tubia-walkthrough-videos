@@ -26,7 +26,7 @@ class Tubia {
         const defaults = {
             debug: false,
             container: 'player',
-            gameId: '2c13796e0f2f4180a84bc64ed53d78e3',
+            gameId: '', // '2c13796e0f2f4180a84bc64ed53d78e3',
             publisherId: 'dc63a91fa184423482808bed4d782320',
             color: '#ff0080',
             onFound() {},
@@ -93,6 +93,8 @@ class Tubia {
                 'play-large',
                 // 'play',
                 // 'restart',
+                'rewind',
+                'forward',
                 'progress',
                 'current-time',
                 'duration',
