@@ -343,6 +343,29 @@ const controls = {
         return container;
     },
 
+    // Create logo
+    createLogo() {
+        const container = utils.createElement('a', {
+            href: 'https://tubia.com/',
+            target: '_blank',
+            class: 'plyr__logo',
+        });
+
+        container.appendChild(controls.createIcon.call(this, 'logo'));
+
+        return container;
+    },
+
+    // Create title
+    createTitle() {
+        const container = utils.createElement('span', {
+            class: 'plyr__title',
+        });
+        container.innerText = this.config.title;
+
+        return container;
+    },
+
     // Create a settings menu item
     createMenuItem(value, list, type, title, badge = null, checked = false) {
         const item = utils.createElement('li');
@@ -906,13 +929,15 @@ const controls = {
         container.appendChild(containerBottom);
 
         const containerTopLeft = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.left));
+        const containerTopCenter = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.center));
         const containerTopRight = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.right));
         containerTop.appendChild(containerTopLeft);
+        containerTop.appendChild(containerTopCenter);
         containerTop.appendChild(containerTopRight);
 
         const containerMiddleLeft = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.left));
-        const containerMiddleRight = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.right));
         const containerMiddleCenter = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.center));
+        const containerMiddleRight = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.right));
         containerMiddle.appendChild(containerMiddleLeft);
         containerMiddle.appendChild(containerMiddleCenter);
         containerMiddle.appendChild(containerMiddleRight);
@@ -955,6 +980,26 @@ const controls = {
 
             this.elements.progress = progress;
             container.appendChild(this.elements.progress);
+        }
+
+        // Show a logo
+        if (this.config.controls.includes('logo')) {
+            containerTopLeft.appendChild(controls.createLogo.call(this, 'logo'));
+        }
+
+        // Video title
+        if (this.config.controls.includes('title')) {
+            containerTopCenter.appendChild(controls.createTitle.call(this, 'title'));
+        }
+
+        // Share button
+        if (this.config.controls.includes('share')) {
+            containerTopRight.appendChild(controls.createButton.call(this, 'share'));
+        }
+
+        // Playlist button
+        if (this.config.controls.includes('playlist')) {
+            containerTopRight.appendChild(controls.createButton.call(this, 'playlist'));
         }
 
         // Media current time display

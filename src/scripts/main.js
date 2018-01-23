@@ -40,17 +40,6 @@ class Tubia {
             this.options = defaults;
         }
 
-        // Open the debug console when debugging is enabled.
-        try {
-            if (this.options.debug || localStorage.getItem('gd_debug')) {
-                this.openConsole();
-            }
-        } catch (error) {
-            /* eslint-disable */
-            console.error(error);
-            /* eslint-enable */
-        }
-
         // Set a version banner within the developer console.
         /* eslint-disable */
         const version = PackageJSON.version;
@@ -90,7 +79,11 @@ class Tubia {
                 active: true,
             },
             controls: [
+                'logo',
+                'playlist',
+                'share',
                 'play-large',
+                'title',
                 // 'play',
                 // 'restart',
                 'rewind',

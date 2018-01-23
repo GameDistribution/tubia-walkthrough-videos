@@ -7,7 +7,7 @@ const defaults = {
     enabled: true,
 
     // Custom media title
-    title: '',
+    title: 'Tubia',
 
     // Logging to console
     debug: false,
