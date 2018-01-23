@@ -94,7 +94,7 @@ class Tubia {
                 'mute',
                 'volume',
                 'settings',
-                'captions',
+                // 'captions',
                 'fullscreen',
                 'pip',
                 'airplay',

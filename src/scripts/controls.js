@@ -1064,7 +1064,7 @@ const controls = {
 
         // Media duration display
         if (this.config.controls.includes('duration')) {
-            containerBottomLeft.appendChild(controls.createTime.call(this, 'duration'));
+            containerBottomRight.appendChild(controls.createTime.call(this, 'duration'));
         }
 
         // Toggle captions button
