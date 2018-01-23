@@ -39,7 +39,7 @@ module.exports = function(grunt) {
                 flatten: true,
                 cwd: './',
                 src: ['src/index.html', 'src/index_legacy.html'],
-                dest: './lib/',
+                dest: './libs/gd/',
             },
         },
 
@@ -48,7 +48,7 @@ module.exports = function(grunt) {
          */
         clean: {
             lib: {
-                src: ['./lib'],
+                src: ['./libs/gd/'],
             },
         },
 
@@ -61,7 +61,7 @@ module.exports = function(grunt) {
             },
             default: {
                 files: {
-                    'lib/sprite.svg': ['src/images/*.svg'],
+                    'libs/gd/sprite.svg': ['src/images/*.svg'],
                 },
             },
         },
@@ -94,7 +94,7 @@ module.exports = function(grunt) {
             },
             files: {
                 src: [
-                    'lib/main.min.js',
+                    'libs/gd/gd.min.js',
                 ],
             },
         },
@@ -109,7 +109,7 @@ module.exports = function(grunt) {
             },
             build: {
                 src: 'src/styles/plyr.scss',
-                dest: 'lib/main.css',
+                dest: 'libs/gd/main.css',
             },
         },
 
@@ -128,8 +128,8 @@ module.exports = function(grunt) {
                 ],
             },
             build: {
-                src: 'lib/main.css',
-                dest: 'lib/main.min.css',
+                src: 'libs/gd/main.css',
+                dest: 'libs/gd/main.min.css',
             },
         },
 
@@ -144,7 +144,7 @@ module.exports = function(grunt) {
             },
             lib: {
                 src: 'src/scripts/**/*.js',
-                dest: 'lib/main.js',
+                dest: 'libs/gd/gd.js',
             },
         },
 
@@ -172,8 +172,8 @@ module.exports = function(grunt) {
                 warnings: false,
             },
             lib: {
-                src: 'lib/main.js',
-                dest: 'lib/main.min.js',
+                src: 'libs/gd/gd.js',
+                dest: 'libs/gd/gd.min.js',
             },
         },
 
@@ -210,11 +210,11 @@ module.exports = function(grunt) {
         browserSync: {
             bsFiles: {
                 src: [
-                    'lib/',
+                    'libs/gd/',
                 ],
             },
             options: {
-                server: './lib/',
+                server: './libs/gd',
                 watchTask: true,
                 port: 3000,
             },
@@ -262,7 +262,7 @@ module.exports = function(grunt) {
             grunt.config.set('uglify.options.sourceMapIncludeSources', true);
             grunt.config.set('postcss.options.map', {
                 inline: false,
-                annotation: 'lib/styles/',
+                annotation: 'libs/gd/',
             });
         });
     grunt.registerTask('default',

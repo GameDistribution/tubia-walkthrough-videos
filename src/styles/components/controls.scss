@@ -44,6 +44,11 @@
     background: linear-gradient(rgba($plyr-video-controls-bg, 0.5), rgba($plyr-video-controls-bg, 0));
     .plyr__controls-center {
         flex: 1;
+        overflow: hidden;
+    }
+    .plyr__controls-right {
+        min-width: 102px;
+        justify-content: flex-end;
     }
 }
 
@@ -109,6 +114,7 @@
 
 // Title
 .plyr__title {
+    display: inline-block;
     padding: 0 $plyr-control-padding;
     white-space: nowrap;
     text-overflow: ellipsis;

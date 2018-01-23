@@ -24,11 +24,11 @@ class Tubia {
         // Set some defaults. We replace them with real given
         // values further down.
         const defaults = {
-            debug: false,
+            debug: true,
             container: 'player',
             gameId: '', // '2c13796e0f2f4180a84bc64ed53d78e3',
             publisherId: 'dc63a91fa184423482808bed4d782320',
-            color: '#ff0080',
+            color: '#1aafff',
             onFound() {},
             onError() {},
             onReady() {},
@@ -56,11 +56,52 @@ class Tubia {
         // Todo: check if we have missing polyfills. Rather get them as npm bundle.
         utils.loadScript('https://cdn.rangetouch.com/1.0.1/rangetouch.js');
 
+        // Create the HTML5 video element.
+        const videoElement = document.createElement('video');
+        videoElement.setAttribute('controls', true);
+        videoElement.setAttribute('crossorigin', true);
+        videoElement.setAttribute('playsinline', true);
+        videoElement.poster = 'https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-HD.jpg';
+        videoElement.id = 'plyr__tubia';
+
+        // Todo: temporary do video
+        const videoSource = document.createElement('source');
+        videoSource.src = 'https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-HD.mp4';
+        videoSource.type = 'video/mp4';
+        const videoTrack = document.createElement('track');
+        videoTrack.kind = 'captions';
+        videoTrack.label = 'English';
+        videoTrack.srclang = 'en';
+        videoTrack.src = 'https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-HD.en.vtt';
+        videoTrack.setAttribute('default', true);
+        const videoTrackFrench = document.createElement('track');
+        videoTrackFrench.kind = 'captions';
+        videoTrackFrench.label = 'Français';
+        videoTrackFrench.srclang = 'fr';
+        videoTrackFrench.src = 'https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-HD.fr.vtt';
+
+        const container = document.getElementById(this.options.container);
+        if (container) {
+            // Add our stylesheet.
+            // Todo: add font.
+            const headElement = document.head;
+            const linkElement = document.createElement('link');
+            linkElement.type = 'text/css';
+            linkElement.rel = 'stylesheet';
+            linkElement.href = 'https://video-static.vooxe.com/libs/gd/main.min.css';
+
+            headElement.appendChild(linkElement);
+            videoElement.appendChild(videoSource);
+            videoElement.appendChild(videoTrack);
+            videoElement.appendChild(videoTrackFrench);
+            container.appendChild(videoElement);
+        }
+
         // Create the video player.
         // Todo: create the markup up dynamically and append to real container.
-        const player = new Plyr(`#${this.options.container}`, {
-            debug: false,
-            iconUrl: 'sprite.svg',
+        const player = new Plyr('#plyr__tubia', {
+            debug: this.options.debug,
+            iconUrl: 'https://video-static.vooxe.com/libs/gd/sprite.svg',
             color: this.options.color,
             ads: {
                 tag: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480' +
@@ -94,7 +135,7 @@ class Tubia {
                 'mute',
                 'volume',
                 'settings',
-                // 'captions',
+                'captions',
                 'fullscreen',
                 'pip',
                 'airplay',
@@ -113,10 +154,22 @@ class Tubia {
 
         // Get us some video data.
         const videoDataPromise = new Promise((resolve, reject) => {
+            // Todo: Need to fetch the game id somehow using the following search url:
+            // https://walkthrough.gamedistribution.com/api/player/find/
+            // params:
+            // publisherId:dc63a91fa184423482808bed4d782320
+            // url:https://www.bgames.com/puzzle-games/adam_and_eve_sleepwalker/
+            // title:Adam and Eve: Sleepwalker
+            // gameId:6f9086bec34b95ab0c51b7a76e99df4f
+            // category:puzzle
+            // langCode:en
+            // https://walkthrough.gamedistribution.com/api/player/findv2/?pageId=57064dbdeede5754fdb998b0fc43e323&gameId=6f9086bec34b95ab0c51b7a76e99df4f&title=Adam%20and%20Eve%3A%20Sleepwalker&domain=www.bgames.com
+
             // Todo: check if we dont want to use a tubia url.
             // Todo: verify if tubia cdn urls are ssl ready.
             // Todo: make sure to disable ads if enableAds is false. Also for addFreeActive :P
-            const videoDataUrl = `https://walkthrough.gamedistribution.com/api/player/publish/?gameid=${this.options.gameId.replace(/-/g, '')}&publisherid=${this.options.publisherId.replace(/-/g, '')}&domain=spele.nl`;
+            // Todo: set domain
+            const videoDataUrl = `https://walkthrough.gamedistribution.com/api/player/publish/?gameid=${this.options.gameId.replace(/-/g, '')}&publisherid=${this.options.publisherId.replace(/-/g, '')}&domain=bgames.com`;
             const videoDataRequest = new Request(videoDataUrl, {method: 'GET'});
             fetch(videoDataRequest).
                 then((response) => {
