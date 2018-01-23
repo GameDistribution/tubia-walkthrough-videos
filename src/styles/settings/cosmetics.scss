@@ -1,7 +1,5 @@
 // ==========================================================================
-// Useful functions
+// Cosmetic
 // ==========================================================================
 
-@function to-percentage($input) {
-    @return $input * 1%;
-}
+$plyr-tab-focus-default-color: $plyr-color-main !default;

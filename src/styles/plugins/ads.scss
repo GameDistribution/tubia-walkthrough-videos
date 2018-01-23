@@ -37,13 +37,12 @@
     height: $plyr-range-track-height;
     left: 0;
     margin: 0;
-    opacity: 0.8;
-    transform: scaleY(0.6);
+    transform: scaleY(0.4);
     transform-origin: bottom;
     will-change: transform;
     transition: all 0.2s ease, transform 0.1s cubic-bezier(0.4, 0.0, 1, 1);
     position: absolute;
-    bottom: 0;
+    bottom: 1px;
     width: 3px;
     z-index: 3; // Between progress and thumb
 }
@@ -52,7 +51,7 @@
 .plyr--full-ui .plyr__progress {
     &:hover {
         .plyr__cues {
-            transform: scaleY(1);
+            transform: scaleY(0.8);
         }
     }
 }

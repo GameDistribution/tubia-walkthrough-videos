@@ -17,8 +17,8 @@
     svg {
         display: block;
         fill: currentColor;
-        pointer-events: none;
         height: $plyr-control-icon-size;
+        pointer-events: none;
         width: $plyr-control-icon-size;
     }
 
@@ -46,8 +46,8 @@
     &.plyr__tab-focus,
     &:hover,
     &[aria-expanded='true'] {
-        background: $plyr-color-main;
-        color: $plyr-color-main;
+        background: $plyr-audio-control-bg-hover;
+        color: $plyr-audio-control-color-hover;
     }
 }
 
