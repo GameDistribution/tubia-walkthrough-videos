@@ -20,19 +20,19 @@
 
         var settings = {
             container: 'vooxe',
-            gameId: '2c13796e0f2f4180a84bc64ed53d78e3',
+            gameId: '110104',
             publisherId: 'dc63a91fa184423482808bed4d782320',
-            width: '100%',
-            height: '480px',
+            width: '900px',
+            height: '506px',
             title: 'Jewel Burst',
-            category: '[Game Category]',
+            category: 'puzzle',
             langCode: 'en-us',
             autoplay: 'no',
             onFound: function(data) {
                 console.log(data);
             },
-            onError: function(data) {
-                console.log(data);
+            onError: function(error) {
+                console.log(error);
             },
             onReady: function(player) {
                 playerInstance = player; // Set player instance
@@ -54,11 +54,9 @@
     </script>
 </head>
 
-<body style="background: #111; padding: 50px;">
+<body style="background: #111;">
     <main role="main" id="main" style="max-width: 780px; margin: auto;">
-        <section>
-            <div id="vooxe"></div>
-        </section>
+        <div id="vooxe"></div>
     </main>
 
 </body>
