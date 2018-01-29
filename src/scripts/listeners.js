@@ -165,6 +165,11 @@ const listeners = {
                         this.setLoop('end');
                         break; */
 
+                    case 80:
+                        // P key
+                        this.togglePlaylist();
+                        break;
+
                     default:
                         break;
                 }
@@ -211,7 +216,7 @@ const listeners = {
         // Toggle controls visibility based on mouse movement
         if (this.config.hideControls) {
             // Toggle controls on mouse events and entering fullscreen
-            utils.on(this.elements.container, 'mouseenter mouseleave mousemove touchstart touchend touchmove enterfullscreen exitfullscreen', event => {
+            utils.on(this.elements.container, 'mouseenter mouseleave mousemove touchstart touchend touchmove enterfullscreen exitfullscreen enterplaylist exitplaylist', event => {
                 this.toggleControls(event);
             });
         }
@@ -353,6 +358,25 @@ const listeners = {
             this.storage.set({ captions: this.captions.active });
         });
 
+        // Playlist toggle
+        utils.on(this.media, 'playlistenabled playlistdisabled', () => {
+            console.log('PLAYLIST TOGGLE EVENT');
+            // Update UI
+            controls.updateSetting.call(this, 'playlist');
+
+            // Save to storage
+            this.storage.set({ playlist: this.playlist.active });
+        });
+
+        // Share toggle
+        utils.on(this.media, 'shareenabled sharedisabled', () => {
+            // Update UI
+            controls.updateSetting.call(this, 'share');
+
+            // Save to storage
+            this.storage.set({ share: this.share.active });
+        });
+
         // Proxy events to container
         // Bubble up key events for Edge
         utils.on(this.media, this.config.events.concat([
@@ -429,6 +453,20 @@ const listeners = {
         utils.on(this.elements.buttons.captions, 'click', event =>
             proxy(event, 'captions', () => {
                 this.toggleCaptions();
+            })
+        );
+
+        // Playlist toggle
+        utils.on(this.elements.buttons.playlist, 'click', event =>
+            proxy(event, 'playlist', () => {
+                this.togglePlaylist();
+            })
+        );
+
+        // Share toggle
+        utils.on(this.elements.buttons.share, 'click', event =>
+            proxy(event, 'share', () => {
+                this.toggleShare();
             })
         );
 

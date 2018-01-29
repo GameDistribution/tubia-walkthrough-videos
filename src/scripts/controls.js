@@ -189,6 +189,20 @@ const controls = {
                 icon = 'play';
                 iconPressed = 'pause';
                 break;
+            case 'share':
+                toggle = true;
+                label = 'shareOpen';
+                labelPressed = 'shareClose';
+                icon = 'share';
+                iconPressed = 'volume';
+                break;
+            case 'playlist':
+                toggle = true;
+                label = 'playlistOpen';
+                labelPressed = 'playlistClose';
+                icon = 'playlist';
+                iconPressed = 'volume';
+                break;
 
             default:
                 label = type;

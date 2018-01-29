@@ -6,6 +6,7 @@ import utils from './utils';
 import captions from './captions';
 import controls from './controls';
 import fullscreen from './fullscreen';
+import playlist from './playlist';
 import listeners from './listeners';
 
 const ui = {
@@ -65,6 +66,9 @@ const ui = {
 
         // Setup fullscreen
         fullscreen.setup.call(this);
+
+        // Playlist
+        playlist.setup.call(this);
 
         // Captions
         captions.setup.call(this);

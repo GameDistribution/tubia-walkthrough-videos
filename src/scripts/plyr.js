@@ -83,6 +83,8 @@ class Plyr {
                 tabs: {},
             },
             captions: null,
+            playlist: null,
+            share: null,
         };
 
         // Captions
@@ -93,6 +95,17 @@ class Plyr {
 
         // Fullscreen
         this.fullscreen = {
+            active: false,
+        };
+
+        // Playlist
+        this.playlist = {
+            active: false,
+            current: null,
+        };
+
+        // Playlist
+        this.share = {
             active: false,
         };
 
@@ -841,6 +854,68 @@ class Plyr {
     }
 
     /**
+     * Toggle playlist
+     * @param {boolean} input - Whether to enable playlist
+     */
+    togglePlaylist(input) {
+        // If there's no full support, or there's no caption toggle
+        if (!this.supported.ui || !utils.is.element(this.elements.buttons.playlist)) {
+            return;
+        }
+
+        // If the method is called without parameter, toggle based on current value
+        const show = utils.is.boolean(input) ? input : this.elements.container.className.indexOf(this.config.classNames.playlist.active) === -1;
+
+        // Nothing to change...
+        if (this.playlist.active === show) {
+            return;
+        }
+
+        // Set global
+        this.playlist.active = show;
+
+        // Toggle state
+        utils.toggleState(this.elements.buttons.playlist, this.playlist.active);
+
+        // Add class hook
+        utils.toggleClass(this.elements.container, this.config.classNames.playlist.active, this.playlist.active);
+
+        // Trigger an event
+        utils.dispatchEvent.call(this, this.media, this.playlist.active ? 'playlistenabled' : 'playlistdisabled');
+    }
+
+    /**
+     * Toggle share
+     * @param {boolean} input - Whether to enable sharing
+     */
+    toggleShare(input) {
+        // If there's no full support, or there's no caption toggle
+        if (!this.supported.ui || !utils.is.element(this.elements.buttons.share)) {
+            return;
+        }
+
+        // If the method is called without parameter, toggle based on current value
+        const show = utils.is.boolean(input) ? input : this.elements.container.className.indexOf(this.config.classNames.share.active) === -1;
+
+        // Nothing to change...
+        if (this.share.active === show) {
+            return;
+        }
+
+        // Set global
+        this.share.active = show;
+
+        // Toggle state
+        utils.toggleState(this.elements.buttons.share, this.share.active);
+
+        // Add class hook
+        utils.toggleClass(this.elements.container, this.config.classNames.share.active, this.share.active);
+
+        // Trigger an event
+        utils.dispatchEvent.call(this, this.media, this.share.active ? 'shareenabled' : 'sharedisabled');
+    }
+
+    /**
      * Toggle fullscreen playback
      * Requires user input event
      * @param {event} event
@@ -1098,12 +1173,16 @@ class Plyr {
 
                     // Remove others
                     utils.removeElement(this.elements.captions);
+                    utils.removeElement(this.elements.playlist);
+                    utils.removeElement(this.elements.share);
                     utils.removeElement(this.elements.controls);
                     utils.removeElement(this.elements.wrapper);
 
                     // Clear for GC
                     this.elements.buttons.play = null;
                     this.elements.captions = null;
+                    this.elements.playlist = null;
+                    this.elements.share = null;
                     this.elements.controls = null;
                     this.elements.wrapper = null;
                 }

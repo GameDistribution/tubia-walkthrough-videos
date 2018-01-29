@@ -128,6 +128,18 @@ const defaults = {
         key: 'plyr',
     },
 
+    // Playlist settings
+    playlist: {
+        enabled: true,
+        active: false,
+    },
+
+    // Sharing settings
+    share: {
+        enabled: true,
+        active: false,
+    },
+
     // Default controls
     controls: [
         'play-large',
@@ -179,6 +191,12 @@ const defaults = {
         reset: 'Reset',
         none: 'None',
         disabled: 'Disabled',
+        playlist: 'Playlist',
+        playlistOpen: 'Open playlist',
+        playlistClose: 'Close playlist',
+        share: 'Share',
+        shareOpen: 'Open sharing',
+        shareClose: 'Close sharing',
     },
 
     // URLs
@@ -212,6 +230,8 @@ const defaults = {
         quality: null,
         loop: null,
         language: null,
+        playlist: null,
+        share: null,
     },
 
     // Events to watch and bubble
@@ -242,6 +262,10 @@ const defaults = {
         // Custom events
         'enterfullscreen',
         'exitfullscreen',
+        'playlistenabled',
+        'playlistdisabled',
+        'shareenabled',
+        'sharedisabled',
         'captionsenabled',
         'captionsdisabled',
         'languagechange',
@@ -295,6 +319,8 @@ const defaults = {
             airplay: '[data-plyr="airplay"]',
             settings: '[data-plyr="settings"]',
             loop: '[data-plyr="loop"]',
+            playlist: '[data-plyr="playlist"]',
+            share: '[data-plyr="share"]',
         },
         inputs: {
             seek: '[data-plyr="seek"]',
@@ -313,6 +339,8 @@ const defaults = {
         },
         progress: '.plyr__progress',
         captions: '.plyr__captions',
+        playlist: '.plyr__playlist',
+        share: '.plyr__share',
         menu: {
             quality: '.js-plyr__menu__list--quality',
         },
@@ -361,6 +389,14 @@ const defaults = {
             active: 'plyr--airplay-active',
         },
         tabFocus: 'plyr__tab-focus',
+        playlist: {
+            enabled: 'plyr--playlist-enabled',
+            active: 'plyr--playlist-active',
+        },
+        share: {
+            enabled: 'plyr--share-enabled',
+            active: 'plyr--share-active',
+        },
     },
 
     // API keys

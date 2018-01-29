@@ -445,6 +445,8 @@ const utils = {
                 settings: utils.getElement.call(this, this.config.selectors.buttons.settings),
                 captions: utils.getElement.call(this, this.config.selectors.buttons.captions),
                 fullscreen: utils.getElement.call(this, this.config.selectors.buttons.fullscreen),
+                playlist: utils.getElement.call(this, this.config.selectors.buttons.playlist),
+                share: utils.getElement.call(this, this.config.selectors.buttons.share),
             };
 
             // Progress
