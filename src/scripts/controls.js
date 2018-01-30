@@ -952,7 +952,7 @@ const controls = {
         // Re-map the tracks into just the data we need
         const tracks = playlist.getData.call(this).map(track => ({
             level: track.name,
-            cue: track.cuePoint,
+            cue: track.cuePoint / 1000,
         }));
 
         // Generate options
@@ -977,7 +977,7 @@ const controls = {
     },
 
     // Create a settings menu item
-    createPlaylistItem(value, list, type, title, counter, checked) {
+    createPlaylistItem(cue, list, type, title, counter, checked) {
         const label = utils.createElement('span', {
             class: 'plyr__title',
         });
@@ -991,13 +991,14 @@ const controls = {
             'bottom',
             'center',
         ];
-        const item = utils.createElement(
-            'li',
-            utils.extend(utils.getAttributesFromSelector(this.config.selectors.inputs[type]), {
-                value,
-                class: (checked || (!checked && counter === '01')) ? 'active' : '',
-            })
-        );
+        const item = utils.createElement('li', {
+            class: (checked || (!checked && counter === '01')) ? 'active' : '',
+        });
+
+        // Forward
+        utils.on(item, 'click', () => {
+            this.forward(cue);
+        });
 
         item.style.backgroundImage = `url("data:image/svg+xml;base64, PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxMCcgaGVpZ2h0PScxMCc+DQogIDxyZWN0IHdpZHRoPScxMCcgaGVpZ2h0PScxMCcgZmlsbD0nIzAwMCcgZmlsbC1vcGFjaXR5PSIwLjYiIC8+DQogIDxyZWN0IHg9JzAnIHk9JzAnIHdpZHRoPSc1JyBoZWlnaHQ9JzUnIGZpbGw9JyMwMDAnIGZpbGwtb3BhY2l0eT0iMSIgLz4NCjwvc3ZnPg=="), url(${this.elements.original.poster})`;
         item.style.backgroundSize = `2px, ${Math.floor(Math.random() * 400) + 200}%`;
