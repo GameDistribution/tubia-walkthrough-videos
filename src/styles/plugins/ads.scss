@@ -34,24 +34,25 @@
 .plyr__cues {
     background: currentColor;
     display: block;
-    height: $plyr-range-track-height;
     left: 0;
     margin: 0;
-    transform: scaleY(0.4);
+    transform: scale(0.6);
     transform-origin: bottom;
     will-change: transform;
     transition: all 0.2s ease, transform 0.1s cubic-bezier(0.4, 0.0, 1, 1);
     position: absolute;
-    bottom: 1px;
-    width: 3px;
+    bottom: 0;
+    width: $plyr-range-track-height;
+    height: $plyr-range-track-height;
     z-index: 3; // Between progress and thumb
+    border-radius: 100%;
 }
 
 // Hover styles
 .plyr--full-ui .plyr__progress {
     &:hover {
         .plyr__cues {
-            transform: scaleY(0.8);
+            transform: scale(1);
         }
     }
 }

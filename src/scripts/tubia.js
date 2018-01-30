@@ -243,7 +243,7 @@ class Tubia {
                         active: true,
                     },
                     playlist: {
-                        active: true,
+                        // active: true,
                         data: json.cuepoints,
                     },
                     controls: [
@@ -277,10 +277,11 @@ class Tubia {
                     // Todo: I think Plyr has some error handling div.
                     this.options.onError(error);
                 });
-
                 // Show the player.
-                const videoContainer = document.querySelectorAll('.plyr--video')[0];
-                videoContainer.style.opacity = '1';
+                this.player.on('loadeddata', () => {
+                    const videoContainer = document.querySelectorAll('.plyr--video')[0];
+                    videoContainer.style.opacity = '1';
+                });
             }).
             catch(error => {
                 this.options.onError(error);

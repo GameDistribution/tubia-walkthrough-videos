@@ -991,13 +991,15 @@ const controls = {
             'bottom',
             'center',
         ];
+        // Todo: set active class based on currentTime and cue times.
         const item = utils.createElement('li', {
             class: (checked || (!checked && counter === '01')) ? 'active' : '',
         });
 
         // Forward
+        // Todo: this only forwards by the time given... not ok.
         utils.on(item, 'click', () => {
-            this.forward(cue);
+            this.jumpTo(cue);
         });
 
         item.style.backgroundImage = `url("data:image/svg+xml;base64, PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxMCcgaGVpZ2h0PScxMCc+DQogIDxyZWN0IHdpZHRoPScxMCcgaGVpZ2h0PScxMCcgZmlsbD0nIzAwMCcgZmlsbC1vcGFjaXR5PSIwLjYiIC8+DQogIDxyZWN0IHg9JzAnIHk9JzAnIHdpZHRoPSc1JyBoZWlnaHQ9JzUnIGZpbGw9JyMwMDAnIGZpbGwtb3BhY2l0eT0iMSIgLz4NCjwvc3ZnPg=="), url(${this.elements.original.poster})`;

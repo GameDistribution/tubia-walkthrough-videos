@@ -408,6 +408,14 @@ class Plyr {
     }
 
     /**
+     * Jump
+     * @param {number} seekTime - where to jump to in seconds. Defaults to the config.seekTime
+     */
+    jumpTo(seekTime) {
+        this.currentTime = (utils.is.number(seekTime) ? seekTime : this.config.seekTime);
+    }
+
+    /**
      * Seek to a time
      * @param {number} input - where to seek to in seconds. Defaults to 0 (the start)
      */
