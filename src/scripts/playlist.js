@@ -2,7 +2,6 @@
 // Plyr Playlist
 // ==========================================================================
 
-import support from './support';
 import utils from './utils';
 import controls from './controls';
 
@@ -14,16 +13,16 @@ const playlist = {
             return;
         }
 
-        // Set default language if not set
-        // const stored = this.storage.get('language');
+        // Set default current video if not set
+        const stored = this.storage.get('current');
 
-        // if (!utils.is.empty(stored)) {
-        //     this.playlist.language = stored;
-        // }
+        if (!utils.is.empty(stored)) {
+            this.playlist.current = stored;
+        }
 
-        // if (utils.is.empty(this.playlist.language)) {
-        //     this.playlist.language = this.config.playlist.language.toLowerCase();
-        // }
+        if (utils.is.empty(this.playlist.current)) {
+            this.playlist.current = this.config.playlist.current.toLowerCase();
+        }
 
         // Set playlist enabled state if not set
         if (!utils.is.boolean(this.playlist.active)) {
@@ -36,48 +35,35 @@ const playlist = {
             }
         }
 
-        // Only video supported at this point
-        if (!this.isVideo) {
-            // Clear menu and hide
-            if (this.config.controls.includes('settings') && this.config.settings.includes('playlist')) {
-                controls.setCaptionsMenu.call(this);
-            }
-
-            return;
-        }
-
         // Inject the container
         if (!utils.is.element(this.elements.playlist)) {
             this.elements.playlist = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.playlist));
+            const listItem = utils.createElement('ul');
+            this.elements.playlist.appendChild(listItem);
 
             utils.insertAfter(this.elements.playlist, this.elements.wrapper);
         }
 
         // Set the class hook
-        utils.toggleClass(this.elements.container, this.config.classNames.playlist.enabled, !utils.is.empty(playlist.getTracks.call(this)));
+        utils.toggleClass(this.elements.container, this.config.classNames.playlist.enabled, !utils.is.empty(playlist.getData.call(this)));
 
-        // If no playlist file exists, hide container for playlist text
-        // if (utils.is.empty(playlist.getTracks.call(this))) {
-        //     return;
-        // }
-
-        // Set language
-        // playlist.setLanguage.call(this);
+        // If no playlist data, hide container
+        if (utils.is.empty(playlist.getData.call(this))) {
+            return;
+        }
 
         // Enable UI
         playlist.show.call(this);
 
-        // Set available languages in list
-        // if (this.config.controls.includes('settings') && this.config.settings.includes('playlist')) {
-        //     controls.setCaptionsMenu.call(this);
-        // }
+        // Set available videos in list
+        controls.setPlaylist.call(this);
     },
 
     // Set the playlist language
     setLanguage() {
         // Setup HTML5 track rendering
         if (this.isHTML5 && this.isVideo) {
-            playlist.getTracks.call(this).forEach(track => {
+            playlist.getData.call(this).forEach(track => {
                 // Remove previous bindings
                 utils.on(track, 'cuechange', event => playlist.setCue.call(this, event));
 
@@ -101,23 +87,15 @@ const playlist = {
         }
     },
 
-    // Get the tracks
-    getTracks() {
-        // Return empty array at least
-        if (utils.is.nullOrUndefined(this.media)) {
-            return [];
-        }
-
+    // Get the playlist data
+    getData() {
         // Only get accepted kinds
-        return Array.from(this.media.textTracks || []).filter(track => [
-            'playlist',
-            'subtitles',
-        ].includes(track.kind));
+        return Array.from(this.config.playlist.data || []);
     },
 
     // Get the current track for the current language
     getCurrentTrack() {
-        return playlist.getTracks.call(this).find(track => track.language.toLowerCase() === this.language);
+        return playlist.getData.call(this).find(track => track.language.toLowerCase() === this.language);
     },
 
     // Display active playlist if it contains text
@@ -180,7 +158,7 @@ const playlist = {
         }
 
         // Try to load the value from storage
-        let active = true; // this.storage.get('playlist');
+        let active = this.storage.get('playlist');
 
         // Otherwise fall back to the default config
         if (!utils.is.boolean(active)) {

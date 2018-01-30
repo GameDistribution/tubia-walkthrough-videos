@@ -40,7 +40,7 @@ const share = {
         if (!this.isVideo) {
             // Clear menu and hide
             if (this.config.controls.includes('settings') && this.config.settings.includes('playlist')) {
-                controls.setCaptionsMenu.call(this);
+                // controls.setCaptionsMenu.call(this);
             }
 
             return;

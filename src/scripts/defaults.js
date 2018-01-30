@@ -132,6 +132,8 @@ const defaults = {
     playlist: {
         enabled: true,
         active: false,
+        data: [],
+        current: '',
     },
 
     // Sharing settings

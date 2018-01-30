@@ -6,6 +6,7 @@ import support from './support';
 import utils from './utils';
 import ui from './ui';
 import captions from './captions';
+import playlist from './playlist';
 
 // Sniff out the browser
 const browser = utils.getBrowser();
@@ -471,6 +472,12 @@ const controls = {
         utils.toggleHidden(pane, !toggle);
     },
 
+    // Hide/show the playlist
+    togglePlaylist(setting, toggle) {
+        const tab = this.elements.playlist[setting];
+        utils.toggleHidden(tab, !toggle);
+    },
+
     // Set the YouTube quality menu
     // TODO: Support for HTML5
     setQualityMenu(options) {
@@ -923,6 +930,86 @@ const controls = {
 
         // Focus the first item
         pane.querySelectorAll('button:not(:disabled), input:not(:disabled), [tabindex]')[0].focus();
+    },
+
+    // Show playlist
+    setPlaylist() {
+        const type = 'playlist';
+        const list = this.elements.playlist.querySelector('ul');
+
+        // Toggle the playlist
+        const hasItems = playlist.getData.call(this).length;
+        controls.togglePlaylist.call(this, type, hasItems);
+
+        // Empty the menu
+        utils.emptyElement(list);
+
+        // If there's no captions, bail
+        if (!hasItems) {
+            return;
+        }
+
+        // Re-map the tracks into just the data we need
+        const tracks = playlist.getData.call(this).map(track => ({
+            level: track.name,
+            cue: track.cuePoint,
+        }));
+
+        // Generate options
+        tracks.forEach((track, index) => {
+            const counter = index + 1;
+            let itemNumber = 0;
+            if (counter.toString().length === 1) {
+                itemNumber = `0${counter}`;
+            } else {
+                itemNumber = counter;
+            }
+            controls.createPlaylistItem.call(
+                this,
+                track.cue,
+                list,
+                type,
+                track.level,
+                itemNumber,
+                track.level.toLowerCase() === this.playlist.current.toLowerCase()
+            );
+        });
+    },
+
+    // Create a settings menu item
+    createPlaylistItem(value, list, type, title, counter, checked) {
+        const label = utils.createElement('span', {
+            class: 'plyr__title',
+        });
+        const count = utils.createElement('span', {
+            class: 'plyr__count',
+        });
+        const backgroundPositions = [
+            'left',
+            'top',
+            'right',
+            'bottom',
+            'center',
+        ];
+        const item = utils.createElement(
+            'li',
+            utils.extend(utils.getAttributesFromSelector(this.config.selectors.inputs[type]), {
+                value,
+                class: (checked || (!checked && counter === '01')) ? 'active' : '',
+            })
+        );
+
+        item.style.backgroundImage = `url("data:image/svg+xml;base64, PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxMCcgaGVpZ2h0PScxMCc+DQogIDxyZWN0IHdpZHRoPScxMCcgaGVpZ2h0PScxMCcgZmlsbD0nIzAwMCcgZmlsbC1vcGFjaXR5PSIwLjYiIC8+DQogIDxyZWN0IHg9JzAnIHk9JzAnIHdpZHRoPSc1JyBoZWlnaHQ9JzUnIGZpbGw9JyMwMDAnIGZpbGwtb3BhY2l0eT0iMSIgLz4NCjwvc3ZnPg=="), url(${this.elements.original.poster})`;
+        item.style.backgroundSize = `2px, ${Math.floor(Math.random() * 400) + 200}%`;
+        item.style.backgroundPosition = `center, ${backgroundPositions[Math.floor(Math.random() * backgroundPositions.length)]}`;
+        item.style.backgroundRepeat = 'repeat, no-repeat';
+
+        label.insertAdjacentHTML('beforeend', title);
+        count.insertAdjacentHTML('beforeend', counter);
+
+        item.appendChild(count);
+        item.appendChild(label);
+        list.appendChild(item);
     },
 
     // Build the default HTML

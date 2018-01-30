@@ -78,98 +78,6 @@ class Tubia {
         // //walkthrough.gamedistribution.com/api/playernotification?reasonid=" + b + "&url=" +
         // encodeURIComponent(q()) + "&videoid=" + A
 
-        // Create the HTML5 video element.
-        const videoElement = document.createElement('video');
-        videoElement.setAttribute('controls', true);
-        videoElement.setAttribute('crossorigin', true);
-        videoElement.setAttribute('playsinline', true);
-        videoElement.poster = 'https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-HD.jpg';
-        videoElement.id = 'plyr__tubia';
-
-        // Todo: temporary do video, would be nice to have a default or something?
-        const videoSource = document.createElement('source');
-        videoSource.src = 'https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-HD.mp4';
-        videoSource.type = 'video/mp4';
-        const videoTrack = document.createElement('track');
-        videoTrack.kind = 'captions';
-        videoTrack.label = 'English';
-        videoTrack.srclang = 'en';
-        videoTrack.src = 'https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-HD.en.vtt';
-        videoTrack.setAttribute('default', true);
-        const videoTrackFrench = document.createElement('track');
-        videoTrackFrench.kind = 'captions';
-        videoTrackFrench.label = 'Français';
-        videoTrackFrench.srclang = 'fr';
-        videoTrackFrench.src = 'https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-HD.fr.vtt';
-
-        const container = document.getElementById(this.options.container);
-        if (container) {
-            // Add our stylesheet.
-            // Todo: add font.
-            const headElement = document.head;
-            const linkElement = document.createElement('link');
-            linkElement.type = 'text/css';
-            linkElement.rel = 'stylesheet';
-            linkElement.href = 'https://video-static.vooxe.com/libs/gd/main.min.css';
-
-            headElement.appendChild(linkElement);
-            videoElement.appendChild(videoSource);
-            videoElement.appendChild(videoTrack);
-            videoElement.appendChild(videoTrackFrench);
-            container.appendChild(videoElement);
-        }
-
-        // Create the video player.
-        this.player = new Plyr('#plyr__tubia', {
-            debug: this.options.debug,
-            iconUrl: 'https://video-static.vooxe.com/libs/gd/sprite.svg',
-            color: this.options.color,
-            ads: {
-                tag: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480' +
-                '&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rul' +
-                'e=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_sta' +
-                'rt=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpost' +
-                '&cmsid=496&vid=short_onecue&correlator=',
-            },
-            keyboard: {
-                global: true,
-            },
-            tooltips: {
-                controls: true,
-            },
-            captions: {
-                active: true,
-            },
-            controls: [
-                'logo',
-                'playlist',
-                'share',
-                'play-large',
-                'title',
-                // 'play',
-                // 'restart',
-                'rewind',
-                'forward',
-                'progress',
-                'current-time',
-                'duration',
-                'mute',
-                'volume',
-                'settings',
-                'captions',
-                'fullscreen',
-                'pip',
-                'airplay',
-            ],
-        });
-        this.player.on('ready', () => {
-            this.options.onReady(this.player);
-        });
-        this.player.on('error', (error) => {
-            // Todo: I think Plyr has some error handling div.
-            this.options.onError(error);
-        });
-
         // Todo: Tubia API needs to allow OPTIONS header.
         // Send a post request to tell the "matching"-team which video is becoming important.
         // It is basically for updating a click counter or whatever :P
@@ -284,21 +192,91 @@ class Tubia {
                     this.options.onError();
                     return;
                 }
-                // Just grab the last video and poster image.
-                // Set the video data to our video player.
-                // Todo: Create seeking cue's as playlist using json.files.cues something data.
-                this.player.source = {
-                    type: 'video',
-                    title: json.detail[0].title,
-                    sources: [{
-                        src: json.files[json.files.length - 1].linkSecure,
-                        type: json.files[json.files.length - 1].type,
-                    }],
-                    poster: json.pictures[json.pictures.length - 1].link,
-                };
 
-                // Set playlist data.
-                this.player.playlist = json.cuepoints;
+                // Create the HTML5 video element.
+                const videoElement = document.createElement('video');
+                videoElement.setAttribute('controls', true);
+                videoElement.setAttribute('crossorigin', true);
+                videoElement.setAttribute('playsinline', true);
+                videoElement.poster = json.pictures[json.pictures.length - 1].link;
+                videoElement.id = 'plyr__tubia';
+
+                const videoSource = document.createElement('source');
+                videoSource.src = json.files[json.files.length - 1].linkSecure;
+                videoSource.type = json.files[json.files.length - 1].type;
+
+                const container = document.getElementById(this.options.container);
+                if (container) {
+                    // Add our stylesheet.
+                    // Todo: add font.
+                    const headElement = document.head;
+                    const linkElement = document.createElement('link');
+                    linkElement.type = 'text/css';
+                    linkElement.rel = 'stylesheet';
+                    linkElement.href = 'https://video-static.vooxe.com/libs/gd/main.min.css';
+
+                    headElement.appendChild(linkElement);
+                    videoElement.appendChild(videoSource);
+                    container.appendChild(videoElement);
+                }
+
+                // Create the video player.
+                this.player = new Plyr('#plyr__tubia', {
+                    debug: this.options.debug,
+                    iconUrl: 'https://video-static.vooxe.com/libs/gd/sprite.svg',
+                    color: this.options.color,
+                    title: json.detail[0].title,
+                    ads: {
+                        tag: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480' +
+                        '&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rul' +
+                        'e=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_sta' +
+                        'rt=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpost' +
+                        '&cmsid=496&vid=short_onecue&correlator=',
+                    },
+                    keyboard: {
+                        global: true,
+                    },
+                    tooltips: {
+                        controls: true,
+                    },
+                    captions: {
+                        active: true,
+                    },
+                    playlist: {
+                        active: true,
+                        data: json.cuepoints,
+                    },
+                    controls: [
+                        'logo',
+                        'playlist',
+                        'share',
+                        'play-large',
+                        'title',
+                        // 'play',
+                        // 'restart',
+                        'rewind',
+                        'forward',
+                        'progress',
+                        'current-time',
+                        'duration',
+                        'mute',
+                        'volume',
+                        'settings',
+                        'captions',
+                        'fullscreen',
+                        'pip',
+                        'airplay',
+                    ],
+                });
+
+                // Set some listeners.
+                this.player.on('ready', () => {
+                    this.options.onReady(this.player);
+                });
+                this.player.on('error', (error) => {
+                    // Todo: I think Plyr has some error handling div.
+                    this.options.onError(error);
+                });
 
                 // Show the player.
                 const videoContainer = document.querySelectorAll('.plyr--video')[0];

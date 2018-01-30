@@ -1,14 +1,16 @@
+.plyr--playlist-active .plyr__playlist {
+    display: block;
+}
 .plyr__playlist {
     display: none;
     position: absolute;
-    z-index: 1;
+    z-index: 3;
     top: 0;
     right: 0;
     height: 100%;
     width: 33.3%;
     min-width: 200px;
     background: rgba(0, 0, 0, 0.8);
-    border-radius: 0 8px 8px 0;
     &:after {
         content: '';
         position: absolute;
@@ -18,7 +20,6 @@
         width: 100%;
         height: 80px;
         background: linear-gradient(0deg, rgba(0, 0, 0, 0.8) 50%, rgba(0, 0, 0, 0));
-        border-radius: inherit;
     }
     ul {
         position: absolute;
@@ -38,15 +39,25 @@
             text-align: left;
             cursor: pointer;
             border-bottom: 3px solid #000;
+            color: white;
             &:last-of-type {
                 margin-bottom: 60px;
             }
-            &.active {
-                .plyr-count {
+            &:hover {
+                .plyr__count {
                     background-color: #363636;
                     color: #04f3ee;
                 }
-                .plyr-title {
+                .plyr__title {
+                    color: #fff;
+                }
+            }
+            &.active {
+                .plyr__count {
+                    background-color: #363636;
+                    color: #04f3ee;
+                }
+                .plyr__title {
                     color: #fff;
                 }
             }
@@ -57,8 +68,8 @@
         padding: 5px;
         color: #beedf5;
         border: 1px solid #9d9ea2;
-        font-size: 14px;
-        font-weight: bold;
+        font-weight: $plyr-font-weight-bold;
+        font-size: $plyr-font-size-base;
         line-height: 100%;
     }
     .plyr__title {
@@ -70,9 +81,10 @@
         color: #a8a7a5;
         margin-right: 15px;
         text-transform: uppercase;
-        font-weight: bold;
-        font-size: 14px;
+        font-weight: $plyr-font-weight-bold;
+        font-size: $plyr-font-size-base;
         border-bottom: 1px solid #a8a7a5;
         padding-bottom: 3px;
+        padding-left: 0;
     }
 }
