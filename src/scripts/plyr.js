@@ -83,8 +83,6 @@ class Plyr {
                 tabs: {},
             },
             captions: null,
-            playlist: null,
-            share: null,
         };
 
         // Captions
@@ -100,13 +98,12 @@ class Plyr {
 
         // Playlist
         this.playlist = {
-            active: false,
-            current: null,
+            active: null,
         };
 
         // Playlist
         this.share = {
-            active: false,
+            active: null,
         };
 
         // Options
@@ -1187,8 +1184,6 @@ class Plyr {
                     // Clear for GC
                     this.elements.buttons.play = null;
                     this.elements.captions = null;
-                    this.elements.playlist = null;
-                    this.elements.share = null;
                     this.elements.controls = null;
                     this.elements.wrapper = null;
                 }

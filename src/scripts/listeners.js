@@ -358,25 +358,6 @@ const listeners = {
             this.storage.set({ captions: this.captions.active });
         });
 
-        // Playlist toggle
-        utils.on(this.media, 'playlistenabled playlistdisabled', () => {
-            console.log('PLAYLIST TOGGLE EVENT');
-            // Update UI
-            controls.updateSetting.call(this, 'playlist');
-
-            // Save to storage
-            this.storage.set({ playlist: this.playlist.active });
-        });
-
-        // Share toggle
-        utils.on(this.media, 'shareenabled sharedisabled', () => {
-            // Update UI
-            controls.updateSetting.call(this, 'share');
-
-            // Save to storage
-            this.storage.set({ share: this.share.active });
-        });
-
         // Proxy events to container
         // Bubble up key events for Edge
         utils.on(this.media, this.config.events.concat([

@@ -13,17 +13,6 @@ const playlist = {
             return;
         }
 
-        // Set default current video if not set
-        const stored = this.storage.get('current');
-
-        if (!utils.is.empty(stored)) {
-            this.playlist.current = stored;
-        }
-
-        if (utils.is.empty(this.playlist.current)) {
-            this.playlist.current = this.config.playlist.current.toLowerCase();
-        }
-
         // Set playlist enabled state if not set
         if (!utils.is.boolean(this.playlist.active)) {
             const active = this.storage.get('playlist');
@@ -58,34 +47,6 @@ const playlist = {
         controls.setPlaylist.call(this);
     },
 
-    // Set the playlist language
-    setLanguage() {
-        // Setup HTML5 track rendering
-        if (this.isHTML5 && this.isVideo) {
-            playlist.getData.call(this).forEach(track => {
-                // Remove previous bindings
-                utils.on(track, 'cuechange', event => playlist.setCue.call(this, event));
-
-                // Turn off native playlist rendering to avoid double playlist
-                // eslint-disable-next-line
-                track.mode = 'hidden';
-            });
-
-            // Get current track
-            const currentTrack = playlist.getCurrentTrack.call(this);
-
-            // Check if suported kind
-            if (utils.is.track(currentTrack)) {
-                // If we change the active track while a cue is already displayed we need to update it
-                if (Array.from(currentTrack.activeCues || []).length) {
-                    playlist.setCue.call(this, currentTrack);
-                }
-            }
-        } else if (this.isVimeo && this.playlist.active) {
-            this.embed.enableTextTrack(this.language);
-        }
-    },
-
     // Get the playlist data
     getData() {
         // Only get accepted kinds
@@ -93,8 +54,9 @@ const playlist = {
     },
 
     // Get the current track for the current language
-    getCurrentTrack() {
-        return playlist.getData.call(this).find(track => track.language.toLowerCase() === this.language);
+    getCurrent() {
+        console.log('current is: ', this.current);
+        return playlist.getData.call(this).find(track => track.level.toLowerCase() === this.current);
     },
 
     // Display active playlist if it contains text
@@ -102,7 +64,7 @@ const playlist = {
         // Get the track from the event if needed
         const track = utils.is.event(input) ? input.target : input;
         const active = track.activeCues[0];
-        const currentTrack = playlist.getCurrentTrack.call(this);
+        const currentTrack = playlist.getCurrent.call(this);
 
         // Only display current track
         if (track !== currentTrack) {

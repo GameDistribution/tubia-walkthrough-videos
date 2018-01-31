@@ -8,6 +8,18 @@
     min-width: 200px;
     overflow: hidden;
     visibility: hidden;
+    &:after {
+        opacity: 0;
+        content: '';
+        position: absolute;
+        z-index: 3;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 80px;
+        background: linear-gradient(0deg, rgba(0, 0, 0, 0.8) 50%, rgba(0, 0, 0, 0));
+        transition: opacity 0s ease;
+    }
     ul {
         position: absolute;
         top: 0;
@@ -21,17 +33,7 @@
         background: rgba(0, 0, 0, 0.8);
         will-change: transform;
         transform: translateX(100%);
-        transition: transform 0.1s cubic-bezier(0.4, 0.0, 1, 1);
-        &:after {
-            content: '';
-            position: absolute;
-            z-index: 3;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 80px;
-            background: linear-gradient(0deg, rgba(0, 0, 0, 0.8) 50%, rgba(0, 0, 0, 0));
-        }
+        transition: opacity 0s ease;
         li {
             display: flex;
             align-items: center;
@@ -39,48 +41,53 @@
             margin: 0;
             text-align: left;
             cursor: pointer;
-            border-bottom: 3px solid #000;
-            color: white;
+            border-bottom: 3px solid $plyr-video-controls-bg;
+            color: $plyr-video-control-color;
+            &:first-of-type {
+                margin-top: 35px;
+            }
             &:last-of-type {
                 margin-bottom: 60px;
             }
             &:hover {
                 .plyr__count {
-                    background-color: #363636;
-                    color: #04f3ee;
+                    color: $plyr-video-control-color-hover;
+                    border-color: $plyr-video-control-color-hover;
                 }
                 .plyr__title {
-                    color: #fff;
+                    color: $plyr-video-control-color-hover;
                 }
             }
             &:active {
                 .plyr__count {
-                    background-color: #363636;
-                    color: #04f3ee;
-                }
-                .plyr__title {
-                    color: #fff;
+                    color: $plyr-video-control-color-hover;
+                    border-color: $plyr-color-main;
                 }
             }
             &.active {
                 .plyr__count {
-                    background-color: #363636;
-                    color: #04f3ee;
+                    background-color: $plyr-color-main;
+                    border-color: $plyr-color-main;
+                    color: $plyr-video-control-color;
                 }
                 .plyr__title {
-                    color: #fff;
+                    color: $plyr-video-control-color-hover;
                 }
             }
         }
     }
+    span {
+        transition: all 0.15s cubic-bezier(0.4, 0.0, 1, 1);
+        font-weight: $plyr-font-weight-bold;
+        font-size: $plyr-font-size-base;
+        color: currentColor;
+    }
     .plyr__count {
         margin: 20px 15px 20px 20px;
         padding: 5px;
-        color: #beedf5;
-        border: 1px solid #9d9ea2;
-        font-weight: $plyr-font-weight-bold;
-        font-size: $plyr-font-size-base;
+        border: 1px solid rgba(255, 255, 255, 0.5);
         line-height: 100%;
+        border-radius: 1px;
     }
     .plyr__title {
         display: block;
@@ -88,12 +95,9 @@
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
-        color: #a8a7a5;
         margin-right: 15px;
         text-transform: uppercase;
-        font-weight: $plyr-font-weight-bold;
-        font-size: $plyr-font-size-base;
-        border-bottom: 1px solid #a8a7a5;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.5);
         padding-bottom: 3px;
         padding-left: 0;
     }
@@ -102,9 +106,14 @@
 .plyr--playlist-active {
     .plyr__playlist {
         visibility: visible;
+        &:after {
+            opacity: 1;
+            transition: opacity 2s ease;
+        }
     }
     .plyr__playlist ul {
         transform: translateX(0);
+        transition: transform 0.1s cubic-bezier(0.4, 0.0, 1, 1);
     }
 }
 

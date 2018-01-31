@@ -244,13 +244,13 @@ class Tubia {
                         active: true,
                     },
                     playlist: {
-                        // active: true,
+                        active: true,
                         data: json.cuepoints,
                     },
                     controls: [
                         'logo',
                         'playlist',
-                        'share',
+                        // 'share',
                         'play-large',
                         'title',
                         // 'play',

@@ -973,13 +973,12 @@ const controls = {
                 type,
                 track.level,
                 itemNumber,
-                track.level.toLowerCase() === this.playlist.current.toLowerCase()
             );
         });
     },
 
     // Create a settings menu item
-    createPlaylistItem(cue, list, type, title, counter, checked) {
+    createPlaylistItem(cue, list, type, title, counter) {
         const label = utils.createElement('span', {
             class: 'plyr__title',
         });
@@ -993,19 +992,18 @@ const controls = {
             'bottom',
             'center',
         ];
-        // Todo: set active class based on currentTime and cue times.
         const item = utils.createElement('li', {
-            class: (checked || (!checked && counter === '01')) ? 'active' : '',
+            class: (counter === '01') ? 'active' : '',
         });
 
-        // Forward
-        // Todo: this only forwards by the time given... not ok.
+        // Jump to the time we want.
         utils.on(item, 'click', () => {
+            // Todo: we want to set the current active class based on seekTime.
             this.jumpTo(cue);
         });
 
         item.style.backgroundImage = `url("data:image/svg+xml;base64, PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxMCcgaGVpZ2h0PScxMCc+DQogIDxyZWN0IHdpZHRoPScxMCcgaGVpZ2h0PScxMCcgZmlsbD0nIzAwMCcgZmlsbC1vcGFjaXR5PSIwLjYiIC8+DQogIDxyZWN0IHg9JzAnIHk9JzAnIHdpZHRoPSc1JyBoZWlnaHQ9JzUnIGZpbGw9JyMwMDAnIGZpbGwtb3BhY2l0eT0iMSIgLz4NCjwvc3ZnPg=="), url(${this.elements.original.poster})`;
-        item.style.backgroundSize = `2px, ${Math.floor(Math.random() * 400) + 200}%`;
+        item.style.backgroundSize = `2px, ${Math.floor(Math.random() * 300) + 100}%`;
         item.style.backgroundPosition = `center, ${backgroundPositions[Math.floor(Math.random() * backgroundPositions.length)]}`;
         item.style.backgroundRepeat = 'repeat, no-repeat';
 

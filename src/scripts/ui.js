@@ -122,6 +122,10 @@ const ui = {
             .plyr__controls .plyr__control--overlaid > div > div svg {
                 color: ${this.config.color};
             }
+            .plyr__playlist ul li.active .plyr__count {
+                border-color: ${this.config.color};
+                background-color: ${this.config.color};
+            }
         `;
         // Add css
         const head = document.head || document.getElementsByTagName('head')[0];

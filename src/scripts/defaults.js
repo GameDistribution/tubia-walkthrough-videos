@@ -133,7 +133,6 @@ const defaults = {
         enabled: true,
         active: false,
         data: [],
-        current: '',
     },
 
     // Sharing settings

@@ -5,7 +5,6 @@
 .plyr__control {
     background: transparent;
     border: 0;
-    border-radius: $plyr-control-radius;
     color: inherit;
     cursor: pointer;
     flex-shrink: 0;
@@ -182,8 +181,13 @@
         transform: translate(-50%, -50%);
 
         &.icon--pressed {
-            margin-left: -1px;
-            margin-top: 1px;
+            margin-left: 0;
+            margin-top: 2px;
+        }
+
+        &.icon--not-pressed {
+            margin-left: 2px;
+            margin-top: 2px;
         }
 
         @media (min-width: $plyr-bp-sm) {
