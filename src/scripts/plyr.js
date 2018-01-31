@@ -1181,8 +1181,6 @@ class Plyr {
 
                     // Remove others
                     utils.removeElement(this.elements.captions);
-                    utils.removeElement(this.elements.playlist);
-                    utils.removeElement(this.elements.share);
                     utils.removeElement(this.elements.controls);
                     utils.removeElement(this.elements.wrapper);
 

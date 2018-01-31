@@ -190,19 +190,21 @@ const controls = {
                 icon = 'play';
                 iconPressed = 'pause';
                 break;
+
             case 'share':
                 toggle = true;
                 label = 'shareOpen';
                 labelPressed = 'shareClose';
                 icon = 'share';
-                iconPressed = 'volume';
+                iconPressed = 'close';
                 break;
+
             case 'playlist':
                 toggle = true;
                 label = 'playlistOpen';
                 labelPressed = 'playlistClose';
                 icon = 'playlist';
-                iconPressed = 'volume';
+                iconPressed = 'close';
                 break;
 
             default:
@@ -474,7 +476,7 @@ const controls = {
 
     // Hide/show the playlist
     togglePlaylist(setting, toggle) {
-        const tab = this.elements.playlist[setting];
+        const tab = this.elements.controls.playlist[setting];
         utils.toggleHidden(tab, !toggle);
     },
 
@@ -935,7 +937,7 @@ const controls = {
     // Show playlist
     setPlaylist() {
         const type = 'playlist';
-        const list = this.elements.playlist.querySelector('ul');
+        const list = this.elements.controls.playlist.querySelector('ul');
 
         // Toggle the playlist
         const hasItems = playlist.getData.call(this).length;

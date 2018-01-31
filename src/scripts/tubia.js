@@ -237,7 +237,8 @@ class Tubia {
                         global: true,
                     },
                     tooltips: {
-                        controls: true,
+                        seek: true,
+                        controls: false,
                     },
                     captions: {
                         active: true,
@@ -254,8 +255,8 @@ class Tubia {
                         'title',
                         // 'play',
                         // 'restart',
-                        'rewind',
-                        'forward',
+                        // 'rewind',
+                        // 'forward',
                         'progress',
                         'current-time',
                         'duration',

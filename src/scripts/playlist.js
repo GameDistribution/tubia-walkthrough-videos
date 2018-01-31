@@ -35,13 +35,12 @@ const playlist = {
             }
         }
 
-        // Inject the container
-        if (!utils.is.element(this.elements.playlist)) {
-            this.elements.playlist = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.playlist));
+        // Inject the container into the controls container
+        if (!utils.is.element(this.elements.controls.playlist)) {
+            this.elements.controls.playlist = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.playlist));
             const listItem = utils.createElement('ul');
-            this.elements.playlist.appendChild(listItem);
-
-            utils.insertAfter(this.elements.playlist, this.elements.wrapper);
+            this.elements.controls.playlist.appendChild(listItem);
+            this.elements.controls.appendChild(this.elements.controls.playlist);
         }
 
         // Set the class hook
@@ -127,11 +126,11 @@ const playlist = {
             return;
         }
 
-        if (utils.is.element(this.elements.playlist)) {
+        if (utils.is.element(this.elements.controls.playlist)) {
             const content = utils.createElement('span');
 
             // Empty the container
-            utils.emptyElement(this.elements.playlist);
+            utils.emptyElement(this.elements.controls.playlist);
 
             // Default to empty
             const list = !utils.is.nullOrUndefined(input) ? input : '';
@@ -144,7 +143,7 @@ const playlist = {
             }
 
             // Set new playlist text
-            this.elements.playlist.appendChild(content);
+            this.elements.controls.playlist.appendChild(content);
         } else {
             this.debug.warn('No playlist element to render to');
         }

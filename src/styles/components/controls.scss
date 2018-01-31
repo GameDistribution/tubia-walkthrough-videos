@@ -39,9 +39,10 @@
 }
 
 .plyr__controls-top {
-    padding: $plyr-control-spacing $plyr-control-spacing / 2 ($plyr-control-spacing * 2);
+    z-index: 1;
+    padding: $plyr-control-spacing / 2 $plyr-control-spacing / 2 ($plyr-control-spacing * 2);
     margin-bottom: auto;
-    background: linear-gradient(rgba($plyr-video-controls-bg, 0.5), rgba($plyr-video-controls-bg, 0));
+    background: linear-gradient(rgba($plyr-video-controls-bg, 0.8), rgba($plyr-video-controls-bg, 0));
     .plyr__controls-center {
         flex: 1;
         overflow: hidden;

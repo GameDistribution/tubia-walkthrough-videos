@@ -1,27 +1,13 @@
-.plyr--playlist-active .plyr__playlist {
-    opacity: 1;
-}
 .plyr__playlist {
-    opacity: 0;
     position: absolute;
-    z-index: 1;
+    z-index: 0;
     top: 0;
     right: 0;
     height: 100%;
     width: 33.3%;
     min-width: 200px;
-    background: rgba(0, 0, 0, 0.8);
-    transition: opacity 0.2s cubic-bezier(0.4, 0.0, 1, 1);
-    &:after {
-        content: '';
-        position: absolute;
-        z-index: 3;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: 80px;
-        background: linear-gradient(0deg, rgba(0, 0, 0, 0.8) 50%, rgba(0, 0, 0, 0));
-    }
+    overflow: hidden;
+    visibility: hidden;
     ul {
         position: absolute;
         top: 0;
@@ -32,6 +18,20 @@
         margin: 0;
         overflow-y: auto;
         border-radius: inherit;
+        background: rgba(0, 0, 0, 0.8);
+        will-change: transform;
+        transform: translateX(100%);
+        transition: transform 0.1s cubic-bezier(0.4, 0.0, 1, 1);
+        &:after {
+            content: '';
+            position: absolute;
+            z-index: 3;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            background: linear-gradient(0deg, rgba(0, 0, 0, 0.8) 50%, rgba(0, 0, 0, 0));
+        }
         li {
             display: flex;
             align-items: center;
@@ -45,6 +45,15 @@
                 margin-bottom: 60px;
             }
             &:hover {
+                .plyr__count {
+                    background-color: #363636;
+                    color: #04f3ee;
+                }
+                .plyr__title {
+                    color: #fff;
+                }
+            }
+            &:active {
                 .plyr__count {
                     background-color: #363636;
                     color: #04f3ee;
@@ -89,3 +98,13 @@
         padding-left: 0;
     }
 }
+
+.plyr--playlist-active {
+    .plyr__playlist {
+        visibility: visible;
+    }
+    .plyr__playlist ul {
+        transform: translateX(0);
+    }
+}
+
