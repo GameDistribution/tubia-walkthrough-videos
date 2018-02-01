@@ -64,11 +64,13 @@
         // Options
         .plyr__control {
             align-items: center;
-            color: $plyr-menu-color;
             display: flex;
             padding: ceil($plyr-control-padding / 2) ($plyr-control-padding * 2);
             user-select: none;
             width: 100%;
+            color: $plyr-menu-color;
+            font-family: $plyr-font-family;
+            font-size: $plyr-font-size-base;
 
             &::after {
                 border: 4px solid transparent;
@@ -97,10 +99,9 @@
                 $horizontal-padding: ($plyr-control-padding * 2);
                 font-weight: $plyr-font-weight-regular;
                 margin: $plyr-control-padding;
-                margin-bottom: floor($plyr-control-padding / 2);
+                // margin-bottom: floor($plyr-control-padding / 2);
                 padding-left: ceil($plyr-control-padding * 4);
                 position: relative;
-
                 width: calc(100% - #{$horizontal-padding});
 
                 &::after {

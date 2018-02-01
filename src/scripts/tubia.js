@@ -90,7 +90,7 @@ class Tubia {
         };
         // Todo: Tubia API needs to allow OPTIONS header.
         // const videoCounterUrl = 'https://walkthrough.gamedistribution.com/api/player/find/';
-        const videoCounterUrl = 'https://test-walkthrough.vooxe.video/api/player/find/';
+        const videoCounterUrl = 'http://test-walkthrough.vooxe.video/api/player/find/';
         const videoCounterRequest = new Request(videoCounterUrl, {
             method: 'POST',
             body: JSON.stringify(videoCounterData),
