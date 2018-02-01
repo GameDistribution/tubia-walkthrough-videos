@@ -374,18 +374,22 @@ class Ads {
         this.player.on('seeked', () => {
             const seekedTime = this.player.currentTime;
 
-            this.cuePoints.forEach((cuePoint, index) => {
-                if (time < cuePoint && cuePoint < seekedTime) {
-                    this.manager.discardAdBreak();
-                    this.cuePoints.splice(index, 1);
-                }
-            });
+            if(this.cuePoints) {
+                this.cuePoints.forEach((cuePoint, index) => {
+                    if (time < cuePoint && cuePoint < seekedTime) {
+                        this.manager.discardAdBreak();
+                        this.cuePoints.splice(index, 1);
+                    }
+                });
+            }
         });
 
         // Listen to the resizing of the window. And resize ad accordingly
         // TODO: eventually implement ResizeObserver
         window.addEventListener('resize', () => {
-            this.manager.resize(container.offsetWidth, container.offsetHeight, google.ima.ViewMode.NORMAL);
+            if(this.manager) {
+                this.manager.resize(container.offsetWidth, container.offsetHeight, google.ima.ViewMode.NORMAL);
+            }
         });
     }
 

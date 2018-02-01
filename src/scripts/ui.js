@@ -94,17 +94,20 @@ const ui = {
         // Update the UI
         ui.checkPlaying.call(this);
 
-        // Ready for API calls
-        this.ready = true;
-
-        // Ready event at end of execution stack
-        utils.dispatchEvent.call(this, this.media, 'ready');
-
         // Set the title
         ui.setTitle.call(this);
 
         // Set the theme
         ui.setTheme.call(this);
+
+        // Ready for API calls
+        this.ready = true;
+
+        // Ready event at end of execution stack
+        // Set a small delay or out on ready event attached to the plyr instance is not triggered
+        setTimeout(() => {
+            utils.dispatchEvent.call(this, this.media, 'ready');
+        }, 50);
     },
 
     // Setup the color theme

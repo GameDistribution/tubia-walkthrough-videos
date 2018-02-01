@@ -78,7 +78,6 @@ class Tubia {
         // //walkthrough.gamedistribution.com/api/playernotification?reasonid=" + b + "&url=" +
         // encodeURIComponent(q()) + "&videoid=" + A
 
-        // Todo: Tubia API needs to allow OPTIONS header.
         // Send a post request to tell the "matching"-team which video is becoming important.
         // It is basically for updating a click counter or whatever :P
         const videoCounterData = {
@@ -89,7 +88,9 @@ class Tubia {
             category: this.options.category,
             langCode: this.options.langCode,
         };
-        const videoCounterUrl = 'https://walkthrough.gamedistribution.com/api/player/find/';
+        // Todo: Tubia API needs to allow OPTIONS header.
+        // const videoCounterUrl = 'https://walkthrough.gamedistribution.com/api/player/find/';
+        const videoCounterUrl = 'https://test-walkthrough.vooxe.video/api/player/find/';
         const videoCounterRequest = new Request(videoCounterUrl, {
             method: 'POST',
             body: JSON.stringify(videoCounterData),
@@ -118,6 +119,7 @@ class Tubia {
         const videoSearchPromise = new Promise((resolve, reject) => {
             MD5Promise.
                 then(() => {
+                    // Todo: set document.location.href
                     const pageId = window.calcMD5('http://spele.nl/jewel-burst-spel/');
                     const videoFindUrl = `https://walkthrough.gamedistribution.com/api/player/findv2/?pageId=${pageId}&gameId=${this.options.gameId}&title=${this.options.title}&domain=${this.options.domain}`;
                     const videoSearchRequest = new Request(videoFindUrl, {
@@ -208,30 +210,33 @@ class Tubia {
                 const container = document.getElementById(this.options.container);
                 if (container) {
                     // Add our stylesheet.
-                    // Todo: add font.
                     const headElement = document.head;
-                    const linkElement = document.createElement('link');
-                    linkElement.type = 'text/css';
-                    linkElement.rel = 'stylesheet';
-                    linkElement.href = 'https://video-static.vooxe.com/libs/gd/main.min.css';
+                    const css = document.createElement('link');
+                    css.type = 'text/css';
+                    css.rel = 'stylesheet';
+                    css.href = 'https://video-static.vooxe.com/libs/gd/main.min.css';
+                    const font = document.createElement('link');
+                    font.type = 'text/css';
+                    font.rel = 'stylesheet';
+                    font.href = 'https://fonts.googleapis.com/css?family=Khand:400,700';
 
-                    headElement.appendChild(linkElement);
+                    headElement.appendChild(font);
+                    headElement.appendChild(css);
                     videoElement.appendChild(videoSource);
                     container.appendChild(videoElement);
                 }
 
                 // Create the video player.
+                const adTag = `https://pubads.g.doubleclick.net/gampad/ads?sz=640x360&iu=/8034/Test_bgames&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&url=${encodeURIComponent(window.location.origin)}&description_url=${encodeURIComponent(window.location.href)}&correlator=${Date.now()}`;
+                console.log(adTag);
                 this.player = new Plyr('#plyr__tubia', {
                     debug: this.options.debug,
                     iconUrl: 'https://video-static.vooxe.com/libs/gd/sprite.svg',
                     color: this.options.color,
                     title: json.detail[0].title,
+                    showPosterOnEnd: true,
                     ads: {
-                        tag: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480' +
-                        '&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rul' +
-                        'e=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_sta' +
-                        'rt=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpost' +
-                        '&cmsid=496&vid=short_onecue&correlator=',
+                        tag: adTag,
                     },
                     keyboard: {
                         global: true,
@@ -271,17 +276,19 @@ class Tubia {
                 });
 
                 // Set some listeners.
+                const videoContainer = document.querySelectorAll('.plyr--video')[0];
                 this.player.on('ready', () => {
                     this.options.onReady(this.player);
+                    if(videoContainer) {
+                        videoContainer.style.opacity = '1';
+                    }
                 });
                 this.player.on('error', (error) => {
                     // Todo: I think Plyr has some error handling div.
                     this.options.onError(error);
-                });
-                // Show the player.
-                this.player.on('loadeddata', () => {
-                    const videoContainer = document.querySelectorAll('.plyr--video')[0];
-                    videoContainer.style.opacity = '1';
+                    if(videoContainer) {
+                        videoContainer.style.display = 'none';
+                    }
                 });
             }).
             catch(error => {

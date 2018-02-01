@@ -49,13 +49,11 @@ const playlist = {
 
     // Get the playlist data
     getData() {
-        // Only get accepted kinds
         return Array.from(this.config.playlist.data || []);
     },
 
     // Get the current track for the current language
     getCurrent() {
-        console.log('current is: ', this.current);
         return playlist.getData.call(this).find(track => track.level.toLowerCase() === this.current);
     },
 
