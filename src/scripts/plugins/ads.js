@@ -88,7 +88,6 @@ class Ads {
         // Create the container for our advertisements
         this.elements.container = utils.createElement('div', {
             class: this.player.config.classNames.ads,
-            hidden: '',
         });
         this.player.elements.container.appendChild(this.elements.container);
 
@@ -301,6 +300,9 @@ class Ads {
 
                 this.pauseContent();
 
+                // Show the advertisement container.
+                this.elements.container.style.zIndex = '3';
+
                 break;
 
             case google.ima.AdEvent.Type.CONTENT_RESUME_REQUESTED:
@@ -315,6 +317,9 @@ class Ads {
                 this.pollCountdown();
 
                 this.resumeContent();
+
+                // Hide the advertisement container.
+                this.elements.container.style.zIndex = '';
 
                 break;
 
@@ -350,6 +355,22 @@ class Ads {
     onAdError(event) {
         this.cancel();
         this.player.debug.log('Ads error', event);
+
+        // Send a google event.
+        try {
+            /* eslint-disable */
+            if (typeof window['ga'] !== 'undefined') {
+                window['ga']('tubia.send', {
+                    hitType: 'event',
+                    eventCategory: 'AD',
+                    eventAction: 'AD_ERROR',
+                    eventLabel: event.getError(),
+                });
+            }
+            /* eslint-enable */
+        } catch (error) {
+            this.player.debug.log('Ads error', error);
+        }
     }
 
     /**

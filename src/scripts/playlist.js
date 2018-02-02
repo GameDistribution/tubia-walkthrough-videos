@@ -29,7 +29,8 @@ const playlist = {
             this.elements.controls.playlist = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.playlist));
             const listItem = utils.createElement('ul');
             this.elements.controls.playlist.appendChild(listItem);
-            this.elements.controls.appendChild(this.elements.controls.playlist);
+            this.elements.controls.middle.appendChild(this.elements.controls.playlist);
+            // utils.insertAfter(this.elements.captions, this.elements.wrapper);
         }
 
         // Set the class hook

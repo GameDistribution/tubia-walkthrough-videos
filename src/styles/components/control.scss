@@ -64,6 +64,10 @@
     height: 100%;
     overflow: hidden;
 
+    // Remove tap highlight.
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+
     > div {
         position: absolute;
         top: 50%;

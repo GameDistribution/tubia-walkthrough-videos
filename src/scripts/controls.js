@@ -1313,6 +1313,9 @@ const controls = {
         }
 
         this.elements.controls = container;
+        this.elements.controls.top = containerTop;
+        this.elements.controls.middle = containerMiddle;
+        this.elements.controls.bottom = containerBottom;
 
         if (this.config.controls.includes('settings') && this.config.settings.includes('speed')) {
             controls.setSpeedMenu.call(this);

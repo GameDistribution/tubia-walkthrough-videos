@@ -32,7 +32,9 @@ class Tubia {
             category: '',
             langCode: '',
             color: '#1aafff',
-            domain: window.location.href.toLowerCase().replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').split('/')[0],
+            domain: window.location.href.toLowerCase().
+                replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').
+                split('/')[0],
             onFound() {},
             onError() {},
             onReady() {},
@@ -43,6 +45,8 @@ class Tubia {
         } else {
             this.options = defaults;
         }
+
+        this.adTag = null;
 
         // Set a version banner within the developer console.
         /* eslint-disable */
@@ -88,9 +92,9 @@ class Tubia {
             category: this.options.category,
             langCode: this.options.langCode,
         };
-        // Todo: Tubia API needs to allow OPTIONS header.
-        // const videoCounterUrl = 'https://walkthrough.gamedistribution.com/api/player/find/';
-        const videoCounterUrl = 'http://test-walkthrough.vooxe.video/api/player/find/';
+
+        const videoCounterUrl = 'https://walkthrough.gamedistribution.com/api/player/find/';
+        // const videoCounterUrl = 'http://test-walkthrough.vooxe.video/api/player/find/';
         const videoCounterRequest = new Request(videoCounterUrl, {
             method: 'POST',
             body: JSON.stringify(videoCounterData),
@@ -108,9 +112,6 @@ class Tubia {
                     return response.json();
                 }
             }).
-            then((json) => {
-                console.log(json);
-            }).
             catch((error) => {
                 this.options.onError(error);
             });
@@ -119,8 +120,7 @@ class Tubia {
         const videoSearchPromise = new Promise((resolve, reject) => {
             MD5Promise.
                 then(() => {
-                    // Todo: set document.location.href
-                    const pageId = window.calcMD5('http://spele.nl/jewel-burst-spel/');
+                    const pageId = window.calcMD5(document.location.href);
                     const videoFindUrl = `https://walkthrough.gamedistribution.com/api/player/findv2/?pageId=${pageId}&gameId=${this.options.gameId}&title=${this.options.title}&domain=${this.options.domain}`;
                     const videoSearchRequest = new Request(videoFindUrl, {
                         method: 'GET',
@@ -156,12 +156,20 @@ class Tubia {
             // Todo: make sure to disable ads if enableAds is false. Also for addFreeActive :P
             videoSearchPromise.
                 then((id) => {
-                    const gameId = (!id) ? this.options.gameId: id;
-                    const videoDataUrl = `https://walkthrough.gamedistribution.com/api/player/publish/?gameid=${gameId.replace(/-/g, '')}&publisherid=${this.options.publisherId.replace(/-/g, '')}&domain=${this.options.domain}`;
+                    const gameId = (!id) ? this.options.gameId : id;
+                    const videoDataUrl = `https://walkthrough.gamedistribution.com/api/player/publish/?gameid=${gameId.replace(
+                        /-/g, '')}&publisherid=${this.options.publisherId.replace(/-/g,
+                        '')}&domain=${this.options.domain}`;
                     const videoDataRequest = new Request(videoDataUrl, {method: 'GET'});
 
                     // Record Tubia view event in Tunnl.
-                    (new Image()).src = `https://ana.tunnl.com/event?tub_id=${gameId}&eventtype=0&page_url=${encodeURIComponent(document.location.href)}`;
+                    (new Image()).src = `https://ana.tunnl.com/event?tub_id=${gameId}&eventtype=0&page_url=${encodeURIComponent(
+                        document.location.href)}`;
+
+                    // Set the ad tag using the given id.
+                    // Todo: Not getting ad data: No Ads VAST response after one or more Wrappers
+                    this.adTag = `https://pub.tunnl.com/opp?page_url=${encodeURIComponent(window.location.href)}&player_width=640&player_height=480&game_id=${gameId}&ad_count=1&ad_position=preroll1`;
+                    // this.adTag = `https://pub.tunnl.com/opp?page_url=${encodeURIComponent('https://bgames.com/action-games/neon_battle_tank/')}&player_width=640&player_height=480&game_id=${'f823756c53924839892f268b2136b5d9'}&ad_count=1&ad_position=preroll1`;
 
                     fetch(videoDataRequest).
                         then((response) => {
@@ -195,12 +203,16 @@ class Tubia {
                     return;
                 }
 
+                // Todo: Make sure our poster uses https. Currently getting http from database.
+                const poster = json.pictures[json.pictures.length - 1].link;
+                const posterUrl = poster.replace(/^http:\/\//i, 'https://');
+
                 // Create the HTML5 video element.
                 const videoElement = document.createElement('video');
                 videoElement.setAttribute('controls', true);
                 videoElement.setAttribute('crossorigin', true);
                 videoElement.setAttribute('playsinline', true);
-                videoElement.poster = json.pictures[json.pictures.length - 1].link;
+                videoElement.poster = posterUrl;
                 videoElement.id = 'plyr__tubia';
 
                 const videoSource = document.createElement('source');
@@ -208,13 +220,14 @@ class Tubia {
                 videoSource.type = json.files[json.files.length - 1].type;
 
                 const container = document.getElementById(this.options.container);
+                container.style.opacity = '0';
                 if (container) {
                     // Add our stylesheet.
                     const headElement = document.head;
                     const css = document.createElement('link');
                     css.type = 'text/css';
                     css.rel = 'stylesheet';
-                    css.href = 'https://video-static.vooxe.com/libs/gd/main.min.css';
+                    css.href = 'https://tubia.gamedistribution.com/libs/gd/main.min.css';
                     const font = document.createElement('link');
                     font.type = 'text/css';
                     font.rel = 'stylesheet';
@@ -227,16 +240,49 @@ class Tubia {
                 }
 
                 // Create the video player.
-                const adTag = `https://pubads.g.doubleclick.net/gampad/ads?sz=640x360&iu=/8034/Test_bgames&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&url=${encodeURIComponent(window.location.origin)}&description_url=${encodeURIComponent(window.location.href)}&correlator=${Date.now()}`;
-                console.log(adTag);
+                // this.adTag = `https://pubads.g.doubleclick.net/gampad/ads?sz=640x360&iu=/8034/Test_bgames&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&url=${encodeURIComponent(window.location.origin)}&description_url=${encodeURIComponent(window.location.href)}&correlator=${Date.now()}`;
+                console.log(this.adTag);
+                const controls = [
+                    'logo',
+                    'playlist',
+                    // 'share',
+                    'play-large',
+                    'title',
+                    // 'play',
+                    // 'restart',
+                    // 'rewind',
+                    // 'forward',
+                    'progress',
+                    'current-time',
+                    'duration',
+                    'mute',
+                    'fullscreen',
+                ];
+                const playlist = {
+                    active: false,
+                    data: json.cuepoints, // Todo: order of cue's from API is not correct.
+                };
+
+                // We don't want certain options when our view is too small.
+                if ((container.offsetWidth >= 768)) {
+                    controls.push('volume');
+                    controls.push('settings');
+                    controls.push('captions');
+                    controls.push('pip');
+                    controls.push('airplay');
+
+                    playlist.active = true;
+                }
+
+                // Create the Plyr instance.
                 this.player = new Plyr('#plyr__tubia', {
                     debug: this.options.debug,
-                    iconUrl: 'https://video-static.vooxe.com/libs/gd/sprite.svg',
+                    iconUrl: 'https://tubia.gamedistribution.com/libs/gd/sprite.svg',
                     color: this.options.color,
                     title: json.detail[0].title,
                     showPosterOnEnd: true,
                     ads: {
-                        tag: adTag,
+                        tag: this.adTag,
                     },
                     keyboard: {
                         global: true,
@@ -248,46 +294,23 @@ class Tubia {
                     captions: {
                         active: true,
                     },
-                    playlist: {
-                        active: true,
-                        data: json.cuepoints,
-                    },
-                    controls: [
-                        'logo',
-                        'playlist',
-                        // 'share',
-                        'play-large',
-                        'title',
-                        // 'play',
-                        // 'restart',
-                        // 'rewind',
-                        // 'forward',
-                        'progress',
-                        'current-time',
-                        'duration',
-                        'mute',
-                        'volume',
-                        'settings',
-                        'captions',
-                        'fullscreen',
-                        'pip',
-                        'airplay',
-                    ],
+                    playlist,
+                    controls,
                 });
 
                 // Set some listeners.
-                const videoContainer = document.querySelectorAll('.plyr--video')[0];
                 this.player.on('ready', () => {
                     this.options.onReady(this.player);
-                    if(videoContainer) {
-                        videoContainer.style.opacity = '1';
+                    if (container) {
+                        container.style.transition = 'opacity 1s cubic-bezier(0.4, 0.0, 1, 1)';
+                        container.style.opacity = '1';
                     }
                 });
                 this.player.on('error', (error) => {
                     // Todo: I think Plyr has some error handling div.
                     this.options.onError(error);
-                    if(videoContainer) {
-                        videoContainer.style.display = 'none';
+                    if (container) {
+                        container.style.display = 'none';
                     }
                 });
             }).
@@ -311,7 +334,7 @@ class Tubia {
                 }, i[r].l = 1 * new Date();
                 a = s.createElement(o),
                     m = s.getElementsByTagName(o)[0];
-                a.async = 1;
+                a.async = true;
                 a.src = g;
                 m.parentNode.insertBefore(a, m);
             })(window, document, 'script',
