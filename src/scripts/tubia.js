@@ -203,8 +203,10 @@ class Tubia {
                     return;
                 }
 
-                // Todo: Make sure our poster uses https. Currently getting http from database.
-                const poster = json.pictures[json.pictures.length - 1].link;
+                console.log('Tubia video data:', json);
+
+                // Todo: Make sure our poster and source url's uses https. Currently getting http from database.
+                const poster = (json.pictures && json.pictures.length > 0) ? json.pictures[json.pictures.length - 1].link : '';
                 const posterUrl = poster.replace(/^http:\/\//i, 'https://');
 
                 // Create the HTML5 video element.
@@ -216,8 +218,14 @@ class Tubia {
                 videoElement.id = 'plyr__tubia';
 
                 const videoSource = document.createElement('source');
-                videoSource.src = json.files[json.files.length - 1].linkSecure;
-                videoSource.type = json.files[json.files.length - 1].type;
+                const source = (json.files && json.files.length > 0) ? json.files[json.files.length - 1].linkSecure : `https://cdn.walkthrough.vooxe.com/media/video/${json.detail[0].mediaURL}`;
+                const sourceUrl = source.replace(/^http:\/\//i, 'https://');
+                const sourceType = (json.files && json.files.length > 0) ? json.files[json.files.length - 1].type : 'video/mp4';
+
+                videoSource.src = sourceUrl;
+                videoSource.type = sourceType;
+
+                console.log('Tubia video:', videoSource.src);
 
                 const container = document.getElementById(this.options.container);
                 container.style.opacity = '0';
@@ -279,7 +287,7 @@ class Tubia {
                     debug: this.options.debug,
                     iconUrl: 'https://tubia.gamedistribution.com/libs/gd/sprite.svg',
                     color: this.options.color,
-                    title: json.detail[0].title,
+                    title: (json.detail && json.detail.length > 0) ? json.detail[0].title : '',
                     showPosterOnEnd: true,
                     ads: {
                         tag: this.adTag,
