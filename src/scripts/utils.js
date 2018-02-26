@@ -232,8 +232,6 @@ const utils = {
             // Get the sprite
             utils.fetch(url)
                 .then(text => {
-                    console.log(text);
-
                     if (text === null) {
                         return;
                     }

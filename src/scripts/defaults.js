@@ -284,7 +284,7 @@ const defaults = {
         // Ads
         'adsloaded',
         'adscontentpause',
-        'adsconentresume',
+        'adscontentresume',
         'adstarted',
         'adsmidpoint',
         'adscomplete',

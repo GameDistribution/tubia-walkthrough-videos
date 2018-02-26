@@ -32,7 +32,7 @@ class Tubia {
             category: '',
             langCode: '',
             color: '#1aafff',
-            domain: 'bgames.com', // window.location.href.toLowerCase().replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').split('/')[0],
+            domain: window.location.href.toLowerCase().replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').split('/')[0],
             onFound() {},
             onError() {},
             onReady() {},
@@ -62,9 +62,9 @@ class Tubia {
         // Todo: check if we have missing polyfills. Rather get them as npm bundle.
         utils.loadScript('https://cdn.rangetouch.com/1.0.1/rangetouch.js');
 
-        // Todo: this is the biggest shit ever.
+        // Todo: this is the biggest shit ever. Would be nice this is done on server side.
         const MD5Promise = new Promise((resolve) => {
-            utils.loadScript('https://common-static.tunnl.com/api/libs/md5/md5.js', () => {
+            utils.loadScript('https://tubia.gamedistribution.com/libs/gd/md5.js', () => {
                 resolve();
             });
         });

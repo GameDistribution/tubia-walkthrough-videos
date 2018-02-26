@@ -10,7 +10,7 @@ function atob(str) {
     return null;
 }
 
-module.exports = function(grunt) {
+module.exports = function (grunt) {
     const startTS = Date.now();
 
     grunt.initConfig({
@@ -38,7 +38,11 @@ module.exports = function(grunt) {
                 expand: true,
                 flatten: true,
                 cwd: './',
-                src: ['src/index.html', 'src/index_legacy.html'],
+                src: [
+                    'src/index.html',
+                    'src/index_legacy.html',
+                    'src/md5.js',
+                ],
                 dest: './libs/gd/',
             },
         },
@@ -238,7 +242,7 @@ module.exports = function(grunt) {
     // Register all tasks.
     grunt.registerTask('duration',
         'Displays the duration of the grunt task up until this point.',
-        function() {
+        function () {
             const date = new Date(Date.now() - startTS);
             let hh = date.getUTCHours();
             let mm = date.getUTCMinutes();
@@ -256,7 +260,7 @@ module.exports = function(grunt) {
         });
     grunt.registerTask('sourcemaps',
         'Build with sourcemaps',
-        function() {
+        function () {
             grunt.config.set('svgstore.options.includedemo', true);
             grunt.config.set('uglify.options.sourceMap', true);
             grunt.config.set('uglify.options.sourceMapIncludeSources', true);
@@ -268,7 +272,7 @@ module.exports = function(grunt) {
     grunt.registerTask('default',
         'Start BrowserSync and watch for any changes so we can do live ' +
         'updates while developing.',
-        function() {
+        function () {
             const tasksArray = [
                 'copy',
                 'sass',
@@ -286,7 +290,7 @@ module.exports = function(grunt) {
         });
     grunt.registerTask('build',
         'Build and optimize the js.',
-        function() {
+        function () {
             const tasksArray = [
                 'clean',
                 'sass',
@@ -302,7 +306,7 @@ module.exports = function(grunt) {
         });
     grunt.registerTask('deploy',
         'Upload the build files.',
-        function() {
+        function () {
             const project = grunt.option('project');
             const bucket = grunt.option('bucket');
             const folderIn = grunt.option('in');
