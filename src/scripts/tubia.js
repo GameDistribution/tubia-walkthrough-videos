@@ -32,9 +32,7 @@ class Tubia {
             category: '',
             langCode: '',
             color: '#1aafff',
-            domain: window.location.href.toLowerCase().
-                replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').
-                split('/')[0],
+            domain: 'bgames.com', // window.location.href.toLowerCase().replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').split('/')[0],
             onFound() {},
             onError() {},
             onReady() {},
@@ -92,7 +90,7 @@ class Tubia {
             category: this.options.category,
             langCode: this.options.langCode,
         };
-
+        // Todo: Triodor has not yet deployed the preflight request update!
         const videoCounterUrl = 'https://walkthrough.gamedistribution.com/api/player/find/';
         // const videoCounterUrl = 'http://test-walkthrough.vooxe.video/api/player/find/';
         const videoCounterRequest = new Request(videoCounterUrl, {
