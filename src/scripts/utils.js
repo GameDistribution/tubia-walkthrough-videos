@@ -96,8 +96,49 @@ const utils = {
         };
     },
 
+    // Fetch wrapper
+    // Using XHR to avoid issues with older browsers
+    fetch(url, responseType = 'text') {
+        return new Promise((resolve, reject) => {
+            try {
+                const request = new XMLHttpRequest();
+
+                // Check for CORS support
+                if (!('withCredentials' in request)) {
+                    return;
+                }
+
+                request.addEventListener('load', () => {
+                    if (responseType === 'text') {
+                        try {
+                            resolve(JSON.parse(request.responseText));
+                        } catch(e) {
+                            resolve(request.responseText);
+                        }
+                    }
+                    else {
+                        resolve(request.response);
+                    }
+                });
+
+                request.addEventListener('error', () => {
+                    throw new Error(request.statusText);
+                });
+
+                request.open('GET', url, true);
+
+                // Set the required response type
+                request.responseType = responseType;
+
+                request.send();
+            } catch (e) {
+                reject(e);
+            }
+        });
+    },
+
     // Load an external script
-    loadScript(url, callback) {
+    loadScript(url, callback, error) {
         const current = document.querySelector(`script[src="${url}"]`);
 
         // Check script is not already referenced, if so wait for load
@@ -114,6 +155,10 @@ const utils = {
         element.callbacks = element.callbacks || [];
         element.callbacks.push(callback);
 
+        // Error queue
+        element.errors = element.errors || [];
+        element.errors.push(error);
+
         // Bind callback
         if (utils.is.function(callback)) {
             element.addEventListener(
@@ -125,6 +170,16 @@ const utils = {
                 false,
             );
         }
+
+        // Bind error handling
+        element.addEventListener(
+            'error',
+            event => {
+                element.errors.forEach(err => err.call(null, event));
+                element.errors = null;
+            },
+            false,
+        );
 
         // Set the URL after binding callback
         element.src = url;
@@ -175,9 +230,10 @@ const utils = {
             }
 
             // Get the sprite
-            fetch(url)
-                .then(response => (response.ok ? response.text() : null))
+            utils.fetch(url)
                 .then(text => {
+                    console.log(text);
+
                     if (text === null) {
                         return;
                     }
@@ -275,12 +331,15 @@ const utils = {
     // Remove an element
     removeElement(element) {
         if (!utils.is.element(element) || !utils.is.element(element.parentNode)) {
-            return null;
+            return;
+        }
+
+        if (utils.is.nodeList(element) || utils.is.array(element)) {
+            Array.from(element).forEach(utils.removeElement);
+            return;
         }
 
         element.parentNode.removeChild(element);
-
-        return element;
     },
 
     // Remove all child elements
@@ -496,46 +555,50 @@ const utils = {
     },
 
     // Trap focus inside container
-    trapFocus() {
+    trapFocus(element = null, toggle = false) {
+        if (!utils.is.element(element)) {
+            return;
+        }
+
         const focusable = utils.getElements.call(this, 'button:not(:disabled), input:not(:disabled), [tabindex]');
         const first = focusable[0];
         const last = focusable[focusable.length - 1];
 
-        utils.on(
-            this.elements.container,
-            'keydown',
-            event => {
-                // Bail if not tab key or not fullscreen
-                if (event.key !== 'Tab' || event.keyCode !== 9 || !this.fullscreen.active) {
-                    return;
-                }
+        const trap = event => {
+            // Bail if not tab key or not fullscreen
+            if (event.key !== 'Tab' || event.keyCode !== 9) {
+                return;
+            }
+            // Get the current focused element
+            const focused = utils.getFocusElement();
 
-                // Get the current focused element
-                const focused = utils.getFocusElement();
+            if (focused === last && !event.shiftKey) {
+                // Move focus to first element that can be tabbed if Shift isn't used
+                first.focus();
+                event.preventDefault();
+            } else if (focused === first && event.shiftKey) {
+                // Move focus to last element that can be tabbed if Shift is used
+                last.focus();
+                event.preventDefault();
+            }
+        };
 
-                if (focused === last && !event.shiftKey) {
-                    // Move focus to first element that can be tabbed if Shift isn't used
-                    first.focus();
-                    event.preventDefault();
-                } else if (focused === first && event.shiftKey) {
-                    // Move focus to last element that can be tabbed if Shift is used
-                    last.focus();
-                    event.preventDefault();
-                }
-            },
-            false,
-        );
+        if (toggle) {
+            utils.on(this.elements.container, 'keydown', trap, false);
+        } else {
+            utils.off(this.elements.container, 'keydown', trap, false);
+        }
     },
 
     // Toggle event listener
     toggleListener(elements, event, callback, toggle, passive, capture) {
-        // Bail if no elements
-        if (utils.is.nullOrUndefined(elements)) {
+        // Bail if no elemetns, event, or callback
+        if (utils.is.empty(elements) || utils.is.empty(event) || !utils.is.function(callback)) {
             return;
         }
 
         // If a nodelist is passed, call itself on each node
-        if (utils.is.nodeList(elements)) {
+        if (utils.is.nodeList(elements) || utils.is.array(elements)) {
             // Create listener for each node
             Array.from(elements).forEach(element => {
                 if (element instanceof Node) {
@@ -582,7 +645,7 @@ const utils = {
     // Trigger event
     dispatchEvent(element, type, bubbles, detail) {
         // Bail if no element
-        if (!element || !type) {
+        if (!utils.is.element(element) || !utils.is.string(type)) {
             return;
         }
 
@@ -601,6 +664,12 @@ const utils = {
     // Toggle aria-pressed state on a toggle button
     // http://www.ssbbartgroup.com/blog/how-not-to-misuse-aria-states-properties-and-roles
     toggleState(element, input) {
+        // If multiple elements passed
+        if (utils.is.array(element) || utils.is.nodeList(element)) {
+            Array.from(element).forEach(target => utils.toggleState(target, input));
+            return;
+        }
+
         // Bail if no target
         if (!utils.is.element(element)) {
             return;
@@ -623,9 +692,15 @@ const utils = {
     },
 
     // Time helpers
-    getHours(value) { return parseInt((value / 60 / 60) % 60, 10); },
-    getMinutes(value) { return parseInt((value / 60) % 60, 10); },
-    getSeconds(value) { return parseInt(value % 60, 10); },
+    getHours(value) {
+        return parseInt((value / 60 / 60) % 60, 10);
+    },
+    getMinutes(value) {
+        return parseInt((value / 60) % 60, 10);
+    },
+    getSeconds(value) {
+        return parseInt(value % 60, 10);
+    },
 
     // Format time to UI friendly string
     formatTime(time = 0, displayHours = false, inverted = false) {

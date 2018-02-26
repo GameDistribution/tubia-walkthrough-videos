@@ -253,6 +253,17 @@ const controls = {
 
         this.elements.buttons[type] = button;
 
+        // We have multiple play buttons
+        if (type === 'play') {
+            if (!utils.is.array(this.elements.buttons[type])) {
+                this.elements.buttons[type] = [];
+            }
+
+            this.elements.buttons[type].push(button);
+        } else {
+            this.elements.buttons[type] = button;
+        }
+
         return button;
     },
 
@@ -1341,9 +1352,10 @@ const controls = {
 
         // Null by default
         let container = null;
+        this.elements.controls = null;
 
-        // HTML passed as the option
-        if (utils.is.string(this.config.controls)) {
+        // HTML or Element passed as the option
+        if (utils.is.string(this.config.controls) || utils.is.element(this.config.controls)) {
             container = this.config.controls;
         } else if (utils.is.function(this.config.controls)) {
             // A custom function to build controls
@@ -1387,7 +1399,7 @@ const controls = {
         }
 
         // Find the elements if need be
-        if (utils.is.element(this.elements.controls)) {
+        if (!utils.is.element(this.elements.controls)) {
             utils.findElements.call(this);
         }
 

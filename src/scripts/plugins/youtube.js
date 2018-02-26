@@ -87,8 +87,16 @@ const youtube = {
             return;
         }
 
+        // Get the source URL or ID
+        let source = player.media.getAttribute('src');
+
+        // Get from <div> if needed
+        if (utils.is.empty(source)) {
+            source = player.media.getAttribute(this.config.attributes.embed.id);
+        }
+
         // Replace the <iframe> with a <div> due to YouTube API issues
-        const videoId = utils.parseYouTubeId(player.media.getAttribute('src'));
+        const videoId = utils.parseYouTubeId(source);
         const id = utils.generateId(player.provider);
         const container = utils.createElement('div', { id });
         player.media = utils.replaceElement(container, player.media);
@@ -108,8 +116,8 @@ const youtube = {
                 playsinline: 1, // Allow iOS inline playback
 
                 // Tracking for stats
-                origin: window && window.location.hostname,
-                widget_referrer: window && window.location.href,
+                // origin: window ? `${window.location.protocol}//${window.location.host}` : null,
+                widget_referrer: window ? window.location.href : null,
 
                 // Captions are flaky on YouTube
                 cc_load_policy: player.captions.active ? 1 : 0,

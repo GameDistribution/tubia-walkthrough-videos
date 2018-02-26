@@ -5,7 +5,6 @@
 import utils from './utils';
 import captions from './captions';
 import controls from './controls';
-import fullscreen from './fullscreen';
 import playlist from './playlist';
 import listeners from './listeners';
 
@@ -34,12 +33,6 @@ const ui = {
         if (!this.supported.ui) {
             this.debug.warn(`Basic support only for ${this.provider} ${this.type}`);
 
-            // Remove controls
-            utils.removeElement.call(this, 'controls');
-
-            // Remove large play
-            utils.removeElement.call(this, 'buttons.play');
-
             // Restore native controls
             ui.toggleNativeControls.call(this, true);
 
@@ -63,9 +56,6 @@ const ui = {
 
         // Remove native controls
         ui.toggleNativeControls.call(this);
-
-        // Setup fullscreen
-        fullscreen.setup.call(this);
 
         // Playlist
         playlist.setup.call(this);
@@ -184,10 +174,8 @@ const ui = {
         utils.toggleClass(this.elements.container, this.config.classNames.playing, this.playing);
         utils.toggleClass(this.elements.container, this.config.classNames.stopped, this.paused);
 
-        // Set aria state
-        if (utils.is.nodeList(this.elements.buttons.play)) {
-            Array.from(this.elements.buttons.play).forEach(button => utils.toggleState(button, this.playing));
-        }
+        // Set ARIA state
+        utils.toggleState(this.elements.buttons.play, this.playing);
 
         // Toggle controls
         this.toggleControls(!this.playing);

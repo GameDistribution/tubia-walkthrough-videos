@@ -120,6 +120,7 @@ const defaults = {
     fullscreen: {
         enabled: true, // Allow fullscreen?
         fallback: true, // Fallback for vintage browsers
+        iosNative: false, // Use the native fullscreen in iOS (disables custom controls)
     },
 
     // Local storage
@@ -192,6 +193,7 @@ const defaults = {
         reset: 'Reset',
         none: 'None',
         disabled: 'Disabled',
+        advertisement: 'Ad',
         playlist: 'Playlist',
         playlistOpen: 'Open playlist',
         playlistClose: 'Close playlist',
@@ -400,6 +402,14 @@ const defaults = {
         },
     },
 
+    // Embed attributes
+    attributes: {
+        embed: {
+            provider: 'data-plyr-provider',
+            id: 'data-plyr-embed-id',
+        },
+    },
+
     // API keys
     keys: {
         google: null,
@@ -407,7 +417,7 @@ const defaults = {
 
     // Ads
     ads: {
-        tag: null,
+        tag: 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpostpod&cmsid=496&vid=short_onecue&correlator=',
     },
 };
 

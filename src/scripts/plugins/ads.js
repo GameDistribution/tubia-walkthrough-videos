@@ -18,18 +18,22 @@ class Ads {
         this.player = player;
         this.playing = false;
         this.initialized = false;
+        this.blocked = false;
         this.enabled = utils.is.url(player.config.ads.tag);
 
-        // Check if a tag URL is provided.
-        if (!this.enabled) {
-            return;
-        }
-
-        // Check if the Google IMA3 SDK is loaded
+        // Check if the Google IMA3 SDK is loaded or load it ourselves
         if (!utils.is.object(window.google)) {
-            utils.loadScript(player.config.urls.googleIMA.api, () => {
-                this.ready();
-            });
+            utils.loadScript(
+                player.config.urls.googleIMA.api,
+                () => {
+                    this.ready();
+                },
+                () => {
+                    // Script failed to load or is blocked
+                    this.blocked = true;
+                    this.player.debug.log('Ads error: Google IMA SDK failed to load');
+                },
+            );
         } else {
             this.ready();
         }
@@ -154,7 +158,8 @@ class Ads {
 
         const update = () => {
             const time = utils.formatTime(this.manager.getRemainingTime());
-            this.elements.container.setAttribute('data-badge-text', time);
+            const label = `${this.player.config.i18n.advertisement} - ${time}`;
+            this.elements.container.setAttribute('data-badge-text', label);
         };
 
         this.countdownTimer = window.setInterval(update, 100);

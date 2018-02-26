@@ -168,7 +168,7 @@ class Tubia {
 
                     // Set the ad tag using the given id.
                     // Todo: Not getting ad data: No Ads VAST response after one or more Wrappers
-                    this.adTag = `https://pub.tunnl.com/opp?page_url=${encodeURIComponent(window.location.href)}&player_width=640&player_height=480&game_id=${gameId}&ad_count=1&ad_position=preroll1`;
+                    this.adTag = `https://pub.tunnl.com/opp?page_url=${encodeURIComponent(window.location.href)}&player_width=640&player_height=480&game_id=${gameId}&correlator=${Date.now()}&ad_count=1&ad_position=preroll1`;
                     // this.adTag = `https://pub.tunnl.com/opp?page_url=${encodeURIComponent('https://bgames.com/action-games/neon_battle_tank/')}&player_width=640&player_height=480&game_id=${'f823756c53924839892f268b2136b5d9'}&ad_count=1&ad_position=preroll1`;
 
                     fetch(videoDataRequest).
@@ -217,8 +217,10 @@ class Tubia {
                 videoElement.poster = posterUrl;
                 videoElement.id = 'plyr__tubia';
 
+                // Todo: If files (transcoded videos) doesn't exist we must load the raw video file.
+                // Todo: However, currently the raw files are in the wrong google project and not served from a CDN, so expensive!
                 const videoSource = document.createElement('source');
-                const source = (json.files && json.files.length > 0) ? json.files[json.files.length - 1].linkSecure : `https://cdn.walkthrough.vooxe.com/media/video/${json.detail[0].mediaURL}`;
+                const source = (json.files && json.files.length > 0) ? json.files[json.files.length - 1].linkSecure : `http://storage.googleapis.com/vooxe_eu/vids/default/${json.detail[0].mediaURL}`;
                 const sourceUrl = source.replace(/^http:\/\//i, 'https://');
                 const sourceType = (json.files && json.files.length > 0) ? json.files[json.files.length - 1].type : 'video/mp4';
 
