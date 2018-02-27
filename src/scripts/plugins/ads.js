@@ -339,6 +339,20 @@ class Ads {
                 break;
 
             case google.ima.AdEvent.Type.IMPRESSION:
+                // Send a google event.
+                try {
+                    /* eslint-disable */
+                    if (typeof window['ga'] !== 'undefined') {
+                        window['ga']('tubia.send', {
+                            hitType: 'event',
+                            eventCategory: 'AD',
+                            eventAction: 'IMPRESSION',
+                        });
+                    }
+                    /* eslint-enable */
+                } catch (error) {
+                    this.player.debug.log('Ads error', error);
+                }
                 dispatchEvent('impression');
                 break;
 

@@ -18,6 +18,7 @@
     },
     "dependencies": {
         "es6-promise": "^4.2.2",
+        "rangetouch": "^1.0.5",
         "whatwg-fetch": "^2.0.3"
     },
     "devDependencies": {
