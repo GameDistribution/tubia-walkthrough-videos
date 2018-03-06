@@ -144,6 +144,8 @@ class Tubia {
             // Todo: check if we dont want to use a tubia url.
             // Todo: verify if tubia cdn urls are ssl ready.
             // Todo: make sure to disable ads if enableAds is false. Also for addFreeActive :P
+
+            // Todo: The SSL certificate used to load resources from https://cdn.walkthrough.vooxe.com will be distrusted in M70. Once distrusted, users will be prevented from loading these resources. See https://g.co/chrome/symantecpkicerts for more information.
             videoSearchPromise.then((id) => {
                 const gameId = (!id) ? this.options.gameId : id;
                 const videoDataUrl = `https://walkthrough.gamedistribution.com/api/player/publish/?gameid=${gameId.replace(/-/g, '')}&publisherid=${this.options.publisherId.replace(/-/g, '')}&domain=${this.options.domain}`;
@@ -179,8 +181,6 @@ class Tubia {
                 return;
             }
 
-            console.log('Tubia video data:', json);
-
             // Todo: Make sure our poster and source url's uses https. Currently getting http from database.
             const poster = (json.pictures && json.pictures.length > 0) ? json.pictures[json.pictures.length - 1].link : '';
             const posterUrl = poster.replace(/^http:\/\//i, 'https://');
@@ -203,8 +203,6 @@ class Tubia {
             videoSource.src = sourceUrl;
             videoSource.type = sourceType;
 
-            console.log('Tubia video:', videoSource.src);
-
             const container = document.getElementById(this.options.container);
             container.style.opacity = '0';
             if (container) {
@@ -226,18 +224,11 @@ class Tubia {
             }
 
             // Create the video player.
-            // this.adTag = `https://pubads.g.doubleclick.net/gampad/ads?sz=640x360&iu=/8034/Test_bgames&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&url=${encodeURIComponent(window.location.origin)}&description_url=${encodeURIComponent(window.location.href)}&correlator=${Date.now()}`;
-            console.log(this.adTag);
             const controls = [
                 'logo',
                 'playlist',
-                // 'share',
                 'play-large',
                 'title',
-                // 'play',
-                // 'restart',
-                // 'rewind',
-                // 'forward',
                 'progress',
                 'current-time',
                 'duration',
@@ -246,7 +237,7 @@ class Tubia {
             ];
             const playlist = {
                 active: false,
-                data: json.cuepoints, // Todo: order of cue's from API is not correct.
+                data: (json.cuepoints && json.cuepoints.length > 0) ? json.cuepoints : [],
             };
 
             // We don't want certain options when our view is too small.
@@ -257,7 +248,7 @@ class Tubia {
                 controls.push('pip');
                 controls.push('airplay');
 
-                playlist.active = true;
+                playlist.active = (json.cuepoints && json.cuepoints.length > 0);
             }
 
             // Create the Plyr instance.

@@ -97,7 +97,7 @@ const ui = {
         // Set a small delay or out on ready event attached to the plyr instance is not triggered
         setTimeout(() => {
             utils.dispatchEvent.call(this, this.media, 'ready');
-        }, 50);
+        }, 0);
     },
 
     // Setup the color theme
