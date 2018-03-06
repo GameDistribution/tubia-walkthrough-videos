@@ -4,8 +4,8 @@
 
 // Nicer focus styles
 // ---------------------------------------
-@mixin plyr-tab-focus($color: $plyr-tab-focus-default-color) {
-    box-shadow: 0 0 0 3px rgba($color, 0.35);
+@mixin plyr-tab-focus() {
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.15);
     outline: 0;
 }
 
@@ -26,9 +26,12 @@
 @mixin plyr-range-track() {
     background: transparent;
     border: 0;
-    border-radius: ($plyr-range-track-height / 2);
+    border-radius: 0;
     height: $plyr-range-track-height;
-    transition: all 0.3s ease;
+    transform: scaleY(0.6);
+    transform-origin: center;
+    transition: all 0.2s ease, transform 0.1s cubic-bezier(0.4, 0.0, 1, 1);
+    will-change: transform;
     user-select: none;
 }
 
@@ -40,7 +43,10 @@
     box-sizing: border-box;
     height: $plyr-range-thumb-height;
     position: relative;
-    transition: all 0.2s ease;
+    transform: scale(0);
+    transform-origin: center;
+    transition: all 0.2s ease, transform 0.1s cubic-bezier(0.4, 0.0, 1, 1);
+    will-change: transform;
     width: $plyr-range-thumb-height;
 }
 

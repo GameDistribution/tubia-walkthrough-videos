@@ -10,19 +10,38 @@
     font-family: $plyr-font-family;
     font-weight: $plyr-font-weight-regular;
     line-height: $plyr-line-height;
+    letter-spacing: $plyr-letter-spacing;
     max-width: 100%;
     min-width: 200px;
     position: relative;
     text-shadow: none;
     transition: box-shadow 0.3s ease;
 
+    &:before {
+        display: block;
+        content: "";
+        width: 100%;
+        padding-top: (9 / 16) * 100%;
+    }
+
+    > .plyr__video-wrapper {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        text-align: center;
+    }
+
     // Media elements
     video,
     audio {
+        width: auto;
+        height: 100%;
         border-radius: inherit;
-        height: auto;
+        // height: auto;
         vertical-align: middle;
-        width: 100%;
+        // width: 100%;
     }
 
     // Ignore focus

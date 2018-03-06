@@ -1,15 +1,15 @@
 .plyr__playlist {
-    display: none;
     position: absolute;
-    z-index: 1;
+    z-index: 0;
     top: 0;
     right: 0;
     height: 100%;
-    width: 33.3%;
-    min-width: 200px;
-    background: rgba(0, 0, 0, 0.8);
-    border-radius: 0 8px 8px 0;
+    width: 30%;
+    min-width: 150px;
+    overflow: hidden;
+    visibility: hidden;
     &:after {
+        opacity: 0;
         content: '';
         position: absolute;
         z-index: 3;
@@ -18,7 +18,7 @@
         width: 100%;
         height: 80px;
         background: linear-gradient(0deg, rgba(0, 0, 0, 0.8) 50%, rgba(0, 0, 0, 0));
-        border-radius: inherit;
+        transition: opacity 0s ease;
     }
     ul {
         position: absolute;
@@ -30,6 +30,10 @@
         margin: 0;
         overflow-y: auto;
         border-radius: inherit;
+        background: rgba(0, 0, 0, 0.8);
+        will-change: transform;
+        transform: translateX(100%);
+        transition: opacity 0s ease;
         li {
             display: flex;
             align-items: center;
@@ -37,29 +41,53 @@
             margin: 0;
             text-align: left;
             cursor: pointer;
-            border-bottom: 3px solid #000;
+            border-bottom: 3px solid $plyr-video-controls-bg;
+            color: $plyr-video-control-color;
+            &:first-of-type {
+                margin-top: 35px;
+            }
             &:last-of-type {
                 margin-bottom: 60px;
             }
-            &.active {
-                .plyr-count {
-                    background-color: #363636;
-                    color: #04f3ee;
+            &:hover {
+                .plyr__count {
+                    color: $plyr-video-control-color-hover;
+                    border-color: $plyr-video-control-color-hover;
                 }
-                .plyr-title {
-                    color: #fff;
+                .plyr__title {
+                    color: $plyr-video-control-color-hover;
+                }
+            }
+            &:active {
+                .plyr__count {
+                    color: $plyr-video-control-color-hover;
+                    border-color: $plyr-color-main;
+                }
+            }
+            &.active {
+                .plyr__count {
+                    background-color: $plyr-color-main;
+                    border-color: $plyr-color-main;
+                    color: $plyr-video-control-color;
+                }
+                .plyr__title {
+                    color: $plyr-video-control-color-hover;
                 }
             }
         }
     }
+    span {
+        transition: all 0.15s cubic-bezier(0.4, 0.0, 1, 1);
+        font-weight: $plyr-font-weight-bold;
+        font-size: $plyr-font-size-large;
+        color: currentColor;
+    }
     .plyr__count {
         margin: 20px 15px 20px 20px;
-        padding: 5px;
-        color: #beedf5;
-        border: 1px solid #9d9ea2;
-        font-size: 14px;
-        font-weight: bold;
+        padding: 5px 5px 2px;
+        border: 1px solid rgba(255, 255, 255, 0.5);
         line-height: 100%;
+        border-radius: 1px;
     }
     .plyr__title {
         display: block;
@@ -67,12 +95,26 @@
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
-        color: #a8a7a5;
         margin-right: 15px;
         text-transform: uppercase;
-        font-weight: bold;
-        font-size: 14px;
-        border-bottom: 1px solid #a8a7a5;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.5);
         padding-bottom: 3px;
+        padding-left: 0;
+        line-height: 90%;
     }
 }
+
+.plyr--playlist-active {
+    .plyr__playlist {
+        visibility: visible;
+        &:after {
+            opacity: 1;
+            transition: opacity 2s ease;
+        }
+    }
+    .plyr__playlist ul {
+        transform: translateX(0);
+        transition: transform 0.1s cubic-bezier(0.4, 0.0, 1, 1);
+    }
+}
+

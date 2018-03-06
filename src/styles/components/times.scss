@@ -4,6 +4,7 @@
 
 .plyr__time {
     font-size: $plyr-font-size-time;
+    padding: 0 $plyr-control-padding;
 }
 
 // Media duration hidden on small screens
@@ -17,8 +18,4 @@
     @media (max-width: $plyr-bp-sm-max) {
         display: none;
     }
-}
-
-.plyr--video .plyr__time {
-    text-shadow: 0 1px 1px rgba(#000, 0.15);
 }

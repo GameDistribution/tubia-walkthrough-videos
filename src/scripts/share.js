@@ -1,7 +1,13 @@
 // ==========================================================================
-// Useful functions
+// Plyr Share
 // ==========================================================================
 
-@function to-percentage($input) {
-    @return $input * 1%;
-}
+const share = {
+    // Setup share panel
+    setup() {
+
+        return false;
+    },
+};
+
+export default share;

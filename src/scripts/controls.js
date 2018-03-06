@@ -6,6 +6,7 @@ import support from './support';
 import utils from './utils';
 import ui from './ui';
 import captions from './captions';
+import playlist from './playlist';
 
 // Sniff out the browser
 const browser = utils.getBrowser();
@@ -183,13 +184,48 @@ const controls = {
             case 'play-large':
                 attributes.class += ` ${this.config.classNames.control}--overlaid`;
                 type = 'play';
+                toggle = true;
                 label = 'play';
+                labelPressed = 'pause';
                 icon = 'play';
+                iconPressed = 'pause';
+                break;
+
+            case 'share':
+                toggle = true;
+                label = 'shareOpen';
+                labelPressed = 'shareClose';
+                icon = 'share';
+                iconPressed = 'close';
+                break;
+
+            case 'playlist':
+                toggle = true;
+                label = 'playlistOpen';
+                labelPressed = 'playlistClose';
+                icon = 'playlist';
+                iconPressed = 'close';
                 break;
 
             default:
                 label = type;
                 icon = type;
+        }
+
+        if (buttonType === 'play-large') {
+            const hexagonContainer = utils.createElement('div');
+            const hexagon = utils.createElement('div');
+            hexagonContainer.appendChild(hexagon);
+            hexagon.appendChild(controls.createIcon.call(this, 'hexagon'));
+            hexagon.appendChild(controls.createIcon.call(this, 'hexagon'));
+            const hexagons = utils.createElement('div');
+            hexagon.appendChild(hexagons);
+            hexagons.appendChild(controls.createIcon.call(this, 'hexagon'));
+            hexagons.appendChild(controls.createIcon.call(this, 'hexagon'));
+            hexagons.appendChild(controls.createIcon.call(this, 'hexagon'));
+            hexagons.appendChild(controls.createIcon.call(this, 'hexagon'));
+
+            button.appendChild(hexagonContainer);
         }
 
         // Setup toggle icon and labels
@@ -216,6 +252,17 @@ const controls = {
         utils.setAttributes(button, attributes);
 
         this.elements.buttons[type] = button;
+
+        // We have multiple play buttons
+        if (type === 'play') {
+            if (!utils.is.array(this.elements.buttons[type])) {
+                this.elements.buttons[type] = [];
+            }
+
+            this.elements.buttons[type].push(button);
+        } else {
+            this.elements.buttons[type] = button;
+        }
 
         return button;
     },
@@ -324,6 +371,29 @@ const controls = {
         return container;
     },
 
+    // Create logo
+    createLogo() {
+        const container = utils.createElement('a', {
+            href: 'https://tubia.com/',
+            target: '_blank',
+            class: 'plyr__logo',
+        });
+
+        container.appendChild(controls.createIcon.call(this, 'logo'));
+
+        return container;
+    },
+
+    // Create title
+    createTitle() {
+        const container = utils.createElement('span', {
+            class: 'plyr__title',
+        });
+        container.innerText = this.config.title;
+
+        return container;
+    },
+
     // Create a settings menu item
     createMenuItem(value, list, type, title, badge = null, checked = false) {
         const item = utils.createElement('li');
@@ -413,6 +483,12 @@ const controls = {
 
         utils.toggleHidden(tab, !toggle);
         utils.toggleHidden(pane, !toggle);
+    },
+
+    // Hide/show the playlist
+    togglePlaylist(setting, toggle) {
+        const tab = this.elements.controls.playlist[setting];
+        utils.toggleHidden(tab, !toggle);
     },
 
     // Set the YouTube quality menu
@@ -845,11 +921,11 @@ const controls = {
                 container.style.height = '';
 
                 // Only listen once
-                utils.off(container, utils.transitionEnd, restore);
+                utils.off(container, utils.transitionEndEvent, restore);
             };
 
             // Listen for the transition finishing and restore auto height/width
-            utils.on(container, utils.transitionEnd, restore);
+            utils.on(container, utils.transitionEndEvent, restore);
 
             // Set dimensions to target
             container.style.width = `${size.width}px`;
@@ -869,6 +945,87 @@ const controls = {
         pane.querySelectorAll('button:not(:disabled), input:not(:disabled), [tabindex]')[0].focus();
     },
 
+    // Show playlist
+    setPlaylist() {
+        const type = 'playlist';
+        const list = this.elements.controls.playlist.querySelector('ul');
+
+        // Toggle the playlist
+        const hasItems = playlist.getData.call(this).length;
+        controls.togglePlaylist.call(this, type, hasItems);
+
+        // Empty the menu
+        utils.emptyElement(list);
+
+        // If there's no captions, bail
+        if (!hasItems) {
+            return;
+        }
+
+        // Re-map the tracks into just the data we need
+        const tracks = playlist.getData.call(this).map(track => ({
+            level: track.name,
+            cue: track.cuePoint / 1000,
+        }));
+
+        // Generate options
+        tracks.forEach((track, index) => {
+            const counter = index + 1;
+            let itemNumber = 0;
+            if (counter.toString().length === 1) {
+                itemNumber = `0${counter}`;
+            } else {
+                itemNumber = counter;
+            }
+            controls.createPlaylistItem.call(
+                this,
+                track.cue,
+                list,
+                type,
+                track.level,
+                itemNumber,
+            );
+        });
+    },
+
+    // Create a settings menu item
+    createPlaylistItem(cue, list, type, title, counter) {
+        const label = utils.createElement('span', {
+            class: 'plyr__title',
+        });
+        const count = utils.createElement('span', {
+            class: 'plyr__count',
+        });
+        const backgroundPositions = [
+            'left',
+            'top',
+            'right',
+            'bottom',
+            'center',
+        ];
+        const item = utils.createElement('li', {
+            class: (counter === '01') ? 'active' : '',
+        });
+
+        // Jump to the time we want.
+        utils.on(item, 'click', () => {
+            // Todo: we want to set the current active class based on seekTime.
+            this.jumpTo(cue);
+        });
+
+        item.style.backgroundImage = `url("data:image/svg+xml;base64, PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxMCcgaGVpZ2h0PScxMCc+DQogIDxyZWN0IHdpZHRoPScxMCcgaGVpZ2h0PScxMCcgZmlsbD0nIzAwMCcgZmlsbC1vcGFjaXR5PSIwLjYiIC8+DQogIDxyZWN0IHg9JzAnIHk9JzAnIHdpZHRoPSc1JyBoZWlnaHQ9JzUnIGZpbGw9JyMwMDAnIGZpbGwtb3BhY2l0eT0iMSIgLz4NCjwvc3ZnPg=="), url(${this.elements.original.poster})`;
+        item.style.backgroundSize = `2px, ${Math.floor(Math.random() * 300) + 100}%`;
+        item.style.backgroundPosition = `center, ${backgroundPositions[Math.floor(Math.random() * backgroundPositions.length)]}`;
+        item.style.backgroundRepeat = 'repeat, no-repeat';
+
+        label.insertAdjacentHTML('beforeend', title);
+        count.insertAdjacentHTML('beforeend', counter);
+
+        item.appendChild(count);
+        item.appendChild(label);
+        list.appendChild(item);
+    },
+
     // Build the default HTML
     // TODO: Set order based on order in the config.controls array?
     create(data) {
@@ -880,14 +1037,30 @@ const controls = {
         // Create the container
         const container = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.wrapper));
         const containerTop = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.top));
+        const containerMiddle = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.middle));
         const containerBottom = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.bottom));
-        const containerLeft = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.left));
-        const containerRight = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.right));
-
         container.appendChild(containerTop);
-        containerBottom.appendChild(containerLeft);
-        containerBottom.appendChild(containerRight);
+        container.appendChild(containerMiddle);
         container.appendChild(containerBottom);
+
+        const containerTopLeft = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.left));
+        const containerTopCenter = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.center));
+        const containerTopRight = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.right));
+        containerTop.appendChild(containerTopLeft);
+        containerTop.appendChild(containerTopCenter);
+        containerTop.appendChild(containerTopRight);
+
+        const containerMiddleLeft = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.left));
+        const containerMiddleCenter = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.center));
+        const containerMiddleRight = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.right));
+        containerMiddle.appendChild(containerMiddleLeft);
+        containerMiddle.appendChild(containerMiddleCenter);
+        containerMiddle.appendChild(containerMiddleRight);
+
+        const containerBottomLeft = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.left));
+        const containerBottomRight = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.right));
+        containerBottom.appendChild(containerBottomLeft);
+        containerBottom.appendChild(containerBottomRight);
 
         // Progress
         if (this.config.controls.includes('progress')) {
@@ -921,33 +1094,58 @@ const controls = {
             }
 
             this.elements.progress = progress;
-            containerTop.appendChild(this.elements.progress);
+            container.appendChild(this.elements.progress);
+        }
+
+        // Show a logo
+        if (this.config.controls.includes('logo')) {
+            containerTopLeft.appendChild(controls.createLogo.call(this, 'logo'));
+        }
+
+        // Video title
+        if (this.config.controls.includes('title')) {
+            containerTopCenter.appendChild(controls.createTitle.call(this, 'title'));
+        }
+
+        // Share button
+        if (this.config.controls.includes('share')) {
+            containerTopRight.appendChild(controls.createButton.call(this, 'share'));
+        }
+
+        // Playlist button
+        if (this.config.controls.includes('playlist')) {
+            containerTopRight.appendChild(controls.createButton.call(this, 'playlist'));
+        }
+
+        // Media current time display
+        if (this.config.controls.includes('current-time')) {
+            containerBottomLeft.appendChild(controls.createTime.call(this, 'currentTime'));
         }
 
         // Restart button
         if (this.config.controls.includes('restart')) {
-            containerLeft.appendChild(controls.createButton.call(this, 'restart'));
+            containerBottomLeft.appendChild(controls.createButton.call(this, 'restart'));
         }
 
         // Rewind button
         if (this.config.controls.includes('rewind')) {
-            containerLeft.appendChild(controls.createButton.call(this, 'rewind'));
+            containerMiddleLeft.appendChild(controls.createButton.call(this, 'rewind'));
+        }
+
+        // Forward button
+        if (this.config.controls.includes('forward')) {
+            containerMiddleRight.appendChild(controls.createButton.call(this, 'forward'));
         }
 
         // Play/Pause button
         if (this.config.controls.includes('play')) {
-            containerLeft.appendChild(controls.createButton.call(this, 'play'));
-            // containerLeft.appendChild(controls.createButton.call(this, 'pause'));
-        }
-
-        // Fast forward button
-        if (this.config.controls.includes('fast-forward')) {
-            containerLeft.appendChild(controls.createButton.call(this, 'fast-forward'));
+            containerBottomLeft.appendChild(controls.createButton.call(this, 'play'));
+            // containerBottomLeft.appendChild(controls.createButton.call(this, 'pause'));
         }
 
         // Toggle mute button
         if (this.config.controls.includes('mute')) {
-            containerLeft.appendChild(controls.createButton.call(this, 'mute'));
+            containerBottomLeft.appendChild(controls.createButton.call(this, 'mute'));
         }
 
         // Volume range control
@@ -976,22 +1174,17 @@ const controls = {
 
             this.elements.volume = volume;
 
-            containerLeft.appendChild(volume);
-        }
-
-        // Media current time display
-        if (this.config.controls.includes('current-time')) {
-            containerLeft.appendChild(controls.createTime.call(this, 'currentTime'));
+            containerBottomLeft.appendChild(volume);
         }
 
         // Media duration display
         if (this.config.controls.includes('duration')) {
-            containerLeft.appendChild(controls.createTime.call(this, 'duration'));
+            containerBottomRight.appendChild(controls.createTime.call(this, 'duration'));
         }
 
         // Toggle captions button
         if (this.config.controls.includes('captions')) {
-            containerRight.appendChild(controls.createButton.call(this, 'captions'));
+            containerBottomRight.appendChild(controls.createButton.call(this, 'captions'));
         }
 
         // Settings button / menu
@@ -1104,7 +1297,7 @@ const controls = {
 
             form.appendChild(inner);
             menu.appendChild(form);
-            containerRight.appendChild(menu);
+            containerBottomRight.appendChild(menu);
 
             this.elements.settings.form = form;
             this.elements.settings.menu = menu;
@@ -1112,25 +1305,28 @@ const controls = {
 
         // Picture in picture button
         if (this.config.controls.includes('pip') && support.pip) {
-            containerRight.appendChild(controls.createButton.call(this, 'pip'));
+            containerBottomRight.appendChild(controls.createButton.call(this, 'pip'));
         }
 
         // Airplay button
         if (this.config.controls.includes('airplay') && support.airplay) {
-            containerRight.appendChild(controls.createButton.call(this, 'airplay'));
+            containerBottomRight.appendChild(controls.createButton.call(this, 'airplay'));
         }
 
         // Toggle fullscreen button
         if (this.config.controls.includes('fullscreen')) {
-            containerRight.appendChild(controls.createButton.call(this, 'fullscreen'));
+            containerBottomRight.appendChild(controls.createButton.call(this, 'fullscreen'));
         }
 
         // Larger overlaid play button
         if (this.config.controls.includes('play-large')) {
-            this.elements.container.appendChild(controls.createButton.call(this, 'play-large'));
+            containerMiddle.appendChild(controls.createButton.call(this, 'play-large'));
         }
 
         this.elements.controls = container;
+        this.elements.controls.top = containerTop;
+        this.elements.controls.middle = containerMiddle;
+        this.elements.controls.bottom = containerBottom;
 
         if (this.config.controls.includes('settings') && this.config.settings.includes('speed')) {
             controls.setSpeedMenu.call(this);
@@ -1156,9 +1352,10 @@ const controls = {
 
         // Null by default
         let container = null;
+        this.elements.controls = null;
 
-        // HTML passed as the option
-        if (utils.is.string(this.config.controls)) {
+        // HTML or Element passed as the option
+        if (utils.is.string(this.config.controls) || utils.is.element(this.config.controls)) {
             container = this.config.controls;
         } else if (utils.is.function(this.config.controls)) {
             // A custom function to build controls
@@ -1202,7 +1399,7 @@ const controls = {
         }
 
         // Find the elements if need be
-        if (utils.is.element(this.elements.controls)) {
+        if (!utils.is.element(this.elements.controls)) {
             utils.findElements.call(this);
         }
 

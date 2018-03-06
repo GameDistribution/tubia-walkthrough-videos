@@ -13,7 +13,7 @@ $plyr-range-thumb-shadow: 0 1px 1px rgba($plyr-video-controls-bg, 0.15), 0 0 0 1
 
 // Track
 $plyr-range-track-height: 6px !default;
-$plyr-range-max-height: ($plyr-range-thumb-active-shadow-width * 2) + $plyr-range-thumb-height !default;
+$plyr-range-max-height: ($plyr-range-thumb-active-shadow-width * 10) + $plyr-range-thumb-height !default;
 
 // Fill
 $plyr-range-fill-bg: $plyr-color-main !default;

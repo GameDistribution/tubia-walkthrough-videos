@@ -1,6 +1,6 @@
 // ==========================================================================
 // Plyr
-// plyr.js v3.0.0-beta.2
+// plyr.js v3.0.0-beta.6
 // https://github.com/sampotts/plyr
 // License: The MIT License (MIT)
 // ==========================================================================
@@ -11,12 +11,12 @@ import support from './support';
 import utils from './utils';
 
 import Console from './console';
+import Fullscreen from './fullscreen';
 import Storage from './storage';
 import Ads from './plugins/ads';
 
 import captions from './captions';
 import controls from './controls';
-import fullscreen from './fullscreen';
 import listeners from './listeners';
 import media from './media';
 import source from './source';
@@ -25,12 +25,6 @@ import ui from './ui';
 // Private properties
 // TODO: Use a WeakMap for private globals
 // const globals = new WeakMap();
-
-// Globals
-let scrollPosition = {
-    x: 0,
-    y: 0,
-};
 
 // Plyr instance
 class Plyr {
@@ -96,6 +90,16 @@ class Plyr {
             active: false,
         };
 
+        // Playlist
+        this.playlist = {
+            active: null,
+        };
+
+        // Playlist
+        this.share = {
+            active: null,
+        };
+
         // Options
         this.options = {
             speed: [],
@@ -153,50 +157,53 @@ class Plyr {
                 // Find the frame
                 iframe = this.media.querySelector('iframe');
 
-                // <iframe> required
-                if (!utils.is.element(iframe)) {
-                    this.debug.error('Setup failed: <iframe> is missing');
-                    return;
+                // <iframe> type
+                if (utils.is.element(iframe)) {
+                    // Detect provider
+                    url = iframe.getAttribute('src');
+                    this.provider = utils.getProviderByUrl(url);
+
+                    // Rework elements
+                    this.elements.container = this.media;
+                    this.media = iframe;
+
+                    // Reset classname
+                    this.elements.container.className = '';
+
+                    // Get attributes from URL and set config
+                    params = utils.getUrlParams(url);
+                    if (!utils.is.empty(params)) {
+                        const truthy = [
+                            '1',
+                            'true',
+                        ];
+
+                        if (truthy.includes(params.autoplay)) {
+                            this.config.autoplay = true;
+                        }
+                        if (truthy.includes(params.playsinline)) {
+                            this.config.inline = true;
+                        }
+                        if (truthy.includes(params.loop)) {
+                            this.config.loop.active = true;
+                        }
+                    }
+                } else {
+                    // <div> with attributes
+                    this.provider = this.media.getAttribute(this.config.attributes.embed.provider);
+
+                    // Remove attribute
+                    this.media.removeAttribute(this.config.attributes.embed.provider);
                 }
 
-                // Audio will come later for external providers
-                this.type = types.video;
-
-                // Detect provider
-                url = iframe.getAttribute('src');
-                this.provider = utils.getProviderByUrl(url);
-
-                // Get attributes from URL and set config
-                params = utils.getUrlParams(url);
-                if (!utils.is.empty(params)) {
-                    const truthy = [
-                        '1',
-                        'true',
-                    ];
-
-                    if (truthy.includes(params.autoplay)) {
-                        this.config.autoplay = true;
-                    }
-                    if (truthy.includes(params.playsinline)) {
-                        this.config.inline = true;
-                    }
-                    if (truthy.includes(params.loop)) {
-                        this.config.loop.active = true;
-                    }
-                }
-
-                // Unsupported provider
+                // Unsupported or missing provider
                 if (utils.is.empty(this.provider) || !Object.keys(providers).includes(this.provider)) {
                     this.debug.error('Setup failed: Invalid provider');
                     return;
                 }
 
-                // Rework elements
-                this.elements.container = this.media;
-                this.media = iframe;
-
-                // Reset classname
-                this.elements.container.className = '';
+                // Audio will come later for external providers
+                this.type = types.video;
 
                 break;
 
@@ -229,9 +236,6 @@ class Plyr {
                 return;
         }
 
-        // Setup local storage for user settings
-        this.storage = new Storage(this);
-
         // Check for support again but with type
         this.supported = support.check(this.type, this.provider, this.config.inline);
 
@@ -240,6 +244,9 @@ class Plyr {
             this.debug.error('Setup failed: no support');
             return;
         }
+
+        // Setup local storage for user settings
+        this.storage = new Storage(this);
 
         // Store reference
         this.media.plyr = this;
@@ -275,6 +282,9 @@ class Plyr {
             ui.build.call(this);
         }
 
+        // Setup fullscreen
+        this.fullscreen = new Fullscreen(this);
+
         // Setup ads if provided
         this.ads = new Ads(this);
     }
@@ -306,10 +316,18 @@ class Plyr {
     }
 
     /**
-     * Play the media
+     * Play the media, or play the advertisement (if they are not blocked)
      */
     play() {
-        return this.media.play();
+        if (this.ads.enabled && !this.ads.initialized && !this.ads.blocked) {
+            this.ads.managerPromise.then(() => {
+                this.ads.play();
+            }).catch(() => {
+                this.media.play();
+            });
+        } else {
+            this.media.play();
+        }
     }
 
     /**
@@ -383,11 +401,19 @@ class Plyr {
     }
 
     /**
-     * Fast forward
-     * @param {number} seekTime - how far to fast forward in seconds. Defaults to the config.seekTime
+     * Forward
+     * @param {number} seekTime - how far to forward in seconds. Defaults to the config.seekTime
      */
     forward(seekTime) {
         this.currentTime = this.currentTime + (utils.is.number(seekTime) ? seekTime : this.config.seekTime);
+    }
+
+    /**
+     * Jump
+     * @param {number} seekTime - where to jump to in seconds. Defaults to the config.seekTime
+     */
+    jumpTo(seekTime) {
+        this.currentTime = (utils.is.number(seekTime) ? seekTime : this.config.seekTime);
     }
 
     /**
@@ -837,59 +863,65 @@ class Plyr {
     }
 
     /**
-     * Toggle fullscreen playback
-     * Requires user input event
-     * @param {event} event
+     * Toggle playlist
+     * @param {boolean} input - Whether to enable playlist
      */
-    toggleFullscreen(event) {
-        // Video only
-        if (this.isAudio) {
+    togglePlaylist(input) {
+        // If there's no full support, or there's no caption toggle
+        if (!this.supported.ui || !utils.is.element(this.elements.buttons.playlist)) {
             return;
         }
 
-        // Check for native support
-        if (fullscreen.enabled) {
-            if (utils.is.event(event) && event.type === fullscreen.eventType) {
-                // If it's a fullscreen change event, update the state
-                this.fullscreen.active = fullscreen.isFullScreen(this.elements.container);
-            } else {
-                // Else it's a user request to enter or exit
-                if (!this.fullscreen.active) {
-                    fullscreen.requestFullScreen(this.elements.container);
-                } else {
-                    fullscreen.cancelFullScreen();
-                }
+        // If the method is called without parameter, toggle based on current value
+        const show = utils.is.boolean(input) ? input : this.elements.container.className.indexOf(this.config.classNames.playlist.active) === -1;
 
-                return;
-            }
-        } else {
-            // Otherwise, it's a simple toggle
-            this.fullscreen.active = !this.fullscreen.active;
-
-            // Add class hook
-            utils.toggleClass(this.elements.container, this.config.classNames.fullscreen.fallback, this.fullscreen.active);
-
-            // Make sure we don't lose scroll position
-            if (this.fullscreen.active) {
-                scrollPosition = {
-                    x: window.pageXOffset || 0,
-                    y: window.pageYOffset || 0,
-                };
-            } else {
-                window.scrollTo(scrollPosition.x, scrollPosition.y);
-            }
-
-            // Bind/unbind escape key
-            document.body.style.overflow = this.fullscreen.active ? 'hidden' : '';
+        // Nothing to change...
+        if (this.playlist.active === show) {
+            return;
         }
 
-        // Set button state
-        if (utils.is.element(this.elements.buttons.fullscreen)) {
-            utils.toggleState(this.elements.buttons.fullscreen, this.fullscreen.active);
-        }
+        // Set global
+        this.playlist.active = show;
+
+        // Toggle state
+        utils.toggleState(this.elements.buttons.playlist, this.playlist.active);
+
+        // Add class hook
+        utils.toggleClass(this.elements.container, this.config.classNames.playlist.active, this.playlist.active);
 
         // Trigger an event
-        utils.dispatchEvent.call(this, this.media, this.fullscreen.active ? 'enterfullscreen' : 'exitfullscreen');
+        utils.dispatchEvent.call(this, this.media, this.playlist.active ? 'playlistenabled' : 'playlistdisabled');
+    }
+
+    /**
+     * Toggle share
+     * @param {boolean} input - Whether to enable sharing
+     */
+    toggleShare(input) {
+        // If there's no full support, or there's no caption toggle
+        if (!this.supported.ui || !utils.is.element(this.elements.buttons.share)) {
+            return;
+        }
+
+        // If the method is called without parameter, toggle based on current value
+        const show = utils.is.boolean(input) ? input : this.elements.container.className.indexOf(this.config.classNames.share.active) === -1;
+
+        // Nothing to change...
+        if (this.share.active === show) {
+            return;
+        }
+
+        // Set global
+        this.share.active = show;
+
+        // Toggle state
+        utils.toggleState(this.elements.buttons.share, this.share.active);
+
+        // Add class hook
+        utils.toggleClass(this.elements.container, this.config.classNames.share.active, this.share.active);
+
+        // Trigger an event
+        utils.dispatchEvent.call(this, this.media, this.share.active ? 'shareenabled' : 'sharedisabled');
     }
 
     /**
@@ -1087,12 +1119,8 @@ class Plyr {
             // If it's a soft destroy, make minimal changes
             if (soft) {
                 if (Object.keys(this.elements).length) {
-                    // Remove buttons
-                    if (this.elements.buttons && this.elements.buttons.play) {
-                        Array.from(this.elements.buttons.play).forEach(button => utils.removeElement(button));
-                    }
-
-                    // Remove others
+                    // Remove elements
+                    utils.removeElement(this.elements.buttons.play);
                     utils.removeElement(this.elements.captions);
                     utils.removeElement(this.elements.controls);
                     utils.removeElement(this.elements.wrapper);

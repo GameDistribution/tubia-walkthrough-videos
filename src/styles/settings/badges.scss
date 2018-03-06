@@ -1,7 +1,6 @@
 // ==========================================================================
-// Useful functions
+// Badges
 // ==========================================================================
 
-@function to-percentage($input) {
-    @return $input * 1%;
-}
+$plyr-badge-bg: $plyr-color-fiord !default;
+$plyr-badge-color: #fff !default;

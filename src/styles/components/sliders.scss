@@ -7,15 +7,14 @@
     -webkit-appearance: none; /* stylelint-disable-line */
     background: transparent;
     border: 0;
-    border-radius: ($plyr-range-thumb-height * 2);
+    border-radius: 0;
     // color is used in JS to populate lower fill for WebKit
-    color: $plyr-range-fill-bg;
     display: block;
-    height: $plyr-range-max-height;
+    color: $plyr-range-fill-bg;
     margin: 0;
-    padding: 0;
-    transition: box-shadow 0.3s ease;
-    width: 100%;
+    // will-change: box-shadow;
+    // transition: box-shadow 0.3s ease;
+    cursor: pointer;
 
     &::-webkit-slider-runnable-track {
         @include plyr-range-track();
@@ -39,7 +38,7 @@
 
     &::-moz-range-progress {
         background: currentColor;
-        border-radius: ($plyr-range-track-height / 2);
+        border-radius: 0;
         height: $plyr-range-track-height;
     }
 
@@ -105,6 +104,48 @@
         &::-ms-thumb {
             @include plyr-range-thumb-active();
         }
+    }
+}
+
+// Progress bar specific
+.plyr--full-ui .plyr__progress input[type='range'] {
+    &::-webkit-slider-runnable-track {
+        transform-origin: bottom;
+    }
+
+    &::-moz-range-track {
+        transform-origin: bottom;
+    }
+
+    &::-ms-track {
+        transform-origin: bottom;
+    }
+}
+
+// Hover styles
+.plyr--full-ui input[type='range']:hover {
+    &::-webkit-slider-runnable-track {
+        transform: scaleY(1);
+    }
+
+    &::-moz-range-track {
+        transform: scaleY(1);
+    }
+
+    &::-ms-track {
+        transform: scaleY(1);
+    }
+
+    &::-webkit-slider-thumb {
+        transform: scale(1);
+    }
+
+    &::-moz-range-thumb {
+        transform: scale(1);
+    }
+
+    &::-ms-thumb {
+        transform: scale(1);
     }
 }
 

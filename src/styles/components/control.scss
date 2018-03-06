@@ -5,14 +5,13 @@
 .plyr__control {
     background: transparent;
     border: 0;
-    border-radius: $plyr-control-radius;
     color: inherit;
     cursor: pointer;
     flex-shrink: 0;
     overflow: visible; // IE11
     padding: $plyr-control-padding;
     position: relative;
-    transition: all 0.3s ease;
+    transition: all 0.15s cubic-bezier(0.4, 0.0, 1, 1);
 
     svg {
         display: block;
@@ -55,76 +54,178 @@
 .plyr__control--overlaid {
     display: none;
     position: absolute;
-    z-index: 2;
-    top: 50%;
-    left: 50%;
-    transform: scale(1) translate(-50%, -50%);
-    cursor: pointer;
+    z-index: 0;
+    left: 0;
+    top: 0;
     outline: 0;
-    border-top: 0;
-    border-bottom: 0;
-    will-change: transform;
-    transition: all 0.2s ease;
-    transform-origin: 0;
+    border: 0;
 
-    &:hover {
-        transform: scale(1.05) translate(-50%, -50%);
-    }
-    &:active {
-        transform: scale(1.1) translate(-50%, -50%);
-    }
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
 
-    // http://csshexagon.com/
-    width: 90px;
-    height: 51.96px;
-    background-color: $plyr-video-control-bg-hover;
-    border-left: solid 8px $plyr-audio-control-bg-hover;
-    border-right: solid 8px $plyr-audio-control-bg-hover;
+    // Remove tap highlight.
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
 
-    &:before,
-    &:after {
-        content: "";
+    > div {
         position: absolute;
-        z-index: 1;
-        width: 63.64px;
-        height: 63.64px;
-        -webkit-transform: scaleY(0.5774) rotate(-45deg);
-        -ms-transform: scaleY(0.5774) rotate(-45deg);
-        transform: scaleY(0.5774) rotate(-45deg);
-        background-color: inherit;
-        left: 5.1802px;
+        top: 50%;
+        left: 50%;
+        cursor: pointer;
+
+        transform: scale(0.95) translate(-50%, -50%);
+        will-change: transform;
+        transition: all 0.1s cubic-bezier(0.4, 0.0, 1, 1);
+        transform-origin: 0;
+
+        &:hover {
+            // ...
+        }
+        &:active {
+            // ...
+        }
     }
 
-    &:before {
-        top: -31.8198px;
-        border-top: solid 11.3137px $plyr-audio-control-bg-hover;
-        border-right: solid 11.3137px $plyr-audio-control-bg-hover;
-    }
-
-    &:after {
-        bottom: -31.8198px;
-        border-bottom: solid 11.3137px $plyr-audio-control-bg-hover;
-        border-left: solid 11.3137px $plyr-audio-control-bg-hover;
-    }
-
-    svg {
-        display: block;
+    // Hexagon
+    > div > div {
         position: relative;
+        width: 50px;
+        height: 50px;
+
+        > svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform: scale(1);
+            will-change: transform;
+            transition: transform 0.2s ease, opacity 0.3s ease;
+            transform-origin: center;
+        }
+
+        @media (min-width: $plyr-bp-sm) {
+            width: 100px;
+            height: 100px;
+        }
+
+        > svg:first-of-type {
+            z-index: 2;
+            margin: 4px;
+            width: 42px;
+            height: 42px;
+            fill: currentColor;
+
+            @media (min-width: $plyr-bp-sm) {
+                margin: 8px;
+                width: 84px;
+                height: 84px;
+            }
+        }
+
+        > svg:last-of-type {
+            z-index: 1;
+            width: 100%;
+            height: 100%;
+            fill: currentColor;
+            filter: brightness(0.9);
+        }
+    }
+
+    // Hexagons
+    > div > div > div {
+        position: absolute;
+        z-index: 0;
+        top: 0;
+        left: 0;
+        svg {
+            display: none;
+            position: absolute;
+            fill: currentColor;
+            width: 50px;
+            height: 50px;
+            transform: scale(0);
+            will-change: transform;
+            transition: transform 0.2s ease, opacity 0.3s ease;
+            transform-origin: center;
+
+            @media (min-width: $plyr-bp-sm) {
+                width: 100px;
+                height: 100px;
+            }
+        }
+    }
+
+    // Play icon
+    > svg {
+        position: absolute;
         z-index: 2;
-        left: 2px; // Offset to make the play button look right
-        margin: auto;
-        width: $plyr-control-icon-size-large;
-        height: $plyr-control-icon-size-large;
+        top: 50%;
+        left: 50%;
+        margin-left: 1px;
         color: white;
+        width: $plyr-control-icon-size;
+        height: $plyr-control-icon-size;
+        transform: translate(-50%, -50%);
+
+        &.icon--pressed {
+            margin-left: 0;
+            margin-top: 2px;
+        }
+
+        &.icon--not-pressed {
+            margin-left: 2px;
+            margin-top: 2px;
+        }
+
+        @media (min-width: $plyr-bp-sm) {
+            width: $plyr-control-icon-size-huge;
+            height: $plyr-control-icon-size-huge;
+        }
     }
 }
 
-.plyr--playing .plyr__control--overlaid {
-    opacity: 0;
-    visibility: hidden;
-    transform: scale(0.9) translate(-50%, 0%);
-}
+//.plyr--playing .plyr__control--overlaid {
+//    opacity: 0;
+//    visibility: hidden;
+//    > div {
+//        transform: scale(0.8) translate(-50%, -50%);
+//    }
+//}
 
 .plyr--full-ui.plyr--video .plyr__control--overlaid {
     display: block;
+}
+
+// Loading state
+.plyr--loading .plyr__control--overlaid {
+    > div {
+        cursor: default;
+        &:hover {
+            // ...
+        }
+        &:active {
+            // ...
+        }
+    }
+    > div > div > svg {
+        animation: plyr-progress-play-beat 1s linear infinite;
+        animation-delay: 0.7s;
+    }
+    > div > div > div > svg {
+        display: block;
+        animation: plyr-progress-play 4s linear infinite;
+
+        &:nth-child(1) {
+            animation-delay: 1s;
+        }
+        &:nth-child(2) {
+            animation-delay: 2s;
+        }
+        &:nth-child(3) {
+            animation-delay: 3s;
+        }
+        &:nth-child(4) {
+            animation-delay: 4s;
+        }
+    }
 }

@@ -9,9 +9,62 @@
     position: absolute;
     right: 0;
     top: 0;
-    z-index: 10;
+    z-index: -1; // Hide it.
 
-    video {
-        left: 0;
+    // Make sure the inner container is big enough for the ad creative.
+    > div {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        iframe {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+    }
+
+    &::after {
+        background: rgba($plyr-color-gunmetal, 0.8);
+        border-radius: 2px;
+        bottom: $plyr-control-spacing;
+        color: #fff;
+        content: attr(data-badge-text);
+        font-size: 11px;
+        padding: 2px 6px;
+        pointer-events: none;
+        position: absolute;
+        right: $plyr-control-spacing;
+        z-index: 3;
+    }
+
+    &::after:empty {
+        display: none;
+    }
+}
+
+// Advertisement cue's for the progress bar
+.plyr__cues {
+    background: currentColor;
+    display: block;
+    left: 0;
+    margin: 0;
+    transform: scale(0.6);
+    transform-origin: bottom;
+    will-change: transform;
+    transition: all 0.2s ease, transform 0.1s cubic-bezier(0.4, 0.0, 1, 1);
+    position: absolute;
+    bottom: 0;
+    width: $plyr-range-track-height;
+    height: $plyr-range-track-height;
+    z-index: 3; // Between progress and thumb
+    border-radius: 100%;
+}
+
+// Hover styles
+.plyr--full-ui .plyr__progress {
+    &:hover {
+        .plyr__cues {
+            transform: scale(1);
+        }
     }
 }

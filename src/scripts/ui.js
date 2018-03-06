@@ -5,7 +5,7 @@
 import utils from './utils';
 import captions from './captions';
 import controls from './controls';
-import fullscreen from './fullscreen';
+import playlist from './playlist';
 import listeners from './listeners';
 
 const ui = {
@@ -33,12 +33,6 @@ const ui = {
         if (!this.supported.ui) {
             this.debug.warn(`Basic support only for ${this.provider} ${this.type}`);
 
-            // Remove controls
-            utils.removeElement.call(this, 'controls');
-
-            // Remove large play
-            utils.removeElement.call(this, 'buttons.play');
-
             // Restore native controls
             ui.toggleNativeControls.call(this, true);
 
@@ -63,8 +57,8 @@ const ui = {
         // Remove native controls
         ui.toggleNativeControls.call(this);
 
-        // Setup fullscreen
-        fullscreen.setup.call(this);
+        // Playlist
+        playlist.setup.call(this);
 
         // Captions
         captions.setup.call(this);
@@ -90,14 +84,52 @@ const ui = {
         // Update the UI
         ui.checkPlaying.call(this);
 
+        // Set the title
+        ui.setTitle.call(this);
+
+        // Set the theme
+        ui.setTheme.call(this);
+
         // Ready for API calls
         this.ready = true;
 
         // Ready event at end of execution stack
-        utils.dispatchEvent.call(this, this.media, 'ready');
+        // Set a small delay or out on ready event attached to the plyr instance is not triggered
+        setTimeout(() => {
+            utils.dispatchEvent.call(this, this.media, 'ready');
+        }, 0);
+    },
 
-        // Set the title
-        ui.setTitle.call(this);
+    // Setup the color theme
+    setTheme() {
+        const css = `
+            .plyr--full-ui input[type=range] {
+                color: ${this.config.color};
+            }
+            .plyr__menu__container {
+                background: ${this.config.color};
+            }
+            .plyr__menu__container:after {
+                border-top-color: ${this.config.color};
+            }
+            .plyr__controls .plyr__control--overlaid > div > div svg {
+                color: ${this.config.color};
+            }
+            .plyr__playlist ul li.active .plyr__count {
+                border-color: ${this.config.color};
+                background-color: ${this.config.color};
+            }
+        `;
+        // Add css
+        const head = document.head || document.getElementsByTagName('head')[0];
+        const style = document.createElement('style');
+        style.type = 'text/css';
+        if (style.styleSheet) {
+            style.styleSheet.cssText = css;
+        } else {
+            style.appendChild(document.createTextNode(css));
+        }
+        head.appendChild(style);
     },
 
     // Setup aria attribute for play and iframe title
@@ -142,10 +174,8 @@ const ui = {
         utils.toggleClass(this.elements.container, this.config.classNames.playing, this.playing);
         utils.toggleClass(this.elements.container, this.config.classNames.stopped, this.paused);
 
-        // Set aria state
-        if (utils.is.nodeList(this.elements.buttons.play)) {
-            Array.from(this.elements.buttons.play).forEach(button => utils.toggleState(button, this.playing));
-        }
+        // Set ARIA state
+        utils.toggleState(this.elements.buttons.play, this.playing);
 
         // Toggle controls
         this.toggleControls(!this.playing);
@@ -297,29 +327,11 @@ const ui = {
             return;
         }
 
-        // Format time component to add leading zero
-        const format = value => `0${value}`.slice(-2);
+        // Always display hours if duration is over an hour
+        const displayHours = utils.getHours(this.duration) > 0;
 
-        // Helpers
-        const getHours = value => parseInt((value / 60 / 60) % 60, 10);
-        const getMinutes = value => parseInt((value / 60) % 60, 10);
-        const getSeconds = value => parseInt(value % 60, 10);
-
-        // Breakdown to hours, mins, secs
-        let hours = getHours(time);
-        const mins = getMinutes(time);
-        const secs = getSeconds(time);
-
-        // Do we need to display hours?
-        if (getHours(this.duration) > 0) {
-            hours = `${hours}:`;
-        } else {
-            hours = '';
-        }
-
-        // Render
         // eslint-disable-next-line no-param-reassign
-        target.textContent = `${inverted ? '-' : ''}${hours}${format(mins)}:${format(secs)}`;
+        target.textContent = utils.formatTime(time, displayHours, inverted);
     },
 
     // Handle time change event

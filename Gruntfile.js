@@ -10,7 +10,7 @@ function atob(str) {
     return null;
 }
 
-module.exports = function(grunt) {
+module.exports = function (grunt) {
     const startTS = Date.now();
 
     grunt.initConfig({
@@ -38,8 +38,12 @@ module.exports = function(grunt) {
                 expand: true,
                 flatten: true,
                 cwd: './',
-                src: ['src/index.html'],
-                dest: './lib/',
+                src: [
+                    'src/index.html',
+                    'src/index_legacy.html',
+                    'src/md5.js',
+                ],
+                dest: './libs/gd/',
             },
         },
 
@@ -48,7 +52,7 @@ module.exports = function(grunt) {
          */
         clean: {
             lib: {
-                src: ['./lib'],
+                src: ['./libs/gd/'],
             },
         },
 
@@ -61,7 +65,7 @@ module.exports = function(grunt) {
             },
             default: {
                 files: {
-                    'lib/sprite.svg': ['src/images/*.svg'],
+                    'libs/gd/sprite.svg': ['src/images/*.svg'],
                 },
             },
         },
@@ -94,7 +98,7 @@ module.exports = function(grunt) {
             },
             files: {
                 src: [
-                    'lib/main.min.js',
+                    'libs/gd/gd.min.js',
                 ],
             },
         },
@@ -109,7 +113,7 @@ module.exports = function(grunt) {
             },
             build: {
                 src: 'src/styles/plyr.scss',
-                dest: 'lib/main.css',
+                dest: 'libs/gd/main.css',
             },
         },
 
@@ -128,8 +132,8 @@ module.exports = function(grunt) {
                 ],
             },
             build: {
-                src: 'lib/main.css',
-                dest: 'lib/main.min.css',
+                src: 'libs/gd/main.css',
+                dest: 'libs/gd/main.min.css',
             },
         },
 
@@ -144,7 +148,7 @@ module.exports = function(grunt) {
             },
             lib: {
                 src: 'src/scripts/**/*.js',
-                dest: 'lib/main.js',
+                dest: 'libs/gd/gd.js',
             },
         },
 
@@ -172,8 +176,8 @@ module.exports = function(grunt) {
                 warnings: false,
             },
             lib: {
-                src: 'lib/main.js',
-                dest: 'lib/main.min.js',
+                src: 'libs/gd/gd.js',
+                dest: 'libs/gd/gd.min.js',
             },
         },
 
@@ -210,11 +214,11 @@ module.exports = function(grunt) {
         browserSync: {
             bsFiles: {
                 src: [
-                    'lib/',
+                    'libs/gd/',
                 ],
             },
             options: {
-                server: './lib/',
+                server: './libs/gd',
                 watchTask: true,
                 port: 3000,
             },
@@ -238,7 +242,7 @@ module.exports = function(grunt) {
     // Register all tasks.
     grunt.registerTask('duration',
         'Displays the duration of the grunt task up until this point.',
-        function() {
+        function () {
             const date = new Date(Date.now() - startTS);
             let hh = date.getUTCHours();
             let mm = date.getUTCMinutes();
@@ -256,19 +260,19 @@ module.exports = function(grunt) {
         });
     grunt.registerTask('sourcemaps',
         'Build with sourcemaps',
-        function() {
+        function () {
             grunt.config.set('svgstore.options.includedemo', true);
             grunt.config.set('uglify.options.sourceMap', true);
             grunt.config.set('uglify.options.sourceMapIncludeSources', true);
             grunt.config.set('postcss.options.map', {
                 inline: false,
-                annotation: 'lib/styles/',
+                annotation: 'libs/gd/',
             });
         });
     grunt.registerTask('default',
         'Start BrowserSync and watch for any changes so we can do live ' +
         'updates while developing.',
-        function() {
+        function () {
             const tasksArray = [
                 'copy',
                 'sass',
@@ -286,7 +290,7 @@ module.exports = function(grunt) {
         });
     grunt.registerTask('build',
         'Build and optimize the js.',
-        function() {
+        function () {
             const tasksArray = [
                 'clean',
                 'sass',
@@ -302,7 +306,7 @@ module.exports = function(grunt) {
         });
     grunt.registerTask('deploy',
         'Upload the build files.',
-        function() {
+        function () {
             const project = grunt.option('project');
             const bucket = grunt.option('bucket');
             const folderIn = grunt.option('in');
