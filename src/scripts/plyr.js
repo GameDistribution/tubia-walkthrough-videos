@@ -319,14 +319,15 @@ class Plyr {
      * Play the media, or play the advertisement (if they are not blocked)
      */
     play() {
-        if (this.ads.enabled && !this.ads.initialized && !this.ads.blocked) {
-            this.ads.managerPromise.then(() => {
+        // Return the promise (for HTML5)
+        if (this.ads.enabled && !this.ads.initialized) {
+            return this.ads.managerPromise.then(() => {
                 this.ads.play();
             }).catch(() => {
                 this.media.play();
             });
         } else {
-            this.media.play();
+            return this.media.play();
         }
     }
 
@@ -1049,15 +1050,7 @@ class Plyr {
         // If toggle is false or if we're playing (regardless of toggle),
         // then set the timer to hide the controls
         if (!show || this.playing) {
-            this.timers.controls = window.setTimeout(() => {
-                /* this.debug.warn({
-                    pressed: this.elements.controls.pressed,
-                    hover: this.elements.controls.pressed,
-                    playing: this.playing,
-                    paused: this.paused,
-                    loading: this.loading,
-                }); */
-
+            this.timers.controls = setTimeout(() => {
                 // If the mouse is over the controls (and not entering fullscreen), bail
                 if ((this.elements.controls.pressed || this.elements.controls.hover) && !isEnterFullscreen) {
                     return;
@@ -1188,7 +1181,7 @@ class Plyr {
                 }
 
                 // Vimeo does not always return
-                window.setTimeout(done, 200);
+                setTimeout(done, 200);
 
                 break;
 
