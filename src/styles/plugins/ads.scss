@@ -11,30 +11,27 @@
     top: 0;
     z-index: -1; // Hide it.
 
-    // Make sure the inner container is big enough for the ad creative.
-    > div {
+    // Make sure the inner container is big enough for the ad creative
+    > div,
+    > div iframe {
         position: absolute;
         width: 100%;
         height: 100%;
-        iframe {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-        }
     }
 
     &::after {
-        background: rgba($plyr-color-gunmetal, 0.8);
-        border-radius: 2px;
-        bottom: $plyr-control-spacing;
-        color: #fff;
-        content: attr(data-badge-text);
-        font-size: 11px;
-        padding: 2px 6px;
-        pointer-events: none;
-        position: absolute;
-        right: $plyr-control-spacing;
-        z-index: 3;
+        display: none;
+        //background: rgba($plyr-color-gunmetal, 0.8);
+        //border-radius: 2px;
+        //bottom: $plyr-control-spacing;
+        //color: #fff;
+        //content: attr(data-badge-text);
+        //font-size: 11px;
+        //padding: 2px 6px;
+        //pointer-events: none;
+        //position: absolute;
+        //right: $plyr-control-spacing;
+        //z-index: 3;
     }
 
     &::after:empty {
