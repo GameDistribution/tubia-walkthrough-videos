@@ -1,6 +1,7 @@
 // ==========================================================================
 // Plyr utils
 // ==========================================================================
+import 'babel-polyfill';
 
 import support from './support';
 import { providers } from './types';
@@ -9,7 +10,7 @@ const utils = {
     // Check variable types
     is: {
         plyr(input) {
-            return this.instanceof(input, Plyr);
+            return this.instanceof(input, window.Plyr);
         },
         object(input) {
             return this.getConstructor(input) === Object;
@@ -138,29 +139,29 @@ const utils = {
     },
 
     // Load an external script
-    loadScript(url, callback, error) {
-        const current = document.querySelector(`script[src="${url}"]`);
+    loadScript(url) {
+        return new Promise((resolve, reject) => {
+            const current = document.querySelector(`script[src="${url}"]`);
 
-        // Check script is not already referenced, if so wait for load
-        if (current !== null) {
-            current.callbacks = current.callbacks || [];
-            current.callbacks.push(callback);
-            return;
-        }
+            // Check script is not already referenced, if so wait for load
+            if (current !== null) {
+                current.callbacks = current.callbacks || [];
+                current.callbacks.push(resolve);
+                return;
+            }
 
-        // Build the element
-        const element = document.createElement('script');
+            // Build the element
+            const element = document.createElement('script');
 
-        // Callback queue
-        element.callbacks = element.callbacks || [];
-        element.callbacks.push(callback);
+            // Callback queue
+            element.callbacks = element.callbacks || [];
+            element.callbacks.push(resolve);
 
-        // Error queue
-        element.errors = element.errors || [];
-        element.errors.push(error);
+            // Error queue
+            element.errors = element.errors || [];
+            element.errors.push(reject);
 
-        // Bind callback
-        if (utils.is.function(callback)) {
+            // Bind callback
             element.addEventListener(
                 'load',
                 event => {
@@ -169,24 +170,24 @@ const utils = {
                 },
                 false,
             );
-        }
 
-        // Bind error handling
-        element.addEventListener(
-            'error',
-            event => {
-                element.errors.forEach(err => err.call(null, event));
-                element.errors = null;
-            },
-            false,
-        );
+            // Bind error handling
+            element.addEventListener(
+                'error',
+                event => {
+                    element.errors.forEach(err => err.call(null, event));
+                    element.errors = null;
+                },
+                false,
+            );
 
-        // Set the URL after binding callback
-        element.src = url;
+            // Set the URL after binding callback
+            element.src = url;
 
-        // Inject
-        const first = document.getElementsByTagName('script')[0];
-        first.parentNode.insertBefore(element, first);
+            // Inject
+            const first = document.getElementsByTagName('script')[0];
+            first.parentNode.insertBefore(element, first);
+        });
     },
 
     // Load an external SVG sprite
@@ -230,9 +231,10 @@ const utils = {
             }
 
             // Get the sprite
-            utils.fetch(url)
-                .then(text => {
-                    if (text === null) {
+            utils
+                .fetch(url)
+                .then(result => {
+                    if (utils.is.empty(result)) {
                         return;
                     }
 
@@ -240,12 +242,12 @@ const utils = {
                         window.localStorage.setItem(
                             prefix + id,
                             JSON.stringify({
-                                content: text,
+                                content: result,
                             }),
                         );
                     }
 
-                    updateSprite.call(container, text);
+                    updateSprite.call(container, result);
                 })
                 .catch(() => {});
         }
@@ -567,6 +569,7 @@ const utils = {
             if (event.key !== 'Tab' || event.keyCode !== 9) {
                 return;
             }
+
             // Get the current focused element
             const focused = utils.getFocusElement();
 
@@ -591,7 +594,7 @@ const utils = {
     // Toggle event listener
     toggleListener(elements, event, callback, toggle, passive, capture) {
         // Bail if no elemetns, event, or callback
-        if (utils.is.empty(elements) || utils.is.empty(event) || !utils.is.function(callback)) {
+        if (utils.is.empty(elements)  || utils.is.empty(event) || !utils.is.function(callback)) {
             return;
         }
 
@@ -651,7 +654,7 @@ const utils = {
         const event = new CustomEvent(type, {
             bubbles: utils.is.boolean(bubbles) ? bubbles : false,
             detail: Object.assign({}, detail, {
-                plyr: this,
+                plyr: utils.is.plyr(this) ? this : null,
             }),
         });
 

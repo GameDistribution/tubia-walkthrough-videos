@@ -17,6 +17,8 @@
         "url": "git@github.com:gamedistribution/tubia.git"
     },
     "dependencies": {
+        "babel-polyfill": "^6.26.0",
+        "custom-event-polyfill": "^0.3.0",
         "es6-promise": "^4.2.2",
         "rangetouch": "^1.0.5",
         "whatwg-fetch": "^2.0.3"

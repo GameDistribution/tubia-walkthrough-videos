@@ -494,6 +494,10 @@ const controls = {
     // Set the YouTube quality menu
     // TODO: Support for HTML5
     setQualityMenu(options) {
+        // Menu required
+        if (!utils.is.element(this.elements.settings.panes.quality)) {
+            return;
+        }
         const type = 'quality';
         const list = this.elements.settings.panes.quality.querySelector('ul');
 
@@ -549,7 +553,7 @@ const controls = {
         };
 
         this.options.quality.forEach(quality =>
-            controls.createMenuItem.call(this, quality, list, type, controls.getLabel.call(this, 'quality', quality), getBadge(quality))
+            controls.createMenuItem.call(this, quality, list, type, controls.getLabel.call(this, 'quality', quality), getBadge(quality)),
         );
 
         controls.updateSetting.call(this, type, list);
@@ -650,6 +654,11 @@ const controls = {
 
     // Set the looping options
     /* setLoopMenu() {
+    // Menu required
+        if (!utils.is.element(this.elements.settings.panes.loop)) {
+            return;
+        }
+
         const options = ['start', 'end', 'all', 'reset'];
         const list = this.elements.settings.panes.loop.querySelector('ul');
 
@@ -748,7 +757,7 @@ const controls = {
                 'language',
                 track.label || track.language,
                 controls.createBadge.call(this, track.language.toUpperCase()),
-                track.language.toLowerCase() === this.captions.language.toLowerCase()
+                track.language.toLowerCase() === this.captions.language.toLowerCase(),
             );
         });
 
@@ -757,6 +766,11 @@ const controls = {
 
     // Set a list of available captions languages
     setSpeedMenu() {
+        // Menu required
+        if (!utils.is.element(this.elements.settings.panes.speed)) {
+            return;
+        }
+
         const type = 'speed';
 
         // Set the default speeds
@@ -804,6 +818,12 @@ const controls = {
     toggleMenu(event) {
         const { form } = this.elements.settings;
         const button = this.elements.buttons.settings;
+
+        // Menu and button are required
+        if (!utils.is.element(form) || !utils.is.element(button)) {
+            return;
+        }
+
         const show = utils.is.boolean(event) ? event : utils.is.element(form) && form.getAttribute('aria-hidden') === 'true';
 
         if (utils.is.event(event)) {

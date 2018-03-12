@@ -126,7 +126,7 @@ module.exports = function (grunt) {
                 map: true,
                 processors: [
                     require('autoprefixer')({
-                        browsers: 'last 2 version, IE 9',
+                        browsers: 'last 2 version',
                     }), // vendor prefixes. for more: https://github.com/ai/browserslist
                     require('cssnano')(),
                 ],
@@ -144,7 +144,24 @@ module.exports = function (grunt) {
          */
         browserify: {
             options: {
-                transform: [['babelify', {presets: ['env']}]],
+                transform: [[
+                    'babelify',
+                    {
+                        presets: [[
+                            'env',
+                            {
+                                targets: {
+                                    browsers: [
+                                        '> 1%',
+                                        'Last 2 versions',
+                                    ],
+                                },
+                                debug: true,
+                                useBuiltIns: true,
+                            },
+                        ]],
+                    },
+                ]],
             },
             lib: {
                 src: 'src/scripts/**/*.js',

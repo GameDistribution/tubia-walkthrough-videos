@@ -1,6 +1,7 @@
-import 'es6-promise/auto';
-import 'rangetouch';
-import 'whatwg-fetch';
+// import 'es6-promise/auto';
+// import 'rangetouch';
+// import 'whatwg-fetch';
+
 import PackageJSON from '../../package.json';
 import Plyr from './plyr';
 import utils from './utils';
@@ -47,6 +48,8 @@ class Tubia {
         } else {
             this.options = defaults;
         }
+
+        console.log('derp');
 
         this.adTag = null;
 
