@@ -1,6 +1,6 @@
-// import 'es6-promise/auto';
-// import 'rangetouch';
-// import 'whatwg-fetch';
+import 'es6-promise/auto';
+import 'whatwg-fetch';
+import 'rangetouch';
 
 import PackageJSON from '../../package.json';
 import Plyr from './plyr';
@@ -34,7 +34,8 @@ class Tubia {
             category: '',
             langCode: '',
             color: '#1aafff',
-            domain: window.location.href.toLowerCase().replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').split('/')[0],
+            domain: 'bgames.com',
+            // domain: window.location.href.toLowerCase().replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').split('/')[0],
             onFound() {
             },
             onError() {
@@ -49,8 +50,6 @@ class Tubia {
             this.options = defaults;
         }
 
-        console.log('derp');
-
         this.adTag = null;
 
         // Set a version banner within the developer console.
@@ -64,13 +63,6 @@ class Tubia {
             'background: #006897');
         console.log.apply(console, banner);
         /* eslint-enable */
-
-        // Todo: this is the biggest shit ever. Would be nice if this is done on server side.
-        const MD5Promise = new Promise((resolve) => {
-            utils.loadScript('https://tubia.gamedistribution.com/libs/gd/md5.js', () => {
-                resolve();
-            });
-        });
 
         // Call Google Analytics and Death Star.
         this.analytics();
@@ -117,29 +109,34 @@ class Tubia {
 
         // Search for a matching game within our Tubia database and return the id.
         const videoSearchPromise = new Promise((resolve, reject) => {
-            MD5Promise.then(() => {
-                const pageId = window.calcMD5(document.location.href);
-                const videoFindUrl = `https://walkthrough.gamedistribution.com/api/player/findv2/?pageId=${pageId}&gameId=${this.options.gameId}&title=${this.options.title}&domain=${this.options.domain}`;
-                const videoSearchRequest = new Request(videoFindUrl, {
-                    method: 'GET',
-                });
-                fetch(videoSearchRequest).then((response) => {
-                    const contentType = response.headers.get('content-type');
-                    if (!contentType || !contentType.includes('application/json')) {
+            utils
+                .loadScript('https://tubia.gamedistribution.com/libs/gd/md5.js')
+                .then(() => {
+                    const pageId = window.calcMD5('http://www.bgames.com');
+                    // const pageId = window.calcMD5(document.location.href);
+                    const videoFindUrl = `https://walkthrough.gamedistribution.com/api/player/findv2/?pageId=${pageId}&gameId=${this.options.gameId}&title=${this.options.title}&domain=${this.options.domain}`;
+                    const videoSearchRequest = new Request(videoFindUrl, {
+                        method: 'GET',
+                    });
+                    fetch(videoSearchRequest).then((response) => {
+                        const contentType = response.headers.get('content-type');
+                        if (!contentType || !contentType.includes('application/json')) {
+                            reject();
+                            throw new TypeError('Oops, we didn\'t get JSON!');
+                        } else {
+                            return response.json();
+                        }
+                    }).then((json) => {
+                        resolve(json);
+                    }).catch((error) => {
+                        this.options.onError(error);
                         reject();
-                        throw new TypeError('Oops, we didn\'t get JSON!');
-                    } else {
-                        return response.json();
-                    }
-                }).then((json) => {
-                    resolve(json);
-                }).catch((error) => {
+                    });
+                })
+                .catch((error) => {
+                    // Script failed to load or is blocked
                     this.options.onError(error);
-                    reject();
                 });
-            }).catch((error) => {
-                this.options.onError(error);
-            });
         });
 
         // Get us some video data.

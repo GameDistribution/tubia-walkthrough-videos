@@ -83,9 +83,6 @@ const ui = {
         // Update the UI
         ui.checkPlaying.call(this);
 
-        // Set the title
-        ui.setTitle.call(this);
-
         // Set the theme
         ui.setTheme.call(this);
 
@@ -93,10 +90,12 @@ const ui = {
         this.ready = true;
 
         // Ready event at end of execution stack
-        // Set a small delay or out on ready event attached to the plyr instance is not triggered
         setTimeout(() => {
             utils.dispatchEvent.call(this, this.media, 'ready');
         }, 0);
+
+        // Set the title
+        ui.setTitle.call(this);
     },
 
     // Setup the color theme

@@ -1,6 +1,6 @@
 // ==========================================================================
 // Plyr
-// plyr.js v3.0.0-beta.6
+// plyr.js v3.0.0-beta.17
 // https://github.com/sampotts/plyr
 // License: The MIT License (MIT)
 // ==========================================================================
@@ -405,8 +405,8 @@ class Plyr {
     }
 
     /**
-     * Forward
-     * @param {number} seekTime - how far to forward in seconds. Defaults to the config.seekTime
+     * Fast forward
+     * @param {number} seekTime - how far to fast forward in seconds. Defaults to the config.seekTime
      */
     forward(seekTime) {
         this.currentTime = this.currentTime + (utils.is.number(seekTime) ? seekTime : this.config.seekTime);
@@ -579,6 +579,10 @@ class Plyr {
     get hasAudio() {
         // Assume yes for all non HTML5 (as we can't tell...)
         if (!this.isHTML5) {
+            return true;
+        }
+
+        if (this.isAudio) {
             return true;
         }
 

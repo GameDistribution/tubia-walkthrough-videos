@@ -1,7 +1,9 @@
 // ==========================================================================
 // Plyr utils
 // ==========================================================================
+
 import 'babel-polyfill';
+import 'custom-event-polyfill';
 
 import support from './support';
 import { providers } from './types';
