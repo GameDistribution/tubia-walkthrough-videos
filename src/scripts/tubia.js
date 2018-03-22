@@ -85,27 +85,28 @@ class Tubia {
         //     category: this.options.category,
         //     langCode: this.options.langCode,
         // };
+        const videoCounterData = `publisherId=${this.options.publisherId}&url=${encodeURIComponent(document.location.href)}&title=${this.options.title}&gameId=${this.options.gameId}&category=${this.options.category}&langCode=${this.options.langCode}`;
         // Todo: Triodor has not yet deployed the preflight request update!
-        // const videoCounterUrl = 'https://walkthrough.gamedistribution.com/api/player/find/';
-        // const videoCounterRequest = new Request(videoCounterUrl, {
-        //     method: 'POST',
-        //     body: JSON.stringify(videoCounterData),
-        //     headers: new Headers({
-        //         'Content-Type': 'application/json',
-        //     }),
-        // });
-        // fetch(videoCounterRequest).
-        //     then((response) => {
-        //         const contentType = response.headers.get('content-type');
-        //         if (!contentType || !contentType.includes('application/json')) {
-        //             throw new TypeError('Oops, we didn\'t get JSON!');
-        //         } else {
-        //             return response.json();
-        //         }
-        //     }).
-        //     catch((error) => {
-        //         this.options.onError(error);
-        //     });
+        const videoCounterUrl = 'https://walkthrough.gamedistribution.com/api/player/find/';
+        const videoCounterRequest = new Request(videoCounterUrl, {
+            method: 'POST',
+            body: videoCounterData, // JSON.stringify(videoCounterData),
+            headers: new Headers({
+                'Content-Type': 'application/x-www-form-urlencoded', // application/json
+            }),
+        });
+        fetch(videoCounterRequest).
+            then((response) => {
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    throw new TypeError('Oops, we didn\'t get JSON!');
+                } else {
+                    return response.json();
+                }
+            }).
+            catch((error) => {
+                this.options.onError(error);
+            });
 
         // Search for a matching game within our Tubia database and return the id.
         const videoSearchPromise = new Promise((resolve, reject) => {
@@ -155,7 +156,8 @@ class Tubia {
                 (new Image()).src = `https://ana.tunnl.com/event?tub_id=${gameId}&eventtype=0&page_url=${encodeURIComponent(document.location.href)}`;
 
                 // Set the ad tag using the given id.
-                this.adTag = `https://pub.tunnl.com/opp?page_url=${encodeURIComponent(window.location.href)}&player_width=640&player_height=480&game_id=${gameId}&correlator=${Date.now()}&ad_count=1&ad_position=preroll1`;
+                // this.adTag = `https://pub.tunnl.com/opp?page_url=${encodeURIComponent(window.location.href)}&player_width=640&player_height=480&game_id=${gameId}&correlator=${Date.now()}&ad_count=1&ad_position=preroll1`;
+                this.adTag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpostpod&cmsid=496&vid=short_onecue&correlator=';
                 fetch(videoDataRequest).then((response) => {
                     const contentType = response.headers.get('content-type');
                     if (!contentType || !contentType.includes('application/json')) {

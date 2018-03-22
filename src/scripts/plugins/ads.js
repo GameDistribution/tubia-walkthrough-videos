@@ -16,8 +16,8 @@ class Ads {
      */
     constructor(player) {
         this.player = player;
-        this.publisherId = player.config.ads.publisherId;
-        this.enabled = player.isHTML5 && player.isVideo && player.config.ads.enabled && utils.is.string(this.publisherId) && this.publisherId.length;
+        this.tagUrl = player.config.ads.tag;
+        this.enabled = player.isHTML5 && player.isVideo && utils.is.string(this.tagUrl) && this.tagUrl.length;
         this.playing = false;
         this.initialized = false;
         this.elements = {
@@ -83,23 +83,6 @@ class Ads {
 
         // Setup the IMA SDK
         this.setupIMA();
-    }
-
-    // Build the default tag URL
-    get tagUrl() {
-        const params = {
-            AV_PUBLISHERID: '58c25bb0073ef448b1087ad6',
-            AV_CHANNELID: '5a0458dc28a06145e4519d21',
-            AV_URL: location.hostname,
-            cb: Date.now(),
-            AV_WIDTH: 640,
-            AV_HEIGHT: 480,
-            AV_CDIM2: this.publisherId,
-        };
-
-        const base = 'https://go.aniview.com/api/adserver6/vast/';
-
-        return `${base}?${utils.buildUrlParams(params)}`;
     }
 
     /**
@@ -171,7 +154,7 @@ class Ads {
      */
     pollCountdown(start = false) {
         if (!start) {
-            window.clearInterval(this.countdownTimer);
+            clearInterval(this.countdownTimer);
             this.elements.container.removeAttribute('data-badge-text');
             return;
         }
@@ -182,7 +165,7 @@ class Ads {
             this.elements.container.setAttribute('data-badge-text', label);
         };
 
-        this.countdownTimer = window.setInterval(update, 100);
+        this.countdownTimer = setInterval(update, 100);
     }
 
     /**
@@ -256,7 +239,8 @@ class Ads {
 
         // Proxy event
         const dispatchEvent = type => {
-            utils.dispatchEvent.call(this.player, this.player.media, `ads${type}`);
+            const eventMessage = `ads${type.replace(/_/g, '').toLowerCase()}`;
+            utils.dispatchEvent.call(this.player, this.player.media, eventMessage);
         };
 
         switch (event.type) {
@@ -266,7 +250,7 @@ class Ads {
                 this.trigger('loaded');
 
                 // Bubble event
-                dispatchEvent('loaded');
+                dispatchEvent(event.type);
 
                 // Start countdown
                 this.pollCountdown(true);
@@ -286,7 +270,7 @@ class Ads {
                 // in case the video is re-played
 
                 // Fire event
-                dispatchEvent('allcomplete');
+                dispatchEvent(event.type);
 
                 // TODO: Example for what happens when a next video in a playlist would be loaded.
                 // So here we load a new video when all ads are done.
@@ -319,7 +303,7 @@ class Ads {
                 // for example display a pause button and remaining time. Fired when content should
                 // be paused. This usually happens right before an ad is about to cover the content
 
-                dispatchEvent('contentpause');
+                dispatchEvent(event.type);
 
                 this.pauseContent();
 
@@ -331,7 +315,7 @@ class Ads {
                 // Fired when content should be resumed. This usually happens when an ad finishes
                 // or collapses
 
-                dispatchEvent('contentresume');
+                dispatchEvent(event.type);
 
                 this.pollCountdown();
 
@@ -340,17 +324,8 @@ class Ads {
                 break;
 
             case google.ima.AdEvent.Type.STARTED:
-                dispatchEvent('started');
-                break;
-
             case google.ima.AdEvent.Type.MIDPOINT:
-                dispatchEvent('midpoint');
-                break;
-
             case google.ima.AdEvent.Type.COMPLETE:
-                dispatchEvent('complete');
-                break;
-
             case google.ima.AdEvent.Type.IMPRESSION:
                 // Send a google event.
                 try {
@@ -370,7 +345,7 @@ class Ads {
                 break;
 
             case google.ima.AdEvent.Type.CLICK:
-                dispatchEvent('click');
+                dispatchEvent(event.type);
                 break;
 
             default:
