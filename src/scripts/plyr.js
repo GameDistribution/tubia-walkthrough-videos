@@ -1,6 +1,6 @@
 // ==========================================================================
 // Plyr
-// plyr.js v3.0.0-beta.17
+// plyr.js v3.0.0-beta.20
 // https://github.com/sampotts/plyr
 // License: The MIT License (MIT)
 // ==========================================================================
@@ -286,7 +286,7 @@ class Plyr {
         this.listeners.container();
 
         // Global listeners
-        this.listeners.global(true);
+        this.listeners.global();
 
         // Setup fullscreen
         this.fullscreen = new Fullscreen(this);
@@ -303,22 +303,22 @@ class Plyr {
      * Types and provider helpers
      */
     get isHTML5() {
-        return this.provider === providers.html5;
+        return Boolean(this.provider === providers.html5);
     }
     get isEmbed() {
-        return this.isYouTube || this.isVimeo;
+        return Boolean(this.isYouTube || this.isVimeo);
     }
     get isYouTube() {
-        return this.provider === providers.youtube;
+        return Boolean(this.provider === providers.youtube);
     }
     get isVimeo() {
-        return this.provider === providers.vimeo;
+        return Boolean(this.provider === providers.vimeo);
     }
     get isVideo() {
-        return this.type === types.video;
+        return Boolean(this.type === types.video);
     }
     get isAudio() {
-        return this.type === types.audio;
+        return Boolean(this.type === types.audio);
     }
 
     /**
@@ -349,21 +349,21 @@ class Plyr {
      * Get paused state
      */
     get paused() {
-        return this.media.paused;
+        return Boolean(this.media.paused);
     }
 
     /**
      * Get playing state
      */
     get playing() {
-        return !this.paused && !this.ended && (this.isHTML5 ? this.media.readyState > 2 : true);
+        return Boolean(!this.paused && !this.ended && (this.isHTML5 ? this.media.readyState > 2 : true));
     }
 
     /**
      * Get ended state
      */
     get ended() {
-        return this.media.ended;
+        return Boolean(this.media.ended);
     }
 
     /**
@@ -453,10 +453,31 @@ class Plyr {
     }
 
     /**
+     * Get buffered
+     */
+    get buffered() {
+        const { buffered } = this.media;
+
+        // YouTube / Vimeo return a float between 0-1
+        if (utils.is.number(buffered)) {
+            return buffered;
+        }
+
+        // HTML5
+        // TODO: Handle buffered chunks of the media
+        // (i.e. seek to another section buffers only that section)
+        if (buffered && buffered.length && this.duration > 0) {
+            return buffered.end(0) / this.duration;
+        }
+
+        return 0;
+    }
+
+    /**
      * Get seeking status
      */
     get seeking() {
-        return this.media.seeking;
+        return Boolean(this.media.seeking);
     }
 
     /**
@@ -521,7 +542,7 @@ class Plyr {
      * Get the current player volume
      */
     get volume() {
-        return this.media.volume;
+        return Number(this.media.volume);
     }
 
     /**
@@ -570,7 +591,7 @@ class Plyr {
      * Get current muted state
      */
     get muted() {
-        return this.media.muted;
+        return Boolean(this.media.muted);
     }
 
     /**
@@ -587,12 +608,16 @@ class Plyr {
         }
 
         // Get audio tracks
-        return this.media.mozHasAudio || Boolean(this.media.webkitAudioDecodedByteCount) || Boolean(this.media.audioTracks && this.media.audioTracks.length);
+        return (
+            Boolean(this.media.mozHasAudio) ||
+            Boolean(this.media.webkitAudioDecodedByteCount) ||
+            Boolean(this.media.audioTracks && this.media.audioTracks.length)
+        );
     }
 
     /**
      * Set playback speed
-     * @param {decimal} speed - the speed of playback (0.5-2.0)
+     * @param {number} speed - the speed of playback (0.5-2.0)
      */
     set speed(input) {
         let speed = null;
@@ -633,7 +658,7 @@ class Plyr {
      * Get current playback speed
      */
     get speed() {
-        return this.media.playbackRate;
+        return Number(this.media.playbackRate);
     }
 
     /**
@@ -733,7 +758,7 @@ class Plyr {
      * Get current loop state
      */
     get loop() {
-        return this.media.loop;
+        return Boolean(this.media.loop);
     }
 
     /**
@@ -790,7 +815,7 @@ class Plyr {
      * Get the current autoplay state
      */
     get autoplay() {
-        return this.config.autoplay;
+        return Boolean(this.config.autoplay);
     }
 
     /**
@@ -1031,7 +1056,7 @@ class Plyr {
         }
 
         // Clear timer on every call
-        window.clearTimeout(this.timers.controls);
+        clearTimeout(this.timers.controls);
 
         // If the mouse is not over the controls, set a timeout to hide them
         if (show || this.paused || this.loading) {
@@ -1109,6 +1134,10 @@ class Plyr {
      * @param {boolean} soft - Whether it's a soft destroy (for source changes etc)
      */
     destroy(callback, soft = false) {
+        if (!this.ready) {
+            return;
+        }
+
         const done = () => {
             // Reset overflow (incase destroyed while in fullscreen)
             document.body.style.overflow = '';
@@ -1137,11 +1166,11 @@ class Plyr {
                     callback();
                 }
             } else {
+                // Unbind listeners
+                this.listeners.clear();
+
                 // Replace the container with the original element provided
                 utils.replaceElement(this.elements.original, this.elements.container);
-
-                // Unbind global listeners
-                this.listeners.global(false);
 
                 // Event
                 utils.dispatchEvent.call(this, this.elements.original, 'destroyed', true);
@@ -1151,15 +1180,27 @@ class Plyr {
                     callback.call(this.elements.original);
                 }
 
-                // Clear for GC
-                this.elements = null;
+                // Reset state
+                this.ready = false;
+
+                // Clear for garbage collection
+                setTimeout(() => {
+                    this.elements = null;
+                    this.media = null;
+                }, 200);
             }
         };
+
+        // Stop playback
+        this.stop();
 
         // Type specific stuff
         switch (`${this.provider}:${this.type}`) {
             case 'html5:video':
             case 'html5:audio':
+                // Clear timeout
+                clearTimeout(this.timers.loading);
+
                 // Restore native video controls
                 ui.toggleNativeControls.call(this, true);
 
@@ -1170,8 +1211,8 @@ class Plyr {
 
             case 'youtube:video':
                 // Clear timers
-                window.clearInterval(this.timers.buffering);
-                window.clearInterval(this.timers.playing);
+                clearInterval(this.timers.buffering);
+                clearInterval(this.timers.playing);
 
                 // Destroy YouTube API
                 if (this.embed !== null) {
