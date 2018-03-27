@@ -1008,7 +1008,7 @@ const controls = {
         });
     },
 
-    // Create a settings menu item
+    // Create a playlist item
     createPlaylistItem(cue, list, type, title, counter) {
         const label = utils.createElement('span', {
             class: 'plyr__title',

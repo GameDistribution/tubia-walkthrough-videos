@@ -253,7 +253,7 @@ class Ads {
                 dispatchEvent(event.type);
 
                 // Start countdown
-                this.pollCountdown(true);
+                // this.pollCountdown(true);
 
                 if (!ad.isLinear()) {
                     // Position AdDisplayContainer correctly for overlay
@@ -317,7 +317,7 @@ class Ads {
 
                 dispatchEvent(event.type);
 
-                this.pollCountdown();
+                // this.pollCountdown();
 
                 this.resumeContent();
 

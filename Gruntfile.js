@@ -153,7 +153,6 @@ module.exports = function (grunt) {
                                 targets: {
                                     browsers: [
                                         '> 1%',
-                                        'Last 2 versions',
                                     ],
                                 },
                                 debug: true,

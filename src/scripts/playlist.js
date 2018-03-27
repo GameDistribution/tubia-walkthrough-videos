@@ -30,7 +30,6 @@ const playlist = {
             const listItem = utils.createElement('ul');
             this.elements.controls.playlist.appendChild(listItem);
             this.elements.controls.middle.appendChild(this.elements.controls.playlist);
-            // utils.insertAfter(this.elements.captions, this.elements.wrapper);
         }
 
         // Set the class hook
@@ -56,58 +55,6 @@ const playlist = {
     // Get the current track for the current language
     getCurrent() {
         return playlist.getData.call(this).find(track => track.level.toLowerCase() === this.current);
-    },
-
-    // Display active playlist if it contains text
-    setCue(input) {
-        // Get the track from the event if needed
-        const track = utils.is.event(input) ? input.target : input;
-        const active = track.activeCues[0];
-        const currentTrack = playlist.getCurrent.call(this);
-
-        // Only display current track
-        if (track !== currentTrack) {
-            return;
-        }
-
-        // Display a cue, if there is one
-        if (utils.is.cue(active)) {
-            playlist.setText.call(this, active.getCueAsHTML());
-        } else {
-            playlist.setText.call(this, null);
-        }
-
-        utils.dispatchEvent.call(this, this.media, 'cuechange');
-    },
-
-    // Set the current playlist
-    setText(input) {
-        // Requires UI
-        if (!this.supported.ui) {
-            return;
-        }
-
-        if (utils.is.element(this.elements.controls.playlist)) {
-            const content = utils.createElement('span');
-
-            // Empty the container
-            utils.emptyElement(this.elements.controls.playlist);
-
-            // Default to empty
-            const list = !utils.is.nullOrUndefined(input) ? input : '';
-
-            // Set the span content
-            if (utils.is.string(list)) {
-                content.textContent = list.trim();
-            } else {
-                content.appendChild(list);
-            }
-
-            // Set new playlist text
-            this.elements.controls.playlist.appendChild(content);
-        } else {
-            this.debug.warn('No playlist element to render to');
-        }
     },
 
     // Display playlist container and button (for initialization)

@@ -436,6 +436,20 @@ class Listeners {
             }),
         );
 
+        // Playlist toggle
+        utils.on(this.player.elements.buttons.playlist, 'click', event =>
+            proxy(event, 'playlist', () => {
+                this.player.togglePlaylist();
+            }),
+        );
+
+        // Share toggle
+        utils.on(this.player.elements.buttons.share, 'click', event =>
+            proxy(event, 'share', () => {
+                this.player.toggleShare();
+            }),
+        );
+
         // Fullscreen toggle
         utils.on(this.player.elements.buttons.fullscreen, 'click', event =>
             proxy(event, 'fullscreen', () => {

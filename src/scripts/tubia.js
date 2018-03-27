@@ -248,7 +248,6 @@ class Tubia {
                 controls.push('settings');
                 controls.push('captions');
                 controls.push('pip');
-                controls.push('airplay');
 
                 playlist.active = (json.cuepoints && json.cuepoints.length > 0);
             }
