@@ -102,20 +102,29 @@ const ui = {
     setTheme() {
         const css = `
             .plyr--full-ui input[type=range] {
-                color: ${this.config.color};
+                color: ${this.config.colorMain};
             }
             .plyr__menu__container {
-                background: ${this.config.color};
+                background: ${this.config.colorMain};
             }
             .plyr__menu__container:after {
-                border-top-color: ${this.config.color};
+                border-top-color: ${this.config.colorMain};
             }
             .plyr__controls .plyr__control--overlaid > div > div svg {
-                color: ${this.config.color};
+                color: ${this.config.colorMain};
             }
             .plyr__playlist ul li.active .plyr__count {
-                border-color: ${this.config.color};
-                background-color: ${this.config.color};
+                border-color: ${this.config.colorMain};
+                background-color: ${this.config.colorMain};
+            }
+            .plyr__playlist ul li:active .plyr__count {
+                border-color: ${this.config.colorAccent};
+            }
+            .plyr__playlist:before {
+                background-color: ${this.config.colorAccent};
+            }
+            .plyr__playlist:after {
+                background-color: ${this.config.colorMain};
             }
         `;
         // Add css

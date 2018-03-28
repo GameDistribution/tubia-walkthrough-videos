@@ -29,6 +29,10 @@ const playlist = {
             this.elements.controls.playlist = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.playlist));
             const listItem = utils.createElement('ul');
             this.elements.controls.playlist.appendChild(listItem);
+            const listItemShadow = utils.createElement('div', {
+                class: 'plyr__shadow',
+            });
+            this.elements.controls.playlist.appendChild(listItemShadow);
             this.elements.controls.middle.appendChild(this.elements.controls.playlist);
         }
 

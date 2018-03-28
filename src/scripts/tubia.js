@@ -33,7 +33,8 @@ class Tubia {
             title: '',
             category: '',
             langCode: '',
-            color: '#1aafff',
+            colorMain: '#1aafff',
+            colorAccent: '#D8E741',
             domain: 'bgames.com',
             // domain: window.location.href.toLowerCase().replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').split('/')[0],
             onFound() {
@@ -185,7 +186,7 @@ class Tubia {
 
             // Todo: Make sure our poster and source url's uses https. Currently getting http from database.
             const poster = (json.pictures && json.pictures.length > 0) ? json.pictures[json.pictures.length - 1].link : '';
-            const posterUrl = poster.replace(/^http:\/\//i, 'https://');
+            const posterUrl = 'https://img.gamedistribution.com/featured/8c16e991b9bf4dfab0942772d77483f7.jpg';// poster.replace(/^http:\/\//i, 'https://');
 
             // Create the HTML5 video element.
             const videoElement = document.createElement('video');
@@ -256,7 +257,8 @@ class Tubia {
             this.player = new Plyr('#plyr__tubia', {
                 debug: this.options.debug,
                 iconUrl: 'https://tubia.gamedistribution.com/libs/gd/sprite.svg',
-                color: this.options.color,
+                colorMain: this.options.colorMain,
+                colorAccent: this.options.colorAccent,
                 title: (json.detail && json.detail.length > 0) ? json.detail[0].title : '',
                 showPosterOnEnd: true,
                 ads: {
