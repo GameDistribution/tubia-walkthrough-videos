@@ -51,8 +51,6 @@ class Tubia {
             this.options = defaults;
         }
 
-        this.adTag = null;
-
         // Set a version banner within the developer console.
         /* eslint-disable */
         const version = PackageJSON.version;
@@ -65,9 +63,221 @@ class Tubia {
         console.log.apply(console, banner);
         /* eslint-enable */
 
+        this.container = document.getElementById(this.options.container);
+        this.adTag = null;
+        this.posterUrl = '';
+        this.posterImageElement = null;
+        this.transitionElement = null;
+        this.playButton = null;
+        this.hexagonLoader = null;
+        this.videoSearchPromise = null;
+        this.videoDataPromise = null;
+        this.transitionSpeed = 2000;
+
+        if (!this.container) {
+            return false;
+        }
+
         // Call Google Analytics and Death Star.
         this.analytics();
 
+        // Start our application. We load the player when the user clicks,
+        // as we don't want too many requests for our assets.
+        this.start();
+    }
+
+    start() {
+        const headElement = document.head;
+        const css = document.createElement('link');
+        const font = document.createElement('link');
+        css.type = 'text/css';
+        css.rel = 'stylesheet';
+        css.href = 'https://tubia.gamedistribution.com/libs/gd/main.min.css';
+        font.type = 'text/css';
+        font.rel = 'stylesheet';
+        font.href = 'https://fonts.googleapis.com/css?family=Khand:400,700';
+        headElement.appendChild(font);
+        headElement.appendChild(css);
+
+        this.container.classList.add('tubia');
+
+        const html = `
+            <div class="tubia__transition"></div>
+            <button class="tubia__play-button"></button>
+            <div class="tubia__hexagon-loader">
+                <svg class="tubia__hexagon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 129.78 150.37">
+                    <path class="tubia__hexagon-base" d="M-1665.43,90.94V35.83a15.09,15.09,0,0,1,6.78-12.59l48.22-31.83a15.09,15.09,0,0,1,16-.38L-1547,19.13a15.09,15.09,0,0,1,7.39,13V90.94a15.09,15.09,0,0,1-7.21,12.87l-47.8,29.24a15.09,15.09,0,0,1-15.75,0l-47.8-29.24A15.09,15.09,0,0,1-1665.43,90.94Z" transform="translate(1667.43 13.09)"/>
+                    <path class="tubia__hexagon-line-animation" d="M-1665.43,90.94V35.83a15.09,15.09,0,0,1,6.78-12.59l48.22-31.83a15.09,15.09,0,0,1,16-.38L-1547,19.13a15.09,15.09,0,0,1,7.39,13V90.94a15.09,15.09,0,0,1-7.21,12.87l-47.8,29.24a15.09,15.09,0,0,1-15.75,0l-47.8-29.24A15.09,15.09,0,0,1-1665.43,90.94Z" transform="translate(1667.43 13.09)"/>
+                </svg>
+            </div>
+        `;
+
+        this.container.insertAdjacentHTML('beforeend', html);
+        this.transitionElement = this.container.querySelector('.tubia__transition');
+        this.playButton = this.container.querySelector('.tubia__play-button');
+        this.hexagonLoader = this.container.querySelector('.tubia__hexagon-loader');
+
+        // Show a spinner loader, as this could take some time.
+        this.hexagonLoader.classList.toggle('tubia__active');
+
+        // Search for a matching game within our Tubia database and return the id.
+        // Todo: We can't get the poster image without doing these requests for data. Kind of sucks.
+        this.videoSearchPromise = new Promise((resolve, reject) => {
+            const gameId = this.options.gameId.replace(/-/g, '');
+            const title = encodeURIComponent(this.options.title);
+            const domain = encodeURIComponent(this.options.domain);
+            utils
+                .loadScript('https://tubia.gamedistribution.com/libs/gd/md5.js')
+                .then(() => {
+                    const pageId = window.calcMD5('http://www.bgames.com/puzzle-games/the-forest-temple/');
+                    // const pageId = window.calcMD5(document.location.href);
+                    const videoFindUrl = `https://walkthrough.gamedistribution.com/api/player/findv3/?pageId=${pageId}&gameId=${gameId}&title=${title}&domain=${domain}`;
+                    const videoSearchRequest = new Request(videoFindUrl, {
+                        method: 'GET',
+                    });
+                    fetch(videoSearchRequest).then((response) => {
+                        const contentType = response.headers.get('content-type');
+                        if (!contentType || !contentType.includes('application/json')) {
+                            reject();
+                            throw new TypeError('Oops, we didn\'t get JSON!');
+                        } else {
+                            return response.json();
+                        }
+                    }).then((json) => {
+                        resolve(json);
+                    }).catch((error) => {
+                        this.onError(error);
+                        reject();
+                    });
+                })
+                .catch((error) => {
+                    this.onError(error);
+                });
+        });
+
+        // Get the video data using the id returned from the videoSearchPromise.
+        this.videoDataPromise = new Promise((resolve, reject) => {
+            // Todo: check if we dont want to use a tubia url.
+            // Todo: verify if tubia cdn urls are ssl ready.
+            // Todo: make sure to disable ads if enableAds is false. Also for addFreeActive :P
+            // Todo: The SSL certificate used to load resources from https://cdn.walkthrough.vooxe.com will be distrusted in M70. Once distrusted, users will be prevented from loading these resources. See https://g.co/chrome/symantecpkicerts for more information.
+            this.videoSearchPromise.then((id) => {
+                const gameId = (!id) ? this.options.gameId.replace(/-/g, '') : id.replace(/-/g, '');
+                const publisherId = this.options.publisherId.replace(/-/g, '');
+                const domain = encodeURIComponent(this.options.domain);
+                const location = encodeURIComponent(document.location.href);
+                const videoDataUrl = `https://walkthrough.gamedistribution.com/api/player/publish/?gameid=${gameId}&publisherid=${publisherId}&domain=${domain}`;
+                const videoDataRequest = new Request(videoDataUrl, {method: 'GET'});
+
+                // Record Tubia view event in Tunnl.
+                (new Image()).src = `https://ana.tunnl.com/event?tub_id=${gameId}&eventtype=0&page_url=${location}`;
+
+                // Set the ad tag using the given id.
+                // this.adTag = `https://pub.tunnl.com/opp?page_url=${encodeURIComponent(window.location.href)}&player_width=640&player_height=480&game_id=${gameId}&correlator=${Date.now()}&ad_count=1&ad_position=preroll1`;
+                this.adTag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpostpod&cmsid=496&vid=short_onecue&correlator=';
+                fetch(videoDataRequest).then((response) => {
+                    const contentType = response.headers.get('content-type');
+                    if (!contentType || !contentType.includes('application/json')) {
+                        reject();
+                        throw new TypeError('Oops, we didn\'t get JSON!');
+                    } else {
+                        return response.json();
+                    }
+                }).then(json => {
+                    console.log(json);
+                    resolve(json);
+                }).catch((error) => {
+                    this.onError(error);
+                    reject(error);
+                });
+            }).catch((error) => {
+                this.onError(error);
+            });
+        });
+
+        // We start with showing a poster image with a play button.
+        // By not loading the actual player we save some requests and overall page load.
+        // A user can click the play button to start loading the video player.
+        // Todo: Enable autoplay when possible.
+        this.videoDataPromise.then((json) => {
+            if (!json) {
+                this.onError('No video has been found!');
+                return;
+            }
+
+            const poster = (json.pictures && json.pictures.length > 0) ? json.pictures[json.pictures.length - 1].link : '';
+            this.posterUrl = poster.replace(/^http:\/\//i, 'https://');
+
+            // Load the poster image.
+            this.posterImageElement = document.createElement('img');
+            this.posterImageElement.classList.add('tubia__poster');
+            const checkImage = path =>
+                new Promise(resolve => {
+                    const img = new Image();
+                    img.onload = () => resolve({path, status: 'ok'});
+                    img.onerror = () => resolve({path, status: 'error'});
+                    img.src = path;
+                });
+            const loadImg = (...paths) => Promise.all(paths.map(checkImage));
+            loadImg(this.posterUrl).then((response) => {
+                if (response[0].status === 'ok') {
+                    this.posterImageElement.src = response[0].path;
+                } else {
+                    // Todo: fallback poster image.
+                    this.posterImageElement.src = 'fallback.jpg';
+                    this.posterUrl = 'fallback.jpg';
+                }
+
+                // Start transition towards showing the poster image.
+                this.transitionElement.classList.toggle('tubia__active');
+
+                setTimeout(() => {
+                    // Hide our spinner loader.
+                    this.hexagonLoader.classList.toggle('tubia__active');
+                    // Add our poster image.
+                    this.container.appendChild(this.posterImageElement);
+
+                    // Create the play button.
+                    this.playButton.classList.toggle('tubia__active');
+                    this.playButton.addEventListener('click', () => {
+                        // Hide the play button.
+                        this.playButton.classList.toggle('tubia__active');
+                        // Show transition
+                        this.transitionElement.classList.toggle('tubia__active');
+
+                        setTimeout(() => {
+                            // Show our spinner loader.
+                            this.hexagonLoader.classList.toggle('tubia__active');
+                            // Hide the poster image.
+                            this.posterImageElement.style.display = 'none';
+                        }, this.transitionSpeed / 2);
+
+                        setTimeout(() => {
+                            // Hide transition.
+                            this.transitionElement.classList.toggle('tubia__active');
+                            // Load our player.
+                            this.loadPlayer();
+                        }, this.transitionSpeed);
+                    });
+                }, this.transitionSpeed / 2);
+
+                setTimeout(() => {
+                    // Hide transition.
+                    this.transitionElement.classList.toggle('tubia__active');
+                }, this.transitionSpeed);
+            });
+        });
+    }
+
+    onError(error) {
+        // Todo: I think Plyr has some error handling div.
+        this.options.onError(error);
+        if (this.container) {
+            this.container.style.display = 'none';
+        }
+    }
+
+    loadPlayer() {
         // Todo: Add tubia related videos
         // //walkthrough.gamedistribution.com/api/RelatedVideo/?gameMd5=" + A + "&publisherId=" + G
         // + "&domain=" + b + "&skip=0&take=5&orderBy=visit&sortDirection=desc&langCode=" + aa
@@ -88,7 +298,7 @@ class Tubia {
         // };
         const videoCounterData = `publisherId=${this.options.publisherId}&url=${encodeURIComponent(document.location.href)}&title=${this.options.title}&gameId=${this.options.gameId}&category=${this.options.category}&langCode=${this.options.langCode}`;
         // Todo: Triodor has not yet deployed the preflight request update!
-        const videoCounterUrl = 'https://walkthrough.gamedistribution.com/api/player/find/';
+        const videoCounterUrl = 'https://walkthrough.gamedistribution.com/api/player/findv3/';
         const videoCounterRequest = new Request(videoCounterUrl, {
             method: 'POST',
             body: videoCounterData, // JSON.stringify(videoCounterData),
@@ -104,125 +314,36 @@ class Tubia {
                 return response.json();
             }
         }).catch((error) => {
-            this.options.onError(error);
+            this.onError(error);
         });
 
-        // Search for a matching game within our Tubia database and return the id.
-        const videoSearchPromise = new Promise((resolve, reject) => {
-            utils
-                .loadScript('https://tubia.gamedistribution.com/libs/gd/md5.js')
-                .then(() => {
-                    const pageId = window.calcMD5('http://www.bgames.com');
-                    // const pageId = window.calcMD5(document.location.href);
-                    const videoFindUrl = `https://walkthrough.gamedistribution.com/api/player/findv2/?pageId=${pageId}&gameId=${this.options.gameId}&title=${this.options.title}&domain=${this.options.domain}`;
-                    const videoSearchRequest = new Request(videoFindUrl, {
-                        method: 'GET',
-                    });
-                    fetch(videoSearchRequest).then((response) => {
-                        const contentType = response.headers.get('content-type');
-                        if (!contentType || !contentType.includes('application/json')) {
-                            reject();
-                            throw new TypeError('Oops, we didn\'t get JSON!');
-                        } else {
-                            return response.json();
-                        }
-                    }).then((json) => {
-                        resolve(json);
-                    }).catch((error) => {
-                        this.options.onError(error);
-                        reject();
-                    });
-                })
-                .catch((error) => {
-                    // Script failed to load or is blocked
-                    this.options.onError(error);
-                });
-        });
-
-        // Get us some video data.
-        const videoDataPromise = new Promise((resolve, reject) => {
-            // Todo: check if we dont want to use a tubia url.
-            // Todo: verify if tubia cdn urls are ssl ready.
-            // Todo: make sure to disable ads if enableAds is false. Also for addFreeActive :P
-
-            // Todo: The SSL certificate used to load resources from https://cdn.walkthrough.vooxe.com will be distrusted in M70. Once distrusted, users will be prevented from loading these resources. See https://g.co/chrome/symantecpkicerts for more information.
-            videoSearchPromise.then((id) => {
-                const gameId = (!id) ? this.options.gameId : id;
-                const videoDataUrl = `https://walkthrough.gamedistribution.com/api/player/publish/?gameid=${gameId.replace(/-/g, '')}&publisherid=${this.options.publisherId.replace(/-/g, '')}&domain=${this.options.domain}`;
-                const videoDataRequest = new Request(videoDataUrl, {method: 'GET'});
-
-                // Record Tubia view event in Tunnl.
-                (new Image()).src = `https://ana.tunnl.com/event?tub_id=${gameId}&eventtype=0&page_url=${encodeURIComponent(document.location.href)}`;
-
-                // Set the ad tag using the given id.
-                // this.adTag = `https://pub.tunnl.com/opp?page_url=${encodeURIComponent(window.location.href)}&player_width=640&player_height=480&game_id=${gameId}&correlator=${Date.now()}&ad_count=1&ad_position=preroll1`;
-                this.adTag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpostpod&cmsid=496&vid=short_onecue&correlator=';
-                fetch(videoDataRequest).then((response) => {
-                    const contentType = response.headers.get('content-type');
-                    if (!contentType || !contentType.includes('application/json')) {
-                        reject();
-                        throw new TypeError('Oops, we didn\'t get JSON!');
-                    } else {
-                        return response.json();
-                    }
-                }).then(json => {
-                    resolve(json);
-                }).catch((error) => {
-                    this.options.onError(error);
-                    reject(error);
-                });
-            }).catch((error) => {
-                this.options.onError(error);
-            });
-        });
-
-        videoDataPromise.then((json) => {
+        this.videoDataPromise.then((json) => {
             if (!json) {
-                this.options.onError('No video has been found!');
+                this.onError('No video has been found!');
                 return;
             }
 
-            // Todo: Make sure our poster and source url's uses https. Currently getting http from database.
-            const poster = (json.pictures && json.pictures.length > 0) ? json.pictures[json.pictures.length - 1].link : '';
-            const posterUrl = 'https://img.gamedistribution.com/featured/8c16e991b9bf4dfab0942772d77483f7.jpg';// poster.replace(/^http:\/\//i, 'https://');
-
             // Create the HTML5 video element.
             const videoElement = document.createElement('video');
-            videoElement.setAttribute('controls', true);
-            videoElement.setAttribute('crossorigin', true);
-            videoElement.setAttribute('playsinline', true);
-            videoElement.poster = posterUrl;
+            videoElement.setAttribute('controls', 'true');
+            videoElement.setAttribute('crossorigin', 'true');
+            videoElement.setAttribute('playsinline', 'true');
+            videoElement.poster = this.posterUrl;
             videoElement.id = 'plyr__tubia';
 
             // Todo: If files (transcoded videos) doesn't exist we must load the raw video file.
             // Todo: However, currently the raw files are in the wrong google project and not served from a CDN, so expensive!
             const videoSource = document.createElement('source');
-            const source = (json.files && json.files.length > 0) ? json.files[json.files.length - 1].linkSecure : `http://storage.googleapis.com/vooxe_eu/vids/default/${json.detail[0].mediaURL}`;
+            const source = (json.files && json.files.length > 0) ? json.files[json.files.length - 1].linkSecure : `https://storage.googleapis.com/vooxe_eu/vids/default/${json.detail[0].mediaURL}`;
             const sourceUrl = source.replace(/^http:\/\//i, 'https://');
             const sourceType = (json.files && json.files.length > 0) ? json.files[json.files.length - 1].type : 'video/mp4';
-
             videoSource.src = sourceUrl;
             videoSource.type = sourceType;
 
-            const container = document.getElementById(this.options.container);
-            container.style.opacity = '0';
-            if (container) {
-                // Add our stylesheet.
-                const headElement = document.head;
-                const css = document.createElement('link');
-                css.type = 'text/css';
-                css.rel = 'stylesheet';
-                css.href = 'https://tubia.gamedistribution.com/libs/gd/main.min.css';
-                const font = document.createElement('link');
-                font.type = 'text/css';
-                font.rel = 'stylesheet';
-                font.href = 'https://fonts.googleapis.com/css?family=Khand:400,700';
+            videoElement.appendChild(videoSource);
+            this.container.appendChild(videoElement);
 
-                headElement.appendChild(font);
-                headElement.appendChild(css);
-                videoElement.appendChild(videoSource);
-                container.appendChild(videoElement);
-            }
+            console.log(`Tubia video: ${source}`);
 
             // Create the video player.
             const controls = [
@@ -242,7 +363,7 @@ class Tubia {
             };
 
             // We don't want certain options when our view is too small.
-            if ((container.offsetWidth >= 768)) {
+            if ((this.container.offsetWidth >= 768)) {
                 controls.push('volume');
                 controls.push('settings');
                 controls.push('captions');
@@ -278,21 +399,32 @@ class Tubia {
 
             // Set some listeners.
             this.player.on('ready', () => {
-                this.options.onReady(this.player);
-                if (container) {
-                    container.style.transition = 'opacity 1s cubic-bezier(0.4, 0.0, 1, 1)';
-                    container.style.opacity = '1';
-                }
+                // Start transition towards showing the player.
+                this.transitionElement.classList.toggle('tubia__active');
+
+                setTimeout(() => {
+                    // Hide our spinner loader.
+                    this.hexagonLoader.classList.toggle('tubia__active');
+                }, this.transitionSpeed / 2);
+
+                setTimeout(() => {
+                    // Hide transition.
+                    this.transitionElement.classList.toggle('tubia__active');
+                    // Permanently hide the transition.
+                    this.transitionElement.style.display = 'none';
+                    // Show the player.
+                    this.container.classList.toggle('tubia__active');
+                    // Return ready callback for our clients.
+                    this.options.onReady(this.player);
+                    // Start playing.
+                    this.player.play();
+                }, this.transitionSpeed / 1.5);
             });
             this.player.on('error', (error) => {
-                // Todo: I think Plyr has some error handling div.
-                this.options.onError(error);
-                if (container) {
-                    container.style.display = 'none';
-                }
+                this.onError(error);
             });
         }).catch(error => {
-            this.options.onError(error);
+            this.onError(error);
         });
     }
 

@@ -1,0 +1,184 @@
+.tubia {
+    position: relative;
+    background-color: $plyr-color-gunmetal;
+
+    transition: opacity 1s cubic-bezier(0.4, 0.0, 1, 1);
+    opacity: 0;
+
+    &:before {
+        display: block;
+        content: "";
+        width: 100%;
+        padding-top: (9 / 16) * 100%;
+    }
+
+    &.tubia__active {
+        opacity: 1;
+        .plyr {
+            opacity: 1;
+        }
+    }
+
+    .plyr {
+        transition: opacity 1s cubic-bezier(0.4, 0.0, 1, 1);
+        opacity: 0;
+    }
+
+    .tubia__transition {
+        position: absolute;
+        z-index: 3;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        &:before,
+        &:after {
+            content: '';
+            position: absolute;
+            z-index: 0;
+            top: 0;
+            left: 0;
+            background-color: $plyr-color-accent;
+            width: 100%;
+            height: 100%;
+
+            transform: scaleX(0);
+            transform-origin: left;
+            will-change: transform;
+        }
+        &:after {
+            background-color: $plyr-color-main;
+            width: calc(100% - 10px);
+        }
+        &.tubia__active {
+            &:before {
+                animation: transition-forward 1s cubic-bezier(.51,.92,.24,1.15),
+                transition-backward 1s cubic-bezier(.51,.92,.24,1.15);
+                animation-delay: 0s, 1s;
+            }
+            &:after {
+                animation: transition-forward 1s cubic-bezier(.51,.92,.24,1.15),
+                transition-backward 1s cubic-bezier(.51,.92,.24,1.15);
+                animation-delay: 0.1s, 0.9s;
+            }
+        }
+    }
+
+    .tubia__poster {
+        position: absolute;
+        z-index: 1;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    .tubia__hexagon-loader {
+        display: none;
+        position: absolute;
+        z-index: 2;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.8);
+        &.tubia__active {
+            display: block;
+        }
+        &.tubia__deactive {
+            display: none;
+        }
+    }
+
+    .tubia__play-button {
+        display: none;
+        position: absolute;
+        z-index: 4;
+        top: 50%;
+        left: 50%;
+        border: 0;
+        width: 100px;
+        height: 100px;
+        background: $plyr-color-main;
+        transform: translate(-50%, -50%);
+        &.tubia__active {
+            display: block;
+        }
+        &.tubia__deactive {
+            display: none;
+        }
+    }
+
+    .tubia__hexagon {
+        width: 104px;
+        height: 121px;
+        overflow: visible;
+        background-color: transparent;
+        .tubia__hexagon-base,
+        .tubia__hexagon-line-animation {
+            fill: transparent;
+            stroke-miterlimit: 10;
+            stroke-width: 10px;
+        }
+        .tubia__hexagon-base {
+            stroke: $plyr-color-main;
+        }
+        .tubia__hexagon-line-animation {
+            stroke: $plyr-color-accent;
+            stroke-linecap: square;
+            animation: dash 1.5s linear;
+            animation-iteration-count: infinite;
+        }
+    }
+
+    @keyframes dash {
+        0% {
+            /* Stroke-dasharray: first value is the width of the animated stroke(aka dash); second value is the width of the space between each dash.
+             * In this case, the first value is 60% of total path length, the second is 40%.
+             */
+            stroke-dasharray: 260.22 173.48;
+            /* Stroke-dashoffset: is the point where stroke-dasharray will begin.
+             * So in this case for anim, it needs to be at the start, and finish at the end of the hexagon shape (aka the length of the path shape)
+             */
+            stroke-dashoffset: 0;
+        }
+        50% {
+            stroke-dasharray: 1 431.7;
+        }
+        100% {
+            stroke-dasharray: 260.22 173.48;
+            stroke-dashoffset: -867.4;
+        }
+    }
+
+    @keyframes transition-forward {
+        0% {
+            transform: scaleX(0);
+        }
+        60% {
+            transform: scaleX(1);
+        }
+        100% {
+            transform: scaleX(1);
+        }
+    }
+
+    @keyframes transition-backward {
+        0% {
+            transform: scaleX(1);
+        }
+        60% {
+            transform: scaleX(-1);
+        }
+        100% {
+            transform: scaleX(-1);
+        }
+    }
+
+    .plyr {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+}

@@ -3,8 +3,6 @@
 // https://github.com/sampotts/plyr
 // TODO: Review use of BEM classnames
 // ==========================================================================
-@charset 'UTF-8';
-
 @import 'settings/breakpoints';
 @import 'settings/colors';
 @import 'settings/cosmetics';
@@ -24,6 +22,7 @@
 @import 'lib/mixins';
 
 @import 'base';
+@import 'main';
 
 @import 'components/badges';
 @import 'components/captions';
