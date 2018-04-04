@@ -95,6 +95,62 @@ class Tubia {
         }).catch((error) => {
             this.onError(error);
         });
+
+        // Set theme styles.
+        const css = `
+            .tubia__ .tubia__transition:after {
+                background-color: ${this.options.colorMain};
+            }
+            .tubia__ .tubia__transition:before {
+                background-color: ${this.options.colorAccent};
+            }
+            .tubia__ .tubia__play-button .tubia__hexagon .tubia__hexagon-base, 
+            .tubia__ .tubia__play-button .tubia__hexagon .tubia__hexagon-line-animation {
+                fill: ${this.options.colorMain};
+                stroke: ${this.options.colorMain};
+            }
+            .tubia__ .tubia__hexagon-loader .tubia__hexagon .tubia__hexagon-base {
+                stroke: ${this.options.colorMain};
+            }
+            .tubia__ .tubia__hexagon-loader .tubia__hexagon .tubia__hexagon-line-animation {
+                stroke: ${this.options.colorAccent};
+            }
+            .plyr--full-ui input[type=range] {
+                color: ${this.options.colorMain};
+            }
+            .plyr__menu__container {
+                background: ${this.options.colorMain};
+            }
+            .plyr__menu__container:after {
+                border-top-color: ${this.options.colorMain};
+            }
+            .plyr__controls .plyr__control--overlaid > div > div svg {
+                color: ${this.options.colorMain};
+            }
+            .plyr__playlist ul li.active .plyr__count {
+                border-color: ${this.options.colorMain};
+                background-color: ${this.options.colorMain};
+            }
+            .plyr__playlist ul li:active .plyr__count {
+                border-color: ${this.options.colorAccent};
+            }
+            .plyr__playlist:before {
+                background-color: ${this.options.colorAccent};
+            }
+            .plyr__playlist:after {
+                background-color: ${this.options.colorMain};
+            }
+        `;
+        // Add css
+        const head = document.head || document.getElementsByTagName('head')[0];
+        const style = document.createElement('style');
+        style.type = 'text/css';
+        if (style.styleSheet) {
+            style.styleSheet.cssText = css;
+        } else {
+            style.appendChild(document.createTextNode(css));
+        }
+        head.appendChild(style);
     }
 
     /**
@@ -186,8 +242,9 @@ class Tubia {
                 (new Image()).src = `https://ana.tunnl.com/event?tub_id=${gameId}&eventtype=0&page_url=${location}`;
 
                 // Set the ad tag using the given id.
-                // this.adTag = `https://pub.tunnl.com/opp?page_url=${encodeURIComponent(window.location.href)}&player_width=640&player_height=480&game_id=${gameId}&correlator=${Date.now()}&ad_count=1&ad_position=preroll1`;
-                this.adTag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpostpod&cmsid=496&vid=short_onecue&correlator=';
+                // this.adTag = `https://pub.tunnl.com/opp?page_url=${encodeURIComponent(this.url)}&player_width=640&player_height=480&game_id=${gameId}&correlator=${Date.now()}`;
+                // this.adTag = `https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpostpod&cmsid=496&vid=short_onecue&correlator=${Date.now()}`;
+                this.adTag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpreonly&cmsid=496&vid=short_onecue&correlator=';
                 fetch(videoDataRequest).then((response) => {
                     const contentType = response.headers.get('content-type');
                     if (!contentType || !contentType.includes('application/json')) {
@@ -236,9 +293,7 @@ class Tubia {
                 if (response[0].status === 'ok') {
                     this.posterImageElement.src = response[0].path;
                 } else {
-                    // Todo: fallback poster image.
-                    this.posterImageElement.src = 'fallback.jpg';
-                    this.posterUrl = 'fallback.jpg';
+                    this.posterImageElement.style.display = 'none';
                 }
 
                 // Start transition towards showing the poster image.
@@ -414,12 +469,16 @@ class Tubia {
             this.player = new Plyr('#plyr__tubia', {
                 debug: this.options.debug,
                 iconUrl: 'https://tubia.gamedistribution.com/libs/gd/sprite.svg',
-                colorMain: this.options.colorMain,
-                colorAccent: this.options.colorAccent,
                 title: (json.detail && json.detail.length > 0) ? json.detail[0].title : '',
+                logo: json.logoEnabled,
                 showPosterOnEnd: true,
                 ads: {
-                    tag: this.adTag,
+                    enabled: json.adsEnabled,
+                    video: json.preRollEnabled,
+                    overlay: json.subBannerEnabled,
+                    videoInterval: json.preRollSecond,
+                    overlayInterval: json.subBannerSecond,
+                    tag: (json.adsEnabled && !json.addFreeActive) ? this.adTag : '',
                 },
                 keyboard: {
                     global: true,
@@ -430,6 +489,9 @@ class Tubia {
                 },
                 captions: {
                     active: true,
+                },
+                fullscreen: {
+                    enabled: json.fullScreenEnabled,
                 },
                 playlist,
                 controls,
