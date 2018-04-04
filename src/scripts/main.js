@@ -33,8 +33,8 @@ class Tubia {
             title: '',
             category: '',
             langCode: '',
-            colorMain: '#1aafff',
-            colorAccent: '#D8E741',
+            colorMain: '',
+            colorAccent: '',
             domain: 'bgames.com',
             // domain: window.location.href.toLowerCase().replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').split('/')[0],
             onFound() {
@@ -64,7 +64,7 @@ class Tubia {
         /* eslint-enable */
 
         this.container = document.getElementById(this.options.container);
-        this.url = 'http://www.bgames.com/puzzle-games/the-forest-temple/'; // document.location.href;
+        this.url = document.location.href;
         this.adTag = null;
         this.posterUrl = '';
         this.posterImageElement = null;
@@ -97,60 +97,62 @@ class Tubia {
         });
 
         // Set theme styles.
-        const css = `
-            .tubia__ .tubia__transition:after {
-                background-color: ${this.options.colorMain};
+        if(this.options.colorMain !== '' && this.options.colorAccent !== '') {
+            const css = `
+                .tubia__ .tubia__transition:after {
+                    background-color: ${this.options.colorMain};
+                }
+                .tubia__ .tubia__transition:before {
+                    background-color: ${this.options.colorAccent};
+                }
+                .tubia__ .tubia__play-button .tubia__hexagon .tubia__hexagon-base, 
+                .tubia__ .tubia__play-button .tubia__hexagon .tubia__hexagon-line-animation {
+                    fill: ${this.options.colorMain};
+                    stroke: ${this.options.colorMain};
+                }
+                .tubia__ .tubia__hexagon-loader .tubia__hexagon .tubia__hexagon-base {
+                    stroke: ${this.options.colorMain};
+                }
+                .tubia__ .tubia__hexagon-loader .tubia__hexagon .tubia__hexagon-line-animation {
+                    stroke: ${this.options.colorAccent};
+                }
+                .plyr--full-ui input[type=range] {
+                    color: ${this.options.colorMain};
+                }
+                .plyr__menu__container {
+                    background: ${this.options.colorMain};
+                }
+                .plyr__menu__container:after {
+                    border-top-color: ${this.options.colorMain};
+                }
+                .plyr__control--overlaid {
+                    color: ${this.options.colorMain};
+                }
+                .plyr__playlist ul li.active .plyr__count {
+                    border-color: ${this.options.colorMain};
+                    background-color: ${this.options.colorMain};
+                }
+                .plyr__playlist ul li:active .plyr__count {
+                    border-color: ${this.options.colorAccent};
+                }
+                .plyr__playlist:before {
+                    background-color: ${this.options.colorAccent};
+                }
+                .plyr__playlist:after {
+                    background-color: ${this.options.colorMain};
+                }
+            `;
+            // Add css
+            const head = document.head || document.getElementsByTagName('head')[0];
+            const style = document.createElement('style');
+            style.type = 'text/css';
+            if (style.styleSheet) {
+                style.styleSheet.cssText = css;
+            } else {
+                style.appendChild(document.createTextNode(css));
             }
-            .tubia__ .tubia__transition:before {
-                background-color: ${this.options.colorAccent};
-            }
-            .tubia__ .tubia__play-button .tubia__hexagon .tubia__hexagon-base, 
-            .tubia__ .tubia__play-button .tubia__hexagon .tubia__hexagon-line-animation {
-                fill: ${this.options.colorMain};
-                stroke: ${this.options.colorMain};
-            }
-            .tubia__ .tubia__hexagon-loader .tubia__hexagon .tubia__hexagon-base {
-                stroke: ${this.options.colorMain};
-            }
-            .tubia__ .tubia__hexagon-loader .tubia__hexagon .tubia__hexagon-line-animation {
-                stroke: ${this.options.colorAccent};
-            }
-            .plyr--full-ui input[type=range] {
-                color: ${this.options.colorMain};
-            }
-            .plyr__menu__container {
-                background: ${this.options.colorMain};
-            }
-            .plyr__menu__container:after {
-                border-top-color: ${this.options.colorMain};
-            }
-            .plyr__controls .plyr__control--overlaid > div > div svg {
-                color: ${this.options.colorMain};
-            }
-            .plyr__playlist ul li.active .plyr__count {
-                border-color: ${this.options.colorMain};
-                background-color: ${this.options.colorMain};
-            }
-            .plyr__playlist ul li:active .plyr__count {
-                border-color: ${this.options.colorAccent};
-            }
-            .plyr__playlist:before {
-                background-color: ${this.options.colorAccent};
-            }
-            .plyr__playlist:after {
-                background-color: ${this.options.colorMain};
-            }
-        `;
-        // Add css
-        const head = document.head || document.getElementsByTagName('head')[0];
-        const style = document.createElement('style');
-        style.type = 'text/css';
-        if (style.styleSheet) {
-            style.styleSheet.cssText = css;
-        } else {
-            style.appendChild(document.createTextNode(css));
+            head.appendChild(style);
         }
-        head.appendChild(style);
     }
 
     /**
@@ -193,35 +195,32 @@ class Tubia {
         // Search for a matching game within our Tubia database and return the id.
         // Todo: We can't get the poster image without doing these requests for data. Kind of sucks.
         this.videoSearchPromise = new Promise((resolve, reject) => {
-            const gameId = this.options.gameId.replace(/-/g, '');
+            const gameId = this.options.gameId.toString().replace(/-/g, '');
             const title = encodeURIComponent(this.options.title);
             const domain = encodeURIComponent(this.options.domain);
-            utils
-                .loadScript('https://tubia.gamedistribution.com/libs/gd/md5.js')
-                .then(() => {
-                    const pageId = window.calcMD5(this.url);
-                    const videoFindUrl = `https://walkthrough.gamedistribution.com/api/player/findv3/?pageId=${pageId}&gameId=${gameId}&title=${title}&domain=${domain}`;
-                    const videoSearchRequest = new Request(videoFindUrl, {
-                        method: 'GET',
-                    });
-                    fetch(videoSearchRequest).then((response) => {
-                        const contentType = response.headers.get('content-type');
-                        if (!contentType || !contentType.includes('application/json')) {
-                            reject();
-                            throw new TypeError('Oops, we didn\'t get JSON!');
-                        } else {
-                            return response.json();
-                        }
-                    }).then((json) => {
-                        resolve(json);
-                    }).catch((error) => {
-                        this.onError(error);
-                        reject();
-                    });
-                })
-                .catch((error) => {
-                    this.onError(error);
+            utils.loadScript('https://tubia.gamedistribution.com/libs/gd/md5.js').then(() => {
+                const pageId = window.calcMD5(this.url);
+                const videoFindUrl = `https://walkthrough.gamedistribution.com/api/player/findv3/?pageId=${pageId}&gameId=${gameId}&title=${title}&domain=${domain}`;
+                const videoSearchRequest = new Request(videoFindUrl, {
+                    method: 'GET',
                 });
+                fetch(videoSearchRequest).then((response) => {
+                    const contentType = response.headers.get('content-type');
+                    if (!contentType || !contentType.includes('application/json')) {
+                        reject();
+                        throw new TypeError('Oops, we didn\'t get JSON!');
+                    } else {
+                        return response.json();
+                    }
+                }).then((json) => {
+                    resolve(json);
+                }).catch((error) => {
+                    this.onError(error);
+                    reject();
+                });
+            }).catch((error) => {
+                this.onError(error);
+            });
         });
 
         // Get the video data using the id returned from the videoSearchPromise.
@@ -231,8 +230,8 @@ class Tubia {
             // Todo: make sure to disable ads if enableAds is false. Also for addFreeActive :P
             // Todo: The SSL certificate used to load resources from https://cdn.walkthrough.vooxe.com will be distrusted in M70. Once distrusted, users will be prevented from loading these resources. See https://g.co/chrome/symantecpkicerts for more information.
             this.videoSearchPromise.then((id) => {
-                const gameId = (typeof id !== 'undefined' && id.gameId && id.gameId !== '') ? id.gameId.replace(/-/g, '') : this.options.gameId.replace(/-/g, '');
-                const publisherId = this.options.publisherId.replace(/-/g, '');
+                const gameId = (typeof id !== 'undefined' && id.gameId && id.gameId !== '') ? id.gameId.toString().replace(/-/g, '') : this.options.gameId.toString().replace(/-/g, '');
+                const publisherId = this.options.publisherId.toString().replace(/-/g, '');
                 const domain = encodeURIComponent(this.options.domain);
                 const location = encodeURIComponent(this.url);
                 const videoDataUrl = `https://walkthrough.gamedistribution.com/api/player/publish/?gameid=${gameId}&publisherid=${publisherId}&domain=${domain}`;
@@ -242,9 +241,9 @@ class Tubia {
                 (new Image()).src = `https://ana.tunnl.com/event?tub_id=${gameId}&eventtype=0&page_url=${location}`;
 
                 // Set the ad tag using the given id.
-                // this.adTag = `https://pub.tunnl.com/opp?page_url=${encodeURIComponent(this.url)}&player_width=640&player_height=480&game_id=${gameId}&correlator=${Date.now()}`;
+                this.adTag = `https://pub.tunnl.com/opp?page_url=${encodeURIComponent(this.url)}&player_width=640&player_height=480&game_id=${gameId}&correlator=${Date.now()}`;
                 // this.adTag = `https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpostpod&cmsid=496&vid=short_onecue&correlator=${Date.now()}`;
-                this.adTag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpreonly&cmsid=496&vid=short_onecue&correlator=';
+                // this.adTag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpreonly&cmsid=496&vid=short_onecue&correlator=';
                 fetch(videoDataRequest).then((response) => {
                     const contentType = response.headers.get('content-type');
                     if (!contentType || !contentType.includes('application/json')) {

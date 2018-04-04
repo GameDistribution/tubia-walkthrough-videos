@@ -146,7 +146,7 @@ class Ads {
             const positionCount = this.adCount - 1;
             this.tagUrl = utils.updateQueryStringParameter(this.tagUrl, 'ad_count', this.adCount);
             this.tagUrl = utils.updateQueryStringParameter(this.tagUrl, 'ad_position',
-                (this.adCount === 1) ? 'preroll' : `midroll${positionCount.toString()}`);
+                (this.adCount === 1) ? 'preroll' : `subbanner${positionCount.toString()}`);
 
             request.adTagUrl = this.tagUrl;
 
