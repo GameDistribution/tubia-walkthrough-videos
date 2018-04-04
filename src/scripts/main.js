@@ -64,6 +64,7 @@ class Tubia {
         /* eslint-enable */
 
         this.container = document.getElementById(this.options.container);
+        this.url = 'http://www.bgames.com/puzzle-games/the-forest-temple/'; // document.location.href;
         this.adTag = null;
         this.posterUrl = '';
         this.posterImageElement = null;
@@ -73,37 +74,47 @@ class Tubia {
         this.videoSearchPromise = null;
         this.videoDataPromise = null;
         this.transitionSpeed = 2000;
+        this.startPlyrHandler = this.startPlyr.bind(this);
 
-        if (!this.container) {
+        if (this.container) {
+            // Add our main class to our clients container.
+            this.container.classList.add('tubia__');
+        } else {
             return false;
         }
 
         // Call Google Analytics and Death Star.
         this.analytics();
 
-        // Start our application. We load the player when the user clicks,
-        // as we don't want too many requests for our assets.
-        this.start();
+        // Load our styles first. So we don't get initial load flickering.
+        utils.loadStyle('https://fonts.googleapis.com/css?family=Khand:400,700');
+        utils.loadStyle('https://tubia.gamedistribution.com/libs/gd/main.min.css').then(() => {
+            // Start our application. We load the player when the user clicks,
+            // as we don't want too many requests for our assets.
+            this.start();
+        }).catch((error) => {
+            this.onError(error);
+        });
     }
 
+    /**
+     * start
+     * Start the Tubia application.
+     */
     start() {
-        const headElement = document.head;
-        const css = document.createElement('link');
-        const font = document.createElement('link');
-        css.type = 'text/css';
-        css.rel = 'stylesheet';
-        css.href = 'https://tubia.gamedistribution.com/libs/gd/main.min.css';
-        font.type = 'text/css';
-        font.rel = 'stylesheet';
-        font.href = 'https://fonts.googleapis.com/css?family=Khand:400,700';
-        headElement.appendChild(font);
-        headElement.appendChild(css);
-
-        this.container.classList.add('tubia');
-
         const html = `
             <div class="tubia__transition"></div>
-            <button class="tubia__play-button"></button>
+            <button class="tubia__play-button">
+                <svg class="tubia__play-icon" viewBox="0 0 18 18" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                    <g>
+                        <path d="M15.5615866,8.10002147 L3.87056367,0.225209313 C3.05219207,-0.33727727 2,0.225209313 2,1.12518784 L2,16.8748122 C2,17.7747907 3.05219207,18.3372773 3.87056367,17.7747907 L15.5615866,9.89997853 C16.1461378,9.44998927 16.1461378,8.55001073 15.5615866,8.10002147 L15.5615866,8.10002147 Z"/>
+                    </g>
+                </svg>
+                <svg class="tubia__hexagon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 129.78 150.37">
+                    <path class="tubia__hexagon-base" d="M-1665.43,90.94V35.83a15.09,15.09,0,0,1,6.78-12.59l48.22-31.83a15.09,15.09,0,0,1,16-.38L-1547,19.13a15.09,15.09,0,0,1,7.39,13V90.94a15.09,15.09,0,0,1-7.21,12.87l-47.8,29.24a15.09,15.09,0,0,1-15.75,0l-47.8-29.24A15.09,15.09,0,0,1-1665.43,90.94Z" transform="translate(1667.43 13.09)"/>
+                    <path class="tubia__hexagon-line-animation" d="M-1665.43,90.94V35.83a15.09,15.09,0,0,1,6.78-12.59l48.22-31.83a15.09,15.09,0,0,1,16-.38L-1547,19.13a15.09,15.09,0,0,1,7.39,13V90.94a15.09,15.09,0,0,1-7.21,12.87l-47.8,29.24a15.09,15.09,0,0,1-15.75,0l-47.8-29.24A15.09,15.09,0,0,1-1665.43,90.94Z" transform="translate(1667.43 13.09)"/>
+                </svg>
+            </button>
             <div class="tubia__hexagon-loader">
                 <svg class="tubia__hexagon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 129.78 150.37">
                     <path class="tubia__hexagon-base" d="M-1665.43,90.94V35.83a15.09,15.09,0,0,1,6.78-12.59l48.22-31.83a15.09,15.09,0,0,1,16-.38L-1547,19.13a15.09,15.09,0,0,1,7.39,13V90.94a15.09,15.09,0,0,1-7.21,12.87l-47.8,29.24a15.09,15.09,0,0,1-15.75,0l-47.8-29.24A15.09,15.09,0,0,1-1665.43,90.94Z" transform="translate(1667.43 13.09)"/>
@@ -117,6 +128,9 @@ class Tubia {
         this.playButton = this.container.querySelector('.tubia__play-button');
         this.hexagonLoader = this.container.querySelector('.tubia__hexagon-loader');
 
+        // Show the container.
+        this.container.classList.toggle('tubia__active');
+
         // Show a spinner loader, as this could take some time.
         this.hexagonLoader.classList.toggle('tubia__active');
 
@@ -129,8 +143,7 @@ class Tubia {
             utils
                 .loadScript('https://tubia.gamedistribution.com/libs/gd/md5.js')
                 .then(() => {
-                    const pageId = window.calcMD5('http://www.bgames.com/puzzle-games/the-forest-temple/');
-                    // const pageId = window.calcMD5(document.location.href);
+                    const pageId = window.calcMD5(this.url);
                     const videoFindUrl = `https://walkthrough.gamedistribution.com/api/player/findv3/?pageId=${pageId}&gameId=${gameId}&title=${title}&domain=${domain}`;
                     const videoSearchRequest = new Request(videoFindUrl, {
                         method: 'GET',
@@ -162,10 +175,10 @@ class Tubia {
             // Todo: make sure to disable ads if enableAds is false. Also for addFreeActive :P
             // Todo: The SSL certificate used to load resources from https://cdn.walkthrough.vooxe.com will be distrusted in M70. Once distrusted, users will be prevented from loading these resources. See https://g.co/chrome/symantecpkicerts for more information.
             this.videoSearchPromise.then((id) => {
-                const gameId = (!id) ? this.options.gameId.replace(/-/g, '') : id.replace(/-/g, '');
+                const gameId = (typeof id !== 'undefined' && id.gameId && id.gameId !== '') ? id.gameId.replace(/-/g, '') : this.options.gameId.replace(/-/g, '');
                 const publisherId = this.options.publisherId.replace(/-/g, '');
                 const domain = encodeURIComponent(this.options.domain);
-                const location = encodeURIComponent(document.location.href);
+                const location = encodeURIComponent(this.url);
                 const videoDataUrl = `https://walkthrough.gamedistribution.com/api/player/publish/?gameid=${gameId}&publisherid=${publisherId}&domain=${domain}`;
                 const videoDataRequest = new Request(videoDataUrl, {method: 'GET'});
 
@@ -238,27 +251,9 @@ class Tubia {
                     this.container.appendChild(this.posterImageElement);
 
                     // Create the play button.
+                    // Todo: hide button when done.
                     this.playButton.classList.toggle('tubia__active');
-                    this.playButton.addEventListener('click', () => {
-                        // Hide the play button.
-                        this.playButton.classList.toggle('tubia__active');
-                        // Show transition
-                        this.transitionElement.classList.toggle('tubia__active');
-
-                        setTimeout(() => {
-                            // Show our spinner loader.
-                            this.hexagonLoader.classList.toggle('tubia__active');
-                            // Hide the poster image.
-                            this.posterImageElement.style.display = 'none';
-                        }, this.transitionSpeed / 2);
-
-                        setTimeout(() => {
-                            // Hide transition.
-                            this.transitionElement.classList.toggle('tubia__active');
-                            // Load our player.
-                            this.loadPlayer();
-                        }, this.transitionSpeed);
-                    });
+                    this.playButton.addEventListener('click', this.startPlyrHandler, false);
                 }, this.transitionSpeed / 2);
 
                 setTimeout(() => {
@@ -269,15 +264,58 @@ class Tubia {
         });
     }
 
+    /**
+     * onError
+     * Whenever we hit a problem while initializing Tubia.
+     * @param {String} error
+     */
     onError(error) {
         // Todo: I think Plyr has some error handling div.
         this.options.onError(error);
         if (this.container) {
-            this.container.style.display = 'none';
+            this.container.classList.toggle = 'tubia__error';
         }
     }
 
-    loadPlayer() {
+    /**
+     * startPlyr
+     * Method for animating into loading the Plyr player.
+     */
+    startPlyr() {
+        if(!this.playButton) {
+            return;
+        }
+
+        // Remove our click listener to avoid double clicks.
+        this.playButton.removeEventListener('click', this.startPlyrHandler, false);
+
+        // Hide the play button.
+        this.playButton.classList.toggle('tubia__active');
+        // Show transition
+        this.transitionElement.classList.toggle('tubia__active');
+
+        setTimeout(() => {
+            // Show our spinner loader.
+            this.hexagonLoader.classList.toggle('tubia__active');
+            // Hide the poster image.
+            this.posterImageElement.style.display = 'none';
+            // Remove the button.
+            this.playButton.parentNode.removeChild(this.playButton);
+        }, this.transitionSpeed / 2);
+
+        setTimeout(() => {
+            // Hide transition.
+            this.transitionElement.classList.toggle('tubia__active');
+            // Load our player.
+            this.loadPlyr();
+        }, this.transitionSpeed);
+    }
+
+    /**
+     * loadPlyr
+     * Load the Plyr library.
+     */
+    loadPlyr() {
         // Todo: Add tubia related videos
         // //walkthrough.gamedistribution.com/api/RelatedVideo/?gameMd5=" + A + "&publisherId=" + G
         // + "&domain=" + b + "&skip=0&take=5&orderBy=visit&sortDirection=desc&langCode=" + aa
@@ -296,7 +334,7 @@ class Tubia {
         //     category: this.options.category,
         //     langCode: this.options.langCode,
         // };
-        const videoCounterData = `publisherId=${this.options.publisherId}&url=${encodeURIComponent(document.location.href)}&title=${this.options.title}&gameId=${this.options.gameId}&category=${this.options.category}&langCode=${this.options.langCode}`;
+        const videoCounterData = `publisherId=${this.options.publisherId}&url=${encodeURIComponent(this.url)}&title=${this.options.title}&gameId=${this.options.gameId}&category=${this.options.category}&langCode=${this.options.langCode}`;
         // Todo: Triodor has not yet deployed the preflight request update!
         const videoCounterUrl = 'https://walkthrough.gamedistribution.com/api/player/findv3/';
         const videoCounterRequest = new Request(videoCounterUrl, {
@@ -413,7 +451,7 @@ class Tubia {
                     // Permanently hide the transition.
                     this.transitionElement.style.display = 'none';
                     // Show the player.
-                    this.container.classList.toggle('tubia__active');
+                    this.player.elements.container.classList.toggle('tubia__active');
                     // Return ready callback for our clients.
                     this.options.onReady(this.player);
                     // Start playing.
@@ -430,6 +468,7 @@ class Tubia {
 
     /**
      * Analytics
+     * Load Google Analytics and OrangeGames analytics.
      */
     analytics() {
         /* eslint-disable */

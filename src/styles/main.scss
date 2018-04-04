@@ -1,9 +1,10 @@
-.tubia {
+.tubia__ {
     position: relative;
     background-color: $plyr-color-gunmetal;
 
     transition: opacity 1s cubic-bezier(0.4, 0.0, 1, 1);
     opacity: 0;
+    visibility: hidden;
 
     &:before {
         display: block;
@@ -13,15 +14,20 @@
     }
 
     &.tubia__active {
+        visibility: visible;
         opacity: 1;
-        .plyr {
-            opacity: 1;
-        }
+    }
+
+    &.tubia__error {
+        display: none;
     }
 
     .plyr {
         transition: opacity 1s cubic-bezier(0.4, 0.0, 1, 1);
         opacity: 0;
+        &.tubia__active {
+            opacity: 1;
+        }
     }
 
     .tubia__transition {
@@ -53,13 +59,13 @@
         }
         &.tubia__active {
             &:before {
-                animation: transition-forward 1s cubic-bezier(.51,.92,.24,1.15),
-                transition-backward 1s cubic-bezier(.51,.92,.24,1.15);
+                animation: transition-forward 1s cubic-bezier(.51, .92, .24, 1.15),
+                transition-backward 1s cubic-bezier(.51, .92, .24, 1.15);
                 animation-delay: 0s, 1s;
             }
             &:after {
-                animation: transition-forward 1s cubic-bezier(.51,.92,.24,1.15),
-                transition-backward 1s cubic-bezier(.51,.92,.24,1.15);
+                animation: transition-forward 1s cubic-bezier(.51, .92, .24, 1.15),
+                transition-backward 1s cubic-bezier(.51, .92, .24, 1.15);
                 animation-delay: 0.1s, 0.9s;
             }
         }
@@ -90,21 +96,48 @@
     }
 
     .tubia__play-button {
-        display: none;
         position: absolute;
         z-index: 4;
         top: 50%;
         left: 50%;
+        background-color: transparent;
         border: 0;
-        width: 100px;
-        height: 100px;
-        background: $plyr-color-main;
-        transform: translate(-50%, -50%);
-        &.tubia__active {
-            display: block;
+        cursor: pointer;
+        opacity: 0;
+        transform-origin: center;
+        transform: translate(-50%, -40%) scale(0.5);
+        will-change: transform, opacity;
+        transition: transform 0.2s cubic-bezier(.51, .92, .24, 1.15),
+        opacity 0.1s linear;
+        .tubia__play-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.4);
+            fill: #fff;
+            margin-left: 4px;
         }
-        &.tubia__deactive {
-            display: none;
+        .tubia__hexagon {
+            .tubia__hexagon-base,
+            .tubia__hexagon-line-animation {
+                fill: $plyr-color-main;
+            }
+            .tubia__hexagon-line-animation {
+                display: none;
+            }
+        }
+        &:focus {
+            outline: 0;
+        }
+        &.tubia__active {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(0.8);
+            &:hover {
+                transform: translate(-50%, -52%) scale(0.8);
+            }
+            &:active {
+                transform: translate(-50%, -50%) scale(0.9);
+            }
         }
     }
 
