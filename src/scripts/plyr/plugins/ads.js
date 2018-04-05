@@ -142,19 +142,19 @@ class Ads {
             // Update our adTag. We add additional parameters so Tunnl
             // can use the values as new metrics within reporting.
             // It is also used to determine if we get an overlay or not.
-            let positionName = '';
-            if (this.adPosition === 0) {
+            this.tagUrl = utils.updateQueryStringParameter(this.tagUrl, 'ad_count', this.adCount);
+            if(this.adPosition === 0) {
+                this.tagUrl = utils.updateQueryStringParameter(this.tagUrl, 'ad_position', 'postroll');
                 this.adPosition = 1;
-                positionName = 'postroll';
-            } else if (this.adPosition === 1) {
-                positionName = 'preroll';
+            } else if(this.adPosition === 1) {
+                this.tagUrl = utils.updateQueryStringParameter(this.tagUrl, 'ad_position', 'preroll');
                 this.adPosition = 2;
             } else {
-                positionName = 'subbanner';
+                this.tagUrl = utils.updateQueryStringParameter(this.tagUrl, 'ad_type', 'image');
+                this.tagUrl = utils.updateQueryStringParameter(this.tagUrl, 'ad_skippable', '0');
+                this.tagUrl = utils.updateQueryStringParameter(this.tagUrl, 'ad_position', `subbanner${this.adCount.toString()}`);
+                this.adPosition = 3;
             }
-            this.tagUrl = utils.updateQueryStringParameter(this.tagUrl, 'ad_count', this.adCount);
-            this.tagUrl = utils.updateQueryStringParameter(this.tagUrl, 'ad_position',
-                (this.adPosition < 2) ? positionName : `${positionName}${this.adCount.toString()}`);
 
             this.adCount += 1;
 
@@ -167,8 +167,8 @@ class Ads {
             request.nonLinearAdSlotWidth = container.offsetWidth;
             request.nonLinearAdSlotHeight = container.offsetHeight;
 
-            // We only overlay ads as we only support video.
-            request.forceNonLinearFullSlot = false;
+            // give us non-linear ads when we're running mid-rolls.
+            request.forceNonLinearFullSlot = (this.adPosition === 3);
 
             this.loader.requestAds(request);
 
