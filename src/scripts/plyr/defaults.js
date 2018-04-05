@@ -282,6 +282,7 @@ const defaults = {
         'qualityrequested',
 
         // Ads
+        'adsmanagerloaded',
         'adsloaded',
         'adscontentpause',
         'adscontentresume',
