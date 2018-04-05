@@ -234,6 +234,23 @@ const controls = {
 
         utils.setAttributes(button, attributes);
 
+        if (type === 'play-large') {
+            const html = `
+                <button class="tubia__play-button">
+                    <svg class="tubia__play-icon" viewBox="0 0 18 18" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                        <g>
+                            <path d="M15.5615866,8.10002147 L3.87056367,0.225209313 C3.05219207,-0.33727727 2,0.225209313 2,1.12518784 L2,16.8748122 C2,17.7747907 3.05219207,18.3372773 3.87056367,17.7747907 L15.5615866,9.89997853 C16.1461378,9.44998927 16.1461378,8.55001073 15.5615866,8.10002147 L15.5615866,8.10002147 Z"/>
+                        </g>
+                    </svg>
+                    <svg class="tubia__hexagon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 129.78 150.37">
+                        <path class="tubia__hexagon-base" d="M-1665.43,90.94V35.83a15.09,15.09,0,0,1,6.78-12.59l48.22-31.83a15.09,15.09,0,0,1,16-.38L-1547,19.13a15.09,15.09,0,0,1,7.39,13V90.94a15.09,15.09,0,0,1-7.21,12.87l-47.8,29.24a15.09,15.09,0,0,1-15.75,0l-47.8-29.24A15.09,15.09,0,0,1-1665.43,90.94Z" transform="translate(1667.43 13.09)"/>
+                        <path class="tubia__hexagon-line-animation" d="M-1665.43,90.94V35.83a15.09,15.09,0,0,1,6.78-12.59l48.22-31.83a15.09,15.09,0,0,1,16-.38L-1547,19.13a15.09,15.09,0,0,1,7.39,13V90.94a15.09,15.09,0,0,1-7.21,12.87l-47.8,29.24a15.09,15.09,0,0,1-15.75,0l-47.8-29.24A15.09,15.09,0,0,1-1665.43,90.94Z" transform="translate(1667.43 13.09)"/>
+                    </svg>
+                </button>
+            `;
+            button.insertAdjacentHTML('beforeend', html);
+        }
+
         // We have multiple play buttons
         if (type === 'play') {
             if (!utils.is.array(this.elements.buttons[type])) {
@@ -354,13 +371,37 @@ const controls = {
 
     // Create logo
     createLogo() {
+        const svg = `
+                <?xml version="1.0" encoding="utf-8"?>
+                <svg preserveAspectRatio="xMinYMin meet" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="7.66 107.033 237.047 36.63">
+                <g>
+                    <path shape-rendering="optimizeQuality" fill="#FFFFFF" d="M75.696,109.75H58.565v-2.716H96.17v2.716H78.969v33.496h-3.203V109.75H75.696z"/>
+                    <path shape-rendering="optimizeQuality" fill="#FFFFFF" d="M147.006,143.245v-36.212h24.025c5.641,0,8.564,2.298,8.564,8.705c0,4.387-0.695,7.381-5.292,8.635v0.07
+                        c4.735,0.975,5.989,4.178,5.989,8.705c0,6.546-3.135,10.098-9.193,10.098H147.006z M170.334,123.12
+                        c4.596,0,6.059-3.134,6.059-7.242c0-5.989-3.342-6.128-5.85-6.128h-20.265v13.37H170.334z M150.209,140.529h19.012
+                        c5.292,0,7.869-1.811,7.869-7.104c0-3.203-0.976-7.59-6.477-7.59h-20.475L150.209,140.529L150.209,140.529z"/>
+                    <path shape-rendering="optimizeQuality" fill="#FFFFFF" d="M195.683,107.033v36.212h-3.204v-36.212H195.683z"/>
+                    <path shape-rendering="optimizeQuality" fill="#FFFFFF" d="M240.668,143.176h4.039l-17.967-35.307h-3.898l-17.967,35.307h3.76l4.805-9.401h22.563L240.668,143.176z
+                         M214.833,130.92l9.889-19.36h0.069l9.68,19.36H214.833z"/>
+                    <path shape-rendering="optimizeQuality" fill="#FFFFFF" d="M133.147,107.033v22.493c0,4.735,0,11.421-7.382,11.421h-11.908c-7.382,0-7.382-6.686-7.382-11.421v-22.493
+                        h-3.203v24.791c0,9.332,4.944,11.77,10.585,11.77h11.908c5.641,0,10.586-2.438,10.586-11.77v-24.791H133.147z"/>
+                </g>
+                <g>
+                    <path shape-rendering="optimizeQuality" fill="#FFFFFF" d="M28.76,125.07l-7.938-5.432c-0.139-0.069-0.209-0.069-0.348,0c-0.139,0.07-0.139,0.14-0.139,0.279v10.863
+                        c0,0.141,0.069,0.209,0.139,0.279c0.069,0,0.139,0.069,0.139,0.069c0.07,0,0.139,0,0.139-0.069l7.939-5.432
+                        c0.139-0.07,0.139-0.14,0.139-0.279S28.83,125.139,28.76,125.07z"/>
+                    <path shape-rendering="optimizeQuality" fill="#FFFFFF" d="M23.538,143.663L7.66,134.541v-18.315l15.808-9.192l15.877,9.123v18.315L23.538,143.663z M9.958,133.217
+                        l13.58,7.8l13.51-7.869v-15.668l-13.58-7.729l-13.51,7.799V133.217z"/>
+                </g>
+                </svg>
+            `;
         const container = utils.createElement('a', {
             href: 'https://tubia.com/',
             target: '_blank',
             class: 'plyr__logo',
         });
-
-        container.appendChild(controls.createIcon.call(this, 'logo'));
+        container.insertAdjacentHTML('beforeend', svg);
+        // container.appendChild(controls.createIcon.call(this, 'logo'));
 
         return container;
     },
@@ -1106,23 +1147,24 @@ const controls = {
             }
 
             this.elements.progress = progress;
-            container.appendChild(this.elements.progress);
+            // container.appendChild(this.elements.progress);
+            this.elements.container.appendChild(container.appendChild(this.elements.progress));
         }
 
         // Show a logo
         if (this.config.controls.includes('logo')) {
-            utils.insertAfter(controls.createLogo.call(this, 'logo'), this.elements.wrapper);
+            this.elements.container.appendChild(controls.createLogo.call(this, 'logo'));
         }
 
         // Video title
         if (this.config.controls.includes('title')) {
-            utils.insertAfter(controls.createTitle.call(this, 'title'), this.elements.wrapper);
+            this.elements.container.appendChild(controls.createTitle.call(this, 'title'));
         }
 
         // Share button
-        if (this.config.controls.includes('share')) {
-            container.appendChild(controls.createButton.call(this, 'share'));
-        }
+        // if (this.config.controls.includes('share')) {
+        //     container.appendChild(controls.createButton.call(this, 'share'));
+        // }
 
         // Playlist button
         // if (this.config.controls.includes('playlist')) {
@@ -1132,11 +1174,6 @@ const controls = {
         // Media current time display
         if (this.config.controls.includes('current-time')) {
             container.appendChild(controls.createTime.call(this, 'currentTime'));
-        }
-
-        // Media duration display
-        if (this.config.controls.includes('duration')) {
-            container.appendChild(controls.createTime.call(this, 'duration'));
         }
 
         // Toggle mute button
@@ -1171,6 +1208,11 @@ const controls = {
             this.elements.volume = volume;
 
             container.appendChild(volume);
+        }
+
+        // Media duration display
+        if (this.config.controls.includes('duration')) {
+            container.appendChild(controls.createTime.call(this, 'duration'));
         }
 
         // Toggle captions button
@@ -1312,7 +1354,15 @@ const controls = {
 
         // Larger overlaid play button
         if (this.config.controls.includes('play-large')) {
-            this.elements.container.appendChild(controls.createButton.call(this, 'play-large'));
+            const button = controls.createButton.call(this, 'play-large');
+            const hexagon = `
+                <svg class="plyr__hexagon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 129.78 150.37">
+                    <path class="plyr__hexagon-base" d="M-1665.43,90.94V35.83a15.09,15.09,0,0,1,6.78-12.59l48.22-31.83a15.09,15.09,0,0,1,16-.38L-1547,19.13a15.09,15.09,0,0,1,7.39,13V90.94a15.09,15.09,0,0,1-7.21,12.87l-47.8,29.24a15.09,15.09,0,0,1-15.75,0l-47.8-29.24A15.09,15.09,0,0,1-1665.43,90.94Z" transform="translate(1667.43 13.09)"/>
+                    <path class="plyr__hexagon-line-animation" d="M-1665.43,90.94V35.83a15.09,15.09,0,0,1,6.78-12.59l48.22-31.83a15.09,15.09,0,0,1,16-.38L-1547,19.13a15.09,15.09,0,0,1,7.39,13V90.94a15.09,15.09,0,0,1-7.21,12.87l-47.8,29.24a15.09,15.09,0,0,1-15.75,0l-47.8-29.24A15.09,15.09,0,0,1-1665.43,90.94Z" transform="translate(1667.43 13.09)"/>
+                </svg>
+            `;
+            button.insertAdjacentHTML('beforeend', hexagon);
+            this.elements.container.appendChild(button);
         }
 
         this.elements.controls = container;

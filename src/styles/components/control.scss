@@ -53,37 +53,61 @@
 
 // Large play button (video only)
 .plyr__control--overlaid {
-    background: rgba($plyr-video-control-bg-hover, 0.8);
-    border: 0;
-    border-radius: 100%;
-    box-shadow: 0 1px 1px rgba(#000, 0.15);
-    color: $plyr-video-control-color;
-    display: none;
-    left: 50%;
-    padding: ceil($plyr-control-spacing * 1.5);
     position: absolute;
-    top: 50%;
-    transform: translate(-50%, -50%);
     z-index: 2;
-
-    svg {
-        height: $plyr-control-icon-size-large;
-        left: 2px; // Offset to make the play button look right
-        position: relative;
-        width: $plyr-control-icon-size-large;
+    top: 50%;
+    left: 50%;
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+    padding: 0;
+    cursor: pointer;
+    opacity: 1;
+    transform-origin: center;
+    transform: translate(-50%, -50%) scale(0.8);
+    will-change: transform, opacity;
+    transition: transform 0.2s cubic-bezier(.51, .92, .24, 1.15),
+    opacity 0.1s linear;
+    &:hover {
+        transform: translate(-50%, -52%) scale(0.8);
     }
-
-    &:hover,
+    &:active {
+        transform: translate(-50%, -50%) scale(0.9);
+    }
     &:focus {
-        background: $plyr-video-control-bg-hover;
+        outline: 0;
+    }
+    // Play icon
+    > svg:first-of-type {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(2);
+        fill: #fff;
+        margin-left: 4px;
     }
 }
 
+// Plyr playing
 .plyr--playing .plyr__control--overlaid {
     opacity: 0;
-    visibility: hidden;
+    transform: translate(-50%, -40%) scale(0.5);
+    // visibility: hidden;
 }
 
+// Plyr loading
+.plyr--loading .plyr__control--overlaid {
+    cursor: default;
+    &:hover {
+        transform: translate(-50%, -50%) scale(0.8);
+    }
+    > svg:first-of-type {
+        opacity: 0.1;
+        filter: brightness(0.1);
+    }
+}
+
+// Interface visible
 .plyr--full-ui.plyr--video .plyr__control--overlaid {
     display: block;
 }

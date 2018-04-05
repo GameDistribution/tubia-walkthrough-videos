@@ -5,11 +5,19 @@
 .plyr__progress {
     display: flex;
     flex: 1;
-    position: relative;
+    //position: relative;
+
+    position: absolute;
+    bottom: 0;
+    z-index: 3;
+    width: 100%;
+
+    margin-bottom: -27px;
 
     input[type='range'] {
         position: relative;
-        z-index: 2;
+        // z-index: 2;
+        // flex: 1;
     }
 
     // Seek tooltip to show time
@@ -19,11 +27,18 @@
     }
 }
 
+.plyr--full-ui .plyr__progress {
+    input[type='range'] {
+        height: 60px;
+        border-radius: 0;
+    }
+}
+
 .plyr__progress--buffer {
     -webkit-appearance: none; /* stylelint-disable-line */
     background: transparent;
     border: 0;
-    border-radius: 100px;
+    // border-radius: 100px;
     height: $plyr-range-track-height;
     left: 0;
     margin: -($plyr-range-track-height / 2) 0 0;
@@ -31,6 +46,8 @@
     position: absolute;
     top: 50%;
     width: 100%;
+
+    border-radius: 0;
 
     &::-webkit-progress-bar {
         background: transparent;

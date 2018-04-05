@@ -106,14 +106,17 @@ class Tubia {
                     background-color: ${this.options.colorAccent};
                 }
                 .tubia__ .tubia__play-button .tubia__hexagon .tubia__hexagon-base, 
-                .tubia__ .tubia__play-button .tubia__hexagon .tubia__hexagon-line-animation {
+                .tubia__ .tubia__play-button .tubia__hexagon .tubia__hexagon-line-animation,
+                .plyr .plyr__hexagon .plyr__hexagon-base {
                     fill: ${this.options.colorMain};
                     stroke: ${this.options.colorMain};
                 }
-                .tubia__ .tubia__hexagon-loader .tubia__hexagon .tubia__hexagon-base {
+                .tubia__ .tubia__hexagon-loader .tubia__hexagon .tubia__hexagon-base,
+                .plyr .plyr__hexagon .plyr__hexagon-base {
                     stroke: ${this.options.colorMain};
                 }
-                .tubia__ .tubia__hexagon-loader .tubia__hexagon .tubia__hexagon-line-animation {
+                .tubia__ .tubia__hexagon-loader .tubia__hexagon .tubia__hexagon-line-animation,
+                .plyr .plyr__hexagon .plyr__hexagon-line-animation {
                     stroke: ${this.options.colorAccent};
                 }
                 .plyr--full-ui input[type=range] {
@@ -124,9 +127,6 @@ class Tubia {
                 }
                 .plyr__menu__container:after {
                     border-top-color: ${this.options.colorMain};
-                }
-                .plyr__control--overlaid {
-                    color: ${this.options.colorMain};
                 }
                 .plyr__playlist ul li.active .plyr__count {
                     border-color: ${this.options.colorMain};

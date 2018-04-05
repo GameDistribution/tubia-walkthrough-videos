@@ -26,6 +26,7 @@
 @import 'base';
 @import 'main';
 
+@import 'components/hexagon';
 @import 'components/badges';
 @import 'components/captions';
 @import 'components/control';
@@ -39,6 +40,8 @@
 @import 'components/video';
 @import 'components/volume';
 @import 'components/playlist';
+@import 'components/logo';
+@import 'components/title';
 
 @import 'states/error';
 @import 'states/fullscreen';

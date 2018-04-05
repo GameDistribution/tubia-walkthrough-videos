@@ -1,0 +1,56 @@
+.plyr {
+    .plyr__hexagon {
+        width: 104px;
+        height: 121px;
+        overflow: visible;
+        background-color: transparent;
+        .plyr__hexagon-base,
+        .plyr__hexagon-line-animation {
+            fill: transparent;
+            stroke-miterlimit: 9;
+            stroke-width: 9px;
+        }
+        .plyr__hexagon-base {
+            stroke: $plyr-color-main;
+        }
+        .plyr__hexagon-line-animation {
+            display: none;
+            stroke: $plyr-color-accent;
+            stroke-linecap: square;
+            animation: hexagon-dash 1.5s linear;
+            animation-iteration-count: infinite;
+        }
+    }
+
+    @keyframes hexagon-dash {
+        0% {
+            /* Stroke-dasharray: first value is the width of the animated stroke(aka dash); second value is the width of the space between each dash.
+             * In this case, the first value is 60% of total path length, the second is 40%.
+             */
+            stroke-dasharray: 260.22 173.48;
+            /* Stroke-dashoffset: is the point where stroke-dasharray will begin.
+             * So in this case for anim, it needs to be at the start, and finish at the end of the hexagon shape (aka the length of the path shape)
+             */
+            stroke-dashoffset: 0;
+        }
+        50% {
+            stroke-dasharray: 1 431.7;
+        }
+        100% {
+            stroke-dasharray: 260.22 173.48;
+            stroke-dashoffset: -867.4;
+        }
+    }
+}
+
+// Plyr is loading
+.plyr.plyr--loading {
+    .plyr__hexagon {
+        .plyr__hexagon-line-animation {
+            display: block;
+        }
+        .plyr__hexagon-base {
+            fill: transparent;
+        }
+    }
+}
