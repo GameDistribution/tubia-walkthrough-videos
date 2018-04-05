@@ -471,6 +471,7 @@ class Tubia {
                 title: (json.detail && json.detail.length > 0) ? json.detail[0].title : '',
                 logo: json.logoEnabled,
                 showPosterOnEnd: true,
+                hideControls: false,
                 ads: {
                     enabled: json.adsEnabled,
                     video: json.preRollEnabled,

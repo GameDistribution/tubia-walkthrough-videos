@@ -478,7 +478,7 @@ const controls = {
 
     // Hide/show the playlist
     togglePlaylist(setting, toggle) {
-        const tab = this.elements.controls.playlist[setting];
+        const tab = this.elements.playlist[setting];
         utils.toggleHidden(tab, !toggle);
     },
 
@@ -960,7 +960,7 @@ const controls = {
     // Show playlist
     setPlaylist() {
         const type = 'playlist';
-        const list = this.elements.controls.playlist.querySelector('ul');
+        const list = this.elements.playlist.querySelector('ul');
 
         // Toggle the playlist
         const hasItems = playlist.getData.call(this).length;
@@ -1111,12 +1111,12 @@ const controls = {
 
         // Show a logo
         if (this.config.controls.includes('logo')) {
-            container.appendChild(controls.createLogo.call(this, 'logo'));
+            utils.insertAfter(controls.createLogo.call(this, 'logo'), this.elements.wrapper);
         }
 
         // Video title
         if (this.config.controls.includes('title')) {
-            container.appendChild(controls.createTitle.call(this, 'title'));
+            utils.insertAfter(controls.createTitle.call(this, 'title'), this.elements.wrapper);
         }
 
         // Share button
@@ -1125,9 +1125,9 @@ const controls = {
         }
 
         // Playlist button
-        if (this.config.controls.includes('playlist')) {
-            container.appendChild(controls.createButton.call(this, 'playlist'));
-        }
+        // if (this.config.controls.includes('playlist')) {
+        //     container.appendChild(controls.createButton.call(this, 'playlist'));
+        // }
 
         // Media current time display
         if (this.config.controls.includes('current-time')) {

@@ -143,7 +143,14 @@
     }
 }
 
+// Todo: Playlist briefly appears on initial load... ugly.
 .plyr--playlist-active {
+    .plyr__playlist {
+        visibility: visible;
+    }
+}
+
+.plyr--video:not(.plyr--hide-controls) {
     .plyr__playlist {
         visibility: visible;
         &:before {
@@ -201,8 +208,65 @@
             }
         }
     }
-    .plyr__playlist ul {
-        transform: translateX(0);
-    }
 }
 
+// When controls are hidden
+.plyr--video.plyr--hide-controls {
+    .plyr__playlist {
+        &:before {
+            transform: scaleX(0);
+            transition: transform 0.4s cubic-bezier(.51,.92,.24,1.15);
+            transition-delay: 0.7s;
+        }
+        &:after {
+            transform: scaleX(0);
+            transition: transform 0.2s cubic-bezier(.51,.92,.24,1.15);
+            transition-delay: 0.6s;
+        }
+        .plyr__background,
+        .plyr__shadow {
+            opacity: 0;
+            transition: opacity 0.1s linear;
+        }
+        ul li {
+            span {
+                opacity: 0;
+                transition: opacity 0.1s linear;
+                transition-delay: 0s;
+            }
+            &:before {
+                transform: scaleX(0);
+                transition: transform 0.2s cubic-bezier(.51,.92,.24,1.15);
+                transition-delay: 0.2s;
+            }
+            // Todo: write some SASS logic for this.
+            &:nth-child(1):before {
+                transition-delay: 0.3s;
+            }
+            &:nth-child(2):before {
+                transition-delay: 0.35s;
+            }
+            &:nth-child(3):before {
+                transition-delay: 0.4s;
+            }
+            &:nth-child(4):before {
+                transition-delay: 0.45s;
+            }
+            &:nth-child(5):before {
+                transition-delay: 0.5s;
+            }
+            &:nth-child(6):before {
+                transition-delay: 0.55s;
+            }
+            &:nth-child(7):before {
+                transition-delay: 0.6s;
+            }
+            &:nth-child(8):before {
+                transition-delay: 0.65s;
+            }
+            &:nth-child(n+9) {
+                transition-delay: 7s;
+            }
+        }
+    }
+}

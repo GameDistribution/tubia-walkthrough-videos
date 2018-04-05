@@ -25,15 +25,15 @@ const playlist = {
         }
 
         // Inject the container into the controls container
-        if (!utils.is.element(this.elements.controls.playlist)) {
-            this.elements.controls.playlist = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.playlist));
+        if (!utils.is.element(this.elements.playlist)) {
+            this.elements.playlist = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.playlist));
             const listItem = utils.createElement('ul');
-            this.elements.controls.playlist.appendChild(listItem);
+            this.elements.playlist.appendChild(listItem);
             const listItemShadow = utils.createElement('div', {
                 class: 'plyr__shadow',
             });
-            this.elements.controls.playlist.appendChild(listItemShadow);
-            this.elements.controls.appendChild(this.elements.controls.playlist);
+            this.elements.playlist.appendChild(listItemShadow);
+            utils.insertAfter(this.elements.playlist, this.elements.wrapper);
         }
 
         // Set the class hook
