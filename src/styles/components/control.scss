@@ -5,6 +5,7 @@
 .plyr__control {
     background: transparent;
     border: 0;
+    border-radius: $plyr-control-radius;
     color: inherit;
     cursor: pointer;
     flex-shrink: 0;
@@ -52,185 +53,37 @@
 
 // Large play button (video only)
 .plyr__control--overlaid {
-    display: none;
-    position: absolute;
-    z-index: 0;
-    left: 0;
-    top: 0;
-    outline: 0;
+    background: rgba($plyr-video-control-bg-hover, 0.8);
     border: 0;
+    border-radius: 100%;
+    box-shadow: 0 1px 1px rgba(#000, 0.15);
+    color: $plyr-video-control-color;
+    display: none;
+    left: 50%;
+    padding: ceil($plyr-control-spacing * 1.5);
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
 
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-
-    // Remove tap highlight.
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
-
-    color: $plyr-color-main;
-    &:hover {
-        color: $plyr-color-main;
-    }
-
-    > div {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        cursor: pointer;
-
-        transform: scale(0.95) translate(-50%, -50%);
-        will-change: transform;
-        transition: all 0.1s cubic-bezier(0.4, 0.0, 1, 1);
-        transform-origin: 0;
-
-        &:hover {
-            // ...
-        }
-        &:active {
-            // ...
-        }
-    }
-
-    // Hexagon
-    > div > div {
+    svg {
+        height: $plyr-control-icon-size-large;
+        left: 2px; // Offset to make the play button look right
         position: relative;
-        width: 50px;
-        height: 50px;
-
-        > svg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            transform: scale(1);
-            will-change: transform;
-            transition: transform 0.2s ease, opacity 0.3s ease;
-            transform-origin: center;
-        }
-
-        @media (min-width: $plyr-bp-sm) {
-            width: 100px;
-            height: 100px;
-        }
-
-        > svg:first-of-type {
-            z-index: 2;
-            margin: 4px;
-            width: 42px;
-            height: 42px;
-            fill: currentColor;
-
-            @media (min-width: $plyr-bp-sm) {
-                margin: 8px;
-                width: 84px;
-                height: 84px;
-            }
-        }
-
-        > svg:last-of-type {
-            z-index: 1;
-            width: 100%;
-            height: 100%;
-            fill: currentColor;
-            filter: brightness(0.9);
-        }
+        width: $plyr-control-icon-size-large;
     }
 
-    // Hexagons
-    > div > div > div {
-        position: absolute;
-        z-index: 0;
-        top: 0;
-        left: 0;
-        svg {
-            display: none;
-            position: absolute;
-            fill: currentColor;
-            width: 50px;
-            height: 50px;
-            transform: scale(0);
-            will-change: transform;
-            transition: transform 0.2s ease, opacity 0.3s ease;
-            transform-origin: center;
-
-            @media (min-width: $plyr-bp-sm) {
-                width: 100px;
-                height: 100px;
-            }
-        }
-    }
-
-    // Play icon
-    > svg {
-        position: absolute;
-        z-index: 2;
-        top: 50%;
-        left: 50%;
-        margin-left: 1px;
-        color: white;
-        width: $plyr-control-icon-size;
-        height: $plyr-control-icon-size;
-        transform: translate(-50%, -50%);
-
-        &.icon--pressed {
-            margin-left: 0;
-            margin-top: 2px;
-        }
-
-        &.icon--not-pressed {
-            margin-left: 2px;
-            margin-top: 2px;
-        }
-
-        @media (min-width: $plyr-bp-sm) {
-            width: $plyr-control-icon-size-huge;
-            height: $plyr-control-icon-size-huge;
-        }
+    &:hover,
+    &:focus {
+        background: $plyr-video-control-bg-hover;
     }
 }
 
-//.plyr--playing .plyr__control--overlaid {
-//    opacity: 0;
-//    visibility: hidden;
-//    > div {
-//        transform: scale(0.8) translate(-50%, -50%);
-//    }
-//}
+.plyr--playing .plyr__control--overlaid {
+    opacity: 0;
+    visibility: hidden;
+}
 
 .plyr--full-ui.plyr--video .plyr__control--overlaid {
     display: block;
-}
-
-// Loading state
-.plyr--loading .plyr__control--overlaid {
-    > div {
-        cursor: default;
-        &:hover {
-            // ...
-        }
-        &:active {
-            // ...
-        }
-    }
-    > div > div > svg {
-        animation: plyr-progress-play-beat 1s linear infinite;
-        animation-delay: 0.7s;
-    }
-    > div > div > div > svg {
-        display: block;
-        animation: plyr-progress-play 4s linear infinite;
-
-        &:nth-child(1) {
-            animation-delay: 1s;
-        }
-        &:nth-child(2) {
-            animation-delay: 2s;
-        }
-        &:nth-child(3) {
-            animation-delay: 3s;
-        }
-        &:nth-child(4) {
-            animation-delay: 4s;
-        }
-    }
 }

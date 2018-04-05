@@ -7,196 +7,69 @@
     display: none;
 }
 
-.plyr__controls {
-    display: flex;
-    flex-direction: column;
-}
-
 // Playback controls
-.plyr__controls-top,
-.plyr__controls-middle,
-.plyr__controls-bottom {
-    display: flex;
-    flex-direction: row;
-    text-align: center;
+.plyr__controls {
     align-items: center;
-    width: 100%;
-    padding: ($plyr-control-spacing * 2) $plyr-control-spacing / 2 $plyr-control-spacing;
+    display: flex;
+    text-align: center;
 
-    .plyr__controls-left,
-    .plyr__controls-right,
-    .plyr__controls-center {
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
-        z-index: 1;
-    }
-
-    .plyr__controls-right {
-        margin-left: auto;
-    }
-}
-
-.plyr__controls-top {
-    z-index: 1;
-    padding: $plyr-control-spacing / 2 $plyr-control-spacing / 2 ($plyr-control-spacing * 2);
-    margin-bottom: auto;
-    background: linear-gradient(rgba($plyr-video-controls-bg, 0.8), rgba($plyr-video-controls-bg, 0));
-
-    .plyr__controls-center,
-    .plyr__controls-right,
-    .plyr__controls-left{
-        position: relative;
-        flex: 1;
-        height: $plyr-control-icon-size-huge;
-        align-items: baseline;
-    }
-    .plyr__controls-right,
-    .plyr__controls-left{
-        min-width: 100px;
-    }
-    .plyr__controls-left {
-        justify-content: flex-start;
-    }
-    .plyr__controls-center {
-        overflow: hidden;
-    }
-    .plyr__controls-right{
-        justify-content: flex-end;
-    }
-}
-
-.plyr__controls-middle {
-    height: 100%;
-    padding-top: $plyr-control-spacing;
-    .plyr__controls-left,
-    .plyr__controls-right,
-    .plyr__controls-center {
-        flex: 1;
-    }
-    .plyr__controls-center {
-        max-width: 50px;
-
-        @media (min-width: $plyr-bp-sm) {
-            max-width: 100px;
-        }
-    }
-    .plyr__controls-left,
-    .plyr__controls-right {
-        button {
-            top: 50%;
-            position: absolute;
-            transform: translateY(-50%);
-        }
-        svg {
-            width: $plyr-control-icon-size-large;
-            height: $plyr-control-icon-size-large;
-
-            @media (min-width: $plyr-bp-sm) {
-                width: $plyr-control-icon-size-huge;
-                height: $plyr-control-icon-size-huge;
-            }
-        }
-    }
-}
-
-.plyr__controls-bottom {
-    margin-top: auto;
-    background: linear-gradient(rgba($plyr-video-controls-bg, 0), rgba($plyr-video-controls-bg, 0.5));
-}
-
-// Logo
-.plyr__logo {
-    margin: $plyr-control-padding;
-    color: currentColor;
-    position: relative;
-    top: 0;
-    left: 0;
-    width: 80px;
-    height: $plyr-control-icon-size-large;
-    overflow: hidden;
-    svg {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 80px;
-        height: $plyr-control-icon-size-large;
-        fill: currentColor;
-        transition: all 0.15s cubic-bezier(0.4, 0.0, 1, 1);
-    }
-    &:hover {
-        svg {
-            fill: rgba(255, 255, 255, 1);
-        }
-    }
-}
-
-// Title
-.plyr__title {
-    display: inline-block;
-    padding: $plyr-control-padding;
-    color: currentColor;
-    font-size: $plyr-font-size-xlarge;
-    font-weight: $plyr-font-weight-bold;
-    text-transform: uppercase;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-}
-
-// Spacing
-> .plyr__control,
-.plyr__time,
-.plyr__menu {
-    margin-left: ($plyr-control-spacing / 2);
-
-    &:first-child,
-    &:first-child + [data-plyr='pause'] {
-        margin-left: 0;
-    }
-}
-
-.plyr__volume {
-    margin-left: ($plyr-control-spacing / 2);
-}
-
-.plyr__progress {
-    z-index: 0;
-    bottom: $plyr-range-max-height;
-}
-
-@media (min-width: $plyr-bp-sm) {
+    // Spacing
     > .plyr__control,
+    .plyr__progress,
     .plyr__time,
     .plyr__menu {
-        margin-left: $plyr-control-spacing;
+        margin-left: ($plyr-control-spacing / 2);
+
+        &:first-child,
+        &:first-child + [data-plyr='pause'] {
+            margin-left: 0;
+        }
     }
 
-    > .plyr__control + .plyr__control,
-    .plyr__menu + .plyr__control,
-    > .plyr__control + .plyr__menu {
+    .plyr__volume {
         margin-left: ($plyr-control-spacing / 2);
+    }
+
+    @media (min-width: $plyr-bp-sm) {
+        > .plyr__control,
+        .plyr__progress,
+        .plyr__time,
+        .plyr__menu {
+            margin-left: $plyr-control-spacing;
+        }
+
+        > .plyr__control + .plyr__control,
+        .plyr__menu + .plyr__control,
+        > .plyr__control + .plyr__menu {
+            margin-left: ($plyr-control-spacing / 2);
+        }
     }
 }
 
 // Video controls
 .plyr--video .plyr__controls {
-    position: absolute;
-    z-index: 2;
-    left: 0;
-    right: 0;
-    top: 0;
+    background: linear-gradient(rgba($plyr-video-controls-bg, 0), rgba($plyr-video-controls-bg, 0.7));
+    border-bottom-left-radius: inherit;
+    border-bottom-right-radius: inherit;
     bottom: 0;
     color: $plyr-video-control-color;
-    transition: opacity 0.2s cubic-bezier(0.4, 0.0, 1, 1);
+    left: 0;
+    padding: ($plyr-control-spacing * 3.5) $plyr-control-spacing $plyr-control-spacing;
+    position: absolute;
+    right: 0;
+    transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+    z-index: 2;
 
     .plyr__control {
+        svg {
+            filter: drop-shadow(0 1px 1px rgba(#000, 0.15));
+        }
+
         // Hover and tab focus
         &.plyr__tab-focus,
         &:hover,
         &[aria-expanded='true'] {
-            // background: $plyr-video-control-bg-hover;
+            background: $plyr-video-control-bg-hover;
             color: $plyr-video-control-color-hover;
         }
     }
@@ -214,7 +87,7 @@
 .plyr--video.plyr--hide-controls .plyr__controls {
     opacity: 0;
     pointer-events: none;
-    // transform: translateY(100%);
+    transform: translateY(100%);
 }
 
 // Some options are hidden by default
