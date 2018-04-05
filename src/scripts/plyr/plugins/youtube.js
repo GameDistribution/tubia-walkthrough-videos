@@ -6,6 +6,64 @@ import utils from './../utils';
 import controls from './../controls';
 import ui from './../ui';
 
+// Standardise YouTube quality unit
+function mapQualityUnit(input) {
+    switch (input) {
+        case 'hd2160':
+            return 2160;
+
+        case 2160:
+            return 'hd2160';
+
+        case 'hd1440':
+            return 1440;
+
+        case 1440:
+            return 'hd1440';
+
+        case 'hd1080':
+            return 1080;
+
+        case 1080:
+            return 'hd1080';
+
+        case 'hd720':
+            return 720;
+
+        case 720:
+            return 'hd720';
+
+        case 'large':
+            return 480;
+
+        case 480:
+            return 'large';
+
+        case 'medium':
+            return 360;
+
+        case 360:
+            return 'medium';
+
+        case 'small':
+            return 240;
+
+        case 240:
+            return 'small';
+
+        default:
+            return 'default';
+    }
+}
+
+function mapQualityUnits(levels) {
+    if (utils.is.empty(levels)) {
+        return levels;
+    }
+
+    return utils.dedupe(levels.map(level => mapQualityUnit(level)));
+}
+
 const youtube = {
     setup() {
         // Add embed class for responsive
@@ -168,14 +226,10 @@ const youtube = {
 
                     utils.dispatchEvent.call(player, player.media, 'error');
                 },
-                onPlaybackQualityChange(event) {
-                    // Get the instance
-                    const instance = event.target;
-
-                    // Get current quality
-                    player.media.quality = instance.getPlaybackQuality();
-
-                    utils.dispatchEvent.call(player, player.media, 'qualitychange');
+                onPlaybackQualityChange() {
+                    utils.dispatchEvent.call(player, player.media, 'qualitychange', false, {
+                        quality: player.media.quality,
+                    });
                 },
                 onPlaybackRateChange(event) {
                     // Get the instance
@@ -240,15 +294,18 @@ const youtube = {
                     // Quality
                     Object.defineProperty(player.media, 'quality', {
                         get() {
-                            return instance.getPlaybackQuality();
+                            return mapQualityUnit(instance.getPlaybackQuality());
                         },
                         set(input) {
+                            const quality = input;
+
+                            // Set via API
+                            instance.setPlaybackQuality(mapQualityUnit(quality));
+
                             // Trigger request event
                             utils.dispatchEvent.call(player, player.media, 'qualityrequested', false, {
-                                quality: input,
+                                quality,
                             });
-
-                            instance.setPlaybackQuality(input);
                         },
                     });
 
@@ -305,10 +362,10 @@ const youtube = {
                     utils.dispatchEvent.call(player, player.media, 'durationchange');
 
                     // Reset timer
-                    window.clearInterval(player.timers.buffering);
+                    clearInterval(player.timers.buffering);
 
                     // Setup buffering
-                    player.timers.buffering = window.setInterval(() => {
+                    player.timers.buffering = setInterval(() => {
                         // Get loaded % from YouTube
                         player.media.buffered = instance.getVideoLoadedFraction();
 
@@ -322,7 +379,7 @@ const youtube = {
 
                         // Bail if we're at 100%
                         if (player.media.buffered === 1) {
-                            window.clearInterval(player.timers.buffering);
+                            clearInterval(player.timers.buffering);
 
                             // Trigger event
                             utils.dispatchEvent.call(player, player.media, 'canplaythrough');
@@ -337,7 +394,7 @@ const youtube = {
                     const instance = event.target;
 
                     // Reset timer
-                    window.clearInterval(player.timers.playing);
+                    clearInterval(player.timers.playing);
 
                     // Handle events
                     // -1   Unstarted
@@ -347,6 +404,16 @@ const youtube = {
                     // 3    Buffering
                     // 5    Video cued
                     switch (event.data) {
+                        case -1:
+                            // Update scrubber
+                            utils.dispatchEvent.call(player, player.media, 'timeupdate');
+
+                            // Get loaded % from YouTube
+                            player.media.buffered = instance.getVideoLoadedFraction();
+                            utils.dispatchEvent.call(player, player.media, 'progress');
+
+                            break;
+
                         case 0:
                             player.media.paused = true;
 
@@ -377,7 +444,7 @@ const youtube = {
                             utils.dispatchEvent.call(player, player.media, 'playing');
 
                             // Poll to get playback progress
-                            player.timers.playing = window.setInterval(() => {
+                            player.timers.playing = setInterval(() => {
                                 utils.dispatchEvent.call(player, player.media, 'timeupdate');
                             }, 50);
 
@@ -390,7 +457,7 @@ const youtube = {
                             }
 
                             // Get quality
-                            controls.setQualityMenu.call(player, instance.getAvailableQualityLevels());
+                            controls.setQualityMenu.call(player, mapQualityUnits(instance.getAvailableQualityLevels()));
 
                             break;
 

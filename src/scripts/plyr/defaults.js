@@ -7,7 +7,7 @@ const defaults = {
     enabled: true,
 
     // Custom media title
-    title: 'Tubia',
+    title: '',
 
     // Logging to console
     debug: false,
@@ -18,7 +18,7 @@ const defaults = {
     // Only allow one media playing at once (vimeo only)
     autopause: true,
 
-    // Default time to skip when rewind/ forward
+    // Default time to skip when rewind/fast forward
     seekTime: 10,
 
     // Default volume
@@ -56,24 +56,26 @@ const defaults = {
     // Sprite (for icons)
     loadSprite: true,
     iconPrefix: 'plyr',
-    iconUrl: 'https://cdn.plyr.io/2.0.10/plyr.svg',
+    iconUrl: 'https://cdn.plyr.io/3.1.0/plyr.svg',
 
     // Blank video (used to prevent errors on source change)
     blankVideo: 'https://cdn.plyr.io/static/blank.mp4',
 
     // Quality default
     quality: {
-        default: 'default',
+        default: 576,
         options: [
-            'hd2160',
-            'hd1440',
-            'hd1080',
-            'hd720',
-            'large',
-            'medium',
-            'small',
-            'tiny',
-            'default',
+            4320,
+            2880,
+            2160,
+            1440,
+            1080,
+            720,
+            576,
+            480,
+            360,
+            240,
+            'default', // YouTube's "auto"
         ],
     },
 
@@ -145,7 +147,10 @@ const defaults = {
     // Default controls
     controls: [
         'play-large',
+        // 'restart',
+        // 'rewind',
         'play',
+        // 'fast-forward',
         'progress',
         'current-time',
         'mute',
@@ -168,7 +173,7 @@ const defaults = {
         rewind: 'Rewind {seektime} secs',
         play: 'Play',
         pause: 'Pause',
-        forward: 'Forward {seektime} secs',
+        fastForward: 'Forward {seektime} secs',
         seek: 'Seek',
         played: 'Played',
         buffered: 'Buffered',
@@ -191,7 +196,6 @@ const defaults = {
         end: 'End',
         all: 'All',
         reset: 'Reset',
-        none: 'None',
         disabled: 'Disabled',
         advertisement: 'Ad',
         playlist: 'Playlist',
@@ -222,7 +226,7 @@ const defaults = {
         pause: null,
         restart: null,
         rewind: null,
-        forward: null,
+        fastForward: null,
         mute: null,
         volume: null,
         captions: null,
@@ -302,12 +306,6 @@ const defaults = {
         controls: {
             container: null,
             wrapper: '.plyr__controls',
-            top: '.plyr__controls-top',
-            middle: '.plyr__controls-middle',
-            bottom: '.plyr__controls-bottom',
-            left: '.plyr__controls-left',
-            right: '.plyr__controls-right',
-            center: '.plyr__controls-center',
         },
         labels: '[data-plyr]',
         buttons: {
@@ -315,7 +313,7 @@ const defaults = {
             pause: '[data-plyr="pause"]',
             restart: '[data-plyr="restart"]',
             rewind: '[data-plyr="rewind"]',
-            forward: '[data-plyr="forward"]',
+            fastForward: '[data-plyr="fast-forward"]',
             mute: '[data-plyr="mute"]',
             captions: '[data-plyr="captions"]',
             fullscreen: '[data-plyr="fullscreen"]',
@@ -416,7 +414,8 @@ const defaults = {
         google: null,
     },
 
-    // Ads
+    // Advertisements plugin
+    // Register for an account here: http://vi.ai/publisher-video-monetization/?aid=plyrio
     ads: {
         video: true,
         overlay: true,

@@ -5,6 +5,7 @@
 import utils from './utils';
 import captions from './captions';
 import controls from './controls';
+import i18n from './i18n';
 import playlist from './playlist';
 
 const ui = {
@@ -74,8 +75,11 @@ const ui = {
         // Reset loop state
         this.loop = null;
 
-        // Reset quality options
-        this.options.quality = [];
+        // Reset quality setting
+        this.quality = null;
+
+        // Reset volume display
+        ui.updateVolume.call(this);
 
         // Reset time display
         ui.timeUpdate.call(this);
@@ -98,7 +102,7 @@ const ui = {
     // Setup aria attribute for play and iframe title
     setTitle() {
         // Find the current text
-        let label = this.config.i18n.play;
+        let label = i18n.get('play', this.config);
 
         // If there's a media title set, use that for the label
         if (utils.is.string(this.config.title) && !utils.is.empty(this.config.title)) {
@@ -125,9 +129,9 @@ const ui = {
             }
 
             // Default to media type
-            const title = !utils.is.empty(this.config.title) ? this.config.title : 'video';
+            const title = !utils.is.empty(this.config.title) ? this.config.title : i18n.get('frameTitle', this.config);
 
-            iframe.setAttribute('title', this.config.i18n.frameTitle.replace('{title}', title));
+            iframe.setAttribute('title', title);
         }
     },
 

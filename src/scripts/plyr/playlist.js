@@ -33,7 +33,7 @@ const playlist = {
                 class: 'plyr__shadow',
             });
             this.elements.controls.playlist.appendChild(listItemShadow);
-            this.elements.controls.middle.appendChild(this.elements.controls.playlist);
+            this.elements.controls.appendChild(this.elements.controls.playlist);
         }
 
         // Set the class hook

@@ -150,9 +150,11 @@ class Ads {
                 this.tagUrl = utils.updateQueryStringParameter(this.tagUrl, 'ad_position', 'preroll');
                 this.adPosition = 2;
             } else {
+                const positionCount = this.adCount - 1;
+                this.tagUrl = utils.updateQueryStringParameter(this.tagUrl, 'ad_midroll_count', positionCount.toString());
                 this.tagUrl = utils.updateQueryStringParameter(this.tagUrl, 'ad_type', 'image');
                 this.tagUrl = utils.updateQueryStringParameter(this.tagUrl, 'ad_skippable', '0');
-                this.tagUrl = utils.updateQueryStringParameter(this.tagUrl, 'ad_position', `subbanner${this.adCount.toString()}`);
+                this.tagUrl = utils.updateQueryStringParameter(this.tagUrl, 'ad_position', 'subbanner');
                 this.adPosition = 3;
             }
 
