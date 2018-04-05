@@ -83,9 +83,6 @@ const ui = {
         // Update the UI
         ui.checkPlaying.call(this);
 
-        // Set the theme
-        ui.setTheme.call(this);
-
         // Ready for API calls
         this.ready = true;
 
@@ -96,47 +93,6 @@ const ui = {
 
         // Set the title
         ui.setTitle.call(this);
-    },
-
-    // Setup the color theme
-    setTheme() {
-        const css = `
-            .plyr--full-ui input[type=range] {
-                color: ${this.config.colorMain};
-            }
-            .plyr__menu__container {
-                background: ${this.config.colorMain};
-            }
-            .plyr__menu__container:after {
-                border-top-color: ${this.config.colorMain};
-            }
-            .plyr__controls .plyr__control--overlaid > div > div svg {
-                color: ${this.config.colorMain};
-            }
-            .plyr__playlist ul li.active .plyr__count {
-                border-color: ${this.config.colorMain};
-                background-color: ${this.config.colorMain};
-            }
-            .plyr__playlist ul li:active .plyr__count {
-                border-color: ${this.config.colorAccent};
-            }
-            .plyr__playlist:before {
-                background-color: ${this.config.colorAccent};
-            }
-            .plyr__playlist:after {
-                background-color: ${this.config.colorMain};
-            }
-        `;
-        // Add css
-        const head = document.head || document.getElementsByTagName('head')[0];
-        const style = document.createElement('style');
-        style.type = 'text/css';
-        if (style.styleSheet) {
-            style.styleSheet.cssText = css;
-        } else {
-            style.appendChild(document.createTextNode(css));
-        }
-        head.appendChild(style);
     },
 
     // Setup aria attribute for play and iframe title

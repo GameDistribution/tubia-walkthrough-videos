@@ -68,6 +68,11 @@
     user-select: none;
     -webkit-tap-highlight-color: transparent;
 
+    color: $plyr-color-main;
+    &:hover {
+        color: $plyr-color-main;
+    }
+
     > div {
         position: absolute;
         top: 50%;

@@ -282,6 +282,7 @@ const defaults = {
         'qualityrequested',
 
         // Ads
+        'adsmanagerloaded',
         'adsloaded',
         'adscontentpause',
         'adscontentresume',
@@ -417,6 +418,10 @@ const defaults = {
 
     // Ads
     ads: {
+        video: true,
+        overlay: true,
+        videoInterval: 300,
+        overlayInterval: 15,
         tag: '',
     },
 };
