@@ -18,7 +18,7 @@
     .plyr__progress,
     .plyr__time,
     .plyr__menu {
-        margin-left: ($plyr-control-spacing / 2);
+        // margin-left: ($plyr-control-spacing / 2);
 
         &:first-child,
         &:first-child + [data-plyr='pause'] {
@@ -36,35 +36,53 @@
         overflow: hidden;
     }
 
-    @media (min-width: $plyr-bp-sm) {
-        > .plyr__control,
-        .plyr__progress,
-        .plyr__time,
-        .plyr__menu {
-            margin-left: $plyr-control-spacing;
-        }
-
-        > .plyr__control + .plyr__control,
-        .plyr__menu + .plyr__control,
-        > .plyr__control + .plyr__menu {
-            margin-left: ($plyr-control-spacing / 2);
-        }
-    }
+    //@media (min-width: $plyr-bp-sm) {
+    //    > .plyr__control,
+    //    .plyr__progress,
+    //    .plyr__time,
+    //    .plyr__menu {
+    //        margin-left: $plyr-control-spacing;
+    //    }
+    //
+    //    > .plyr__control + .plyr__control,
+    //    .plyr__menu + .plyr__control,
+    //    > .plyr__control + .plyr__menu {
+    //        margin-left: ($plyr-control-spacing / 2);
+    //    }
+    //}
 }
 
 // Video controls
 .plyr--video .plyr__controls {
-    background: linear-gradient(rgba($plyr-video-controls-bg, 0), rgba($plyr-video-controls-bg, 0.7));
+    background: red;
+    // background: linear-gradient(rgba($plyr-video-controls-bg, 0), rgba($plyr-video-controls-bg, 0.7));
     border-bottom-left-radius: inherit;
     border-bottom-right-radius: inherit;
-    bottom: 0;
+    // bottom: 0;
     color: $plyr-video-control-color;
-    left: 0;
-    padding: ($plyr-control-spacing * 3.5) $plyr-control-spacing $plyr-control-spacing;
-    position: absolute;
-    right: 0;
+    // left: 0;
+    // padding: ($plyr-control-spacing * 3.5) $plyr-control-spacing $plyr-control-spacing;
+    // position: absolute;
+    // right: 0;
     transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
-    z-index: 2;
+    // z-index: 3;
+
+    .plyr__controls-left,
+    .plyr__controls-right {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        z-index: 3; // Above progress bar.
+        bottom: 0;
+        left: 0;
+        padding: ($plyr-control-spacing * 3.5) $plyr-control-spacing $plyr-control-spacing;
+    }
+
+    .plyr__controls-right {
+        left: auto;
+        right: 0;
+    }
 
     .plyr__control {
         svg {
@@ -75,7 +93,7 @@
         &.plyr__tab-focus,
         &:hover,
         &[aria-expanded='true'] {
-            background: $plyr-video-control-bg-hover;
+            // background: $plyr-video-control-bg-hover;
             color: $plyr-video-control-color-hover;
         }
     }

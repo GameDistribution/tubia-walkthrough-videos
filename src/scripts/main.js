@@ -125,8 +125,8 @@ class Tubia {
                 .plyr__menu__container {
                     background: ${this.options.colorMain};
                 }
-                .plyr__menu__container:after {
-                    border-top-color: ${this.options.colorMain};
+                .plyr__menu__container label.plyr__control input[type=radio]:checked+span {
+                    background: ${this.options.colorAccent};
                 }
                 .plyr__playlist ul li.active .plyr__count {
                     border-color: ${this.options.colorMain};

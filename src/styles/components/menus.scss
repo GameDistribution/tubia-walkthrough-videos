@@ -25,7 +25,7 @@
     &__container {
         animation: plyr-popup 0.2s ease;
         background: $plyr-menu-bg;
-        border-radius: 4px;
+        border-radius: 1px;
         bottom: 100%;
         box-shadow: $plyr-menu-shadow;
         color: $plyr-menu-color;
@@ -117,8 +117,8 @@
                 }
 
                 &::before {
-                    background: $plyr-menu-border-color;
-                    box-shadow: 0 1px 0 $plyr-menu-border-shadow-color;
+                    background: rgba(255, 255, 255, 0.2);
+                    // box-shadow: 0 1px 0 $plyr-menu-border-shadow-color;
                     content: '';
                     height: 1px;
                     left: 0;
