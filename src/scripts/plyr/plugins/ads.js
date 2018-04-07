@@ -223,21 +223,24 @@ class Ads {
         this.cuePoints = this.manager.getCuePoints();
 
         // Add advertisement cue's within the time line if available
-        this.cuePoints.forEach(cuePoint => {
-            if (cuePoint !== 0 && cuePoint !== -1 && cuePoint < this.player.duration) {
-                const seekElement = this.player.elements.progress;
+        // Todo: cue points are not yet working with how we currently request ads.
+        if (this.cuePoints) {
+            this.cuePoints.forEach(cuePoint => {
+                if (cuePoint !== 0 && cuePoint !== -1 && cuePoint < this.player.duration) {
+                    const seekElement = this.player.elements.progress;
 
-                if (seekElement) {
-                    const cuePercentage = 100 / this.player.duration * cuePoint;
-                    const cue = utils.createElement('span', {
-                        class: this.player.config.classNames.cues,
-                    });
+                    if (seekElement) {
+                        const cuePercentage = 100 / this.player.duration * cuePoint;
+                        const cue = utils.createElement('span', {
+                            class: this.player.config.classNames.cues,
+                        });
 
-                    cue.style.left = `${cuePercentage.toString()}%`;
-                    seekElement.appendChild(cue);
+                        cue.style.left = `${cuePercentage.toString()}%`;
+                        seekElement.appendChild(cue);
+                    }
                 }
-            }
-        });
+            });
+        }
 
         // Get skippable state
         // TODO: Skip button
@@ -435,12 +438,14 @@ class Ads {
         this.player.on('seeked', () => {
             const seekedTime = this.player.currentTime;
 
-            this.cuePoints.forEach((cuePoint, index) => {
-                if (time < cuePoint && cuePoint < seekedTime) {
-                    this.manager.discardAdBreak();
-                    this.cuePoints.splice(index, 1);
-                }
-            });
+            if (this.cuePoints){
+                this.cuePoints.forEach((cuePoint, index) => {
+                    if (time < cuePoint && cuePoint < seekedTime) {
+                        this.manager.discardAdBreak();
+                        this.cuePoints.splice(index, 1);
+                    }
+                });
+            }
         });
 
         // Run a post-roll advertisement and complete the ads loader

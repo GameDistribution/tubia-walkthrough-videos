@@ -35,8 +35,8 @@ class Tubia {
             langCode: '',
             colorMain: '',
             colorAccent: '',
-            domain: 'bgames.com',
-            // domain: window.location.href.toLowerCase().replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').split('/')[0],
+            // domain: 'bgames.com',
+            domain: window.location.href.toLowerCase().replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').split('/')[0],
             onFound() {
             },
             onError() {
@@ -89,7 +89,7 @@ class Tubia {
         // Load our styles first. So we don't get initial load flickering.
         utils.loadStyle('https://fonts.googleapis.com/css?family=Khand:400,700');
         // Todo: update url
-        utils.loadStyle('./main.min.css').then(() => {
+        utils.loadStyle('https://tubia.gamedistribution.com/libs/gd/main.min.css').then(() => {
             // Start our application. We load the player when the user clicks,
             // as we don't want too many requests for our assets.
             this.start();
@@ -268,7 +268,6 @@ class Tubia {
         // We start with showing a poster image with a play button.
         // By not loading the actual player we save some requests and overall page load.
         // A user can click the play button to start loading the video player.
-        // Todo: Enable autoplay when possible.
         this.videoDataPromise.then((json) => {
             if (!json) {
                 this.onError('No video has been found!');
@@ -306,7 +305,6 @@ class Tubia {
                     this.container.appendChild(this.posterImageElement);
 
                     // Create the play button.
-                    // Todo: hide button when done.
                     this.playButton.classList.toggle('tubia__active');
                     this.playButton.addEventListener('click', this.startPlyrHandler, false);
                 }, this.transitionSpeed / 2);
@@ -325,7 +323,7 @@ class Tubia {
      * @param {String} error
      */
     onError(error) {
-        // Todo: I think Plyr has some error handling div.
+        // Todo: I think Plyr has some error handling div?
         this.options.onError(error);
         if (this.container) {
             this.container.classList.toggle = 'tubia__error';
@@ -379,6 +377,7 @@ class Tubia {
         // //walkthrough.gamedistribution.com/api/playernotification?reasonid=" + b + "&url=" +
         // encodeURIComponent(q()) + "&videoid=" + A
 
+        // Todo: Triodor has not yet deployed the preflight request update, so no JSON!
         // Send a post request to tell the "matching"-team which video is becoming important.
         // It is basically for updating a click counter or whatever :P
         // const videoCounterData = {
@@ -390,7 +389,6 @@ class Tubia {
         //     langCode: this.options.langCode,
         // };
         const videoCounterData = `publisherId=${this.options.publisherId}&url=${encodeURIComponent(this.url)}&title=${this.options.title}&gameId=${this.options.gameId}&category=${this.options.category}&langCode=${this.options.langCode}`;
-        // Todo: Triodor has not yet deployed the preflight request update!
         const videoCounterUrl = 'https://walkthrough.gamedistribution.com/api/player/findv3/';
         const videoCounterRequest = new Request(videoCounterUrl, {
             method: 'POST',
