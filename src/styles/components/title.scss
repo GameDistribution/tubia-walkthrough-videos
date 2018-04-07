@@ -12,6 +12,9 @@
     transform: translateX(-50%);
     transition: opacity 0.15s linear;
     transition-delay: 0.5s;
+    @media (max-width: $plyr-bp-sm) {
+        display: none;
+    }
 }
 
 .plyr--video:not(.plyr--hide-controls) {

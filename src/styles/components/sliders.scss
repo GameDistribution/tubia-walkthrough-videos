@@ -39,7 +39,7 @@
 
     &::-moz-range-progress {
         background: currentColor;
-        border-radius: ($plyr-range-track-height / 2);
+        // border-radius: ($plyr-range-track-height / 2);
         height: $plyr-range-track-height;
     }
 

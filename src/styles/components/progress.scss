@@ -25,19 +25,28 @@
         bottom: 0;
         z-index: 1;
         height: 40px;
+        display: flex;
+
         &::-webkit-slider-runnable-track {
             flex: 1;
             margin-top: auto;
         }
 
-        &::-moz-range-track {
+        &::-moz-range-track,
+        &::-moz-range-thumb,
+        &::-moz-range-progress {
             flex: 1;
             margin-top: auto;
+            transform: translateY(17px);
         }
 
-        &::-ms-track {
+        &::-ms-track,
+        &::-ms-fill-upper,
+        &::-ms-fill-lower,
+        &::-ms-thumb{
             flex: 1;
             margin-top: auto;
+            transform: translateY(17px);
         }
     }
 }

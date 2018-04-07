@@ -7,6 +7,9 @@
     width: 250px;
     overflow: hidden;
     visibility: hidden;
+    @media (max-width: $plyr-bp-sm) {
+        width: 150px;
+    }
     &:before,
     &:after,
     ul li:before {
@@ -98,6 +101,9 @@
         font-weight: $plyr-font-weight-bold;
         font-size: $plyr-font-size-large;
         color: currentColor;
+        @media (max-width: $plyr-bp-sm) {
+            font-size: $plyr-font-size-small;
+        }
     }
     .plyr__count {
         margin: 20px 15px 20px 20px;
@@ -105,6 +111,9 @@
         border: 1px solid rgba(255, 255, 255, 0.5);
         line-height: 100%;
         border-radius: 1px;
+        @media (max-width: $plyr-bp-sm) {
+            margin: 10px 7.5px 10px 10px;
+        }
     }
     .plyr__title {
         display: block;
@@ -118,6 +127,10 @@
         padding-bottom: 3px;
         padding-left: 0;
         line-height: 90%;
+        @media (max-width: $plyr-bp-sm) {
+            margin-right: 7.5px;
+            padding-top: 4px;
+        }
     }
     .plyr__background {
         position: absolute;
@@ -137,6 +150,9 @@
         height: 60px;
         background: linear-gradient(0deg, rgba(0, 0, 0, 0.8) 10%, rgba(0, 0, 0, 0));
         transition: opacity 0s;
+        @media (max-width: $plyr-bp-sm) {
+            height: 30px;
+        }
     }
 }
 

@@ -82,9 +82,11 @@
         position: absolute;
         top: 50%;
         left: 50%;
-        transform: translate(-50%, -50%) scale(2);
+        transform: translate(-50%, -50%);
         fill: #fff;
         margin-left: 4px;
+        width: 40px;
+        height: 40px;
     }
 }
 
