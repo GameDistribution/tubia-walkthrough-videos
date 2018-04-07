@@ -7,7 +7,7 @@
     -webkit-appearance: none; /* stylelint-disable-line */
     background: transparent;
     border: 0;
-    border-radius: ($plyr-range-thumb-height * 2);
+    border-radius: 0;
     // color is used in JS to populate lower fill for WebKit
     color: $plyr-range-fill-bg;
     display: block;
@@ -39,7 +39,7 @@
 
     &::-moz-range-progress {
         background: currentColor;
-        // border-radius: ($plyr-range-track-height / 2);
+        border-radius: 0;
         height: $plyr-range-track-height;
     }
 

@@ -61,7 +61,8 @@
             padding: $plyr-control-padding;
 
             li {
-                margin-top: 2px;
+                padding: 0;
+                margin: 2px 0 0;
 
                 &:first-child {
                     margin-top: 0;

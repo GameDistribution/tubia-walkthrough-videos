@@ -88,7 +88,8 @@ class Tubia {
 
         // Load our styles first. So we don't get initial load flickering.
         utils.loadStyle('https://fonts.googleapis.com/css?family=Khand:400,700');
-        utils.loadStyle('https://tubia.gamedistribution.com/libs/gd/main.min.css').then(() => {
+        // Todo: update url
+        utils.loadStyle('./main.min.css').then(() => {
             // Start our application. We load the player when the user clicks,
             // as we don't want too many requests for our assets.
             this.start();
@@ -458,7 +459,7 @@ class Tubia {
             if ((this.container.offsetWidth >= 768)) {
                 controls.push('volume');
                 controls.push('settings');
-                controls.push('captions');
+                // controls.push('captions');
                 controls.push('pip');
 
                 playlist.active = (json.cuepoints && json.cuepoints.length > 0);
@@ -488,7 +489,7 @@ class Tubia {
                     controls: false,
                 },
                 captions: {
-                    active: true,
+                    active: false,
                 },
                 fullscreen: {
                     enabled: json.fullScreenEnabled,

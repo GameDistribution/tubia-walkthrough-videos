@@ -127,6 +127,9 @@
         padding-bottom: 3px;
         padding-left: 0;
         line-height: 90%;
+        @media not all and (min-resolution: .001dpcm) {
+            overflow: visible;
+        }
         @media (max-width: $plyr-bp-sm) {
             margin-right: 7.5px;
             padding-top: 4px;

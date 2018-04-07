@@ -472,7 +472,9 @@ class Ads {
         // Listen to the resizing of the window. And resize ad accordingly
         // TODO: eventually implement ResizeObserver
         window.addEventListener('resize', () => {
-            this.manager.resize(container.offsetWidth, container.offsetHeight, google.ima.ViewMode.NORMAL);
+            if (this.manager) {
+                this.manager.resize(container.offsetWidth, container.offsetHeight, google.ima.ViewMode.NORMAL);
+            }
         });
     }
 
