@@ -12,14 +12,6 @@
     z-index: 3;
     width: 100%;
 
-    margin-bottom: -27px;
-
-    input[type='range'] {
-        position: relative;
-        // z-index: 2;
-        // flex: 1;
-    }
-
     // Seek tooltip to show time
     .plyr__tooltip {
         font-size: $plyr-font-size-time;
@@ -29,8 +21,24 @@
 
 .plyr--full-ui .plyr__progress {
     input[type='range'] {
-        height: 60px;
-        border-radius: 0;
+        position: absolute;
+        bottom: 0;
+        z-index: 1;
+        height: 40px;
+        &::-webkit-slider-runnable-track {
+            flex: 1;
+            margin-top: auto;
+        }
+
+        &::-moz-range-track {
+            flex: 1;
+            margin-top: auto;
+        }
+
+        &::-ms-track {
+            flex: 1;
+            margin-top: auto;
+        }
     }
 }
 
@@ -38,16 +46,15 @@
     -webkit-appearance: none; /* stylelint-disable-line */
     background: transparent;
     border: 0;
-    // border-radius: 100px;
+    border-radius: 0;
     height: $plyr-range-track-height;
     left: 0;
-    margin: -($plyr-range-track-height / 2) 0 0;
+    margin: 0;
     padding: 0;
     position: absolute;
-    top: 50%;
+    bottom: 0;
     width: 100%;
-
-    border-radius: 0;
+    z-index: 0;
 
     &::-webkit-progress-bar {
         background: transparent;
@@ -56,27 +63,27 @@
 
     &::-webkit-progress-value {
         background: currentColor;
-        border-radius: 100px;
+        border-radius: 0;
         min-width: $plyr-range-track-height;
     }
 
     // Mozilla
     &::-moz-progress-bar {
         background: currentColor;
-        border-radius: 100px;
+        border-radius: 0;
         min-width: $plyr-range-track-height;
         transition: width 0.2s ease;
     }
 
     // Microsoft
     &::-ms-fill {
-        border-radius: 100px;
+        border-radius: 0;
         transition: width 0.2s ease;
     }
 }
 
 .plyr--video .plyr__progress--buffer {
-    box-shadow: 0 1px 1px rgba(#000, 0.15);
+    // box-shadow: 0 1px 1px rgba(#000, 0.15);
     color: $plyr-video-progress-buffered-bg;
 }
 
