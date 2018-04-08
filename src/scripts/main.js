@@ -325,7 +325,7 @@ class Tubia {
         // Todo: I think Plyr has some error handling div?
         this.options.onError(error);
         if (this.container) {
-            this.container.classList.toggle = 'tubia__error';
+            this.container.classList.add('tubia__error');
         }
         /* eslint-disable */
         if (typeof window['ga'] !== 'undefined') {
