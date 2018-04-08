@@ -378,6 +378,7 @@ class Ads {
                             hitType: 'event',
                             eventCategory: 'AD',
                             eventAction: 'IMPRESSION',
+                            eventLabel: this.adPosition,
                         });
                     }
                     /* eslint-enable */

@@ -88,7 +88,6 @@ class Tubia {
 
         // Load our styles first. So we don't get initial load flickering.
         utils.loadStyle('https://fonts.googleapis.com/css?family=Khand:400,700');
-        // Todo: update url
         utils.loadStyle('https://tubia.gamedistribution.com/libs/gd/main.min.css').then(() => {
             // Start our application. We load the player when the user clicks,
             // as we don't want too many requests for our assets.
@@ -328,6 +327,16 @@ class Tubia {
         if (this.container) {
             this.container.classList.toggle = 'tubia__error';
         }
+        /* eslint-disable */
+        if (typeof window['ga'] !== 'undefined') {
+            window['ga']('tubia.send', {
+                hitType: 'event',
+                eventCategory: 'MAIN',
+                eventAction: 'ERROR',
+                eventLabel: error,
+            });
+        }
+        /* eslint-enable */
     }
 
     /**
@@ -434,8 +443,6 @@ class Tubia {
             videoElement.appendChild(videoSource);
             this.container.appendChild(videoElement);
 
-            console.log(`Tubia video: ${source}`);
-
             // Create the video player.
             const controls = [
                 'logo',
@@ -468,15 +475,15 @@ class Tubia {
                 debug: this.options.debug,
                 iconUrl: 'https://tubia.gamedistribution.com/libs/gd/sprite.svg',
                 title: (json.detail && json.detail.length > 0) ? json.detail[0].title : '',
-                logo: json.logoEnabled,
+                logo: (json.logoEnabled && !json.logoEnabled) ? json.logoEnabled : false,
                 showPosterOnEnd: true,
                 hideControls: false,
                 ads: {
-                    enabled: json.adsEnabled,
-                    video: json.preRollEnabled,
-                    overlay: json.subBannerEnabled,
-                    videoInterval: json.preRollSecond,
-                    overlayInterval: json.subBannerSecond,
+                    enabled: (json.adsEnabled && !json.adsEnabled) ? json.adsEnabled : true,
+                    video: (json.preRollEnabled && !json.preRollEnabled) ? json.preRollEnabled : true,
+                    overlay: (json.subBannerEnabled && !json.subBannerEnabled) ? json.subBannerEnabled : true,
+                    videoInterval: (json.preRollSecond && !json.preRollSecond) ? json.preRollSecond : 300,
+                    overlayInterval: (json.subBannerSecond && !json.subBannerSecond) ? json.subBannerSecond : 15,
                     tag: (json.adsEnabled && !json.addFreeActive) ? this.adTag : '',
                 },
                 keyboard: {
@@ -490,7 +497,7 @@ class Tubia {
                     active: false,
                 },
                 fullscreen: {
-                    enabled: json.fullScreenEnabled,
+                    enabled: (json.fullScreenEnabled && !json.fullScreenEnabled) ? json.fullScreenEnabled : true,
                 },
                 playlist,
                 controls,
@@ -518,6 +525,17 @@ class Tubia {
                     // Start playing.
                     this.player.play();
                 }, this.transitionSpeed / 1.5);
+
+                /* eslint-disable */
+                if (typeof window['ga'] !== 'undefined') {
+                    window['ga']('tubia.send', {
+                        hitType: 'event',
+                        eventCategory: 'MAIN',
+                        eventAction: 'LOADED',
+                        eventLabel: sourceUrl,
+                    });
+                }
+                /* eslint-enable */
             });
             this.player.on('error', (error) => {
                 this.onError(error);

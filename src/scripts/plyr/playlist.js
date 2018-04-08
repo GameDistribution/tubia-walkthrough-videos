@@ -63,11 +63,6 @@ const playlist = {
 
     // Display playlist container and button (for initialization)
     show() {
-        // If there's no playlist toggle, bail
-        if (!utils.is.element(this.elements.buttons.playlist)) {
-            return;
-        }
-
         // Try to load the value from storage
         let active = this.storage.get('playlist');
 
@@ -79,7 +74,10 @@ const playlist = {
         }
 
         if (active) {
-            utils.toggleClass(this.elements.container, this.config.classNames.playlist.active, true);
+            // Todo: ugly solution for hiding initial display of the playlist.
+            setTimeout(() => {
+                utils.toggleClass(this.elements.container, this.config.classNames.playlist.active, true);
+            }, 3000);
             utils.toggleState(this.elements.buttons.playlist, true);
         }
     },
