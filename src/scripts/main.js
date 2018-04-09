@@ -446,7 +446,6 @@ class Tubia {
             // Create the video player.
             const controls = [
                 'logo',
-                'playlist',
                 'play-large',
                 'title',
                 'progress',
@@ -466,8 +465,11 @@ class Tubia {
                 controls.push('settings');
                 // controls.push('captions');
                 controls.push('pip');
+            }
 
-                playlist.active = (json.cuepoints && json.cuepoints.length > 0);
+            // Check if we want a playlist.
+            if (json.cuepoints && json.cuepoints.length > 0) {
+                controls.push('playlist');
             }
 
             // Create the Plyr instance.

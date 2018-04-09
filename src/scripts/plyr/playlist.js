@@ -74,10 +74,7 @@ const playlist = {
         }
 
         if (active) {
-            // Todo: ugly solution for hiding initial display of the playlist.
-            setTimeout(() => {
-                utils.toggleClass(this.elements.container, this.config.classNames.playlist.active, true);
-            }, 3000);
+            utils.toggleClass(this.elements.container, this.config.classNames.playlist.active, true);
             utils.toggleState(this.elements.buttons.playlist, true);
         }
     },
