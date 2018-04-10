@@ -230,18 +230,20 @@ class Tubia {
             // Todo: make sure to disable ads if enableAds is false. Also for addFreeActive :P
             // Todo: The SSL certificate used to load resources from https://cdn.walkthrough.vooxe.com will be distrusted in M70. Once distrusted, users will be prevented from loading these resources. See https://g.co/chrome/symantecpkicerts for more information.
             this.videoSearchPromise.then((id) => {
-                const gameId = (typeof id !== 'undefined' && id.gameId && id.gameId !== '') ? id.gameId.toString().replace(/-/g, '') : this.options.gameId.toString().replace(/-/g, '');
+                // id.gameId is actually the videoId...
+                const videoId = (typeof id !== 'undefined' && id.gameId && id.gameId !== '') ? id.gameId.toString().replace(/-/g, '') : '';
                 const publisherId = this.options.publisherId.toString().replace(/-/g, '');
                 const domain = encodeURIComponent(this.options.domain);
                 const location = encodeURIComponent(this.url);
-                const videoDataUrl = `https://walkthrough.gamedistribution.com/api/player/publish/?gameid=${gameId}&publisherid=${publisherId}&domain=${domain}`;
+                // Yes argument gameid is expecting the videoId...
+                const videoDataUrl = `https://walkthrough.gamedistribution.com/api/player/publish/?gameid=${videoId}&publisherid=${publisherId}&domain=${domain}`;
                 const videoDataRequest = new Request(videoDataUrl, {method: 'GET'});
 
                 // Record Tubia view event in Tunnl.
-                (new Image()).src = `https://ana.tunnl.com/event?tub_id=${gameId}&eventtype=0&page_url=${location}`;
+                (new Image()).src = `https://ana.tunnl.com/event?tub_id=${videoId}&eventtype=0&page_url=${location}`;
 
                 // Set the ad tag using the given id.
-                this.adTag = `https://pub.tunnl.com/opp?page_url=${encodeURIComponent(this.url)}&player_width=640&player_height=480&game_id=${gameId}&correlator=${Date.now()}`;
+                this.adTag = `https://pub.tunnl.com/opp?page_url=${encodeURIComponent(this.url)}&player_width=640&player_height=480&tub_id=${videoId}&correlator=${Date.now()}`;
                 // this.adTag = `https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpostpod&cmsid=496&vid=short_onecue&correlator=${Date.now()}`;
                 // this.adTag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpreonly&cmsid=496&vid=short_onecue&correlator=';
                 fetch(videoDataRequest).then((response) => {

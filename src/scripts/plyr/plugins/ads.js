@@ -169,7 +169,7 @@ class Ads {
             request.nonLinearAdSlotWidth = container.offsetWidth;
             request.nonLinearAdSlotHeight = container.offsetHeight;
 
-            // give us non-linear ads when we're running mid-rolls.
+            // Give us non-linear ads when we're running mid-rolls
             request.forceNonLinearFullSlot = (this.adPosition === 3);
 
             this.loader.requestAds(request);
