@@ -5,7 +5,7 @@
 
 
 # Tubia walkthrough video's
-This is the documentation of the "Tubia Walkthrough Video" project. An HTML5 player used for displaying gaming walkthrough video's matching its context.
+This is the documentation of the Tubia video player project. An HTML5 player used for displaying gaming walkthrough video's matching its context.
 
 Tubia.com offers walkthrough video’s to gaming publishers, for free. Many gamers seek out helpful tutorials and videos to help them when they get stuck in a game. We facilitate this and create helpful content that helps gamers beat their favorite web games! By embedding our video walkthroughs on your website, you can not only help your users beat a difficult part of a game, but also increase your revenue and user engagement.
 
