@@ -88,7 +88,8 @@ class Tubia {
 
         // Load our styles first. So we don't get initial load flickering.
         utils.loadStyle('https://fonts.googleapis.com/css?family=Khand:400,700');
-        utils.loadStyle('https://tubia.gamedistribution.com/libs/gd/main.min.css').then(() => {
+        utils.loadStyle('./main.min.css').then(() => {
+        // utils.loadStyle('https://tubia.gamedistribution.com/libs/gd/main.min.css').then(() => {
             // Start our application. We load the player when the user clicks,
             // as we don't want too many requests for our assets.
             this.start();
@@ -474,7 +475,7 @@ class Tubia {
                 title: (json.detail && json.detail.length > 0) ? json.detail[0].title : '',
                 logo: (json.logoEnabled && !json.logoEnabled) ? json.logoEnabled : false,
                 showPosterOnEnd: true,
-                hideControls: false,
+                hideControls: (!/Mobi/.test(navigator.userAgent)),
                 ads: {
                     enabled: (json.adsEnabled && !json.adsEnabled) ? json.adsEnabled : true,
                     video: (json.preRollEnabled && !json.preRollEnabled) ? json.preRollEnabled : true,
