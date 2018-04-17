@@ -1056,7 +1056,7 @@ const controls = {
     // Create a playlist item
     createPlaylistItem(cue, list, type, title, counter) {
         const label = utils.createElement('span', {
-            class: 'plyr__title',
+            class: 'plyr_name',
         });
         const count = utils.createElement('span', {
             class: 'plyr__count',

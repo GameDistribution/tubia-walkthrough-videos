@@ -286,14 +286,6 @@ class Listeners {
         // Loading state
         utils.on(this.player.media, 'waiting canplay seeked playing', event => ui.checkLoading.call(this.player, event));
 
-        // Display the playlist UI a bit later
-        // Todo: Stupid solution
-        utils.on(this.player.media, 'canplay', () => {
-            setTimeout(() => {
-                utils.toggleClass(this.player.elements.container, 'plyr--playlist-initial', true);
-            }, 5000);
-        });
-
         // Check if media failed to load
         // utils.on(this.player.media, 'play', event => ui.checkFailed.call(this.player, event));
 

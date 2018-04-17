@@ -451,7 +451,7 @@ class Tubia {
                 'fullscreen',
             ];
             const playlist = {
-                active: false,
+                active: (!/Mobi/.test(navigator.userAgent)), // Only on desktop.
                 data: (json.cuepoints && json.cuepoints.length > 0) ? json.cuepoints : [],
             };
 
