@@ -345,8 +345,6 @@ class Tubia {
 
         // Hide the play button.
         this.playButton.classList.toggle('tubia__active');
-        // Show transition
-        this.transitionElement.classList.toggle('tubia__active');
 
         setTimeout(() => {
             // Show our spinner loader.
@@ -355,14 +353,9 @@ class Tubia {
             this.posterImageElement.style.display = 'none';
             // Remove the button.
             this.playButton.parentNode.removeChild(this.playButton);
-        }, this.transitionSpeed / 2);
-
-        setTimeout(() => {
-            // Hide transition.
-            this.transitionElement.classList.toggle('tubia__active');
             // Load our player.
             this.loadPlyr();
-        }, this.transitionSpeed);
+        }, 200); // Wait for the play button to hide.
     }
 
     /**
