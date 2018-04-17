@@ -1172,7 +1172,7 @@ const controls = {
 
         // Video title
         if (this.config.controls.includes('title')) {
-            this.elements.container.appendChild(controls.createTitle.call(this, 'title'));
+            container.appendChild(controls.createTitle.call(this, 'title'));
         }
 
         // Share button
