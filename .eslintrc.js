@@ -13,6 +13,7 @@ module.exports = {
         'google': false,
     },
     'rules': {
+        'no-param-reassign': ["error", { "props": false }],
         'no-const-assign': 1,
         'no-this-before-super': 1,
         'no-undef': 1,

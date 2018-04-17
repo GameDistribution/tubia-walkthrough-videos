@@ -255,8 +255,29 @@ class Tubia {
                         return response.json();
                     }
                 }).then(json => {
-                    console.log(json);
-                    resolve(json);
+                    if (json.cuepoints.length <= 0) {
+                        // Todo: Title property within related games JSON is always empty!!
+                        // Request related video's as fallback to the playlist data.
+                        const relatedVideosUrl = `https://walkthrough.gamedistribution.com/api/RelatedVideo/?gameMd5=${this.options.gameId}&publisherId=${publisherId}&domain=${domain}&skip=0&take=10&orderBy=visit&sortDirection=desc&langCode=${this.options.langCode}`;
+                        const relatedVideosRequest = new Request(relatedVideosUrl, {
+                            method: 'GET',
+                        });
+                        fetch(relatedVideosRequest).then((response) => {
+                            const contentType = response.headers.get('content-type');
+                            if (!contentType || !contentType.includes('application/json')) {
+                                throw new TypeError('Oops, we didn\'t get JSON!');
+                            } else {
+                                json.playlistType = 'related';
+                                json.cuepoints = response;
+                                console.log(json);
+                                resolve(json);
+                            }
+                        });
+                    } else {
+                        json.playlistType = 'cue';
+                        console.log(json);
+                        resolve(json);
+                    }
                 }).catch((error) => {
                     this.onError(error);
                     reject(error);
@@ -443,37 +464,10 @@ class Tubia {
             ];
 
             // Setup the playlist.
-            // Todo: Add tubia related videos
-
-            let playlistData = [];
-            let playlistType = 'cue';
-            if (json.cuepoints && json.cuepoints.length > 0) {
-                playlistData = json.cuepoints;
-            } else {
-                // Todo: Title property within related games JSON is always empty!!
-                // Request related video's as fallback to the playlist data.
-                const domain = encodeURIComponent(this.options.domain);
-                const relatedVideosUrl = `https://walkthrough.gamedistribution.com/api/RelatedVideo/?gameMd5=${this.options.gameId}&publisherId=${publisherId}&domain=${domain}&skip=0&take=10&orderBy=visit&sortDirection=desc&langCode=${this.options.langCode}`;
-                const relatedVideosRequest = new Request(relatedVideosUrl, {
-                    method: 'GET',
-                });
-                fetch(relatedVideosRequest).then((response) => {
-                    const contentType = response.headers.get('content-type');
-                    if (!contentType || !contentType.includes('application/json')) {
-                        throw new TypeError('Oops, we didn\'t get JSON!');
-                    } else {
-                        playlistType = 'related';
-                        playlistData = response.json();
-                    }
-                }).catch((error) => {
-                    this.onError(error);
-                });
-            }
-
             const playlist = {
                 active: (!/Mobi/.test(navigator.userAgent)), // Only on desktop.
-                type: playlistType,
-                data: playlistData,
+                type: json.playlistType,
+                data: json.cuepoints,
             };
 
             // We don't want certain options when our view is too small.
