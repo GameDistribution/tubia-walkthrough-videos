@@ -39,7 +39,7 @@ class Tubia {
             domain: window.location.href.toLowerCase().replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').split('/')[0],
             onFound() {
             },
-            onError(error) {
+            onError() {
             },
             onReady() {
             },
@@ -429,9 +429,10 @@ class Tubia {
             if (!json) {
                 this.onError('No video has been found!');
                 return;
-            } else {
-                this.options.onFound(json);
             }
+
+            // Send callback to end-user containing our video data.
+            this.options.onFound(json);
 
             // Create the HTML5 video element.
             const videoElement = document.createElement('video');
