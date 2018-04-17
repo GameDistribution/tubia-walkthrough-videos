@@ -46,7 +46,6 @@ const captions = {
 
             return;
         }
-
         // Inject the container
         if (!utils.is.element(this.elements.captions)) {
             this.elements.captions = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.captions));
@@ -110,7 +109,7 @@ const captions = {
         // Setup HTML5 track rendering
         if (this.isHTML5 && this.isVideo) {
             captions.getTracks.call(this).forEach(track => {
-                // Remove previous bindings
+                // Show track
                 utils.on(track, 'cuechange', event => captions.setCue.call(this, event));
 
                 // Turn off native caption rendering to avoid double captions

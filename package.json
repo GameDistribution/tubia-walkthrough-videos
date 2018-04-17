@@ -21,7 +21,8 @@
         "custom-event-polyfill": "^0.3.0",
         "es6-promise": "^4.2.2",
         "rangetouch": "^1.0.5",
-        "whatwg-fetch": "^2.0.3"
+        "whatwg-fetch": "^2.0.3",
+        "loadjs": "^3.5.4"
     },
     "devDependencies": {
         "autoprefixer": "^7.2.4",

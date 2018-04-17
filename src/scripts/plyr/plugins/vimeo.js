@@ -4,6 +4,7 @@
 
 import utils from './../utils';
 import captions from './../captions';
+import controls from './../controls';
 import ui from './../ui';
 
 const vimeo = {
@@ -34,7 +35,7 @@ const vimeo = {
     setAspectRatio(input) {
         const ratio = utils.is.string(input) ? input.split(':') : this.config.ratio.split(':');
         const padding = 100 / ratio[0] * ratio[1];
-        const height = 200;
+        const height = 240;
         const offset = (height - padding) / (height / 50);
         this.elements.wrapper.style.paddingBottom = `${padding}%`;
         this.media.style.transform = `translateY(-${offset}%)`;
@@ -101,10 +102,8 @@ const vimeo = {
         };
 
         player.media.stop = () => {
-            player.embed.stop().then(() => {
-                player.media.paused = true;
-                player.currentTime = 0;
-            });
+            player.pause();
+            player.currentTime = 0;
         };
 
         // Seeking
@@ -141,10 +140,18 @@ const vimeo = {
                 return speed;
             },
             set(input) {
-                player.embed.setPlaybackRate(input).then(() => {
-                    speed = input;
-                    utils.dispatchEvent.call(player, player.media, 'ratechange');
-                });
+                player.embed
+                    .setPlaybackRate(input)
+                    .then(() => {
+                        speed = input;
+                        utils.dispatchEvent.call(player, player.media, 'ratechange');
+                    })
+                    .catch(error => {
+                        // Hide menu item (and menu if empty)
+                        if (error.name === 'Error') {
+                            controls.setSpeedMenu.call(player, []);
+                        }
+                    });
             },
         });
 
@@ -195,9 +202,15 @@ const vimeo = {
 
         // Source
         let currentSrc;
-        player.embed.getVideoUrl().then(value => {
-            currentSrc = value;
-        });
+        player.embed
+            .getVideoUrl()
+            .then(value => {
+                currentSrc = value;
+            })
+            .catch(error => {
+                this.debug.warn(error);
+            });
+
         Object.defineProperty(player.media, 'currentSrc', {
             get() {
                 return currentSrc;

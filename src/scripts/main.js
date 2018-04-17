@@ -35,8 +35,8 @@ class Tubia {
             langCode: '',
             colorMain: '',
             colorAccent: '',
-            domain: 'bgames.com',
-            // domain: window.location.href.toLowerCase().replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').split('/')[0],
+            // domain: 'bgames.com',
+            domain: window.location.href.toLowerCase().replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').split('/')[0],
             onFound() {
             },
             onError() {
@@ -106,14 +106,17 @@ class Tubia {
                     background-color: ${this.options.colorAccent};
                 }
                 .tubia__ .tubia__play-button .tubia__hexagon .tubia__hexagon-base, 
-                .tubia__ .tubia__play-button .tubia__hexagon .tubia__hexagon-line-animation {
+                .tubia__ .tubia__play-button .tubia__hexagon .tubia__hexagon-line-animation,
+                .plyr .plyr__hexagon .plyr__hexagon-base {
                     fill: ${this.options.colorMain};
                     stroke: ${this.options.colorMain};
                 }
-                .tubia__ .tubia__hexagon-loader .tubia__hexagon .tubia__hexagon-base {
+                .tubia__ .tubia__hexagon-loader .tubia__hexagon .tubia__hexagon-base,
+                .plyr .plyr__hexagon .plyr__hexagon-base {
                     stroke: ${this.options.colorMain};
                 }
-                .tubia__ .tubia__hexagon-loader .tubia__hexagon .tubia__hexagon-line-animation {
+                .tubia__ .tubia__hexagon-loader .tubia__hexagon .tubia__hexagon-line-animation,
+                .plyr .plyr__hexagon .plyr__hexagon-line-animation {
                     stroke: ${this.options.colorAccent};
                 }
                 .plyr--full-ui input[type=range] {
@@ -122,11 +125,8 @@ class Tubia {
                 .plyr__menu__container {
                     background: ${this.options.colorMain};
                 }
-                .plyr__menu__container:after {
-                    border-top-color: ${this.options.colorMain};
-                }
-                .plyr__control--overlaid {
-                    color: ${this.options.colorMain};
+                .plyr__menu__container label.plyr__control input[type=radio]:checked+span {
+                    background: ${this.options.colorAccent};
                 }
                 .plyr__playlist ul li.active .plyr__count {
                     border-color: ${this.options.colorMain};
@@ -230,18 +230,20 @@ class Tubia {
             // Todo: make sure to disable ads if enableAds is false. Also for addFreeActive :P
             // Todo: The SSL certificate used to load resources from https://cdn.walkthrough.vooxe.com will be distrusted in M70. Once distrusted, users will be prevented from loading these resources. See https://g.co/chrome/symantecpkicerts for more information.
             this.videoSearchPromise.then((id) => {
-                const gameId = (typeof id !== 'undefined' && id.gameId && id.gameId !== '') ? id.gameId.toString().replace(/-/g, '') : this.options.gameId.toString().replace(/-/g, '');
+                // id.gameId is actually the videoId...
+                const videoId = (typeof id !== 'undefined' && id.gameId && id.gameId !== '') ? id.gameId.toString().replace(/-/g, '') : '';
                 const publisherId = this.options.publisherId.toString().replace(/-/g, '');
                 const domain = encodeURIComponent(this.options.domain);
                 const location = encodeURIComponent(this.url);
-                const videoDataUrl = `https://walkthrough.gamedistribution.com/api/player/publish/?gameid=${gameId}&publisherid=${publisherId}&domain=${domain}`;
+                // Yes argument gameid is expecting the videoId...
+                const videoDataUrl = `https://walkthrough.gamedistribution.com/api/player/publish/?gameid=${videoId}&publisherid=${publisherId}&domain=${domain}`;
                 const videoDataRequest = new Request(videoDataUrl, {method: 'GET'});
 
                 // Record Tubia view event in Tunnl.
-                (new Image()).src = `https://ana.tunnl.com/event?tub_id=${gameId}&eventtype=0&page_url=${location}`;
+                (new Image()).src = `https://ana.tunnl.com/event?tub_id=${videoId}&eventtype=0&page_url=${location}`;
 
                 // Set the ad tag using the given id.
-                this.adTag = `https://pub.tunnl.com/opp?page_url=${encodeURIComponent(this.url)}&player_width=640&player_height=480&game_id=${gameId}&correlator=${Date.now()}`;
+                this.adTag = `https://pub.tunnl.com/opp?page_url=${encodeURIComponent(this.url)}&player_width=640&player_height=480&tub_id=${videoId}&correlator=${Date.now()}`;
                 // this.adTag = `https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpostpod&cmsid=496&vid=short_onecue&correlator=${Date.now()}`;
                 // this.adTag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpreonly&cmsid=496&vid=short_onecue&correlator=';
                 fetch(videoDataRequest).then((response) => {
@@ -267,7 +269,6 @@ class Tubia {
         // We start with showing a poster image with a play button.
         // By not loading the actual player we save some requests and overall page load.
         // A user can click the play button to start loading the video player.
-        // Todo: Enable autoplay when possible.
         this.videoDataPromise.then((json) => {
             if (!json) {
                 this.onError('No video has been found!');
@@ -305,7 +306,6 @@ class Tubia {
                     this.container.appendChild(this.posterImageElement);
 
                     // Create the play button.
-                    // Todo: hide button when done.
                     this.playButton.classList.toggle('tubia__active');
                     this.playButton.addEventListener('click', this.startPlyrHandler, false);
                 }, this.transitionSpeed / 2);
@@ -324,11 +324,21 @@ class Tubia {
      * @param {String} error
      */
     onError(error) {
-        // Todo: I think Plyr has some error handling div.
+        // Todo: I think Plyr has some error handling div?
         this.options.onError(error);
         if (this.container) {
-            this.container.classList.toggle = 'tubia__error';
+            this.container.classList.add('tubia__error');
         }
+        /* eslint-disable */
+        if (typeof window['ga'] !== 'undefined') {
+            window['ga']('tubia.send', {
+                hitType: 'event',
+                eventCategory: 'MAIN',
+                eventAction: 'ERROR',
+                eventLabel: error,
+            });
+        }
+        /* eslint-enable */
     }
 
     /**
@@ -371,6 +381,7 @@ class Tubia {
         // //walkthrough.gamedistribution.com/api/playernotification?reasonid=" + b + "&url=" +
         // encodeURIComponent(q()) + "&videoid=" + A
 
+        // Todo: Triodor has not yet deployed the preflight request update, so no JSON!
         // Send a post request to tell the "matching"-team which video is becoming important.
         // It is basically for updating a click counter or whatever :P
         // const videoCounterData = {
@@ -382,7 +393,6 @@ class Tubia {
         //     langCode: this.options.langCode,
         // };
         const videoCounterData = `publisherId=${this.options.publisherId}&url=${encodeURIComponent(this.url)}&title=${this.options.title}&gameId=${this.options.gameId}&category=${this.options.category}&langCode=${this.options.langCode}`;
-        // Todo: Triodor has not yet deployed the preflight request update!
         const videoCounterUrl = 'https://walkthrough.gamedistribution.com/api/player/findv3/';
         const videoCounterRequest = new Request(videoCounterUrl, {
             method: 'POST',
@@ -428,12 +438,9 @@ class Tubia {
             videoElement.appendChild(videoSource);
             this.container.appendChild(videoElement);
 
-            console.log(`Tubia video: ${source}`);
-
             // Create the video player.
             const controls = [
                 'logo',
-                'playlist',
                 'play-large',
                 'title',
                 'progress',
@@ -451,10 +458,13 @@ class Tubia {
             if ((this.container.offsetWidth >= 768)) {
                 controls.push('volume');
                 controls.push('settings');
-                controls.push('captions');
+                // controls.push('captions');
                 controls.push('pip');
+            }
 
-                playlist.active = (json.cuepoints && json.cuepoints.length > 0);
+            // Check if we want a playlist.
+            if (json.cuepoints && json.cuepoints.length > 0) {
+                controls.push('playlist');
             }
 
             // Create the Plyr instance.
@@ -462,14 +472,15 @@ class Tubia {
                 debug: this.options.debug,
                 iconUrl: 'https://tubia.gamedistribution.com/libs/gd/sprite.svg',
                 title: (json.detail && json.detail.length > 0) ? json.detail[0].title : '',
-                logo: json.logoEnabled,
+                logo: (json.logoEnabled && !json.logoEnabled) ? json.logoEnabled : false,
                 showPosterOnEnd: true,
+                hideControls: false,
                 ads: {
-                    enabled: json.adsEnabled,
-                    video: json.preRollEnabled,
-                    overlay: json.subBannerEnabled,
-                    videoInterval: json.preRollSecond,
-                    overlayInterval: json.subBannerSecond,
+                    enabled: (json.adsEnabled && !json.adsEnabled) ? json.adsEnabled : true,
+                    video: (json.preRollEnabled && !json.preRollEnabled) ? json.preRollEnabled : true,
+                    overlay: (json.subBannerEnabled && !json.subBannerEnabled) ? json.subBannerEnabled : true,
+                    videoInterval: (json.preRollSecond && !json.preRollSecond) ? json.preRollSecond : 300,
+                    overlayInterval: (json.subBannerSecond && !json.subBannerSecond) ? json.subBannerSecond : 15,
                     tag: (json.adsEnabled && !json.addFreeActive) ? this.adTag : '',
                 },
                 keyboard: {
@@ -480,10 +491,10 @@ class Tubia {
                     controls: false,
                 },
                 captions: {
-                    active: true,
+                    active: false,
                 },
                 fullscreen: {
-                    enabled: json.fullScreenEnabled,
+                    enabled: (json.fullScreenEnabled && !json.fullScreenEnabled) ? json.fullScreenEnabled : true,
                 },
                 playlist,
                 controls,
@@ -511,6 +522,17 @@ class Tubia {
                     // Start playing.
                     this.player.play();
                 }, this.transitionSpeed / 1.5);
+
+                /* eslint-disable */
+                if (typeof window['ga'] !== 'undefined') {
+                    window['ga']('tubia.send', {
+                        hitType: 'event',
+                        eventCategory: 'MAIN',
+                        eventAction: 'LOADED',
+                        eventLabel: sourceUrl,
+                    });
+                }
+                /* eslint-enable */
             });
             this.player.on('error', (error) => {
                 this.onError(error);

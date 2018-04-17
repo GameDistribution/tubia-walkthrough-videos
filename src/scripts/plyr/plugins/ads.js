@@ -150,9 +150,11 @@ class Ads {
                 this.tagUrl = utils.updateQueryStringParameter(this.tagUrl, 'ad_position', 'preroll');
                 this.adPosition = 2;
             } else {
+                const positionCount = this.adCount - 1;
+                this.tagUrl = utils.updateQueryStringParameter(this.tagUrl, 'ad_midroll_count', positionCount.toString());
                 this.tagUrl = utils.updateQueryStringParameter(this.tagUrl, 'ad_type', 'image');
                 this.tagUrl = utils.updateQueryStringParameter(this.tagUrl, 'ad_skippable', '0');
-                this.tagUrl = utils.updateQueryStringParameter(this.tagUrl, 'ad_position', `subbanner${this.adCount.toString()}`);
+                this.tagUrl = utils.updateQueryStringParameter(this.tagUrl, 'ad_position', 'subbanner');
                 this.adPosition = 3;
             }
 
@@ -167,7 +169,7 @@ class Ads {
             request.nonLinearAdSlotWidth = container.offsetWidth;
             request.nonLinearAdSlotHeight = container.offsetHeight;
 
-            // give us non-linear ads when we're running mid-rolls.
+            // Give us non-linear ads when we're running mid-rolls
             request.forceNonLinearFullSlot = (this.adPosition === 3);
 
             this.loader.requestAds(request);
@@ -221,21 +223,24 @@ class Ads {
         this.cuePoints = this.manager.getCuePoints();
 
         // Add advertisement cue's within the time line if available
-        this.cuePoints.forEach(cuePoint => {
-            if (cuePoint !== 0 && cuePoint !== -1 && cuePoint < this.player.duration) {
-                const seekElement = this.player.elements.progress;
+        // Todo: cue points are not yet working with how we currently request ads.
+        if (this.cuePoints) {
+            this.cuePoints.forEach(cuePoint => {
+                if (cuePoint !== 0 && cuePoint !== -1 && cuePoint < this.player.duration) {
+                    const seekElement = this.player.elements.progress;
 
-                if (seekElement) {
-                    const cuePercentage = 100 / this.player.duration * cuePoint;
-                    const cue = utils.createElement('span', {
-                        class: this.player.config.classNames.cues,
-                    });
+                    if (seekElement) {
+                        const cuePercentage = 100 / this.player.duration * cuePoint;
+                        const cue = utils.createElement('span', {
+                            class: this.player.config.classNames.cues,
+                        });
 
-                    cue.style.left = `${cuePercentage.toString()}%`;
-                    seekElement.appendChild(cue);
+                        cue.style.left = `${cuePercentage.toString()}%`;
+                        seekElement.appendChild(cue);
+                    }
                 }
-            }
-        });
+            });
+        }
 
         // Get skippable state
         // TODO: Skip button
@@ -373,6 +378,7 @@ class Ads {
                             hitType: 'event',
                             eventCategory: 'AD',
                             eventAction: 'IMPRESSION',
+                            eventLabel: this.adPosition,
                         });
                     }
                     /* eslint-enable */
@@ -433,12 +439,14 @@ class Ads {
         this.player.on('seeked', () => {
             const seekedTime = this.player.currentTime;
 
-            this.cuePoints.forEach((cuePoint, index) => {
-                if (time < cuePoint && cuePoint < seekedTime) {
-                    this.manager.discardAdBreak();
-                    this.cuePoints.splice(index, 1);
-                }
-            });
+            if (this.cuePoints){
+                this.cuePoints.forEach((cuePoint, index) => {
+                    if (time < cuePoint && cuePoint < seekedTime) {
+                        this.manager.discardAdBreak();
+                        this.cuePoints.splice(index, 1);
+                    }
+                });
+            }
         });
 
         // Run a post-roll advertisement and complete the ads loader
@@ -471,7 +479,9 @@ class Ads {
         // Listen to the resizing of the window. And resize ad accordingly
         // TODO: eventually implement ResizeObserver
         window.addEventListener('resize', () => {
-            this.manager.resize(container.offsetWidth, container.offsetHeight, google.ima.ViewMode.NORMAL);
+            if (this.manager) {
+                this.manager.resize(container.offsetWidth, container.offsetHeight, google.ima.ViewMode.NORMAL);
+            }
         });
     }
 

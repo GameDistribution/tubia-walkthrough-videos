@@ -5,6 +5,8 @@
 import 'babel-polyfill';
 import 'custom-event-polyfill';
 
+import loadjs from 'loadjs';
+
 import support from './support';
 import { providers } from './types';
 
@@ -115,11 +117,10 @@ const utils = {
                     if (responseType === 'text') {
                         try {
                             resolve(JSON.parse(request.responseText));
-                        } catch(e) {
+                        } catch (e) {
                             resolve(request.responseText);
                         }
-                    }
-                    else {
+                    } else {
                         resolve(request.response);
                     }
                 });
@@ -143,52 +144,10 @@ const utils = {
     // Load an external script
     loadScript(url) {
         return new Promise((resolve, reject) => {
-            const current = document.querySelector(`script[src="${url}"]`);
-
-            // Check script is not already referenced, if so wait for load
-            if (current !== null) {
-                current.callbacks = current.callbacks || [];
-                current.callbacks.push(resolve);
-                return;
-            }
-
-            // Build the element
-            const element = document.createElement('script');
-
-            // Callback queue
-            element.callbacks = element.callbacks || [];
-            element.callbacks.push(resolve);
-
-            // Error queue
-            element.errors = element.errors || [];
-            element.errors.push(reject);
-
-            // Bind callback
-            element.addEventListener(
-                'load',
-                event => {
-                    element.callbacks.forEach(cb => cb.call(null, event));
-                    element.callbacks = null;
-                },
-                false,
-            );
-
-            // Bind error handling
-            element.addEventListener(
-                'error',
-                event => {
-                    element.errors.forEach(err => err.call(null, event));
-                    element.errors = null;
-                },
-                false,
-            );
-
-            // Set the URL after binding callback
-            element.src = url;
-
-            // Inject
-            const first = document.getElementsByTagName('script')[0];
-            first.parentNode.insertBefore(element, first);
+            loadjs(url, {
+                success: resolve,
+                error: reject,
+            });
         });
     },
 
@@ -255,7 +214,14 @@ const utils = {
         const hasId = utils.is.string(id);
         let isCached = false;
 
-        function updateSprite(data) {
+        const exists = () => document.querySelectorAll(`#${id}`).length;
+
+        function injectSprite(data) {
+            // Check again incase of race condition
+            if (hasId && exists()) {
+                return;
+            }
+
             // Inject content
             this.innerHTML = data;
 
@@ -263,8 +229,8 @@ const utils = {
             document.body.insertBefore(this, document.body.childNodes[0]);
         }
 
-        // Only load once
-        if (!hasId || !document.querySelectorAll(`#${id}`).length) {
+        // Only load once if ID set
+        if (!hasId || !exists()) {
             // Create container
             const container = document.createElement('div');
             utils.toggleHidden(container, true);
@@ -280,7 +246,7 @@ const utils = {
 
                 if (isCached) {
                     const data = JSON.parse(cached);
-                    updateSprite.call(container, data.content);
+                    injectSprite.call(container, data.content);
                     return;
                 }
             }
@@ -302,7 +268,7 @@ const utils = {
                         );
                     }
 
-                    updateSprite.call(container, result);
+                    injectSprite.call(container, result);
                 })
                 .catch(() => {});
         }
@@ -311,15 +277,6 @@ const utils = {
     // Generate a random ID
     generateId(prefix) {
         return `${prefix}-${Math.floor(Math.random() * 10000)}`;
-    },
-
-    // Determine if we're in an iframe
-    inFrame() {
-        try {
-            return window.self !== window.top;
-        } catch (e) {
-            return true;
-        }
     },
 
     // Wrap an element
@@ -424,8 +381,11 @@ const utils = {
             return;
         }
 
-        Object.keys(attributes).forEach(key => {
-            element.setAttribute(key, attributes[key]);
+        Object.entries(attributes).forEach(([
+            key,
+            value,
+        ]) => {
+            element.setAttribute(key, value);
         });
     },
 
@@ -552,7 +512,7 @@ const utils = {
                 pause: utils.getElement.call(this, this.config.selectors.buttons.pause),
                 restart: utils.getElement.call(this, this.config.selectors.buttons.restart),
                 rewind: utils.getElement.call(this, this.config.selectors.buttons.rewind),
-                forward: utils.getElement.call(this, this.config.selectors.buttons.forward),
+                fastForward: utils.getElement.call(this, this.config.selectors.buttons.fastForward),
                 mute: utils.getElement.call(this, this.config.selectors.buttons.mute),
                 pip: utils.getElement.call(this, this.config.selectors.buttons.pip),
                 airplay: utils.getElement.call(this, this.config.selectors.buttons.airplay),
@@ -647,9 +607,9 @@ const utils = {
     },
 
     // Toggle event listener
-    toggleListener(elements, event, callback, toggle, passive, capture) {
+    toggleListener(elements, event, callback, toggle = false, passive = true, capture = false) {
         // Bail if no elemetns, event, or callback
-        if (utils.is.empty(elements)  || utils.is.empty(event) || !utils.is.function(callback)) {
+        if (utils.is.empty(elements) || utils.is.empty(event) || !utils.is.function(callback)) {
             return;
         }
 
@@ -669,16 +629,16 @@ const utils = {
         const events = event.split(' ');
 
         // Build options
-        // Default to just capture boolean
-        let options = utils.is.boolean(capture) ? capture : false;
+        // Default to just the capture boolean for browsers with no passive listener support
+        let options = capture;
 
         // If passive events listeners are supported
         if (support.passiveListeners) {
             options = {
                 // Whether the listener can be passive (i.e. default never prevented)
-                passive: utils.is.boolean(passive) ? passive : true,
+                passive,
                 // Whether the listener is a capturing listener or not
-                capture: utils.is.boolean(capture) ? capture : false,
+                capture,
             };
         }
 
@@ -689,25 +649,25 @@ const utils = {
     },
 
     // Bind event handler
-    on(element, events, callback, passive, capture) {
+    on(element, events = '', callback, passive = true, capture = false) {
         utils.toggleListener(element, events, callback, true, passive, capture);
     },
 
     // Unbind event handler
-    off(element, events, callback, passive, capture) {
+    off(element, events = '', callback, passive = true, capture = false) {
         utils.toggleListener(element, events, callback, false, passive, capture);
     },
 
     // Trigger event
-    dispatchEvent(element, type, bubbles, detail) {
+    dispatchEvent(element, type = '', bubbles = false, detail = {}) {
         // Bail if no element
-        if (!utils.is.element(element) || !utils.is.string(type)) {
+        if (!utils.is.element(element) || utils.is.empty(type)) {
             return;
         }
 
         // Create and dispatch the event
         const event = new CustomEvent(type, {
-            bubbles: utils.is.boolean(bubbles) ? bubbles : false,
+            bubbles,
             detail: Object.assign({}, detail, {
                 plyr: utils.is.plyr(this) ? this : null,
             }),
@@ -785,6 +745,44 @@ const utils = {
         return `${inverted ? '-' : ''}${hours}${format(mins)}:${format(secs)}`;
     },
 
+    // Replace all occurances of a string in a string
+    replaceAll(input = '', find = '', replace = '') {
+        return input.replace(new RegExp(find.toString().replace(/([.*+?^=!:${}()|[\]/\\])/g, '\\$1'), 'g'), replace.toString());
+    },
+
+    // Convert to title case
+    toTitleCase(input = '') {
+        return input.toString().replace(/\w\S*/g, text => text.charAt(0).toUpperCase() + text.substr(1).toLowerCase());
+    },
+
+    // Convert string to pascalCase
+    toPascalCase(input = '') {
+        let string = input.toString();
+
+        // Convert kebab case
+        string = utils.replaceAll(string, '-', ' ');
+
+        // Convert snake case
+        string = utils.replaceAll(string, '_', ' ');
+
+        // Convert to title case
+        string = utils.toTitleCase(string);
+
+        // Convert to pascal case
+        return utils.replaceAll(string, ' ', '');
+    },
+
+    // Convert string to pascalCase
+    toCamelCase(input = '') {
+        let string = input.toString();
+
+        // Convert to pascal case
+        string = utils.toPascalCase(string);
+
+        // Convert first character to lowercase
+        return string.charAt(0).toLowerCase() + string.slice(1);
+    },
+
     // Deep extend destination object with N more objects
     extend(target = {}, ...sources) {
         if (!sources.length) {
@@ -810,6 +808,24 @@ const utils = {
         });
 
         return utils.extend(target, ...sources);
+    },
+
+    // Remove duplicates in an array
+    dedupe(array) {
+        if (!utils.is.array(array)) {
+            return array;
+        }
+
+        return array.filter((item, index) => array.indexOf(item) === index);
+    },
+
+    // Get the closest value in an array
+    closest(array, value) {
+        if (!utils.is.array(array) || !array.length) {
+            return null;
+        }
+
+        return array.reduce((prev, curr) => Math.abs(curr - value) < Math.abs(prev - value) ? curr : prev);
     },
 
     // Get the provider for a given URL
