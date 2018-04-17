@@ -1,0 +1,31 @@
+.plyr__logo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 150px;
+    padding: 10px;
+    overflow: hidden;
+    svg {
+        opacity: 0;
+        transform: translateY(-200%);
+        transition: transform 0.1s cubic-bezier(.51, .92, .24, 1.15), opacity 0.15s linear;
+        transition-delay: 0.5s, 0.5s;
+    }
+}
+
+.plyr--video:not(.plyr--hide-controls) {
+    .plyr__logo {
+        svg {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+}
+
+.plyr--hide-controls {
+    .plyr__logo {
+        svg {
+            opacity: 0;
+        }
+    }
+}

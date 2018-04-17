@@ -1,6 +1,6 @@
 // ==========================================================================
 // Plyr
-// plyr.js v3.0.0-beta.20
+// plyr.js v3.1.0
 // https://github.com/sampotts/plyr
 // License: The MIT License (MIT)
 // ==========================================================================
@@ -36,6 +36,9 @@ class Plyr {
         this.loading = false;
         this.failed = false;
 
+        // Touch device
+        this.touch = support.touch;
+
         // Set the media element
         this.media = target;
 
@@ -54,7 +57,7 @@ class Plyr {
         this.config = utils.extend(
             {},
             defaults,
-            options,
+            options || {},
             (() => {
                 try {
                     return JSON.parse(this.media.getAttribute('data-plyr-config'));
@@ -140,7 +143,17 @@ class Plyr {
         }
 
         // Cache original element state for .destroy()
-        this.elements.original = this.media.cloneNode(true);
+        // TODO: Investigate a better solution as I suspect this causes reported double load issues?
+        setTimeout(() => {
+            const clone = this.media.cloneNode(true);
+
+            // Prevent the clone autoplaying
+            if (clone.getAttribute('autoplay')) {
+                clone.pause();
+            }
+
+            this.elements.original = clone;
+        }, 0);
 
         // Set media type based on tag or data attribute
         // Supported: video, audio, vimeo, youtube
@@ -293,6 +306,11 @@ class Plyr {
 
         // Setup ads if provided
         this.ads = new Ads(this);
+
+        // Autoplay if required
+        if (this.config.autoplay) {
+            this.play();
+        }
     }
 
     // ---------------------------------------
@@ -325,6 +343,10 @@ class Plyr {
      * Play the media, or play the advertisement (if they are not blocked)
      */
     play() {
+        if (!utils.is.function(this.media.play)) {
+            return null;
+        }
+
         // If ads are enabled, wait for them first
         if (this.ads.enabled && !this.ads.initialized && this.ads.adTypeVideo) {
             return this.ads.managerPromise.then(() => this.ads.play()).catch(() => this.media.play());
@@ -338,7 +360,7 @@ class Plyr {
      * Pause the media
      */
     pause() {
-        if (!this.playing) {
+        if (!this.playing || !utils.is.function(this.media.pause)) {
             return;
         }
 
@@ -385,8 +407,11 @@ class Plyr {
      * Stop playback
      */
     stop() {
-        this.restart();
-        this.pause();
+        if (this.isHTML5) {
+            this.media.load();
+        } else if (utils.is.function(this.media.stop)) {
+            this.media.stop();
+        }
     }
 
     /**
@@ -439,7 +464,7 @@ class Plyr {
         }
 
         // Set
-        this.media.currentTime = targetTime.toFixed(4);
+        this.media.currentTime = parseFloat(targetTime.toFixed(4));
 
         // Logging
         this.debug.log(`Seeking to ${this.currentTime} seconds`);
@@ -488,7 +513,7 @@ class Plyr {
         const fauxDuration = parseInt(this.config.duration, 10);
 
         // True duration
-        const realDuration = Number(this.media.duration);
+        const realDuration = this.media ? Number(this.media.duration) : 0;
 
         // If custom duration is funky, use regular duration
         return !Number.isNaN(fauxDuration) ? fauxDuration : realDuration;
@@ -532,8 +557,8 @@ class Plyr {
         // Set the player volume
         this.media.volume = volume;
 
-        // If muted, and we're increasing volume, reset muted state
-        if (this.muted && volume > 0) {
+        // If muted, and we're increasing volume manually, reset muted state
+        if (!utils.is.empty(value) && this.muted && volume > 0) {
             this.muted = false;
         }
     }
@@ -663,27 +688,36 @@ class Plyr {
 
     /**
      * Set playback quality
-     * Currently YouTube only
-     * @param {string} input - Quality level
+     * Currently HTML5 & YouTube only
+     * @param {number} input - Quality level
      */
     set quality(input) {
         let quality = null;
 
-        if (utils.is.string(input)) {
-            quality = input;
+        if (!utils.is.empty(input)) {
+            quality = Number(input);
         }
 
-        if (!utils.is.string(quality)) {
+        if (!utils.is.number(quality) || quality === 0) {
             quality = this.storage.get('quality');
         }
 
-        if (!utils.is.string(quality)) {
+        if (!utils.is.number(quality)) {
             quality = this.config.quality.selected;
         }
 
-        if (!this.options.quality.includes(quality)) {
-            this.debug.warn(`Unsupported quality option (${quality})`);
+        if (!utils.is.number(quality)) {
+            quality = this.config.quality.default;
+        }
+
+        if (!this.options.quality.length) {
             return;
+        }
+
+        if (!this.options.quality.includes(quality)) {
+            const closest = utils.closest(this.options.quality, quality);
+            this.debug.warn(`Unsupported quality option: ${quality}, using ${closest} instead`);
+            quality = closest;
         }
 
         // Update config
@@ -1027,26 +1061,32 @@ class Plyr {
                 // Is the enter fullscreen event
                 isEnterFullscreen = toggle.type === 'enterfullscreen';
 
-                // Whether to show controls
-                show = [
-                    'mouseenter',
-                    'mousemove',
+                // Events that show the controls
+                const showEvents = [
                     'touchstart',
                     'touchmove',
-                    'focusin',
-                ].includes(toggle.type);
-
-                // Delay hiding on move events
-                if ([
+                    'mouseenter',
                     'mousemove',
+                    'focusin',
+                ];
+
+                // Events that delay hiding
+                const delayEvents = [
                     'touchmove',
                     'touchend',
-                ].includes(toggle.type)) {
+                    'mousemove',
+                ];
+
+                // Whether to show controls
+                show = showEvents.includes(toggle.type);
+
+                // Delay hiding on move events
+                if (delayEvents.includes(toggle.type)) {
                     delay = 2000;
                 }
 
                 // Delay a little more for keyboard users
-                if (toggle.type === 'focusin') {
+                if (!this.touch && toggle.type === 'focusin') {
                     delay = 3000;
                     utils.toggleClass(this.elements.controls, this.config.classNames.noTransition, true);
                 }
@@ -1074,7 +1114,7 @@ class Plyr {
             }
 
             // Delay for hiding on touch
-            if (support.touch) {
+            if (this.touch) {
                 delay = 3000;
             }
         }
@@ -1083,6 +1123,11 @@ class Plyr {
         // then set the timer to hide the controls
         if (!show || this.playing) {
             this.timers.controls = setTimeout(() => {
+                // We need controls of course...
+                if (!utils.is.element(this.elements.controls)) {
+                    return;
+                }
+
                 // If the mouse is over the controls (and not entering fullscreen), bail
                 if ((this.elements.controls.pressed || this.elements.controls.hover) && !isEnterFullscreen) {
                     return;
@@ -1215,7 +1260,7 @@ class Plyr {
                 clearInterval(this.timers.playing);
 
                 // Destroy YouTube API
-                if (this.embed !== null) {
+                if (this.embed !== null && utils.is.function(this.embed.destroy)) {
                     this.embed.destroy();
                 }
 

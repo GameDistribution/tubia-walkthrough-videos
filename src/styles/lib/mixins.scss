@@ -4,8 +4,8 @@
 
 // Nicer focus styles
 // ---------------------------------------
-@mixin plyr-tab-focus() {
-    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.15);
+@mixin plyr-tab-focus($color: $plyr-tab-focus-default-color) {
+    box-shadow: 0 0 0 3px rgba($color, 0.35);
     outline: 0;
 }
 
@@ -28,10 +28,7 @@
     border: 0;
     border-radius: 0;
     height: $plyr-range-track-height;
-    transform: scaleY(0.6);
-    transform-origin: center;
-    transition: all 0.2s ease, transform 0.1s cubic-bezier(0.4, 0.0, 1, 1);
-    will-change: transform;
+    transition: all 0.3s ease;
     user-select: none;
 }
 
@@ -43,15 +40,13 @@
     box-sizing: border-box;
     height: $plyr-range-thumb-height;
     position: relative;
-    transform: scale(0);
-    transform-origin: center;
-    transition: all 0.2s ease, transform 0.1s cubic-bezier(0.4, 0.0, 1, 1);
-    will-change: transform;
+    transition: all 0.2s ease;
     width: $plyr-range-thumb-height;
+    z-index: 1;
 }
 
-@mixin plyr-range-thumb-active() {
-    box-shadow: 0 0 0 $plyr-range-thumb-active-shadow-width transparentize($plyr-range-thumb-bg, 0.5);
+@mixin plyr-range-thumb-active($color: rgba($plyr-range-thumb-bg, 0.5)) {
+    box-shadow: $plyr-range-thumb-shadow, 0 0 0 $plyr-range-thumb-active-shadow-width $color;
 }
 
 // Fullscreen styles
@@ -91,6 +86,11 @@
         + svg {
             display: none;
         }
+    }
+
+    // Hide cursor in fullscreen when controls hidden
+    &.plyr--hide-controls {
+        cursor: none;
     }
 
     // Large captions in full screen on larger screens

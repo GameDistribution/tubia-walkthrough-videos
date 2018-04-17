@@ -73,6 +73,11 @@ const support = {
                 return false;
             }
 
+            // Check directly if codecs specified
+            if (type.includes('codecs=')) {
+                return media.canPlayType(type).replace(/no/, '');
+            }
+
             // Type specific checks
             if (this.isVideo) {
                 switch (type) {
@@ -143,7 +148,7 @@ const support = {
     })(),
 
     // Touch
-    // Remember a device can be moust + touch enabled
+    // NOTE: Remember a device can be mouse + touch enabled so we check on first touch event
     touch: 'ontouchstart' in document.documentElement,
 
     // Detect transitions support

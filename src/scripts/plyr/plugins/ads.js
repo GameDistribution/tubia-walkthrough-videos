@@ -35,7 +35,7 @@ class Ads {
         };
         this.manager = null;
         this.loader = null;
-        this.cuePoints = null;
+        this.cuePoints = [];
         this.events = {};
         this.safetyTimer = null;
         this.countdownTimer = null;
@@ -150,9 +150,11 @@ class Ads {
                 this.tagUrl = utils.updateQueryStringParameter(this.tagUrl, 'ad_position', 'preroll');
                 this.adPosition = 2;
             } else {
+                const positionCount = this.adCount - 1;
+                this.tagUrl = utils.updateQueryStringParameter(this.tagUrl, 'ad_midroll_count', positionCount.toString());
                 this.tagUrl = utils.updateQueryStringParameter(this.tagUrl, 'ad_type', 'image');
                 this.tagUrl = utils.updateQueryStringParameter(this.tagUrl, 'ad_skippable', '0');
-                this.tagUrl = utils.updateQueryStringParameter(this.tagUrl, 'ad_position', `subbanner${this.adCount.toString()}`);
+                this.tagUrl = utils.updateQueryStringParameter(this.tagUrl, 'ad_position', 'subbanner');
                 this.adPosition = 3;
             }
 
@@ -167,7 +169,7 @@ class Ads {
             request.nonLinearAdSlotWidth = container.offsetWidth;
             request.nonLinearAdSlotHeight = container.offsetHeight;
 
-            // give us non-linear ads when we're running mid-rolls.
+            // Give us non-linear ads when we're running mid-rolls
             request.forceNonLinearFullSlot = (this.adPosition === 3);
 
             this.loader.requestAds(request);
@@ -221,21 +223,24 @@ class Ads {
         this.cuePoints = this.manager.getCuePoints();
 
         // Add advertisement cue's within the time line if available
-        this.cuePoints.forEach(cuePoint => {
-            if (cuePoint !== 0 && cuePoint !== -1 && cuePoint < this.player.duration) {
-                const seekElement = this.player.elements.progress;
+        // Todo: cue points are not yet working with how we currently request ads.
+        if (this.cuePoints) {
+            this.cuePoints.forEach(cuePoint => {
+                if (cuePoint !== 0 && cuePoint !== -1 && cuePoint < this.player.duration) {
+                    const seekElement = this.player.elements.progress;
 
-                if (seekElement) {
-                    const cuePercentage = 100 / this.player.duration * cuePoint;
-                    const cue = utils.createElement('span', {
-                        class: this.player.config.classNames.cues,
-                    });
+                    if (seekElement) {
+                        const cuePercentage = 100 / this.player.duration * cuePoint;
+                        const cue = utils.createElement('span', {
+                            class: this.player.config.classNames.cues,
+                        });
 
-                    cue.style.left = `${cuePercentage.toString()}%`;
-                    seekElement.appendChild(cue);
+                        cue.style.left = `${cuePercentage.toString()}%`;
+                        seekElement.appendChild(cue);
+                    }
                 }
-            }
-        });
+            });
+        }
 
         // Get skippable state
         // TODO: Skip button
@@ -373,6 +378,7 @@ class Ads {
                             hitType: 'event',
                             eventCategory: 'AD',
                             eventAction: 'IMPRESSION',
+                            eventLabel: this.adPosition,
                         });
                     }
                     /* eslint-enable */
@@ -433,12 +439,14 @@ class Ads {
         this.player.on('seeked', () => {
             const seekedTime = this.player.currentTime;
 
-            this.cuePoints.forEach((cuePoint, index) => {
-                if (time < cuePoint && cuePoint < seekedTime) {
-                    this.manager.discardAdBreak();
-                    this.cuePoints.splice(index, 1);
-                }
-            });
+            if (this.cuePoints){
+                this.cuePoints.forEach((cuePoint, index) => {
+                    if (time < cuePoint && cuePoint < seekedTime) {
+                        this.manager.discardAdBreak();
+                        this.cuePoints.splice(index, 1);
+                    }
+                });
+            }
         });
 
         // Run a post-roll advertisement and complete the ads loader
@@ -449,13 +457,14 @@ class Ads {
             this.loader.contentComplete();
         });
 
-        // Run an mid-roll advertisement on a certain time
+        // Run an mid-roll video advertisement on a certain time
         // Timeupdate event updates ~250ms per second so we set a previousMidrollTime
         // to avoid consecutive requests for ads, as it is quite a race
+        // Todo: Tunnl doesn't provide non-linear ads, so we can't call those. Only video for now.
         this.player.on('timeupdate', () => {
             if(this.adTypeOverlay && !this.playing) {
                 const currentTime = Math.ceil(this.player.currentTime);
-                const interval = Math.ceil(this.overlayInterval);
+                const interval = Math.ceil(this.videoInterval);
                 const duration = Math.floor(this.player.duration);
                 if (currentTime % interval === 0
                     && currentTime !== this.previousMidrollTime
@@ -470,7 +479,9 @@ class Ads {
         // Listen to the resizing of the window. And resize ad accordingly
         // TODO: eventually implement ResizeObserver
         window.addEventListener('resize', () => {
-            this.manager.resize(container.offsetWidth, container.offsetHeight, google.ima.ViewMode.NORMAL);
+            if (this.manager) {
+                this.manager.resize(container.offsetWidth, container.offsetHeight, google.ima.ViewMode.NORMAL);
+            }
         });
     }
 

@@ -7,6 +7,9 @@
     width: 250px;
     overflow: hidden;
     visibility: hidden;
+    @media (max-width: $plyr-bp-sm) {
+        width: 150px;
+    }
     &:before,
     &:after,
     ul li:before {
@@ -16,7 +19,7 @@
         top: 0;
         right: 0;
         background-color: $plyr-color-accent;
-        width: calc(100% - 10px);
+        width: calc(100% - 6px);
         height: 100%;
         transform-origin: right;
 
@@ -26,7 +29,7 @@
     }
     &:after {
         background-color: $plyr-color-main;
-        width: calc(100% - 15px);
+        width: calc(100% - 12px);
     }
     ul li:before {
         background: $plyr-color-gunmetal;
@@ -38,10 +41,10 @@
         top: 0;
         right: 0;
         height: 100%;
-        width: calc(100% - 15px);
+        width: calc(100% - 12px);
         padding: 0;
         margin: 0;
-        overflow-y: auto;
+        overflow: hidden;
         li {
             position: relative;
             display: flex;
@@ -53,9 +56,6 @@
             cursor: pointer;
             color: $plyr-video-control-color;
 
-            &:first-of-type {
-                margin-top: 60px;
-            }
             &:last-of-type {
                 margin-bottom: 60px;
             }
@@ -101,6 +101,9 @@
         font-weight: $plyr-font-weight-bold;
         font-size: $plyr-font-size-large;
         color: currentColor;
+        @media (max-width: $plyr-bp-sm) {
+            font-size: $plyr-font-size-small;
+        }
     }
     .plyr__count {
         margin: 20px 15px 20px 20px;
@@ -108,6 +111,9 @@
         border: 1px solid rgba(255, 255, 255, 0.5);
         line-height: 100%;
         border-radius: 1px;
+        @media (max-width: $plyr-bp-sm) {
+            margin: 10px 7.5px 10px 10px;
+        }
     }
     .plyr__title {
         display: block;
@@ -121,10 +127,19 @@
         padding-bottom: 3px;
         padding-left: 0;
         line-height: 90%;
+        @media not all and (min-resolution: .001dpcm) {
+            overflow: visible;
+        }
+        @media (max-width: $plyr-bp-sm) {
+            margin-right: 7.5px;
+            padding-top: 4px;
+        }
     }
     .plyr__background {
         position: absolute;
         z-index: 0;
+        top: 0;
+        left: 0;
         opacity: 0;
         width: 100%;
         height: 100%;
@@ -136,14 +151,25 @@
         z-index: 3;
         bottom: 0;
         right: 0;
-        width: calc(100% - 15px);
+        width: calc(100% - 12px);
         height: 60px;
         background: linear-gradient(0deg, rgba(0, 0, 0, 0.8) 10%, rgba(0, 0, 0, 0));
         transition: opacity 0s;
+        @media (max-width: $plyr-bp-sm) {
+            height: 30px;
+        }
     }
 }
 
-.plyr--playlist-active {
+// Todo: Playlist briefly appears on initial load... ugly.
+.plyr--playlist-initial {
+    .plyr__playlist {
+        visibility: visible;
+    }
+}
+
+// When the playlist is displayed
+.plyr--playlist-enabled:not(.plyr--hide-controls) {
     .plyr__playlist {
         visibility: visible;
         &:before {
@@ -161,48 +187,109 @@
             transition: opacity 1s linear;
             transition-delay: 1s;
         }
-        ul li {
-            span {
-                opacity: 1;
-                transition: opacity 0.1s linear;
-                transition-delay: 1s;
-            }
-            &:before {
-                transform: scaleX(1);
-                transition: transform 0.2s cubic-bezier(.51,.92,.24,1.15);
-            }
-            // Todo: write some SASS logic for this.
-            &:nth-child(1):before {
-                transition-delay: 0.6s;
-            }
-            &:nth-child(2):before {
-                transition-delay: 0.65s;
-            }
-            &:nth-child(3):before {
-                transition-delay: 0.7s;
-            }
-            &:nth-child(4):before {
-                transition-delay: 0.75s;
-            }
-            &:nth-child(5):before {
-                transition-delay: 0.8s;
-            }
-            &:nth-child(6):before {
-                transition-delay: 0.85s;
-            }
-            &:nth-child(7):before {
-                transition-delay: 0.9s;
-            }
-            &:nth-child(8):before {
-                transition-delay: 0.95s;
-            }
-            &:nth-child(n+9) {
-                transition-delay: 1s;
+        ul {
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            li {
+                span {
+                    opacity: 1;
+                    transition: opacity 0.1s linear;
+                    transition-delay: 1s;
+                }
+                &:before {
+                    transform: scaleX(1);
+                    transition: transform 0.2s cubic-bezier(.51,.92,.24,1.15);
+                }
+                // Todo: write some SASS logic for this.
+                &:nth-child(1):before {
+                    transition-delay: 0.6s;
+                }
+                &:nth-child(2):before {
+                    transition-delay: 0.65s;
+                }
+                &:nth-child(3):before {
+                    transition-delay: 0.7s;
+                }
+                &:nth-child(4):before {
+                    transition-delay: 0.75s;
+                }
+                &:nth-child(5):before {
+                    transition-delay: 0.8s;
+                }
+                &:nth-child(6):before {
+                    transition-delay: 0.85s;
+                }
+                &:nth-child(7):before {
+                    transition-delay: 0.9s;
+                }
+                &:nth-child(8):before {
+                    transition-delay: 0.95s;
+                }
+                &:nth-child(n+9) {
+                    transition-delay: 1s;
+                }
             }
         }
     }
-    .plyr__playlist ul {
-        transform: translateX(0);
-    }
 }
 
+// When the playlist is hidden
+.plyr--playlist-enabled.plyr--hide-controls {
+    .plyr__playlist {
+        &:before {
+            transform: scaleX(0);
+            transition: transform 0.4s cubic-bezier(.51,.92,.24,1.15);
+            transition-delay: 0.7s;
+        }
+        &:after {
+            transform: scaleX(0);
+            transition: transform 0.2s cubic-bezier(.51,.92,.24,1.15);
+            transition-delay: 0.6s;
+        }
+        .plyr__background,
+        .plyr__shadow {
+            opacity: 0;
+            transition: opacity 0.1s linear;
+        }
+        ul li {
+            span {
+                opacity: 0;
+                transition: opacity 0.1s linear;
+                transition-delay: 0s;
+            }
+            &:before {
+                transform: scaleX(0);
+                transition: transform 0.2s cubic-bezier(.51,.92,.24,1.15);
+                transition-delay: 0.2s;
+            }
+            // Todo: write some SASS logic for this.
+            &:nth-child(1):before {
+                transition-delay: 0.3s;
+            }
+            &:nth-child(2):before {
+                transition-delay: 0.35s;
+            }
+            &:nth-child(3):before {
+                transition-delay: 0.4s;
+            }
+            &:nth-child(4):before {
+                transition-delay: 0.45s;
+            }
+            &:nth-child(5):before {
+                transition-delay: 0.5s;
+            }
+            &:nth-child(6):before {
+                transition-delay: 0.55s;
+            }
+            &:nth-child(7):before {
+                transition-delay: 0.6s;
+            }
+            &:nth-child(8):before {
+                transition-delay: 0.65s;
+            }
+            &:nth-child(n+9) {
+                transition-delay: 7s;
+            }
+        }
+    }
+}

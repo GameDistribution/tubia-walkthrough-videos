@@ -25,7 +25,7 @@
     &__container {
         animation: plyr-popup 0.2s ease;
         background: $plyr-menu-bg;
-        border-radius: 4px;
+        border-radius: 1px;
         bottom: 100%;
         box-shadow: $plyr-menu-shadow;
         color: $plyr-menu-color;
@@ -59,9 +59,10 @@
             margin: 0;
             overflow: hidden;
             padding: $plyr-control-padding;
+
             li {
-                margin-top: 2px;
                 padding: 0;
+                margin: 2px 0 0;
 
                 &:first-child {
                     margin-top: 0;
@@ -72,13 +73,12 @@
         // Options
         .plyr__control {
             align-items: center;
+            color: $plyr-menu-color;
             display: flex;
+            font-size: $plyr-font-size-menu;
             padding: ceil($plyr-control-padding / 2) ($plyr-control-padding * 2);
             user-select: none;
             width: 100%;
-            color: $plyr-menu-color;
-            font-family: $plyr-font-family;
-            font-size: $plyr-font-size-base;
 
             &::after {
                 border: 4px solid transparent;
@@ -107,7 +107,7 @@
                 $horizontal-padding: ($plyr-control-padding * 2);
                 font-weight: $plyr-font-weight-regular;
                 margin: $plyr-control-padding;
-                // margin-bottom: floor($plyr-control-padding / 2);
+                margin-bottom: floor($plyr-control-padding / 2);
                 padding-left: ceil($plyr-control-padding * 4);
                 position: relative;
                 width: calc(100% - #{$horizontal-padding});
@@ -118,8 +118,8 @@
                 }
 
                 &::before {
-                    background: $plyr-menu-border-color;
-                    box-shadow: 0 1px 0 $plyr-menu-border-shadow-color;
+                    background: rgba(255, 255, 255, 0.2);
+                    // box-shadow: 0 1px 0 $plyr-menu-border-shadow-color;
                     content: '';
                     height: 1px;
                     left: 0;
@@ -138,7 +138,6 @@
         }
 
         label.plyr__control {
-            font-size: $plyr-font-size-base;
             padding-left: $plyr-control-padding;
 
             input[type='radio'] + span {
@@ -168,6 +167,8 @@
             }
 
             input[type='radio']:checked + span {
+                background: $plyr-color-main;
+
                 &::after {
                     opacity: 1;
                     transform: scale(1);
