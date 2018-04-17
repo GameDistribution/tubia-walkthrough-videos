@@ -35,7 +35,7 @@ class Ads {
         };
         this.manager = null;
         this.loader = null;
-        this.cuePoints = null;
+        this.cuePoints = [];
         this.events = {};
         this.safetyTimer = null;
         this.countdownTimer = null;
@@ -449,13 +449,14 @@ class Ads {
             this.loader.contentComplete();
         });
 
-        // Run an mid-roll advertisement on a certain time
+        // Run an mid-roll video advertisement on a certain time
         // Timeupdate event updates ~250ms per second so we set a previousMidrollTime
         // to avoid consecutive requests for ads, as it is quite a race
+        // Todo: Tunnl doesn't provide non-linear ads, so we can't call those. Only video for now.
         this.player.on('timeupdate', () => {
             if(this.adTypeOverlay && !this.playing) {
                 const currentTime = Math.ceil(this.player.currentTime);
-                const interval = Math.ceil(this.overlayInterval);
+                const interval = Math.ceil(this.videoInterval);
                 const duration = Math.floor(this.player.duration);
                 if (currentTime % interval === 0
                     && currentTime !== this.previousMidrollTime
