@@ -199,6 +199,7 @@ const controls = {
                 break;
 
             case 'playlist':
+                attributes.class += ` ${this.config.classNames.playlist.button}`;
                 toggle = true;
                 label = 'playlistOpen';
                 labelPressed = 'playlistClose';
@@ -247,6 +248,15 @@ const controls = {
                         <path class="tubia__hexagon-line-animation" d="M-1665.43,90.94V35.83a15.09,15.09,0,0,1,6.78-12.59l48.22-31.83a15.09,15.09,0,0,1,16-.38L-1547,19.13a15.09,15.09,0,0,1,7.39,13V90.94a15.09,15.09,0,0,1-7.21,12.87l-47.8,29.24a15.09,15.09,0,0,1-15.75,0l-47.8-29.24A15.09,15.09,0,0,1-1665.43,90.94Z" transform="translate(1667.43 13.09)"/>
                     </svg>
                 </button>
+            `;
+            button.insertAdjacentHTML('beforeend', html);
+        }
+
+        if (type === 'playlist') {
+            const html = `
+                <span class="plyr__playlist-button-title">
+                    Levels
+                </span>
             `;
             button.insertAdjacentHTML('beforeend', html);
         }
@@ -1171,9 +1181,9 @@ const controls = {
         // }
 
         // Playlist button
-        // if (this.config.controls.includes('playlist')) {
-        //     container.appendChild(controls.createButton.call(this, 'playlist'));
-        // }
+        if (this.config.controls.includes('playlist')) {
+            container.appendChild(controls.createButton.call(this, 'playlist'));
+        }
 
         // Media current time display
         if (this.config.controls.includes('current-time')) {

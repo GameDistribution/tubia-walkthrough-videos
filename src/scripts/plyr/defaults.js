@@ -396,6 +396,7 @@ const defaults = {
         playlist: {
             enabled: 'plyr--playlist-enabled',
             active: 'plyr--playlist-active',
+            button: 'plyr--playlist-button',
         },
         share: {
             enabled: 'plyr--share-enabled',
