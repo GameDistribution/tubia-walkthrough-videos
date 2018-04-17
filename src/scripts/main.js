@@ -26,7 +26,7 @@ class Tubia {
         // Set some defaults. We replace them with real given
         // values further down.
         const defaults = {
-            debug: true,
+            debug: false,
             container: 'player',
             gameId: '',
             publisherId: '',
@@ -39,7 +39,7 @@ class Tubia {
             domain: window.location.href.toLowerCase().replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').split('/')[0],
             onFound() {
             },
-            onError() {
+            onError(error) {
             },
             onReady() {
             },
@@ -429,6 +429,8 @@ class Tubia {
             if (!json) {
                 this.onError('No video has been found!');
                 return;
+            } else {
+                this.options.onFound(json);
             }
 
             // Create the HTML5 video element.

@@ -1,29 +1,22 @@
 <!doctype html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8"/>
-    <title></title>
-    <meta name="description" content="">
+    <title>Tubia</title>
+    <meta name="description" content="Tubia walkthrough video's">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <script>
-        // Todo: create better implementation.
-        var playerInstance;
-
-        var settings = {
-            container: 'vooxe',
-            gameId: '110104',
-            publisherId: 'dc63a91fa184423482808bed4d782320',
-            width: '900px',
-            height: '506px',
-            title: 'Jewel Burst',
-            category: 'puzzle',
-            langCode: 'en-us',
-            autoplay: 'no',
-            notification: false,
-            colorMain: '#489CA8',
-            colorAccent: '#ff0080',
+        window["TUBIA_OPTIONS"] = {
+            "debug": true,
+            "container": 'tubia',
+            "publisherId": 'dc63a91fa184423482808bed4d782320',
+            "langCode": 'en-us',
+            "colorMain": '#489CA8',
+            "colorAccent": '#ff0080',
+            "gameId": '110104',
+            "title": 'Jewel Burst',
+            "category": 'puzzle',
             onFound: function (data) {
                 console.log(data);
             },
@@ -31,29 +24,23 @@
                 console.log(error);
             },
             onReady: function (player) {
-                playerInstance = player; // Set player instance
+                console.log(player);
             },
         };
-        (function (i, s, o, g, r, a, m) {
-            i['VooxeVideo'] = r;
-            i[r] = i[r] || function () {
-                (i[r].q = i[r].q || []).push(arguments);
-            };
-            i[r].l = 1 * new Date();
-            a = s.createElement(o);
-            m = s.getElementsByTagName(o)[0];
-            a.async = 1;
-            a.src = g;
-            m.parentNode.insertBefore(a, m);
-        })(window, document, 'script', './gd.js', 'gdPlayer');
-        gdPlayer(settings);
+        (function (d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) return;
+            js = d.createElement(s);
+            js.id = id;
+            js.src = './gd.js';
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'tubia-playerjs'));
     </script>
 </head>
 
 <body style="background: #5b002e; margin: 0; padding: 0;">
-<div role="main" id="main" style="max-width: 780px; margin: 100px auto;">
-    <div id="vooxe" style="box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);"></div>
-</div>
+
+<div id="tubia" style="background: #5b002e; box-shadow: 0 0 5px rgba(0, 0, 0, 0.5); max-width: 700px; margin: auto;"></div>
 
 </body>
 

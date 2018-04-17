@@ -1,7 +1,5 @@
 .tubia__ {
     position: relative;
-    background-color: $plyr-color-gunmetal;
-
     transition: opacity 1s cubic-bezier(0.4, 0.0, 1, 1);
     opacity: 0;
     visibility: hidden;
@@ -74,10 +72,11 @@
     .tubia__poster {
         position: absolute;
         z-index: 1;
-        top: 0;
+        top: 50%;
         left: 0;
         width: 100%;
-        height: 100%;
+        height: auto;
+        transform: translateY(-50%);
     }
 
     .tubia__hexagon-loader {

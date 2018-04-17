@@ -229,7 +229,7 @@
                 &:nth-child(8):before {
                     transition-delay: 0.95s;
                 }
-                &:nth-child(n+9) {
+                &:nth-child(n+9):before {
                     transition-delay: 1s;
                 }
             }
@@ -294,8 +294,8 @@
             &:nth-child(8):before {
                 transition-delay: 0.65s;
             }
-            &:nth-child(n+9) {
-                transition-delay: 7s;
+            &:nth-child(n+9):before {
+                transition-delay: 0.7s;
             }
         }
     }
