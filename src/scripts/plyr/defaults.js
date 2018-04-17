@@ -135,6 +135,7 @@ const defaults = {
     playlist: {
         enabled: true,
         active: false,
+        type: 'cue',
         data: [],
     },
 

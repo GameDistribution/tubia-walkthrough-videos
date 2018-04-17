@@ -255,7 +255,7 @@ const controls = {
         if (type === 'playlist') {
             const html = `
                 <span class="plyr__playlist-button-title">
-                    Levels
+                    ${(this.config.playlist.type === 'related') ? 'Related' : 'Levels'}
                 </span>
             `;
             button.insertAdjacentHTML('beforeend', html);
@@ -411,7 +411,6 @@ const controls = {
             class: 'plyr__logo',
         });
         container.insertAdjacentHTML('beforeend', svg);
-        // container.appendChild(controls.createIcon.call(this, 'logo'));
 
         return container;
     },
@@ -1022,39 +1021,66 @@ const controls = {
         // Empty the menu
         utils.emptyElement(list);
 
-        // If there's no captions, bail
+        // If there's no items, bail
         if (!hasItems) {
             return;
         }
 
-        // Re-map the tracks into just the data we need
-        const tracks = playlist.getData.call(this).map(track => ({
-            level: track.name,
-            cue: track.cuePoint / 1000,
-        }));
+        if(this.config.playlist.type === 'cue') {
+            // Re-map the tracks into just the data we need
+            const items = playlist.getData.call(this).map(item => ({
+                link: item.cuePoint / 1000,
+                name: item.name,
+            }));
 
-        // Generate options
-        tracks.forEach((track, index) => {
-            const counter = index + 1;
-            let itemNumber = 0;
-            if (counter.toString().length === 1) {
-                itemNumber = `0${counter}`;
-            } else {
-                itemNumber = counter;
-            }
-            controls.createPlaylistItem.call(
-                this,
-                track.cue,
-                list,
-                type,
-                track.level,
-                itemNumber,
-            );
-        });
+            // Generate options
+            items.forEach((item, index) => {
+                const counter = index + 1;
+                let itemNumber = 0;
+                if (counter.toString().length === 1) {
+                    itemNumber = `0${counter}`;
+                } else {
+                    itemNumber = counter;
+                }
+                controls.createPlaylistItemCue.call(
+                    this,
+                    list,
+                    item.link,
+                    item.name,
+                    itemNumber,
+                );
+            });
+        } else if(this.config.playlist.type === 'related') {
+            // Re-map the tracks into just the data we need
+            const items = playlist.getData.call(this).map(item => ({
+                link: item.PageUrl,
+                name: (item.Title && item.Title !== '') ? item.Title : 'Check out this game!',
+                image: item.GameImage,
+            }));
+
+            // Generate options
+            items.forEach((item, index) => {
+                const counter = index + 1;
+                let itemNumber = 0;
+                if (counter.toString().length === 1) {
+                    itemNumber = `0${counter}`;
+                } else {
+                    itemNumber = counter;
+                }
+                controls.createPlaylistItemRelated.call(
+                    this,
+                    list,
+                    item.link,
+                    item.name,
+                    item.image,
+                    itemNumber,
+                );
+            });
+        }
     },
 
-    // Create a playlist item
-    createPlaylistItem(cue, list, type, title, counter) {
+    // Create a playlist cue item for seeking
+    createPlaylistItemCue(list, cue, title, counter) {
         const label = utils.createElement('span', {
             class: 'plyr_name',
         });
@@ -1068,7 +1094,6 @@ const controls = {
             'bottom',
             'center',
         ];
-
         const imageItem = utils.createElement('div', {
             class: 'plyr__background',
         });
@@ -1085,6 +1110,40 @@ const controls = {
         utils.on(item, 'click', () => {
             // Todo: we want to set the current active class based on seekTime.
             this.jumpTo(cue);
+        });
+
+        label.insertAdjacentHTML('beforeend', title);
+        count.insertAdjacentHTML('beforeend', counter);
+
+        item.appendChild(imageItem);
+        item.appendChild(count);
+        item.appendChild(label);
+        list.appendChild(item);
+    },
+
+    // Create a playlist related item
+    createPlaylistItemRelated(list, link, title, image, counter) {
+        const label = utils.createElement('span', {
+            class: 'plyr_name',
+        });
+        const count = utils.createElement('span', {
+            class: 'plyr__count',
+        });
+        const imageItem = utils.createElement('div', {
+            class: 'plyr__background',
+        });
+        imageItem.style.backgroundImage = `url("data:image/svg+xml;base64, PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxMCcgaGVpZ2h0PScxMCc+DQogIDxyZWN0IHdpZHRoPScxMCcgaGVpZ2h0PScxMCcgZmlsbD0nIzAwMCcgZmlsbC1vcGFjaXR5PSIwLjYiIC8+DQogIDxyZWN0IHg9JzAnIHk9JzAnIHdpZHRoPSc1JyBoZWlnaHQ9JzUnIGZpbGw9JyMwMDAnIGZpbGwtb3BhY2l0eT0iMSIgLz4NCjwvc3ZnPg=="), url(${image})`;
+        imageItem.style.backgroundSize = '2px, 100%';
+        imageItem.style.backgroundPosition = 'center, center';
+        imageItem.style.backgroundRepeat = 'repeat, no-repeat';
+
+        const item = utils.createElement('li', {
+            class: (counter === '01') ? 'active' : '',
+        });
+
+        // Jump to the time we want.
+        utils.on(item, 'click', () => {
+            window.open(link, '_blank');
         });
 
         label.insertAdjacentHTML('beforeend', title);

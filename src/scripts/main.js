@@ -446,9 +446,11 @@ class Tubia {
             // Todo: Add tubia related videos
 
             let playlistData = [];
+            let playlistType = 'cue';
             if (json.cuepoints && json.cuepoints.length > 0) {
                 playlistData = json.cuepoints;
             } else {
+                // Todo: Title property within related games JSON is always empty!!
                 // Request related video's as fallback to the playlist data.
                 const domain = encodeURIComponent(this.options.domain);
                 const relatedVideosUrl = `https://walkthrough.gamedistribution.com/api/RelatedVideo/?gameMd5=${this.options.gameId}&publisherId=${publisherId}&domain=${domain}&skip=0&take=10&orderBy=visit&sortDirection=desc&langCode=${this.options.langCode}`;
@@ -460,6 +462,7 @@ class Tubia {
                     if (!contentType || !contentType.includes('application/json')) {
                         throw new TypeError('Oops, we didn\'t get JSON!');
                     } else {
+                        playlistType = 'related';
                         playlistData = response.json();
                     }
                 }).catch((error) => {
@@ -469,43 +472,8 @@ class Tubia {
 
             const playlist = {
                 active: (!/Mobi/.test(navigator.userAgent)), // Only on desktop.
-                // data: playlistData,
-                /* eslint-disable */
-                data: [
-                    {
-                        "GameId": "",
-                        "PageUrl": "http://spele.nl/appel-schieten-spel/?utm_source=AD&utm_medium=popUnderDYNAMIC&utm_campaign=SpeleNL",
-                        "Title": "",
-                        "GameImage": "//cdn.tubia.com/media/catalogue/d81d658f7fb3fca03ea5e74f787f1f51_360_203.jpg",
-                        "Id": 0,
-                        "GameMd5": ""
-                    },
-                    {
-                        "GameId": "",
-                        "PageUrl": "http://spele.nl/color-switch-1-spel/?utm_source=nl&utm_medium=lastplayed&utm_campaign=extension&utm_content=Color%20Switch",
-                        "Title": "",
-                        "GameImage": "//cdn.tubia.com/media/catalogue/a26e06b13f79d245c0ea522d3a398da0_360_203.jpg",
-                        "Id": 0,
-                        "GameMd5": ""
-                    },
-                    {
-                        "GameId": "",
-                        "PageUrl": "http://spele.nl/goudzoeker-1-spel/#source=69937",
-                        "Title": "",
-                        "GameImage": "//cdn.tubia.com/media/catalogue/146f7dd4c91bc9d80cf4458ad6d6cd1b_360_203.jpg",
-                        "Id": 0,
-                        "GameMd5": ""
-                    },
-                    {
-                        "GameId": "",
-                        "PageUrl": "http://spele.nl/pac-xon-deluxe-spel/#source=78765",
-                        "Title": "",
-                        "GameImage": "//cdn.tubia.com/media/catalogue/586691f81045ebfe99049a8a8e43ea2e_360_203.jpg",
-                        "Id": 0,
-                        "GameMd5": ""
-                    }
-                ]
-                /* eslint-enable */
+                type: playlistType,
+                data: playlistData,
             };
 
             // We don't want certain options when our view is too small.
