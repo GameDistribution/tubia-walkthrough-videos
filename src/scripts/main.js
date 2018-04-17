@@ -26,7 +26,7 @@ class Tubia {
         // Set some defaults. We replace them with real given
         // values further down.
         const defaults = {
-            debug: true,
+            debug: false,
             container: 'player',
             gameId: '',
             publisherId: '',
@@ -39,7 +39,7 @@ class Tubia {
             domain: window.location.href.toLowerCase().replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').split('/')[0],
             onFound() {
             },
-            onError() {
+            onError(error) {
             },
             onReady() {
             },
@@ -63,6 +63,7 @@ class Tubia {
         console.log.apply(console, banner);
         /* eslint-enable */
 
+        this.videoId = '';
         this.container = document.getElementById(this.options.container);
         this.url = document.location.href;
         this.adTag = null;
@@ -88,8 +89,8 @@ class Tubia {
 
         // Load our styles first. So we don't get initial load flickering.
         utils.loadStyle('https://fonts.googleapis.com/css?family=Khand:400,700');
-        utils.loadStyle('./main.min.css').then(() => {
-        // utils.loadStyle('https://tubia.gamedistribution.com/libs/gd/main.min.css').then(() => {
+        // utils.loadStyle('./main.min.css').then(() => {
+        utils.loadStyle('https://tubia.gamedistribution.com/libs/gd/main.min.css').then(() => {
             // Start our application. We load the player when the user clicks,
             // as we don't want too many requests for our assets.
             this.start();
@@ -226,25 +227,23 @@ class Tubia {
 
         // Get the video data using the id returned from the videoSearchPromise.
         this.videoDataPromise = new Promise((resolve, reject) => {
-            // Todo: check if we dont want to use a tubia url.
-            // Todo: verify if tubia cdn urls are ssl ready.
-            // Todo: make sure to disable ads if enableAds is false. Also for addFreeActive :P
+            // Todo: check if we dont want to use a tubia url instead of gamedistribution?
             // Todo: The SSL certificate used to load resources from https://cdn.walkthrough.vooxe.com will be distrusted in M70. Once distrusted, users will be prevented from loading these resources. See https://g.co/chrome/symantecpkicerts for more information.
             this.videoSearchPromise.then((id) => {
                 // id.gameId is actually the videoId...
-                const videoId = (typeof id !== 'undefined' && id.gameId && id.gameId !== '') ? id.gameId.toString().replace(/-/g, '') : '';
+                this.videoId = (typeof id !== 'undefined' && id.gameId && id.gameId !== '') ? id.gameId.toString().replace(/-/g, '') : '';
                 const publisherId = this.options.publisherId.toString().replace(/-/g, '');
                 const domain = encodeURIComponent(this.options.domain);
                 const location = encodeURIComponent(this.url);
                 // Yes argument gameid is expecting the videoId...
-                const videoDataUrl = `https://walkthrough.gamedistribution.com/api/player/publish/?gameid=${videoId}&publisherid=${publisherId}&domain=${domain}`;
+                const videoDataUrl = `https://walkthrough.gamedistribution.com/api/player/publish/?gameid=${this.videoId}&publisherid=${publisherId}&domain=${domain}`;
                 const videoDataRequest = new Request(videoDataUrl, {method: 'GET'});
 
                 // Record Tubia view event in Tunnl.
-                (new Image()).src = `https://ana.tunnl.com/event?tub_id=${videoId}&eventtype=0&page_url=${location}`;
+                (new Image()).src = `https://ana.tunnl.com/event?tub_id=${this.videoId}&eventtype=0&page_url=${location}`;
 
                 // Set the ad tag using the given id.
-                this.adTag = `https://pub.tunnl.com/opp?page_url=${encodeURIComponent(this.url)}&player_width=640&player_height=480&tub_id=${videoId}&correlator=${Date.now()}`;
+                this.adTag = `https://pub.tunnl.com/opp?page_url=${location}&player_width=640&player_height=480&tub_id=${this.videoId}&correlator=${Date.now()}`;
                 // this.adTag = `https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpostpod&cmsid=496&vid=short_onecue&correlator=${Date.now()}`;
                 // this.adTag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpreonly&cmsid=496&vid=short_onecue&correlator=';
                 fetch(videoDataRequest).then((response) => {
@@ -256,8 +255,29 @@ class Tubia {
                         return response.json();
                     }
                 }).then(json => {
-                    console.log(json);
-                    resolve(json);
+                    if (json.cuepoints.length <= 0) {
+                        // Todo: Title property within related games JSON is always empty!!
+                        // Request related video's as fallback to the playlist data.
+                        const relatedVideosUrl = `https://walkthrough.gamedistribution.com/api/RelatedVideo/?gameMd5=${this.options.gameId}&publisherId=${publisherId}&domain=${domain}&skip=0&take=10&orderBy=visit&sortDirection=desc&langCode=${this.options.langCode}`;
+                        const relatedVideosRequest = new Request(relatedVideosUrl, {
+                            method: 'GET',
+                        });
+                        fetch(relatedVideosRequest).then((response) => {
+                            const contentType = response.headers.get('content-type');
+                            if (!contentType || !contentType.includes('application/json')) {
+                                throw new TypeError('Oops, we didn\'t get JSON!');
+                            } else {
+                                json.playlistType = 'related';
+                                json.cuepoints = response;
+                                console.log(json);
+                                resolve(json);
+                            }
+                        });
+                    } else {
+                        json.playlistType = 'cue';
+                        console.log(json);
+                        resolve(json);
+                    }
                 }).catch((error) => {
                     this.onError(error);
                     reject(error);
@@ -330,6 +350,8 @@ class Tubia {
         if (this.container) {
             this.container.classList.add('tubia__error');
         }
+        // Send error report to Tubia.
+        (new Image()).src = `https://walkthrough.gamedistribution.com/api/playernotification?reasonid=${error}&url=${encodeURIComponent(this.url)}&videoid=${this.videoId}`;
         /* eslint-disable */
         if (typeof window['ga'] !== 'undefined') {
             window['ga']('tubia.send', {
@@ -374,14 +396,6 @@ class Tubia {
      * Load the Plyr library.
      */
     loadPlyr() {
-        // Todo: Add tubia related videos
-        // //walkthrough.gamedistribution.com/api/RelatedVideo/?gameMd5=" + A + "&publisherId=" + G
-        // + "&domain=" + b + "&skip=0&take=5&orderBy=visit&sortDirection=desc&langCode=" + aa
-
-        // Todo: Add tubia error reporting
-        // //walkthrough.gamedistribution.com/api/playernotification?reasonid=" + b + "&url=" +
-        // encodeURIComponent(q()) + "&videoid=" + A
-
         // Todo: Triodor has not yet deployed the preflight request update, so no JSON!
         // Send a post request to tell the "matching"-team which video is becoming important.
         // It is basically for updating a click counter or whatever :P
@@ -393,7 +407,9 @@ class Tubia {
         //     category: this.options.category,
         //     langCode: this.options.langCode,
         // };
-        const videoCounterData = `publisherId=${this.options.publisherId}&url=${encodeURIComponent(this.url)}&title=${this.options.title}&gameId=${this.options.gameId}&category=${this.options.category}&langCode=${this.options.langCode}`;
+        const publisherId = this.options.publisherId.toString().replace(/-/g, '');
+        const location = encodeURIComponent(this.url);
+        const videoCounterData = `publisherId=${publisherId}&url=${location}&title=${this.options.title}&gameId=${this.options.gameId}&category=${this.options.category}&langCode=${this.options.langCode}`;
         const videoCounterUrl = 'https://walkthrough.gamedistribution.com/api/player/findv3/';
         const videoCounterRequest = new Request(videoCounterUrl, {
             method: 'POST',
@@ -406,17 +422,15 @@ class Tubia {
             const contentType = response.headers.get('content-type');
             if (!contentType || !contentType.includes('application/json')) {
                 throw new TypeError('Oops, we didn\'t get JSON!');
-            } else {
-                return response.json();
             }
-        }).catch((error) => {
-            this.onError(error);
         });
 
         this.videoDataPromise.then((json) => {
             if (!json) {
                 this.onError('No video has been found!');
                 return;
+            } else {
+                this.options.onFound(json);
             }
 
             // Create the HTML5 video element.
@@ -450,9 +464,12 @@ class Tubia {
                 'mute',
                 'fullscreen',
             ];
+
+            // Setup the playlist.
             const playlist = {
-                active: false,
-                data: (json.cuepoints && json.cuepoints.length > 0) ? json.cuepoints : [],
+                active: (!/Mobi/.test(navigator.userAgent)), // Only on desktop.
+                type: json.playlistType,
+                data: json.cuepoints,
             };
 
             // We don't want certain options when our view is too small.
@@ -475,7 +492,7 @@ class Tubia {
                 title: (json.detail && json.detail.length > 0) ? json.detail[0].title : '',
                 logo: (json.logoEnabled && !json.logoEnabled) ? json.logoEnabled : false,
                 showPosterOnEnd: true,
-                hideControls: (!/Mobi/.test(navigator.userAgent)),
+                hideControls: (!/Mobi/.test(navigator.userAgent)), // Only on desktop.
                 ads: {
                     enabled: (json.adsEnabled && !json.adsEnabled) ? json.adsEnabled : true,
                     video: (json.preRollEnabled && !json.preRollEnabled) ? json.preRollEnabled : true,
