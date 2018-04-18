@@ -26,7 +26,7 @@ class Tubia {
         // Set some defaults. We replace them with real given
         // values further down.
         const defaults = {
-            debug: false,
+            debug: true,
             container: 'player',
             gameId: '',
             publisherId: '',
@@ -68,7 +68,7 @@ class Tubia {
         this.url = document.location.href;
         this.adTag = null;
         this.posterUrl = '';
-        this.posterImageElement = null;
+        this.posterPosterElement = null;
         this.transitionElement = null;
         this.playButton = null;
         this.hexagonLoader = null;
@@ -299,22 +299,27 @@ class Tubia {
             const poster = (json.pictures && json.pictures.length > 0) ? json.pictures[json.pictures.length - 1].link : '';
             this.posterUrl = poster.replace(/^http:\/\//i, 'https://');
 
-            // Load the poster image.
-            this.posterImageElement = document.createElement('img');
-            this.posterImageElement.classList.add('tubia__poster');
+            // Check if the poster image exists the poster image.
+            this.posterPosterElement = document.createElement('div');
+            this.posterPosterElement.classList.add('tubia__poster');
             const checkImage = path =>
                 new Promise(resolve => {
                     const img = new Image();
                     img.onload = () => resolve({path, status: 'ok'});
                     img.onerror = () => resolve({path, status: 'error'});
                     img.src = path;
+
+                    // Always resolve.
+                    setTimeout(() => {
+                        resolve({path, status: 'error'});
+                    }, 2000);
                 });
             const loadImg = (...paths) => Promise.all(paths.map(checkImage));
             loadImg(this.posterUrl).then((response) => {
                 if (response[0].status === 'ok') {
-                    this.posterImageElement.src = response[0].path;
+                    this.posterPosterElement.style.backgroundImage = `url(${response[0].path})`;
                 } else {
-                    this.posterImageElement.style.display = 'none';
+                    this.posterPosterElement.style.display = 'none';
                 }
 
                 // Start transition towards showing the poster image.
@@ -324,7 +329,7 @@ class Tubia {
                     // Hide our spinner loader.
                     this.hexagonLoader.classList.toggle('tubia__active');
                     // Add our poster image.
-                    this.container.appendChild(this.posterImageElement);
+                    this.container.appendChild(this.posterPosterElement);
 
                     // Create the play button.
                     this.playButton.classList.toggle('tubia__active');
@@ -383,7 +388,7 @@ class Tubia {
             // Show our spinner loader.
             this.hexagonLoader.classList.toggle('tubia__active');
             // Hide the poster image.
-            this.posterImageElement.style.display = 'none';
+            this.posterPosterElement.style.display = 'none';
             // Remove the button.
             this.playButton.parentNode.removeChild(this.playButton);
             // Load our player.
