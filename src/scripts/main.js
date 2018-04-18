@@ -26,7 +26,7 @@ class Tubia {
         // Set some defaults. We replace them with real given
         // values further down.
         const defaults = {
-            debug: true,
+            debug: false,
             container: 'player',
             gameId: '',
             publisherId: '',
