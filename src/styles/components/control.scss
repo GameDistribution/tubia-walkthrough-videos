@@ -13,6 +13,8 @@
     padding: $plyr-control-padding;
     position: relative;
     transition: all 0.15s cubic-bezier(0.4, 0.0, 1, 1);
+    min-width: auto;
+    min-height: auto;
 
     svg {
         display: block;
