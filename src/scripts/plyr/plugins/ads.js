@@ -21,7 +21,8 @@ class Ads {
 
         this.adTypeVideo = player.config.ads.video;
         this.adTypeOverlay = player.config.ads.overlay;
-        this.videoInterval = player.config.ads.videoInterval;
+        // Todo: want to test with 120 second interval.
+        this.videoInterval = 120; // player.config.ads.videoInterval;
         this.overlayInterval = player.config.ads.overlayInterval;
 
         this.adCount = 1;
@@ -171,6 +172,10 @@ class Ads {
 
             // Give us non-linear ads when we're running mid-rolls
             request.forceNonLinearFullSlot = (this.adPosition === 3);
+
+            // https://developers.google.com/interactive-media-ads/docs/sdks/html5/desktop-autoplay
+            // request.setAdWillAutoPlay(false);
+            // request.setAdWillPlayMuted(false);
 
             this.loader.requestAds(request);
 

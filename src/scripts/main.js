@@ -239,7 +239,7 @@ class Tubia {
                 const videoDataUrl = `https://walkthrough.gamedistribution.com/api/player/publish/?gameid=${this.videoId}&publisherid=${publisherId}&domain=${domain}`;
                 const videoDataRequest = new Request(videoDataUrl, {method: 'GET'});
 
-                // Record Tubia view event in Tunnl.
+                // Record Tubia "Video Loaded" event in Tunnl.
                 (new Image()).src = `https://ana.tunnl.com/event?tub_id=${this.videoId}&eventtype=0&page_url=${location}`;
 
                 // Set the ad tag using the given id.
@@ -546,6 +546,9 @@ class Tubia {
                     // Start playing.
                     this.player.play();
                 }, this.transitionSpeed / 1.5);
+
+                // Record Tubia "Video Play" event in Tunnl.
+                (new Image()).src = `https://ana.tunnl.com/event?tub_id=${this.videoId}&eventtype=1&page_url=${location}`;
 
                 /* eslint-disable */
                 if (typeof window['ga'] !== 'undefined') {
