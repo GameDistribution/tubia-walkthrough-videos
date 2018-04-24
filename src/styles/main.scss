@@ -1,4 +1,5 @@
-.tubia__ {
+.tubia {
+    display: block;
     position: relative;
     transition: opacity 1s cubic-bezier(0.4, 0.0, 1, 1);
     opacity: 0;
@@ -29,6 +30,7 @@
     }
 
     .tubia__transition {
+        display: block;
         position: absolute;
         z-index: 3;
         top: 0;
@@ -70,6 +72,7 @@
     }
 
     .tubia__poster {
+        display: block;
         position: absolute;
         z-index: 1;
         top: 0;
@@ -97,6 +100,7 @@
     }
 
     .tubia__play-button {
+        display: block;
         position: absolute;
         z-index: 4;
         top: 50%;

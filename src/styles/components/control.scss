@@ -2,116 +2,118 @@
 // Control buttons
 // --------------------------------------------------------------
 
-.plyr__control {
-    background: transparent;
-    border: 0;
-    border-radius: $plyr-control-radius;
-    color: inherit;
-    cursor: pointer;
-    flex-shrink: 0;
-    overflow: visible; // IE11
-    padding: $plyr-control-padding;
-    position: relative;
-    transition: all 0.15s cubic-bezier(0.4, 0.0, 1, 1);
-    min-width: auto;
-    min-height: auto;
+.plyr {
+    .plyr__control {
+        background: transparent;
+        border: 0;
+        border-radius: $plyr-control-radius;
+        color: inherit;
+        cursor: pointer;
+        flex-shrink: 0;
+        overflow: visible; // IE11
+        padding: $plyr-control-padding;
+        position: relative;
+        transition: all 0.15s cubic-bezier(0.4, 0.0, 1, 1);
+        min-width: auto;
+        min-height: auto;
 
-    svg {
-        display: block;
-        fill: currentColor;
-        height: $plyr-control-icon-size;
-        pointer-events: none;
-        width: $plyr-control-icon-size;
+        svg {
+            display: block;
+            fill: currentColor;
+            height: $plyr-control-icon-size;
+            pointer-events: none;
+            width: $plyr-control-icon-size;
+        }
+
+        // Default focus
+        &:focus {
+            outline: 0;
+        }
+
+        // Tab focus
+        &.plyr__tab-focus {
+            @include plyr-tab-focus();
+        }
     }
 
-    // Default focus
-    &:focus {
-        outline: 0;
+    // Change icons on state change
+    .plyr__control[aria-pressed='false'] .icon--pressed,
+    .plyr__control[aria-pressed='true'] .icon--not-pressed,
+    .plyr__control[aria-pressed='false'] .label--pressed,
+    .plyr__control[aria-pressed='true'] .label--not-pressed {
+        display: none;
     }
 
-    // Tab focus
-    &.plyr__tab-focus {
-        @include plyr-tab-focus();
+    // Audio styles
+    .plyr--audio .plyr__control {
+        &.plyr__tab-focus,
+        &:hover,
+        &[aria-expanded='true'] {
+            // background: $plyr-audio-control-bg-hover;
+            color: $plyr-audio-control-color-hover;
+        }
     }
-}
 
-// Change icons on state change
-.plyr__control[aria-pressed='false'] .icon--pressed,
-.plyr__control[aria-pressed='true'] .icon--not-pressed,
-.plyr__control[aria-pressed='false'] .label--pressed,
-.plyr__control[aria-pressed='true'] .label--not-pressed {
-    display: none;
-}
-
-// Audio styles
-.plyr--audio .plyr__control {
-    &.plyr__tab-focus,
-    &:hover,
-    &[aria-expanded='true'] {
-        // background: $plyr-audio-control-bg-hover;
-        color: $plyr-audio-control-color-hover;
-    }
-}
-
-// Large play button (video only)
-.plyr__control--overlaid {
-    position: absolute;
-    z-index: 2;
-    top: 50%;
-    left: 50%;
-    background-color: transparent;
-    border: 0;
-    border-radius: 0;
-    padding: 0;
-    cursor: pointer;
-    opacity: 1;
-    transform-origin: center;
-    transform: translate(-50%, -50%) scale(0.8);
-    will-change: transform, opacity;
-    transition: transform 0.2s cubic-bezier(.51, .92, .24, 1.15),
-    opacity 0.1s linear;
-    &:hover {
-        transform: translate(-50%, -52%) scale(0.8);
-    }
-    &:active {
-        transform: translate(-50%, -50%) scale(0.9);
-    }
-    &:focus {
-        outline: 0;
-    }
-    // Play icon
-    > svg:first-of-type {
+    // Large play button (video only)
+    .plyr__control--overlaid {
         position: absolute;
+        z-index: 2;
         top: 50%;
         left: 50%;
-        transform: translate(-50%, -50%);
-        fill: #fff;
-        margin-left: 4px;
-        width: 40px;
-        height: 40px;
-    }
-}
-
-// Plyr playing
-.plyr--playing .plyr__control--overlaid {
-    opacity: 0;
-    transform: translate(-50%, -40%) scale(0.5);
-    // visibility: hidden;
-}
-
-// Plyr loading
-.plyr--loading .plyr__control--overlaid {
-    cursor: default;
-    &:hover {
+        background-color: transparent;
+        border: 0;
+        border-radius: 0;
+        padding: 0;
+        cursor: pointer;
+        opacity: 1;
+        transform-origin: center;
         transform: translate(-50%, -50%) scale(0.8);
+        will-change: transform, opacity;
+        transition: transform 0.2s cubic-bezier(.51, .92, .24, 1.15),
+        opacity 0.1s linear;
+        &:hover {
+            transform: translate(-50%, -52%) scale(0.8);
+        }
+        &:active {
+            transform: translate(-50%, -50%) scale(0.9);
+        }
+        &:focus {
+            outline: 0;
+        }
+        // Play icon
+        > svg:first-of-type {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            fill: #fff;
+            margin-left: 4px;
+            width: 40px;
+            height: 40px;
+        }
     }
-    > svg:first-of-type {
-        opacity: 0.1;
-        filter: brightness(0.1);
-    }
-}
 
-// Interface visible
-.plyr--full-ui.plyr--video .plyr__control--overlaid {
-    display: block;
+    // Plyr playing
+    &.plyr--playing .plyr__control--overlaid {
+        opacity: 0;
+        transform: translate(-50%, -40%) scale(0.5);
+        // visibility: hidden;
+    }
+
+    // Plyr loading
+    &.plyr--loading .plyr__control--overlaid {
+        cursor: default;
+        &:hover {
+            transform: translate(-50%, -50%) scale(0.8);
+        }
+        > svg:first-of-type {
+            opacity: 0.1;
+            filter: brightness(0.1);
+        }
+    }
+
+    // Interface visible
+    &.plyr--full-ui.plyr--video .plyr__control--overlaid {
+        display: block;
+    }
 }

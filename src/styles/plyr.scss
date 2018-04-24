@@ -23,8 +23,9 @@
 @import 'lib/functions';
 @import 'lib/mixins';
 
-@import 'base';
+@import 'reset';
 @import 'main';
+@import 'base';
 
 @import 'components/hexagon';
 @import 'components/badges';

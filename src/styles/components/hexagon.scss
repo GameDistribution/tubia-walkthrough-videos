@@ -1,25 +1,39 @@
 .plyr {
-    .plyr__hexagon {
-        width: 104px;
-        height: 121px;
-        overflow: visible;
-        background-color: transparent;
-        .plyr__hexagon-base,
-        .plyr__hexagon-line-animation {
-            fill: transparent;
-            stroke-miterlimit: 9;
-            stroke-width: 9px;
+    .plyr__control {
+        .plyr__hexagon {
+            width: 104px;
+            height: 121px;
+            overflow: visible;
+            background-color: transparent;
+            .plyr__hexagon-base,
+            .plyr__hexagon-line-animation {
+                fill: transparent;
+                stroke-miterlimit: 9;
+                stroke-width: 9px;
+            }
+            .plyr__hexagon-base {
+                stroke: $plyr-color-main;
+                fill: $plyr-color-main;
+            }
+            .plyr__hexagon-line-animation {
+                display: none;
+                stroke: $plyr-color-accent;
+                stroke-linecap: square;
+                animation: hexagon-dash 1.5s linear;
+                animation-iteration-count: infinite;
+            }
         }
-        .plyr__hexagon-base {
-            stroke: $plyr-color-main;
-            fill: $plyr-color-main;
-        }
-        .plyr__hexagon-line-animation {
-            display: none;
-            stroke: $plyr-color-accent;
-            stroke-linecap: square;
-            animation: hexagon-dash 1.5s linear;
-            animation-iteration-count: infinite;
+    }
+
+    // Plyr is loading
+    &.plyr--loading {
+        .plyr__hexagon {
+            .plyr__hexagon-line-animation {
+                display: block;
+            }
+            .plyr__hexagon-base {
+                fill: transparent;
+            }
         }
     }
 
@@ -40,18 +54,6 @@
         100% {
             stroke-dasharray: 260.22 173.48;
             stroke-dashoffset: -867.4;
-        }
-    }
-}
-
-// Plyr is loading
-.plyr.plyr--loading {
-    .plyr__hexagon {
-        .plyr__hexagon-line-animation {
-            display: block;
-        }
-        .plyr__hexagon-base {
-            fill: transparent;
         }
     }
 }

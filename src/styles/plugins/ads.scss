@@ -2,71 +2,73 @@
 // Advertisements
 // ==========================================================================
 
-.plyr__ads {
-    border-radius: inherit;
-    bottom: 0;
-    cursor: pointer;
-    left: 0;
-    overflow: hidden;
-    position: absolute;
-    right: 0;
-    top: 0;
-    z-index: -1; // Hide it by default
-
-    // Make sure the inner container is big enough for the ad creative.
-    > div,
-    > div iframe {
-        height: 100%;
+.plyr {
+    .plyr__ads {
+        border-radius: inherit;
+        bottom: 0;
+        cursor: pointer;
+        left: 0;
+        overflow: hidden;
         position: absolute;
-        width: 100%;
+        right: 0;
+        top: 0;
+        z-index: -1; // Hide it by default
+
+        // Make sure the inner container is big enough for the ad creative.
+        > div,
+        > div iframe {
+            height: 100%;
+            position: absolute;
+            width: 100%;
+        }
+
+        // The countdown label
+        &::after {
+            display: none;
+            //background: rgba($plyr-color-gunmetal, 0.8);
+            //border-radius: 2px;
+            //bottom: $plyr-control-spacing;
+            //color: #fff;
+            //content: attr(data-badge-text);
+            //font-size: 11px;
+            //padding: 2px 6px;
+            //pointer-events: none;
+            //position: absolute;
+            //right: $plyr-control-spacing;
+            //z-index: 3;
+        }
+
+        &::after:empty {
+            display: none;
+        }
     }
 
-    // The countdown label
-    &::after {
-        display: none;
-        //background: rgba($plyr-color-gunmetal, 0.8);
-        //border-radius: 2px;
-        //bottom: $plyr-control-spacing;
-        //color: #fff;
-        //content: attr(data-badge-text);
-        //font-size: 11px;
-        //padding: 2px 6px;
-        //pointer-events: none;
-        //position: absolute;
-        //right: $plyr-control-spacing;
-        //z-index: 3;
+    // Advertisement cue's for the progress bar
+    .plyr__cues {
+        background: currentColor;
+        display: block;
+        left: 0;
+        margin: 0;
+        opacity: 1;
+        transform: translateY(1px);
+        transform-origin: bottom;
+        will-change: transform;
+        transition: opacity 0.2s ease, transform 0.1s cubic-bezier(0.4, 0.0, 1, 1);
+        position: absolute;
+        bottom: 0;
+        width: $plyr-range-track-height;
+        height: $plyr-range-track-height;
+        z-index: 3; // Between progress and thumb
+        border-radius: 100%;
     }
 
-    &::after:empty {
-        display: none;
-    }
-}
-
-// Advertisement cue's for the progress bar
-.plyr__cues {
-    background: currentColor;
-    display: block;
-    left: 0;
-    margin: 0;
-    opacity: 1;
-    transform: translateY(1px);
-    transform-origin: bottom;
-    will-change: transform;
-    transition: opacity 0.2s ease, transform 0.1s cubic-bezier(0.4, 0.0, 1, 1);
-    position: absolute;
-    bottom: 0;
-    width: $plyr-range-track-height;
-    height: $plyr-range-track-height;
-    z-index: 3; // Between progress and thumb
-    border-radius: 100%;
-}
-
-// Hover styles
-.plyr--full-ui .plyr__progress {
-    &:hover {
-        .plyr__cues {
-            opacity: 0;
-            transform: translateY(-10px);
+    // Hover styles
+    &.plyr--full-ui .plyr__progress {
+        &:hover {
+            .plyr__cues {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
         }
     }
 }

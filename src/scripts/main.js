@@ -81,7 +81,7 @@ class Tubia {
 
         if (this.container) {
             // Add our main class to our clients container.
-            this.container.classList.add('tubia__');
+            this.container.classList.add('tubia');
         } else {
             return false;
         }
@@ -103,49 +103,49 @@ class Tubia {
         // Set theme styles.
         if(this.options.colorMain !== '' && this.options.colorAccent !== '') {
             const css = `
-                .tubia__ .tubia__transition:after {
+                .tubia .tubia__transition:after {
                     background-color: ${this.options.colorMain};
                 }
-                .tubia__ .tubia__transition:before {
+                .tubia .tubia__transition:before {
                     background-color: ${this.options.colorAccent};
                 }
-                .tubia__ .tubia__play-button .tubia__hexagon .tubia__hexagon-base, 
-                .tubia__ .tubia__play-button .tubia__hexagon .tubia__hexagon-line-animation,
-                .plyr .plyr__hexagon .plyr__hexagon-base {
+                .tubia .tubia__play-button .tubia__hexagon .tubia__hexagon-base, 
+                .tubia .tubia__play-button .tubia__hexagon .tubia__hexagon-line-animation,
+                .plyr .plyr__control .plyr__hexagon .plyr__hexagon-base {
                     fill: ${this.options.colorMain};
                     stroke: ${this.options.colorMain};
                 }
-                .tubia__ .tubia__hexagon-loader .tubia__hexagon .tubia__hexagon-base,
-                .plyr .plyr__hexagon .plyr__hexagon-base {
+                .tubia .tubia__hexagon-loader .tubia__hexagon .tubia__hexagon-base,
+                .plyr .plyr__control .plyr__hexagon .plyr__hexagon-base {
                     stroke: ${this.options.colorMain};
                 }
-                .tubia__ .tubia__hexagon-loader .tubia__hexagon .tubia__hexagon-line-animation,
-                .plyr .plyr__hexagon .plyr__hexagon-line-animation {
+                .tubia .tubia__hexagon-loader .tubia__hexagon .tubia__hexagon-line-animation,
+                .plyr .plyr__control .plyr__hexagon .plyr__hexagon-line-animation {
                     stroke: ${this.options.colorAccent};
                 }
-                .plyr--full-ui input[type=range] {
+                .plyr.plyr--full-ui input[type=range] {
                     color: ${this.options.colorMain};
                 }
-                .plyr__menu__container {
+                .plyr .plyr__menu__container {
                     background: ${this.options.colorMain};
                 }
-                .plyr__menu__container label.plyr__control input[type=radio]:checked+span {
+                .plyr .plyr__menu__container label.plyr__control input[type=radio]:checked+span {
                     background: ${this.options.colorAccent};
                 }
-                .plyr__menu__container:after {
+                .plyr .plyr__menu__container:after {
                     border-top-color: ${this.options.colorMain};
                 }
-                .plyr__playlist ul li.active .plyr__count {
+                .plyr .plyr__playlist ul li.active .plyr__count {
                     border-color: ${this.options.colorMain};
                     background-color: ${this.options.colorMain};
                 }
-                .plyr__playlist ul li:active .plyr__count {
+                .plyr .plyr__playlist ul li:active .plyr__count {
                     border-color: ${this.options.colorAccent};
                 }
-                .plyr__playlist:before {
+                .plyr .plyr__playlist:before {
                     background-color: ${this.options.colorAccent};
                 }
-                .plyr__playlist:after {
+                .plyr .plyr__playlist:after {
                     background-color: ${this.options.colorMain};
                 }
             `;

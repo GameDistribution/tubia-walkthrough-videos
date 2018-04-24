@@ -2,24 +2,26 @@
 // Time
 // --------------------------------------------------------------
 
-.plyr__time {
-    font-size: $plyr-font-size-time;
-    padding: 0 $plyr-control-padding;
-}
-
-// Media duration hidden on small screens
-.plyr__time + .plyr__time {
-    // Add a slash in before
-    &::before {
-        content: '\2044';
-        margin-right: $plyr-control-spacing;
+.plyr {
+    .plyr__time {
+        font-size: $plyr-font-size-time;
+        padding: 0 $plyr-control-padding;
     }
 
-    @media (max-width: $plyr-bp-sm-max) {
-        display: none;
-    }
-}
+    // Media duration hidden on small screens
+    .plyr__time + .plyr__time {
+        // Add a slash in before
+        &::before {
+            content: '\2044';
+            margin-right: $plyr-control-spacing;
+        }
 
-.plyr--video .plyr__time {
-    text-shadow: 0 1px 1px rgba(#000, 0.15);
+        @media (max-width: $plyr-bp-sm-max) {
+            display: none;
+        }
+    }
+
+    &.plyr--video .plyr__time {
+        text-shadow: 0 1px 1px rgba(#000, 0.15);
+    }
 }

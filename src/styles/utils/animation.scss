@@ -2,6 +2,8 @@
 // Animation utils
 // --------------------------------------------------------------
 
-.plyr--no-transition {
-    transition: none !important;
+.plyr {
+    &.plyr--no-transition {
+        transition: none !important;
+    }
 }

@@ -2,167 +2,164 @@
 // Controls
 // --------------------------------------------------------------
 
-// Hide native controls
-.plyr--full-ui ::-webkit-media-controls {
-    display: none;
-}
+.plyr {
+    // Hide native controls
+    &.plyr--full-ui ::-webkit-media-controls {
+        display: none;
+    }
 
-// Playback controls
-.plyr__controls {
-    align-items: center;
-    display: flex;
-    text-align: center;
+    // Playback controls
+    .plyr__controls {
+        align-items: center;
+        display: flex;
+        text-align: center;
 
-    // Spacing
-    > .plyr__control,
-    .plyr__progress,
-    .plyr__time,
-    .plyr__menu {
-        // margin-left: ($plyr-control-spacing / 2);
+        // Spacing
+        > .plyr__control,
+        .plyr__progress,
+        .plyr__time,
+        .plyr__menu {
+            // margin-left: ($plyr-control-spacing / 2);
 
-        &:first-child,
-        &:first-child + [data-plyr='pause'] {
-            margin-left: 0;
+            &:first-child,
+            &:first-child + [data-plyr='pause'] {
+                margin-left: 0;
+            }
         }
-    }
 
-    .plyr__volume {
-        margin-left: ($plyr-control-spacing / 2);
-        margin-right: auto;
-    }
-
-    .plyr__time {
-        min-width: 41px;
-        overflow: hidden;
-    }
-
-    .plyr--playlist-button {
-        position: absolute;
-        top: 2px;
-        right: 4px;
-        svg.icon--pressed {
-            margin-top: -2px;
+        .plyr__volume {
+            margin-left: ($plyr-control-spacing / 2);
+            margin-right: auto;
         }
-        span {
+
+        .plyr__time {
+            min-width: 41px;
+            overflow: hidden;
+        }
+
+        .plyr--playlist-button {
             position: absolute;
-            top: 8px;
-            right: 35px;
+            top: 2px;
+            right: 4px;
+            svg.icon--pressed {
+                margin-top: -2px;
+            }
+            span {
+                position: absolute;
+                top: 8px;
+                right: 35px;
+                line-height: 100%;
+                text-transform: uppercase;
+                font-weight: 600;
+                font-size: 16px;
+                @media (max-width: $plyr-bp-sm) {
+                    display: none;
+                }
+            }
+        }
+
+        .plyr__title {
+            position: absolute;
+            top: 10px;
+            left: 50%;
             line-height: 100%;
             text-transform: uppercase;
             font-weight: 600;
             font-size: 16px;
+            transform: translateX(-50%);
             @media (max-width: $plyr-bp-sm) {
                 display: none;
             }
         }
+
+        //@media (min-width: $plyr-bp-sm) {
+        //    > .plyr__control,
+        //    .plyr__progress,
+        //    .plyr__time,
+        //    .plyr__menu {
+        //        margin-left: $plyr-control-spacing;
+        //    }
+        //
+        //    > .plyr__control + .plyr__control,
+        //    .plyr__menu + .plyr__control,
+        //    > .plyr__control + .plyr__menu {
+        //        margin-left: ($plyr-control-spacing / 2);
+        //    }
+        //}
     }
 
-    .plyr__title {
-        position: absolute;
-        top: 10px;
-        left: 50%;
-        color: #fff;
-        line-height: 100%;
-        text-transform: uppercase;
-        font-weight: 600;
-        font-size: 16px;
+    // Video controls
+    &.plyr--video .plyr__controls {
+        // background: linear-gradient(rgba($plyr-video-controls-bg, 0), rgba($plyr-video-controls-bg, 0.7));
+        border-bottom-left-radius: inherit;
+        border-bottom-right-radius: inherit;
+        // bottom: 0;
+        color: $plyr-video-control-color;
+        // left: 0;
+        // padding: ($plyr-control-spacing * 3.5) $plyr-control-spacing $plyr-control-spacing;
+        // position: absolute;
+        // right: 0;
+        transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+        // z-index: 3;
 
+        .plyr__controls-left,
+        .plyr__controls-right {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            z-index: 3; // Above progress bar.
+            bottom: 0;
+            left: 0;
+            padding: ($plyr-control-spacing * 3.5) $plyr-control-spacing $plyr-control-spacing;
+        }
+
+        .plyr__controls-right {
+            left: auto;
+            right: 0;
+        }
+
+        .plyr__control {
+            svg {
+                filter: drop-shadow(0 1px 1px rgba(#000, 0.15));
+            }
+
+            // Hover and tab focus
+            &.plyr__tab-focus,
+            &:hover,
+            &[aria-expanded='true'] {
+                // background: $plyr-video-control-bg-hover;
+                color: $plyr-video-control-color-hover;
+            }
+        }
+    }
+
+    // Audio controls
+    &.plyr--audio .plyr__controls {
+        background: $plyr-audio-controls-bg;
+        border-radius: inherit;
+        color: $plyr-audio-control-color;
+        padding: $plyr-control-spacing;
+    }
+
+    // Hide controls
+    &.plyr--video.plyr--hide-controls .plyr__controls {
         opacity: 0;
-        transform: translateX(-50%);
-        transition: opacity 0.15s linear;
-        transition-delay: 0.5s;
-        @media (max-width: $plyr-bp-sm) {
-            display: none;
-        }
+        pointer-events: none;
+        // transform: translateY(100%);
     }
 
-    //@media (min-width: $plyr-bp-sm) {
-    //    > .plyr__control,
-    //    .plyr__progress,
-    //    .plyr__time,
-    //    .plyr__menu {
-    //        margin-left: $plyr-control-spacing;
-    //    }
-    //
-    //    > .plyr__control + .plyr__control,
-    //    .plyr__menu + .plyr__control,
-    //    > .plyr__control + .plyr__menu {
-    //        margin-left: ($plyr-control-spacing / 2);
-    //    }
-    //}
-}
-
-// Video controls
-.plyr--video .plyr__controls {
-    // background: linear-gradient(rgba($plyr-video-controls-bg, 0), rgba($plyr-video-controls-bg, 0.7));
-    border-bottom-left-radius: inherit;
-    border-bottom-right-radius: inherit;
-    // bottom: 0;
-    color: $plyr-video-control-color;
-    // left: 0;
-    // padding: ($plyr-control-spacing * 3.5) $plyr-control-spacing $plyr-control-spacing;
-    // position: absolute;
-    // right: 0;
-    transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
-    // z-index: 3;
-
-    .plyr__controls-left,
-    .plyr__controls-right {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: absolute;
-        z-index: 3; // Above progress bar.
-        bottom: 0;
-        left: 0;
-        padding: ($plyr-control-spacing * 3.5) $plyr-control-spacing $plyr-control-spacing;
+    // Some options are hidden by default
+    [data-plyr='captions'],
+    [data-plyr='pip'],
+    [data-plyr='airplay'],
+    [data-plyr='fullscreen'] {
+        display: none;
     }
-
-    .plyr__controls-right {
-        left: auto;
-        right: 0;
+    &.plyr--captions-enabled [data-plyr='captions'],
+    &.plyr--pip-supported [data-plyr='pip'],
+    &.plyr--airplay-supported [data-plyr='airplay'],
+    &.plyr--fullscreen-enabled [data-plyr='fullscreen'] {
+        display: inline-block;
     }
-
-    .plyr__control {
-        svg {
-            filter: drop-shadow(0 1px 1px rgba(#000, 0.15));
-        }
-
-        // Hover and tab focus
-        &.plyr__tab-focus,
-        &:hover,
-        &[aria-expanded='true'] {
-            // background: $plyr-video-control-bg-hover;
-            color: $plyr-video-control-color-hover;
-        }
-    }
-}
-
-// Audio controls
-.plyr--audio .plyr__controls {
-    background: $plyr-audio-controls-bg;
-    border-radius: inherit;
-    color: $plyr-audio-control-color;
-    padding: $plyr-control-spacing;
-}
-
-// Hide controls
-.plyr--video.plyr--hide-controls .plyr__controls {
-    opacity: 0;
-    pointer-events: none;
-    // transform: translateY(100%);
-}
-
-// Some options are hidden by default
-.plyr [data-plyr='captions'],
-.plyr [data-plyr='pip'],
-.plyr [data-plyr='airplay'],
-.plyr [data-plyr='fullscreen'] {
-    display: none;
-}
-.plyr--captions-enabled [data-plyr='captions'],
-.plyr--pip-supported [data-plyr='pip'],
-.plyr--airplay-supported [data-plyr='airplay'],
-.plyr--fullscreen-enabled [data-plyr='fullscreen'] {
-    display: inline-block;
 }
