@@ -5,7 +5,7 @@
 import 'babel-polyfill';
 import 'custom-event-polyfill';
 
-import loadjs from 'loadjs';
+// import loadjs from 'loadjs';
 
 import support from './support';
 import { providers } from './types';
@@ -143,11 +143,61 @@ const utils = {
 
     // Load an external script
     loadScript(url) {
+        // Todo: removed loadjs, at least for now, as its breaking on spele.nl
+        // Todo: on spele we got loadjs.default is not a function as error.
+        // return new Promise((resolve, reject) => {
+        //     loadjs(url, {
+        //         success: resolve,
+        //         error: reject,
+        //     });
+        // });
         return new Promise((resolve, reject) => {
-            loadjs(url, {
-                success: resolve,
-                error: reject,
-            });
+            const current = document.querySelector(`script[src="${url}"]`);
+
+            // Check script is not already referenced, if so wait for load
+            if (current !== null) {
+                current.callbacks = current.callbacks || [];
+                current.callbacks.push(resolve);
+                return;
+            }
+
+            // Build the element
+            const element = document.createElement('script');
+
+            // Callback queue
+            element.callbacks = element.callbacks || [];
+            element.callbacks.push(resolve);
+
+            // Error queue
+            element.errors = element.errors || [];
+            element.errors.push(reject);
+
+            // Bind callback
+            element.addEventListener(
+                'load',
+                event => {
+                    element.callbacks.forEach(cb => cb.call(null, event));
+                    element.callbacks = null;
+                },
+                false,
+            );
+
+            // Bind error handling
+            element.addEventListener(
+                'error',
+                event => {
+                    element.errors.forEach(err => err.call(null, event));
+                    element.errors = null;
+                },
+                false,
+            );
+
+            // Set the URL after binding callback
+            element.src = url;
+
+            // Inject
+            const first = document.getElementsByTagName('script')[0];
+            first.parentNode.insertBefore(element, first);
         });
     },
 

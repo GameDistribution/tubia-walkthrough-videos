@@ -17,6 +17,9 @@
             "gameId": '110104',
             "title": 'Jewel Burst',
             "category": 'puzzle',
+            onStart: function () {
+                console.log('Tubia started');
+            },
             onFound: function (data) {
                 console.log(data);
             },
@@ -40,7 +43,7 @@
 
 <body style="background: #5b002e; margin: 0; padding: 0;">
 
-<div id="tubia" style="background: #5b002e; box-shadow: 0 0 5px rgba(0, 0, 0, 0.5); max-width: 700px; margin: auto;"></div>
+<div id="tubia" style="background: #5b002e; box-shadow: 0 0 5px rgba(0, 0, 0, 0.5); max-width: 800px; margin: auto;"></div>
 
 </body>
 

@@ -114,6 +114,7 @@
         border: 1px solid rgba(255, 255, 255, 0.5);
         line-height: 100%;
         border-radius: 1px;
+        min-width: auto;
         @media (max-width: $plyr-bp-sm) {
             margin: 10px 7.5px 10px 10px;
         }

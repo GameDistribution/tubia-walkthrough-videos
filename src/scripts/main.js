@@ -37,6 +37,8 @@ class Tubia {
             colorAccent: '',
             // domain: 'bgames.com',
             domain: window.location.href.toLowerCase().replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').split('/')[0],
+            onStart() {
+            },
             onFound() {
             },
             onError() {
@@ -129,6 +131,9 @@ class Tubia {
                 }
                 .plyr__menu__container label.plyr__control input[type=radio]:checked+span {
                     background: ${this.options.colorAccent};
+                }
+                .plyr__menu__container:after {
+                    border-top-color: ${this.options.colorMain};
                 }
                 .plyr__playlist ul li.active .plyr__count {
                     border-color: ${this.options.colorMain};
@@ -255,7 +260,7 @@ class Tubia {
                         return response.json();
                     }
                 }).then(json => {
-                    if (json.cuepoints.length <= 0) {
+                    if (json.cuepoints && json.cuepoints.length <= 0) {
                         // Todo: Title property within related games JSON is always empty!!
                         // Request related video's as fallback to the playlist data.
                         const relatedVideosUrl = `https://walkthrough.gamedistribution.com/api/RelatedVideo/?gameMd5=${this.options.gameId}&publisherId=${publisherId}&domain=${domain}&skip=0&take=10&orderBy=visit&sortDirection=desc&langCode=${this.options.langCode}`;
@@ -295,6 +300,9 @@ class Tubia {
                 this.onError('No video has been found!');
                 return;
             }
+
+            // Return callback.
+            this.options.onStart();
 
             const poster = (json.pictures && json.pictures.length > 0) ? json.pictures[json.pictures.length - 1].link : '';
             this.posterUrl = poster.replace(/^http:\/\//i, 'https://');
@@ -473,7 +481,7 @@ class Tubia {
 
             // Setup the playlist.
             const playlist = {
-                active: (!/Mobi/.test(navigator.userAgent)), // Only on desktop.
+                active: false,
                 type: json.playlistType,
                 data: json.cuepoints,
             };
