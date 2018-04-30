@@ -128,7 +128,9 @@ module.exports = function (grunt) {
                     require('autoprefixer')({
                         browsers: 'last 2 version',
                     }), // vendor prefixes. for more: https://github.com/ai/browserslist
-                    require('cssnano')(),
+                    require('cssnano')({
+                        reduceIdents: false,
+                    }),
                 ],
             },
             build: {
@@ -155,7 +157,7 @@ module.exports = function (grunt) {
                                         '> 1%',
                                     ],
                                 },
-                                debug: true,
+                                debug: false,
                                 useBuiltIns: true,
                             },
                         ]],
