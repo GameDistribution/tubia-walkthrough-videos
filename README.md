@@ -14,7 +14,7 @@ Running into any issues? Check out the Wiki of the github repository before mail
 ## Implementation within a page
 The player should be implemented within a page by loading it through our CDN. Specific information of the player features and usages can be found at the <a href="https://github.com/GameDistribution/tubia-walkthrough-videos/wiki" target="_blank">wiki</a>.
 
-### CDN
+### Example
 Add the following script to your document.
 ```
 window["TUBIA_OPTIONS"] = {
@@ -29,10 +29,38 @@ window["TUBIA_OPTIONS"] = {
     if (d.getElementById(id)) return;
     js = d.createElement(s);
     js.id = id;
-    js.src = './gd.js';
+    js.src = 'https://tubia.gamedistribution.com/libs/gd/gd.min.js';
     fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'tubia-playerjs'));
 ```
+
+## Callbacks & Properties
+### Properties
+You can use the following properties:
+
+| Property | Mandatory | Default | Description |
+| --- | --- | --- | --- |
+| container | Yes | {String} 'player' | The container element id value. The HTML5 player will be embedded within. |
+| publisherId | Yes | {String} '' | Your Tubia publisher identifier. |
+| gameId | Yes | {String} '' | A unique identifier of your page content. We use this data to match a video with your identifier. |
+| title | Yes | {String} '' | The name of your game. This values is used within the video player, but we also use this data to match a video with your title. |
+| category | Yes | {String} '' | The category of your game. We use this data to match a video with your category. The value can be the name or a number, as long as you give us a string value. |
+| colorMain | No | {String} '' | The main theme color of the HTML5 video player. |
+| colorAccent | No | {String} '' | The accent theme color of the HTML5 video player. |
+| debug | No | {Boolean} false | Enable debugging. Please keep it to false when publishing. |
+
+### Callbacks
+You can hook into the following callbacks:
+
+| Callback | Returns | Description |
+| --- | --- | --- |
+| onStart | nothing | The very first moment everything is initializing. |
+| onFound | {Object} - Video data | When a video - matching with your game - has been found. |
+| onReady | {Object} - Player instance | When the HTML5 player is ready to play the video. |
+| onError | {Object} - Error data | When any error happens inside of Tubia. |
+
+### Styling/ CSS
+The video player will be embedded straight into your web page as a component, so not within an iframe. This means you're free to completely style it to your wishes or even write plugins.
 
 ## Repository
 The player is maintained on a public github repository.
