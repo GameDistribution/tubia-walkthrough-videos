@@ -5,10 +5,23 @@
     <title>Tubia</title>
     <meta name="description" content="Tubia walkthrough video's">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            background: #5b002e;
+            margin: 0;
+            padding: 0;
+        }
+
+        #tubia-container {
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+            max-width: 800px;
+            margin: auto;
+        }
+    </style>
     <script>
         window["TUBIA_OPTIONS"] = {
             "debug": true,
-            "container": 'tubia',
+            "container": 'tubia-container',
             "publisherId": 'dc63a91fa184423482808bed4d782320',
             "langCode": 'en-us',
             "colorMain": '#489CA8',
@@ -40,9 +53,9 @@
     </script>
 </head>
 
-<body style="background: #5b002e; margin: 0; padding: 0;">
+<body>
 
-<div id="tubia" style="background: #5b002e; box-shadow: 0 0 5px rgba(0, 0, 0, 0.5); max-width: 800px; margin: auto;"></div>
+<div id="tubia-container"></div>
 
 </body>
 

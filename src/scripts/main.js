@@ -66,7 +66,7 @@ class Tubia {
         /* eslint-enable */
 
         this.videoId = '';
-        this.container = document.getElementById(this.options.container);
+        this.innerContainer = null;
         this.url = document.location.href;
         this.adTag = null;
         this.posterUrl = '';
@@ -79,9 +79,11 @@ class Tubia {
         this.transitionSpeed = 2000;
         this.startPlyrHandler = this.startPlyr.bind(this);
 
-        if (this.container) {
-            // Add our main class to our clients container.
-            this.container.classList.add('tubia');
+        const container = document.getElementById(this.options.container);
+        if (container) {
+            this.innerContainer = document.createElement('div');
+            this.innerContainer.className = 'tubia';
+            container.appendChild(this.innerContainer);
         } else {
             return false;
         }
@@ -188,13 +190,13 @@ class Tubia {
             </div>
         `;
 
-        this.container.insertAdjacentHTML('beforeend', html);
-        this.transitionElement = this.container.querySelector('.tubia__transition');
-        this.playButton = this.container.querySelector('.tubia__play-button');
-        this.hexagonLoader = this.container.querySelector('.tubia__hexagon-loader');
+        this.innerContainer.insertAdjacentHTML('beforeend', html);
+        this.transitionElement = this.innerContainer.querySelector('.tubia__transition');
+        this.playButton = this.innerContainer.querySelector('.tubia__play-button');
+        this.hexagonLoader = this.innerContainer.querySelector('.tubia__hexagon-loader');
 
         // Show the container.
-        this.container.classList.toggle('tubia__active');
+        this.innerContainer.classList.toggle('tubia__active');
 
         // Show a spinner loader, as this could take some time.
         this.hexagonLoader.classList.toggle('tubia__active');
@@ -337,7 +339,7 @@ class Tubia {
                     // Hide our spinner loader.
                     this.hexagonLoader.classList.toggle('tubia__active');
                     // Add our poster image.
-                    this.container.appendChild(this.posterPosterElement);
+                    this.innerContainer.appendChild(this.posterPosterElement);
 
                     // Create the play button.
                     this.playButton.classList.toggle('tubia__active');
@@ -360,8 +362,8 @@ class Tubia {
     onError(error) {
         // Todo: I think Plyr has some error handling div?
         this.options.onError(error);
-        if (this.container) {
-            this.container.classList.add('tubia__error');
+        if (this.innerContainer) {
+            this.innerContainer.classList.add('tubia__error');
         }
         // Send error report to Tubia.
         (new Image()).src = `https://walkthrough.gamedistribution.com/api/playernotification?reasonid=${error}&url=${encodeURIComponent(this.url)}&videoid=${this.videoId}`;
@@ -465,7 +467,7 @@ class Tubia {
             videoSource.type = sourceType;
 
             videoElement.appendChild(videoSource);
-            this.container.appendChild(videoElement);
+            this.innerContainer.appendChild(videoElement);
 
             // Create the video player.
             const controls = [
@@ -487,7 +489,7 @@ class Tubia {
             };
 
             // We don't want certain options when our view is too small.
-            if ((this.container.offsetWidth >= 768)) {
+            if ((this.innerContainer.offsetWidth >= 768)) {
                 controls.push('volume');
                 controls.push('settings');
                 // controls.push('captions');
