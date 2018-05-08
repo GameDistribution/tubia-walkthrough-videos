@@ -281,7 +281,6 @@ class Tubia {
                             }
                         });
                     } else {
-                        json.playlistType = 'cue';
                         console.log(json);
                         resolve(json);
                     }
@@ -484,7 +483,7 @@ class Tubia {
             // Setup the playlist.
             const playlist = {
                 active: false,
-                type: json.playlistType,
+                type: (json.playlistType) ? json.playlistType : 'cue',
                 data: json.cuepoints,
             };
 
