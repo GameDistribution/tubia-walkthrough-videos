@@ -201,12 +201,41 @@ class Tubia {
         // Show a spinner loader, as this could take some time.
         this.hexagonLoader.classList.toggle('tubia__active');
 
+        // Todo: Triodor has not yet deployed the preflight request update, so no JSON!
+        // Send a post request to tell the "matching"-team which video is becoming important.
+        // It is basically for updating a click counter or whatever :P
+        // const videoCounterData = {
+        //     publisherId: this.options.publisherId,
+        //     url: document.location.href,
+        //     title: this.options.title,
+        //     gameId: this.options.gameId,
+        //     category: this.options.category,
+        //     langCode: this.options.langCode,
+        // };
+        const publisherId = this.options.publisherId.toString().replace(/-/g, '');
+        const location = encodeURIComponent(this.url);
+        const domain = encodeURIComponent(this.options.domain);
+        const videoCounterData = `publisherId=${publisherId}&url=${location}&title=${this.options.title}&gameId=${this.options.gameId}&category=${this.options.category}&langCode=${this.options.langCode}`;
+        const videoCounterUrl = 'https://walkthrough.gamedistribution.com/api/player/find/';
+        const videoCounterRequest = new Request(videoCounterUrl, {
+            method: 'POST',
+            body: videoCounterData, // JSON.stringify(videoCounterData),
+            headers: new Headers({
+                'Content-Type': 'application/x-www-form-urlencoded', // application/json
+            }),
+        });
+        fetch(videoCounterRequest).then((response) => {
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                throw new TypeError('Oops, we didn\'t get JSON!');
+            }
+        });
+
         // Search for a matching game within our Tubia database and return the id.
         // Todo: We can't get the poster image without doing these requests for data. Kind of sucks.
         this.videoSearchPromise = new Promise((resolve, reject) => {
             const gameId = this.options.gameId.toString().replace(/-/g, '');
             const title = encodeURIComponent(this.options.title);
-            const domain = encodeURIComponent(this.options.domain);
             utils.loadScript('https://tubia.gamedistribution.com/libs/gd/md5.js').then(() => {
                 const pageId = window.calcMD5(this.url);
                 const videoFindUrl = `https://walkthrough.gamedistribution.com/api/player/findv3/?pageId=${pageId}&gameId=${gameId}&title=${title}&domain=${domain}`;
@@ -239,9 +268,6 @@ class Tubia {
             this.videoSearchPromise.then((id) => {
                 // id.gameId is actually the videoId...
                 this.videoId = (typeof id !== 'undefined' && id.gameId && id.gameId !== '') ? id.gameId.toString().replace(/-/g, '') : '';
-                const publisherId = this.options.publisherId.toString().replace(/-/g, '');
-                const domain = encodeURIComponent(this.options.domain);
-                const location = encodeURIComponent(this.url);
                 // Yes argument gameid is expecting the videoId...
                 const videoDataUrl = `https://walkthrough.gamedistribution.com/api/player/publish/?gameid=${this.videoId}&publisherid=${publisherId}&domain=${domain}`;
                 const videoDataRequest = new Request(videoDataUrl, {method: 'GET'});
@@ -410,35 +436,6 @@ class Tubia {
      * Load the Plyr library.
      */
     loadPlyr() {
-        // Todo: Triodor has not yet deployed the preflight request update, so no JSON!
-        // Send a post request to tell the "matching"-team which video is becoming important.
-        // It is basically for updating a click counter or whatever :P
-        // const videoCounterData = {
-        //     publisherId: this.options.publisherId,
-        //     url: document.location.href,
-        //     title: this.options.title,
-        //     gameId: this.options.gameId,
-        //     category: this.options.category,
-        //     langCode: this.options.langCode,
-        // };
-        const publisherId = this.options.publisherId.toString().replace(/-/g, '');
-        const location = encodeURIComponent(this.url);
-        const videoCounterData = `publisherId=${publisherId}&url=${location}&title=${this.options.title}&gameId=${this.options.gameId}&category=${this.options.category}&langCode=${this.options.langCode}`;
-        const videoCounterUrl = 'https://walkthrough.gamedistribution.com/api/player/findv3/';
-        const videoCounterRequest = new Request(videoCounterUrl, {
-            method: 'POST',
-            body: videoCounterData, // JSON.stringify(videoCounterData),
-            headers: new Headers({
-                'Content-Type': 'application/x-www-form-urlencoded', // application/json
-            }),
-        });
-        fetch(videoCounterRequest).then((response) => {
-            const contentType = response.headers.get('content-type');
-            if (!contentType || !contentType.includes('application/json')) {
-                throw new TypeError('Oops, we didn\'t get JSON!');
-            }
-        });
-
         this.videoDataPromise.then((json) => {
             if (!json) {
                 this.onError('No video has been found!');
