@@ -485,7 +485,8 @@ class Tubia {
             };
 
             // We don't want certain options when our view is too small.
-            if ((this.innerContainer.offsetWidth >= 768)) {
+            if ((this.innerContainer.offsetWidth >= 400)
+                && (!/Mobi/.test(navigator.userAgent))) {
                 controls.push('volume');
                 controls.push('settings');
                 // controls.push('captions');

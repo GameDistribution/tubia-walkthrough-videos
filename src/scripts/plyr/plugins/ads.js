@@ -21,8 +21,7 @@ class Ads {
 
         this.adTypeVideo = player.config.ads.video;
         this.adTypeOverlay = player.config.ads.overlay;
-        // Todo: want to test with 120 second interval.
-        this.videoInterval = 120; // player.config.ads.videoInterval;
+        this.videoInterval = player.config.ads.videoInterval;
         this.overlayInterval = player.config.ads.overlayInterval;
 
         this.adCount = 1;
@@ -168,10 +167,13 @@ class Ads {
             request.linearAdSlotWidth = container.offsetWidth;
             request.linearAdSlotHeight = container.offsetHeight;
             request.nonLinearAdSlotWidth = container.offsetWidth;
-            request.nonLinearAdSlotHeight = container.offsetHeight;
 
-            // Give us non-linear ads when we're running mid-rolls
-            request.forceNonLinearFullSlot = (this.adPosition === 3);
+            // Set a small height when we want to run a midroll on order to enforce an IAB leaderboard.
+            const isMidrollDesktop = (this.adPosition === 3 && (!/Mobi/.test(navigator.userAgent)));
+            request.nonLinearAdSlotHeight = (isMidrollDesktop) ? 120 : container.offsetHeight;
+
+            // Give us non-linear ads when we're running mid-rolls on desktop
+            request.forceNonLinearFullSlot = (isMidrollDesktop);
 
             // https://developers.google.com/interactive-media-ads/docs/sdks/html5/desktop-autoplay
             // request.setAdWillAutoPlay(false);
@@ -465,11 +467,10 @@ class Ads {
         // Run an mid-roll video advertisement on a certain time
         // Timeupdate event updates ~250ms per second so we set a previousMidrollTime
         // to avoid consecutive requests for ads, as it is quite a race
-        // Todo: Tunnl doesn't provide non-linear ads, so we can't call those. Only video for now.
         this.player.on('timeupdate', () => {
             if(this.adTypeOverlay && !this.playing) {
                 const currentTime = Math.ceil(this.player.currentTime);
-                const interval = Math.ceil(this.videoInterval);
+                const interval = Math.ceil(this.overlayInterval);
                 const duration = Math.floor(this.player.duration);
                 if (currentTime % interval === 0
                     && currentTime !== this.previousMidrollTime
