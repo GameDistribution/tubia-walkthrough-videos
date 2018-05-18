@@ -348,8 +348,13 @@ class Plyr {
         }
 
         // If ads are enabled, wait for them first
-        if (this.ads.enabled && !this.ads.initialized && this.ads.adTypeVideo) {
-            return this.ads.managerPromise.then(() => this.ads.play()).catch(() => this.media.play());
+        if (this.ads.enabled &&
+            this.ads.adTypeVideo &&
+            !this.ads.initialized) {
+            return this.ads.loaderPromise.then(() => {
+                this.ads.requestAttempts = 0;
+                this.ads.requestAd();
+            }).catch(() => this.media.play());
         }
 
         // Return the promise (for HTML5)

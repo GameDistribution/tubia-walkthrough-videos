@@ -276,9 +276,9 @@ class Tubia {
                 (new Image()).src = `https://ana.tunnl.com/event?tub_id=${this.videoId}&eventtype=0&page_url=${location}`;
 
                 // Set the ad tag using the given id.
-                this.adTag = `https://pub.tunnl.com/opp?page_url=${location}&player_width=640&player_height=480&tub_id=${this.videoId}&correlator=${Date.now()}`;
+                // this.adTag = `https://pub.tunnl.com/opp?page_url=${location}&player_width=640&player_height=480&tub_id=${this.videoId}&correlator=${Date.now()}`;
                 // this.adTag = `https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpostpod&cmsid=496&vid=short_onecue&correlator=${Date.now()}`;
-                // this.adTag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpreonly&cmsid=496&vid=short_onecue&correlator=';
+                this.adTag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpreonly&cmsid=496&vid=short_onecue&correlator=';
                 fetch(videoDataRequest).then((response) => {
                     const contentType = response.headers.get('content-type');
                     if (!contentType || !contentType.includes('application/json')) {
@@ -500,19 +500,19 @@ class Tubia {
 
             // Create the Plyr instance.
             this.player = new Plyr('#plyr__tubia', {
-                debug: this.options.debug,
+                debug: true, // this.options.debug,
                 iconUrl: 'https://tubia.gamedistribution.com/libs/gd/sprite.svg',
                 title: (json.detail && json.detail.length > 0) ? json.detail[0].title : '',
                 logo: (json.logoEnabled && !json.logoEnabled) ? json.logoEnabled : false,
                 showPosterOnEnd: true,
                 hideControls: (!/Mobi/.test(navigator.userAgent)), // Only on desktop.
                 ads: {
-                    enabled: (json.adsEnabled && !json.adsEnabled) ? json.adsEnabled : true,
+                    enabled: true, // (json.adsEnabled && !json.adsEnabled) ? json.adsEnabled : true,
                     video: (json.preRollEnabled && !json.preRollEnabled) ? json.preRollEnabled : true,
                     overlay: (json.subBannerEnabled && !json.subBannerEnabled) ? json.subBannerEnabled : true,
                     videoInterval: (json.preRollSecond && !json.preRollSecond) ? json.preRollSecond : 300,
                     overlayInterval: (json.subBannerSecond && !json.subBannerSecond) ? json.subBannerSecond : 15,
-                    tag: (json.adsEnabled && !json.addFreeActive) ? this.adTag : '',
+                    tag: this.adTag, // (json.adsEnabled && !json.addFreeActive) ? this.adTag : '',
                 },
                 keyboard: {
                     global: true,
