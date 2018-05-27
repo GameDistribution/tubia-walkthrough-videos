@@ -34,7 +34,7 @@ class Ads {
         this.events = {};
         this.safetyTimer = null;
         this.requestAttempts = 0;
-        this.adCount = 1;
+        this.adCount = 0;
         this.adPosition = 1;
         this.previousMidrollTime = 0;
         this.requestRunning = false;
@@ -134,6 +134,7 @@ class Ads {
         this.player.on('play', () => {
             if (this.prerollEnabled) {
                 this.prerollEnabled = false;
+                this.adPosition = 1;
                 this.requestAd();
                 this.player.debug.log('Starting a pre-roll advertisement.');
             }
@@ -153,14 +154,23 @@ class Ads {
         this.player.on('timeupdate', () => {
             if(this.midrollEnabled && !this.requestRunning) {
                 const currentTime = Math.ceil(this.player.currentTime);
-                const interval = Math.ceil(this.overlayInterval);
+                const intervalOverlay = Math.ceil(this.overlayInterval);
+                const intervalVideo = Math.ceil(this.videoInterval);
                 const duration = Math.floor(this.player.duration);
-                if (currentTime % interval === 0
+                if (currentTime % intervalVideo === 0
                     && currentTime !== this.previousMidrollTime
-                    && currentTime < duration - interval) {
+                    && currentTime < duration - intervalVideo) {
                     this.previousMidrollTime = currentTime;
+                    this.adPosition = 3;
                     this.requestAd();
-                    this.player.debug.log('Starting a mid-roll advertisement.');
+                    this.player.debug.log('Starting a video mid-roll advertisement.');
+                } else if (currentTime % intervalOverlay === 0
+                    && currentTime !== this.previousMidrollTime
+                    && currentTime < duration - intervalOverlay) {
+                    this.previousMidrollTime = currentTime;
+                    this.adPosition = 2;
+                    this.requestAd();
+                    this.player.debug.log('Starting an overlay mid-roll advertisement.');
                 }
             }
         });
@@ -224,46 +234,7 @@ class Ads {
             // Request new video ads
             const adsRequest = new google.ima.AdsRequest();
 
-            // Update our adTag. We add additional parameters so Tunnl
-            // can use the values as new metrics within reporting.
-            // It is also used to determine if we get an overlay or not.
-            this.adCount += 1;
-            const positionCount = this.adCount - 1;
-            const requestAttempts = this.requestAttempts + 1;
-            this.tag = utils.updateQueryStringParameter(this.tag, 'ad_count', this.adCount);
-            this.tag = utils.updateQueryStringParameter(this.tag, 'ad_request_count', requestAttempts.toString());
-            if(this.adPosition === 0) {
-                this.tag = utils.updateQueryStringParameter(this.tag, 'ad_position', 'postroll');
-                // If there is a re-request attempt for a preroll then make
-                // sure we increment the adCount but still ask for a preroll.
-                // The same goes for midrolls and postrolls.
-                if (this.requestAttempts === 0) {
-                    this.adPosition = 1;
-                }
-            } else if(this.adPosition === 1) {
-                this.tag = utils.updateQueryStringParameter(this.tag, 'ad_position', 'preroll');
-                if (this.requestAttempts === 0) {
-                    this.adPosition = 2;
-                }
-            } else {
-                this.tag = utils.updateQueryStringParameter(this.tag, 'ad_midroll_count', positionCount.toString());
-                this.tag = utils.updateQueryStringParameter(this.tag, 'ad_type', 'image');
-                this.tag = utils.updateQueryStringParameter(this.tag, 'ad_skippable', '0');
-                this.tag = utils.updateQueryStringParameter(this.tag, 'ad_position', 'subbanner');
-                if (this.requestAttempts === 0) {
-                    this.adPosition = 3;
-                }
-            }
-
-            // GDPR personalised advertisement ruling.
-            const gdprTargeting = (document.location.search.indexOf('gdpr-targeting') >= 0);
-            const gdprTargetingConsentDeclined = (document.location.search.indexOf('gdpr-targeting=false') >= 0);
-            this.tag = (gdprTargeting) ?
-                utils.updateQueryStringParameter(this.tag, 'npa', (gdprTargetingConsentDeclined) ? '1' : '0') : this.tag;
-
-            adsRequest.adTagUrl = this.tag;
-
-            this.player.debug.log('Tag URL:', this.tag);
+            this.player.debug.log('----- ADVERTISEMENT ------');
 
             // Specify the linear and nonlinear slot sizes. This helps the SDK
             // to select the correct creative if multiple are returned
@@ -272,14 +243,21 @@ class Ads {
             adsRequest.nonLinearAdSlotWidth = container.offsetWidth;
 
             // Set a small height when we want to run a midroll on order to enforce an IAB leaderboard.
-            const isMidrollDesktop = (this.adPosition === 3 && (!/Mobi/.test(navigator.userAgent)));
+            const isMidrollDesktop = (this.adPosition === 2 && (!/Mobi/.test(navigator.userAgent)));
             adsRequest.nonLinearAdSlotHeight = (isMidrollDesktop) ? 120 : container.offsetHeight;
-            console.log(`nonLinearAdSlotWidth: ${container.offsetWidth}`);
-            console.log(`nonLinearAdSlotHeight: ${adsRequest.nonLinearAdSlotHeight}`);
+            this.player.debug.log(`ADVERTISEMENT: nonLinearAdSlotWidth: ${container.offsetWidth}`);
+            this.player.debug.log(`ADVERTISEMENT: nonLinearAdSlotHeight: ${adsRequest.nonLinearAdSlotHeight}`);
 
             // We don't want non-linear FULL SLOT ads when we're running mid-rolls on desktop
             adsRequest.forceNonLinearFullSlot = (!isMidrollDesktop);
-            console.log(`forceNonLinearFullSlot: ${(!isMidrollDesktop)}`);
+            this.player.debug.log(`ADVERTISEMENT: forceNonLinearFullSlot: ${(!isMidrollDesktop)}`);
+
+            // GDPR personalised advertisement ruling.
+            const gdprTargeting = (document.location.search.indexOf('gdpr-targeting') >= 0);
+            const gdprTargetingConsentDeclined = (document.location.search.indexOf('gdpr-targeting=false') >= 0);
+            this.tag = (gdprTargeting) ?
+                utils.updateQueryStringParameter(this.tag, 'npa', (gdprTargetingConsentDeclined) ? '1' : '0') : this.tag;
+            this.player.debug.log(`ADVERTISEMENT: gdpr: npa=${(gdprTargetingConsentDeclined) ? '1' : '0'}`);
 
             // Send a google event.
             try {
@@ -291,13 +269,13 @@ class Ads {
                     const m = time.getMonth();
                     const y = time.getFullYear();
                     let categoryName = '';
-                    if (this.adPosition === 1) {
+                    if (this.adPosition === 0) {
                         categoryName = 'AD_POSTROLL';
-                    } else if (this.adPosition === 2) {
+                    } else if (this.adPosition === 1) {
                         categoryName = 'AD_PREROLL';
-                    } else if (this.adPosition === 3) {
+                    } else if (this.adPosition === 2) {
                         categoryName = 'AD_MIDROLL';
-                    } else {
+                    } else if (this.adPosition === 3) {
                         categoryName = 'AD_MIDROLL_FULLSLOT'
                     }
                     window['ga']('tubia.send', {
@@ -311,6 +289,62 @@ class Ads {
             } catch (error) {
                 this.player.debug.log('Ads error', error);
             }
+
+            // Update our adTag. We add additional parameters so Tunnl
+            // can use the values as new metrics within reporting.
+            // It is also used to determine if we get an overlay or not.
+            // And even if the mid-roll should be an overlay or video.
+            // 0 - post-roll
+            // 1 - pre-roll
+            // 2 - mid-roll overlay
+            // 3 - mid-roll video
+            this.adCount += 1;
+            const positionCount = this.adCount - 1;
+            const requestAttempts = this.requestAttempts + 1;
+            this.tag = utils.updateQueryStringParameter(this.tag, 'ad_count', this.adCount);
+            this.player.debug.log(`ADVERTISEMENT: ad_count: ${this.adCount}`);
+            this.tag = utils.updateQueryStringParameter(this.tag, 'ad_request_count', requestAttempts.toString());
+            this.player.debug.log(`ADVERTISEMENT: ad_request_count: ${requestAttempts}`);
+            if(this.adPosition === 0) {
+                this.tag = utils.updateQueryStringParameter(this.tag, 'ad_position', 'postroll');
+                this.player.debug.log('ADVERTISEMENT: ad_position: postroll');
+                // If there is a re-request attempt for a preroll then make
+                // sure we increment the adCount but still ask for a preroll.
+                // The same goes for midrolls and postrolls.
+                if (this.requestAttempts === 0) {
+                    // Next ad will be a pre-roll.
+                    this.adPosition = 1;
+                }
+            } else if(this.adPosition === 1) {
+                this.tag = utils.updateQueryStringParameter(this.tag, 'ad_position', 'preroll');
+                this.player.debug.log('ADVERTISEMENT: ad_position: preroll');
+                if (this.requestAttempts === 0) {
+                    // Next ad will be a mid-roll.
+                    this.adPosition = 2;
+                }
+            } else if(this.adPosition === 2) {
+                this.tag = utils.updateQueryStringParameter(this.tag, 'ad_position', 'subbanner');
+                this.player.debug.log('ADVERTISEMENT: ad_position: subbanner');
+                this.tag = utils.updateQueryStringParameter(this.tag, 'ad_midroll_count', positionCount.toString());
+                this.player.debug.log(`ADVERTISEMENT: ad_midroll_count: ${positionCount}`);
+                this.tag = utils.updateQueryStringParameter(this.tag, 'ad_type', 'image');
+                this.player.debug.log('ADVERTISEMENT: ad_type: image');
+                this.tag = utils.updateQueryStringParameter(this.tag, 'ad_skippable', '0');
+                this.player.debug.log('ADVERTISEMENT: ad_skippable: 0');
+            } else if(this.adPosition === 3) {
+                this.tag = utils.updateQueryStringParameter(this.tag, 'ad_position', 'subbanner');
+                this.player.debug.log('ADVERTISEMENT: ad_position: subbanner');
+                this.tag = utils.updateQueryStringParameter(this.tag, 'ad_midroll_count', positionCount.toString());
+                this.player.debug.log(`ADVERTISEMENT: ad_midroll_count: ${positionCount}`);
+                if (this.requestAttempts === 0) {
+                    // Reset back to a normal mid-roll.
+                    this.adPosition = 2;
+                }
+            }
+
+            adsRequest.adTagUrl = this.tag;
+
+            this.player.debug.log(`ADVERTISEMENT: ${this.tag}`);
 
             // https://developers.google.com/interactive-media-ads/docs/sdks/html5/desktop-autoplay
             // request.setAdWillAutoPlay(false);
