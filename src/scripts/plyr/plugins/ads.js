@@ -18,6 +18,7 @@ class Ads {
         this.player = player;
         this.tag = player.config.ads.tag;
         this.enabled = player.isHTML5 && player.isVideo && utils.is.string(this.tag) && this.tag.length;
+        this.gdprTargeting = player.config.ads.gdprTargeting;
 
         this.prerollEnabled = player.config.ads.prerollEnabled;
         this.midrollEnabled = player.config.ads.midrollEnabled;
@@ -276,11 +277,9 @@ class Ads {
             this.player.debug.log(`ADVERTISEMENT: forceNonLinearFullSlot: ${(!isMidrollDesktop)}`);
 
             // GDPR personalised advertisement ruling.
-            const gdprTargeting = (document.location.search.indexOf('gdpr-targeting') >= 0);
-            const gdprTargetingConsentDeclined = (document.location.search.indexOf('gdpr-targeting=false') >= 0);
-            this.tag = (gdprTargeting) ?
-                utils.updateQueryStringParameter(this.tag, 'npa', (gdprTargetingConsentDeclined) ? '1' : '0') : this.tag;
-            this.player.debug.log(`ADVERTISEMENT: gdpr: npa=${(gdprTargetingConsentDeclined) ? '1' : '0'}`);
+            this.tag = (this.gdprTargeting !== null) ?
+                utils.updateQueryStringParameter(this.tag, 'npa', (this.gdprTargeting) ? '1' : '0') : this.tag;
+            this.player.debug.log(`ADVERTISEMENT: gdpr: npa=${(this.gdprTargeting) ? '1' : '0'}`);
 
             // Send a google event.
             try {

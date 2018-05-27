@@ -37,6 +37,8 @@ class Tubia {
             colorAccent: '',
             domain: 'bgames.com',
             // domain: window.location.href.toLowerCase().replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').split('/')[0],
+            gdprTracking: true,
+            gdprTargeting: null,
             onStart() {
             },
             onFound() {
@@ -89,7 +91,9 @@ class Tubia {
         }
 
         // Call Google Analytics and Death Star.
-        this.analytics();
+        if(this.options.gdprTracking) {
+            this.analytics();
+        }
 
         // Load our styles first. So we don't get initial load flickering.
         utils.loadStyle('https://fonts.googleapis.com/css?family=Khand:400,700');
@@ -515,6 +519,7 @@ class Tubia {
                     videoInterval: (json.preRollSecond && !json.preRollSecond) ? json.preRollSecond : 300,
                     overlayInterval: (json.subBannerSecond && !json.subBannerSecond) ? json.subBannerSecond : 15,
                     tag: this.adTag, // (json.adsEnabled && !json.addFreeActive) ? this.adTag : '',
+                    gdprTargeting: this.options.gdprTargeting,
                 },
                 keyboard: {
                     global: true,
