@@ -38,7 +38,8 @@ class Ads {
         this.adPosition = 1;
         this.previousMidrollTime = 0;
         this.requestRunning = false;
-        this.tag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=480x70&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dnonlinear&correlator=';
+        // this.tag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=480x70&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dnonlinear&correlator=';
+        this.tag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator=';
 
         // Setup a promise to resolve when the IMA manager is ready
         this.loaderPromise = new Promise((resolve, reject) => {
@@ -146,9 +147,8 @@ class Ads {
         // Run an mid-roll video advertisement on a certain time
         // Timeupdate event updates ~250ms per second so we set a previousMidrollTime
         // to avoid consecutive requests for ads, as it is quite a race
-        // Todo: request video midroll based on videomidroll timer.
         this.player.on('timeupdate', () => {
-            if(this.midrollEnabled && !this.requestRunning) {
+            if(this.midrollEnabled) {
                 const currentTime = Math.ceil(this.player.currentTime);
                 const intervalOverlay = Math.ceil(this.overlayInterval);
                 const intervalVideo = Math.ceil(this.videoInterval);
@@ -163,10 +163,37 @@ class Ads {
                 } else if (currentTime % intervalOverlay === 0
                     && currentTime !== this.previousMidrollTime
                     && currentTime < duration - intervalOverlay) {
+                    // Make a new request for the non-linear ad.
                     this.previousMidrollTime = currentTime;
                     this.adPosition = 2;
-                    this.requestAd();
                     this.player.debug.log('Starting an overlay mid-roll advertisement.');
+                    // Kill the non-linear advertisement before requesting a new one.
+                    // This way we're allowed to request a new one.
+                    // Normal video ads kill themselves on CONTENT_RESUME event.
+                    if (this.requestRunning) {
+                        this.loaderPromise.then(() => {
+                            if (this.loader) {
+                                this.loader.contentComplete();
+                            }
+                            if (this.manager) {
+                                this.manager.destroy();
+                            }
+
+                            // We're done with the current request.
+                            this.requestRunning = false;
+
+                            // Log message to tell that the whole advertisement
+                            // thing is finished.
+                            this.player.debug.log('IMA SDK is ready for new ad requests.');
+
+                            // Make a new request for the non-linear ad.
+                            this.requestAd();
+                        }).catch(() => {
+                            this.player.debug.warn(new Error('adsLoaderPromise failed to load.'));
+                        });
+                    } else {
+                        this.requestAd();
+                    }
                 }
             }
         });
@@ -304,9 +331,9 @@ class Ads {
             if(this.adPosition === 0) {
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_position', 'postroll');
                 this.player.debug.log('ADVERTISEMENT: ad_position: postroll');
-                // If there is a re-request attempt for a preroll then make
-                // sure we increment the adCount but still ask for a preroll.
-                // The same goes for midrolls and postrolls.
+                // If there is a re-request attempt for a post-roll then make
+                // sure we increment the adCount but still ask for a post-roll.
+                // The same goes for mid-rolls and pre-rolls.
                 if (this.requestAttempts === 0) {
                     // Next ad will be a pre-roll.
                     this.adPosition = 1;
@@ -319,6 +346,7 @@ class Ads {
                     this.adPosition = 2;
                 }
             } else if(this.adPosition === 2) {
+                this.tag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=480x70&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dnonlinear&correlator=';
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_position', 'subbanner');
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_midroll_count', positionCount.toString());
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_type', 'image');
@@ -328,6 +356,7 @@ class Ads {
                 this.player.debug.log('ADVERTISEMENT: ad_type: image');
                 this.player.debug.log('ADVERTISEMENT: ad_skippable: 0');
             } else if(this.adPosition === 3) {
+                this.tag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=480x70&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dnonlinear&correlator=';
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_position', 'subbanner');
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_midroll_count', positionCount.toString());
                 this.player.debug.log('ADVERTISEMENT: ad_position: subbanner');
@@ -453,11 +482,6 @@ class Ads {
         switch (event.type) {
             case google.ima.AdEvent.Type.LOADED:
                 dispatchEvent('loaded');
-                // Todo: Make sure ad container resizes based on non-linear ad and back again.
-                // Todo: Make sure we call the second video midroll ad
-                // Todo: Make sure we request ads regardless of failure before.
-                // Todo: Add the actual GDPR :P
-
                 // Make sure that our ad containers have the correct size and styling.
                 if (ad.isLinear()) {
                     utils.toggleClass(this.elements.container, this.player.config.classNames.nonLinearAdvertisement, false);
@@ -466,9 +490,9 @@ class Ads {
                     this.elements.container.firstChild.style.width = '100%';
                     this.elements.container.firstChild.style.height = '100%';
                 } else {
-                    utils.toggleClass(this.elements.container, this.player.config.classNames.nonLinearAdvertisement, true);
                     const advertisement = ad[Object.keys(ad)[0]];
                     if (advertisement) {
+                        utils.toggleClass(this.elements.container, this.player.config.classNames.nonLinearAdvertisement, true);
                         this.elements.container.style.width = `${advertisement.width}px`;
                         this.elements.container.style.height = `${advertisement.height}px`;
                         this.elements.container.firstChild.style.width = `${advertisement.width}px`;
@@ -572,12 +596,6 @@ class Ads {
 
             case google.ima.AdEvent.Type.USER_CLOSE:
                 dispatchEvent('complete');
-                // Hide the container when run a non-linear ad.
-                // Because non-linear ads won't trigger CONTENT_RESUME_REQUESTED.
-                if (!ad.isLinear()) {
-                    this.hideAd();
-                    this.cancel();
-                }
                 break;
 
             case google.ima.AdEvent.Type.CLICK:
