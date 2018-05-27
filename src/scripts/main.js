@@ -35,8 +35,8 @@ class Tubia {
             langCode: '',
             colorMain: '',
             colorAccent: '',
-            // domain: 'bgames.com',
-            domain: window.location.href.toLowerCase().replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').split('/')[0],
+            domain: 'bgames.com',
+            // domain: window.location.href.toLowerCase().replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').split('/')[0],
             onStart() {
             },
             onFound() {
@@ -93,8 +93,8 @@ class Tubia {
 
         // Load our styles first. So we don't get initial load flickering.
         utils.loadStyle('https://fonts.googleapis.com/css?family=Khand:400,700');
-        // utils.loadStyle('./main.min.css').then(() => {
-        utils.loadStyle('https://tubia.gamedistribution.com/libs/gd/main.min.css').then(() => {
+        utils.loadStyle('./main.min.css').then(() => {
+        // utils.loadStyle('https://tubia.gamedistribution.com/libs/gd/main.min.css').then(() => {
             // Start our application. We load the player when the user clicks,
             // as we don't want too many requests for our assets.
             this.start();
@@ -236,7 +236,8 @@ class Tubia {
         this.videoSearchPromise = new Promise((resolve, reject) => {
             const gameId = this.options.gameId.toString().replace(/-/g, '');
             const title = encodeURIComponent(this.options.title);
-            utils.loadScript('https://tubia.gamedistribution.com/libs/gd/md5.js').then(() => {
+            utils.loadScript('./md5.js').then(() => {
+            // utils.loadScript('https://tubia.gamedistribution.com/libs/gd/md5.js').then(() => {
                 const pageId = window.calcMD5(this.url);
                 const videoFindUrl = `https://walkthrough.gamedistribution.com/api/player/findv3/?pageId=${pageId}&gameId=${gameId}&title=${title}&domain=${domain}`;
                 const videoSearchRequest = new Request(videoFindUrl, {
@@ -501,15 +502,16 @@ class Tubia {
             // Create the Plyr instance.
             this.player = new Plyr('#plyr__tubia', {
                 debug: true, // this.options.debug,
-                iconUrl: 'https://tubia.gamedistribution.com/libs/gd/sprite.svg',
+                iconUrl: './sprite.svg',
+                // iconUrl: 'https://tubia.gamedistribution.com/libs/gd/sprite.svg',
                 title: (json.detail && json.detail.length > 0) ? json.detail[0].title : '',
                 logo: (json.logoEnabled && !json.logoEnabled) ? json.logoEnabled : false,
                 showPosterOnEnd: true,
                 hideControls: (!/Mobi/.test(navigator.userAgent)), // Only on desktop.
                 ads: {
                     enabled: true, // (json.adsEnabled && !json.adsEnabled) ? json.adsEnabled : true,
-                    video: (json.preRollEnabled && !json.preRollEnabled) ? json.preRollEnabled : true,
-                    overlay: (json.subBannerEnabled && !json.subBannerEnabled) ? json.subBannerEnabled : true,
+                    prerollEnabled: (json.preRollEnabled && !json.preRollEnabled) ? json.preRollEnabled : true,
+                    midrollEnabled: (json.subBannerEnabled && !json.subBannerEnabled) ? json.subBannerEnabled : true,
                     videoInterval: (json.preRollSecond && !json.preRollSecond) ? json.preRollSecond : 300,
                     overlayInterval: (json.subBannerSecond && !json.subBannerSecond) ? json.subBannerSecond : 15,
                     tag: this.adTag, // (json.adsEnabled && !json.addFreeActive) ? this.adTag : '',

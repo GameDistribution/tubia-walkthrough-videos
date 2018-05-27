@@ -19,12 +19,11 @@ class Ads {
         this.tag = player.config.ads.tag;
         this.enabled = player.isHTML5 && player.isVideo && utils.is.string(this.tag) && this.tag.length;
 
-        this.adTypeVideo = player.config.ads.video;
-        this.adTypeOverlay = player.config.ads.overlay;
+        this.prerollEnabled = player.config.ads.prerollEnabled;
+        this.midrollEnabled = player.config.ads.midrollEnabled;
         this.videoInterval = player.config.ads.videoInterval;
         this.overlayInterval = player.config.ads.overlayInterval;
 
-        this.initialized = false;
         this.loader = null;
         this.manager = null;
         this.cuePoints = [];
@@ -87,7 +86,6 @@ class Ads {
 
         // Clear the safety timer
         this.loaderPromise.then(() => {
-            this.initialized = true;
             this.clearSafetyTimer('onAdsManagerLoaded()');
         });
 
@@ -132,6 +130,15 @@ class Ads {
             }
         });
 
+        // Run a pre-roll advertisement on first play.
+        this.player.on('play', () => {
+            if (this.prerollEnabled) {
+                this.prerollEnabled = false;
+                this.requestAd();
+                this.player.debug.log('Starting a pre-roll advertisement.');
+            }
+        });
+
         // Run a post-roll advertisement and complete the ads loader
         this.player.on('ended', () => {
             this.adPosition = 0; // Make sure we register a post-roll.
@@ -144,7 +151,7 @@ class Ads {
         // to avoid consecutive requests for ads, as it is quite a race
         // Todo: request video midroll based on videomidroll timer.
         this.player.on('timeupdate', () => {
-            if(this.adTypeOverlay && !this.requestRunning) {
+            if(this.midrollEnabled && !this.requestRunning) {
                 const currentTime = Math.ceil(this.player.currentTime);
                 const interval = Math.ceil(this.overlayInterval);
                 const duration = Math.floor(this.player.duration);
@@ -247,6 +254,12 @@ class Ads {
                     this.adPosition = 3;
                 }
             }
+
+            // GDPR personalised advertisement ruling.
+            const gdprTargeting = (document.location.search.indexOf('gdpr-targeting') >= 0);
+            const gdprTargetingConsentDeclined = (document.location.search.indexOf('gdpr-targeting=false') >= 0);
+            this.tag = (gdprTargeting) ?
+                utils.updateQueryStringParameter(this.tag, 'npa', (gdprTargetingConsentDeclined) ? '1' : '0') : this.tag;
 
             adsRequest.adTagUrl = this.tag;
 
