@@ -36,7 +36,7 @@
         // unless the controls are hidden.
         &.plyr--non-linear {
             top: auto;
-            transform: translateY(-43px);
+            transform: translateY(-$plyr-control-spacing * 6);
         }
 
         // The countdown label
