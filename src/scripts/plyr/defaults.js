@@ -373,6 +373,7 @@ const defaults = {
         isTouch: 'plyr--is-touch',
         uiSupported: 'plyr--full-ui',
         noTransition: 'plyr--no-transition',
+        nonLinearAdvertisement: 'plyr--non-linear',
         menu: {
             value: 'plyr__menu__value',
             badge: 'plyr__badge',
@@ -404,7 +405,6 @@ const defaults = {
             enabled: 'plyr--share-enabled',
             active: 'plyr--share-active',
         },
-        nonLinearAdvertisement: 'plyr--non-linear',
     },
 
     // Embed attributes

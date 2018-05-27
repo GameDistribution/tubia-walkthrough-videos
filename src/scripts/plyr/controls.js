@@ -1168,6 +1168,26 @@ const controls = {
         const containerLeft = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.left));
         const containerRight = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.right));
 
+        // Show a logo
+        if (this.config.controls.includes('logo')) {
+            this.elements.container.appendChild(controls.createLogo.call(this, 'logo'));
+        }
+
+        // Video title
+        if (this.config.controls.includes('title')) {
+            container.appendChild(controls.createTitle.call(this, 'title'));
+        }
+
+        // Share button
+        // if (this.config.controls.includes('share')) {
+        //     container.appendChild(controls.createButton.call(this, 'share'));
+        // }
+
+        // Playlist button
+        if (this.config.controls.includes('playlist')) {
+            container.appendChild(controls.createButton.call(this, 'playlist'));
+        }
+
         // Restart button
         if (this.config.controls.includes('restart')) {
             containerLeft.appendChild(controls.createButton.call(this, 'restart'));
@@ -1209,7 +1229,6 @@ const controls = {
                 const tooltip = utils.createElement(
                     'span',
                     {
-                        role: 'tooltip',
                         class: this.config.classNames.tooltip,
                     },
                     '00:00',
@@ -1220,33 +1239,17 @@ const controls = {
             }
 
             this.elements.progress = progress;
-            // container.appendChild(this.elements.progress);
-            this.elements.container.appendChild(container.appendChild(this.elements.progress));
-        }
-
-        // Show a logo
-        if (this.config.controls.includes('logo')) {
-            this.elements.container.appendChild(controls.createLogo.call(this, 'logo'));
-        }
-
-        // Video title
-        if (this.config.controls.includes('title')) {
-            container.appendChild(controls.createTitle.call(this, 'title'));
-        }
-
-        // Share button
-        // if (this.config.controls.includes('share')) {
-        //     container.appendChild(controls.createButton.call(this, 'share'));
-        // }
-
-        // Playlist button
-        if (this.config.controls.includes('playlist')) {
-            container.appendChild(controls.createButton.call(this, 'playlist'));
+            container.appendChild(this.elements.progress);
         }
 
         // Media current time display
         if (this.config.controls.includes('current-time')) {
             containerLeft.appendChild(controls.createTime.call(this, 'currentTime'));
+        }
+
+        // Media duration display
+        if (this.config.controls.includes('duration')) {
+            containerLeft.appendChild(controls.createTime.call(this, 'duration'));
         }
 
         // Toggle mute button
@@ -1281,11 +1284,6 @@ const controls = {
             this.elements.volume = volume;
 
             containerLeft.appendChild(volume);
-        }
-
-        // Media duration display
-        if (this.config.controls.includes('duration')) {
-            containerRight.appendChild(controls.createTime.call(this, 'duration'));
         }
 
         // Toggle captions button

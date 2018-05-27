@@ -14,6 +14,7 @@
         &::before {
             content: '\2044';
             margin-right: $plyr-control-spacing;
+            margin-left: -$plyr-control-spacing / 3;
         }
 
         @media (max-width: $plyr-bp-sm-max) {

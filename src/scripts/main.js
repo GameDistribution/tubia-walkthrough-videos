@@ -478,6 +478,7 @@ class Tubia {
                 'progress',
                 'current-time',
                 'duration',
+                'play',
                 'mute',
                 'fullscreen',
             ];

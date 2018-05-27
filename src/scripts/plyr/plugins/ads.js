@@ -515,7 +515,7 @@ class Ads {
                 // Show the container when we get a non-linear ad.
                 // Because non-linear ads won't trigger CONTENT_PAUSE_REQUESTED.
                 if (!ad.isLinear()) {
-                    this.showAd('nonlinear');
+                    this.showAd();
                 }
                 break;
 
@@ -620,10 +620,9 @@ class Ads {
 
     /**
      * Show the advertisement container
-     * @param {String} adType
      */
-    showAd(adType) {
-        this.elements.container.style.zIndex = (adType === 'nonlinear') ? '0' : '3';
+    showAd() {
+        this.elements.container.style.zIndex = '3';
     }
 
     /**

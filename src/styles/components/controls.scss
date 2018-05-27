@@ -33,12 +33,13 @@
         }
 
         .plyr__time {
-            min-width: 41px;
+            min-width: 40px;
             overflow: hidden;
         }
 
         .plyr--playlist-button {
             position: absolute;
+            z-index: 2;
             top: 2px;
             right: 4px;
             svg.icon--pressed {
@@ -111,7 +112,7 @@
             z-index: 3; // Above progress bar.
             bottom: 0;
             left: 0;
-            padding: ($plyr-control-spacing * 3.5) $plyr-control-spacing $plyr-control-spacing;
+            padding: $plyr-control-spacing / 2 $plyr-control-spacing;
         }
 
         .plyr__controls-right {

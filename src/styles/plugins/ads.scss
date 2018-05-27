@@ -18,7 +18,7 @@
         // Make sure we move non-linear ads above controls.
         will-change: transform;
         transform: translateY(0);
-        transition: transform 0.2s ease-in-out;
+        transition: transform 0.15s ease-in-out;
 
         // Make sure the inner container is big enough for the ad creative.
         > div,
@@ -36,7 +36,7 @@
         // unless the controls are hidden.
         &.plyr--non-linear {
             top: auto;
-            transform: translateY(-45px);
+            transform: translateY(-43px);
         }
 
         // The countdown label
@@ -61,38 +61,40 @@
     }
 
     // Advertisement cue's for the progress bar
+    // Not working for current Tunnl setup, as they don't support ad rules.
     .plyr__cues {
-        background: currentColor;
-        display: block;
-        left: 0;
-        margin: 0;
-        opacity: 1;
-        transform: translateY(1px);
-        transform-origin: bottom;
-        will-change: transform;
-        transition: opacity 0.2s ease, transform 0.1s cubic-bezier(0.4, 0.0, 1, 1);
-        position: absolute;
-        bottom: 0;
-        width: $plyr-range-track-height;
-        height: $plyr-range-track-height;
-        z-index: 3; // Between progress and thumb
-        border-radius: 100%;
+        display: none;
+        //background: currentColor;
+        //display: block;
+        //left: 0;
+        //margin: 0;
+        //opacity: 1;
+        //transform: translateY(1px);
+        //transform-origin: bottom;
+        //will-change: transform;
+        //transition: opacity 0.2s ease, transform 0.1s cubic-bezier(0.4, 0.0, 1, 1);
+        //position: absolute;
+        //bottom: 0;
+        //width: $plyr-range-track-height;
+        //height: $plyr-range-track-height;
+        //z-index: 3; // Between progress and thumb
+        //border-radius: 100%;
     }
 
     // Hover styles
-    &.plyr--full-ui .plyr__progress {
-        &:hover {
-            .plyr__cues {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-        }
-    }
+    //&.plyr--full-ui .plyr__progress {
+    //    &:hover {
+    //        .plyr__cues {
+    //            opacity: 0;
+    //            transform: translateY(-10px);
+    //        }
+    //    }
+    //}
 
     &.plyr--hide-controls {
         .plyr__ads {
             &.plyr--non-linear {
-                transform: translateY(0);
+                transform: translateY(5px);
             }
         }
     }
