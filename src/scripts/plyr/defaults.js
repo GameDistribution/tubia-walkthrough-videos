@@ -404,6 +404,7 @@ const defaults = {
             enabled: 'plyr--share-enabled',
             active: 'plyr--share-active',
         },
+        nonLinearAdvertisement: 'plyr--non-linear',
     },
 
     // Embed attributes

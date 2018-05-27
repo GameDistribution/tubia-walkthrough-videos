@@ -13,6 +13,12 @@
         right: 0;
         top: 0;
         z-index: -1; // Hide it by default
+        margin: auto;
+
+        // Make sure we move non-linear ads above controls.
+        will-change: transform;
+        transform: translateY(0);
+        transition: transform 0.2s ease-in-out;
 
         // Make sure the inner container is big enough for the ad creative.
         > div,
@@ -20,6 +26,17 @@
             height: 100%;
             position: absolute;
             width: 100%;
+        }
+
+        &.plyr--linear {
+            top: 0;
+        }
+
+        // Move the non-linear ad above the controls
+        // unless the controls are hidden.
+        &.plyr--non-linear {
+            top: auto;
+            transform: translateY(-45px);
         }
 
         // The countdown label
@@ -68,6 +85,14 @@
             .plyr__cues {
                 opacity: 0;
                 transform: translateY(-10px);
+            }
+        }
+    }
+
+    &.plyr--hide-controls {
+        .plyr__ads {
+            &.plyr--non-linear {
+                transform: translateY(0);
             }
         }
     }

@@ -38,11 +38,7 @@ class Ads {
         this.adPosition = 1;
         this.previousMidrollTime = 0;
         this.requestRunning = false;
-        this.tag = 'https://pubads.g.doubleclick.net/gampad/ads' +
-            '?sz=640x480&iu=/124319096/external/single_ad_samples' +
-            '&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast' +
-            '&unviewed_position_start=1&cust_params=deployment%3Ddevsite' +
-            '%26sample_ct%3Dlinear&correlator=';
+        this.tag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=480x70&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dnonlinear&correlator=';
 
         // Setup a promise to resolve when the IMA manager is ready
         this.loaderPromise = new Promise((resolve, reject) => {
@@ -302,8 +298,8 @@ class Ads {
             const positionCount = this.adCount - 1;
             const requestAttempts = this.requestAttempts + 1;
             this.tag = utils.updateQueryStringParameter(this.tag, 'ad_count', this.adCount);
-            this.player.debug.log(`ADVERTISEMENT: ad_count: ${this.adCount}`);
             this.tag = utils.updateQueryStringParameter(this.tag, 'ad_request_count', requestAttempts.toString());
+            this.player.debug.log(`ADVERTISEMENT: ad_count: ${this.adCount}`);
             this.player.debug.log(`ADVERTISEMENT: ad_request_count: ${requestAttempts}`);
             if(this.adPosition === 0) {
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_position', 'postroll');
@@ -324,17 +320,17 @@ class Ads {
                 }
             } else if(this.adPosition === 2) {
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_position', 'subbanner');
-                this.player.debug.log('ADVERTISEMENT: ad_position: subbanner');
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_midroll_count', positionCount.toString());
-                this.player.debug.log(`ADVERTISEMENT: ad_midroll_count: ${positionCount}`);
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_type', 'image');
-                this.player.debug.log('ADVERTISEMENT: ad_type: image');
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_skippable', '0');
+                this.player.debug.log('ADVERTISEMENT: ad_position: subbanner');
+                this.player.debug.log(`ADVERTISEMENT: ad_midroll_count: ${positionCount}`);
+                this.player.debug.log('ADVERTISEMENT: ad_type: image');
                 this.player.debug.log('ADVERTISEMENT: ad_skippable: 0');
             } else if(this.adPosition === 3) {
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_position', 'subbanner');
-                this.player.debug.log('ADVERTISEMENT: ad_position: subbanner');
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_midroll_count', positionCount.toString());
+                this.player.debug.log('ADVERTISEMENT: ad_position: subbanner');
                 this.player.debug.log(`ADVERTISEMENT: ad_midroll_count: ${positionCount}`);
                 if (this.requestAttempts === 0) {
                     // Reset back to a normal mid-roll.
@@ -343,7 +339,6 @@ class Ads {
             }
 
             adsRequest.adTagUrl = this.tag;
-
             this.player.debug.log(`ADVERTISEMENT: ${this.tag}`);
 
             // https://developers.google.com/interactive-media-ads/docs/sdks/html5/desktop-autoplay
@@ -445,8 +440,6 @@ class Ads {
      * @param {Event} event
      */
     onAdEvent(event) {
-        const { container } = this.player.elements;
-
         // Retrieve the ad from the event. Some events (e.g. ALL_ADS_COMPLETED)
         // don't have ad object associated
         const ad = event.getAd();
@@ -464,17 +457,25 @@ class Ads {
                 // Todo: Make sure we call the second video midroll ad
                 // Todo: Make sure we request ads regardless of failure before.
                 // Todo: Add the actual GDPR :P
-                if (!ad.isLinear()) {
+
+                // Make sure that our ad containers have the correct size and styling.
+                if (ad.isLinear()) {
+                    utils.toggleClass(this.elements.container, this.player.config.classNames.nonLinearAdvertisement, false);
+                    this.elements.container.style.width = '100%';
+                    this.elements.container.style.height = '100%';
+                    this.elements.container.firstChild.style.width = '100%';
+                    this.elements.container.firstChild.style.height = '100%';
+                } else {
+                    utils.toggleClass(this.elements.container, this.player.config.classNames.nonLinearAdvertisement, true);
                     const advertisement = ad[Object.keys(ad)[0]];
                     if (advertisement) {
                         this.elements.container.style.width = `${advertisement.width}px`;
                         this.elements.container.style.height = `${advertisement.height}px`;
+                        this.elements.container.firstChild.style.width = `${advertisement.width}px`;
+                        this.elements.container.firstChild.style.height = `${advertisement.height}px`;
                     }
-
-                    // Show the container when we get a non-linear ad.
-                    // Because non-linear ads won't trigger CONTENT_PAUSE_REQUESTED.
-                    this.showAd();
                 }
+
                 // console.info('Ad type: ' + event.getAd().getAdPodInfo().getPodIndex());
                 // console.info('Ad time: ' + event.getAd().getAdPodInfo().getTimeOffset());
                 break;
@@ -484,7 +485,7 @@ class Ads {
                 // Show the container when we get a non-linear ad.
                 // Because non-linear ads won't trigger CONTENT_PAUSE_REQUESTED.
                 if (!ad.isLinear()) {
-                    this.showAd();
+                    this.showAd('nonlinear');
                 }
                 break;
 
@@ -561,11 +562,6 @@ class Ads {
 
             case google.ima.AdEvent.Type.COMPLETE:
                 dispatchEvent('complete');
-                // Hide the container when run a non-linear ad.
-                // Because non-linear ads won't trigger CONTENT_RESUME_REQUESTED.
-                if (!ad.isLinear()) {
-                    this.hideAd();
-                }
                 break;
 
             case google.ima.AdEvent.Type.ALL_ADS_COMPLETED:
@@ -580,6 +576,7 @@ class Ads {
                 // Because non-linear ads won't trigger CONTENT_RESUME_REQUESTED.
                 if (!ad.isLinear()) {
                     this.hideAd();
+                    this.cancel();
                 }
                 break;
 
@@ -619,9 +616,10 @@ class Ads {
 
     /**
      * Show the advertisement container
+     * @param {String} adType
      */
-    showAd() {
-        this.elements.container.style.zIndex = '3';
+    showAd(adType) {
+        this.elements.container.style.zIndex = (adType === 'nonlinear') ? '0' : '3';
     }
 
     /**
@@ -653,6 +651,8 @@ class Ads {
         // media-ads/docs/sdks/android/faq#8
         this.loaderPromise.then(() => {
             if (this.loader) {
+                // We don't use DFP ad rules, so we have to set it to complete.
+                // Before we can request new ads.
                 this.loader.contentComplete();
             }
             if (this.manager) {
