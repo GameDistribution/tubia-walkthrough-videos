@@ -35,8 +35,8 @@ class Tubia {
             langCode: '',
             colorMain: '',
             colorAccent: '',
-            domain: 'bgames.com',
-            // domain: window.location.href.toLowerCase().replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').split('/')[0],
+            // domain: 'bgames.com',
+            domain: window.location.href.toLowerCase().replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').split('/')[0],
             gdprTracking: true,
             gdprTargeting: null,
             onStart() {
@@ -97,8 +97,8 @@ class Tubia {
 
         // Load our styles first. So we don't get initial load flickering.
         utils.loadStyle('https://fonts.googleapis.com/css?family=Khand:400,700');
-        utils.loadStyle('./main.min.css').then(() => {
-        // utils.loadStyle('https://tubia.gamedistribution.com/libs/gd/main.min.css').then(() => {
+        // utils.loadStyle('./main.min.css').then(() => {
+        utils.loadStyle('https://tubia.gamedistribution.com/libs/gd/main.min.css').then(() => {
             // Start our application. We load the player when the user clicks,
             // as we don't want too many requests for our assets.
             this.start();
@@ -240,8 +240,8 @@ class Tubia {
         this.videoSearchPromise = new Promise((resolve, reject) => {
             const gameId = this.options.gameId.toString().replace(/-/g, '');
             const title = encodeURIComponent(this.options.title);
-            utils.loadScript('./md5.js').then(() => {
-            // utils.loadScript('https://tubia.gamedistribution.com/libs/gd/md5.js').then(() => {
+            // utils.loadScript('./md5.js').then(() => {
+            utils.loadScript('https://tubia.gamedistribution.com/libs/gd/md5.js').then(() => {
                 const pageId = window.calcMD5(this.url);
                 const videoFindUrl = `https://walkthrough.gamedistribution.com/api/player/findv3/?pageId=${pageId}&gameId=${gameId}&title=${title}&domain=${domain}`;
                 const videoSearchRequest = new Request(videoFindUrl, {
@@ -281,9 +281,9 @@ class Tubia {
                 (new Image()).src = `https://ana.tunnl.com/event?tub_id=${this.videoId}&eventtype=0&page_url=${location}`;
 
                 // Set the ad tag using the given id.
-                // this.adTag = `https://pub.tunnl.com/opp?page_url=${location}&player_width=640&player_height=480&tub_id=${this.videoId}&correlator=${Date.now()}`;
+                this.adTag = `https://pub.tunnl.com/opp?page_url=${location}&player_width=640&player_height=480&tub_id=${this.videoId}&correlator=${Date.now()}`;
                 // this.adTag = `https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpostpod&cmsid=496&vid=short_onecue&correlator=${Date.now()}`;
-                this.adTag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpreonly&cmsid=496&vid=short_onecue&correlator=';
+                // this.adTag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpreonly&cmsid=496&vid=short_onecue&correlator=';
                 fetch(videoDataRequest).then((response) => {
                     const contentType = response.headers.get('content-type');
                     if (!contentType || !contentType.includes('application/json')) {
@@ -506,19 +506,19 @@ class Tubia {
             // Create the Plyr instance.
             this.player = new Plyr('#plyr__tubia', {
                 debug: true, // this.options.debug,
-                iconUrl: './sprite.svg',
-                // iconUrl: 'https://tubia.gamedistribution.com/libs/gd/sprite.svg',
+                // iconUrl: './sprite.svg',
+                iconUrl: 'https://tubia.gamedistribution.com/libs/gd/sprite.svg',
                 title: (json.detail && json.detail.length > 0) ? json.detail[0].title : '',
                 logo: (json.logoEnabled && !json.logoEnabled) ? json.logoEnabled : false,
                 showPosterOnEnd: true,
                 hideControls: (!/Mobi/.test(navigator.userAgent)), // Only on desktop.
                 ads: {
-                    enabled: true, // (json.adsEnabled && !json.adsEnabled) ? json.adsEnabled : true,
+                    enabled: (json.adsEnabled && !json.adsEnabled) ? json.adsEnabled : true,
                     prerollEnabled: (json.preRollEnabled && !json.preRollEnabled) ? json.preRollEnabled : true,
                     midrollEnabled: (json.subBannerEnabled && !json.subBannerEnabled) ? json.subBannerEnabled : true,
                     videoInterval: (json.preRollSecond && !json.preRollSecond) ? json.preRollSecond : 300,
                     overlayInterval: (json.subBannerSecond && !json.subBannerSecond) ? json.subBannerSecond : 15,
-                    tag: this.adTag, // (json.adsEnabled && !json.addFreeActive) ? this.adTag : '',
+                    tag: (json.adsEnabled && !json.addFreeActive) ? this.adTag : '',
                     gdprTargeting: this.options.gdprTargeting,
                 },
                 keyboard: {

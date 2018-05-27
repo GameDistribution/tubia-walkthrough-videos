@@ -40,7 +40,7 @@ class Ads {
         this.previousMidrollTime = 0;
         this.requestRunning = false;
         // this.tag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=480x70&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dnonlinear&correlator=';
-        this.tag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator=';
+        // this.tag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator=';
 
         // Setup a promise to resolve when the IMA manager is ready
         this.loaderPromise = new Promise((resolve, reject) => {
@@ -114,6 +114,7 @@ class Ads {
         });
 
         // Discard ads when skipping the track at certain cue's
+        // Todo: We don't have cue's because we don't have ad rules.
         this.player.on('seeked', () => {
             if (this.manager) {
                 const seekedTime = this.player.currentTime;
@@ -133,6 +134,7 @@ class Ads {
             if (this.prerollEnabled) {
                 this.prerollEnabled = false;
                 this.adPosition = 1;
+                this.requestAttempts = 0;
                 this.requestAd();
                 this.player.debug.log('Starting a pre-roll advertisement.');
             }
@@ -141,6 +143,7 @@ class Ads {
         // Run a post-roll advertisement and complete the ads loader
         this.player.on('ended', () => {
             this.adPosition = 0; // Make sure we register a post-roll.
+            this.requestAttempts = 0;
             this.requestAd();
             this.player.debug.log('Starting a post-roll advertisement.');
         });
@@ -159,45 +162,51 @@ class Ads {
                     && currentTime < duration - intervalVideo) {
                     this.previousMidrollTime = currentTime;
                     this.adPosition = 3;
-                    this.requestAd();
                     this.player.debug.log('Starting a video mid-roll advertisement.');
+                    if (this.requestRunning) {
+                        this.killCurrentAd();
+                    }
+                    this.requestAttempts = 0;
+                    this.requestAd();
                 } else if (currentTime % intervalOverlay === 0
                     && currentTime !== this.previousMidrollTime
                     && currentTime < duration - intervalOverlay) {
-                    // Make a new request for the non-linear ad.
                     this.previousMidrollTime = currentTime;
                     this.adPosition = 2;
                     this.player.debug.log('Starting an overlay mid-roll advertisement.');
-                    // Kill the non-linear advertisement before requesting a new one.
-                    // This way we're allowed to request a new one.
-                    // Normal video ads kill themselves on CONTENT_RESUME event.
                     if (this.requestRunning) {
-                        this.loaderPromise.then(() => {
-                            if (this.loader) {
-                                this.loader.contentComplete();
-                            }
-                            if (this.manager) {
-                                this.manager.destroy();
-                            }
-
-                            // We're done with the current request.
-                            this.requestRunning = false;
-
-                            // Log message to tell that the whole advertisement
-                            // thing is finished.
-                            this.player.debug.log('IMA SDK is ready for new ad requests.');
-
-                            // Make a new request for the non-linear ad.
-                            this.requestAd();
-                        }).catch(() => {
-                            this.player.debug.warn(new Error('adsLoaderPromise failed to load.'));
-                        });
-                    } else {
-                        this.requestAd();
+                        this.killCurrentAd();
                     }
+                    this.requestAttempts = 0;
+                    this.requestAd();
                 }
             }
         });
+    }
+
+    /**
+     * Kill the non-linear advertisement before requesting a new one.
+     * This way we're allowed to request a new one.
+     * Normal video ads kill themselves on CONTENT_RESUME event.
+     */
+    killCurrentAd() {
+        // Destroy the manager so we can grab new ads after this.
+        // If we don't then we're not allowed to call new ads based
+        // on google policies, as they interpret this as an accidental
+        // video requests. https://developers.google.com/interactive-
+        // media-ads/docs/sdks/android/faq#8
+        if (this.loader) {
+            this.loader.contentComplete();
+        }
+        if (this.manager) {
+            this.manager.destroy();
+        }
+
+        // We're done with the current request.
+        this.requestRunning = false;
+
+        // Log message to tell that the advertisement thing is finished.
+        this.player.debug.log('IMA SDK is ready for new ad requests.');
     }
 
     /**
@@ -345,7 +354,6 @@ class Ads {
                     this.adPosition = 2;
                 }
             } else if(this.adPosition === 2) {
-                this.tag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=480x70&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dnonlinear&correlator=';
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_position', 'subbanner');
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_midroll_count', positionCount.toString());
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_type', 'image');
@@ -355,7 +363,6 @@ class Ads {
                 this.player.debug.log('ADVERTISEMENT: ad_type: image');
                 this.player.debug.log('ADVERTISEMENT: ad_skippable: 0');
             } else if(this.adPosition === 3) {
-                this.tag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=480x70&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dnonlinear&correlator=';
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_position', 'subbanner');
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_midroll_count', positionCount.toString());
                 this.player.debug.log('ADVERTISEMENT: ad_position: subbanner');
@@ -550,28 +557,8 @@ class Ads {
                 // Hide the advertisement.
                 this.hideAd();
 
-                // Destroy the manager so we can grab new ads after this.
-                // If we don't then we're not allowed to call new ads based
-                // on google policies, as they interpret this as an accidental
-                // video requests. https://developers.google.com/interactive-
-                // media-ads/docs/sdks/android/faq#8
-                this.loaderPromise.then(() => {
-                    if (this.loader) {
-                        this.loader.contentComplete();
-                    }
-                    if (this.manager) {
-                        this.manager.destroy();
-                    }
-
-                    // We're done with the current request.
-                    this.requestRunning = false;
-
-                    // Log message to tell that the whole advertisement
-                    // thing is finished.
-                    this.player.debug.log('IMA SDK is ready for new ad requests.');
-                }).catch(() => {
-                    this.player.debug.warn(new Error('adsLoaderPromise failed to load.'));
-                });
+                // Kill the current ad.
+                this.killCurrentAd();
 
                 // Play our video
                 if (this.player.currentTime < this.player.duration) {
