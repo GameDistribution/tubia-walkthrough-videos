@@ -287,11 +287,12 @@ const defaults = {
         'qualityrequested',
 
         // Ads
+        'adsloaderready',
         'adsmanagerloaded',
         'adsloaded',
         'adscontentpause',
         'adscontentresume',
-        'adstarted',
+        'adsstarted',
         'adsmidpoint',
         'adscomplete',
         'adsallcomplete',
@@ -372,6 +373,7 @@ const defaults = {
         isTouch: 'plyr--is-touch',
         uiSupported: 'plyr--full-ui',
         noTransition: 'plyr--no-transition',
+        nonLinearAdvertisement: 'plyr--non-linear',
         menu: {
             value: 'plyr__menu__value',
             badge: 'plyr__badge',

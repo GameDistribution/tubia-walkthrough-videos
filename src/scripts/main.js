@@ -37,6 +37,8 @@ class Tubia {
             colorAccent: '',
             // domain: 'bgames.com',
             domain: window.location.href.toLowerCase().replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').split('/')[0],
+            gdprTracking: true,
+            gdprTargeting: null,
             onStart() {
             },
             onFound() {
@@ -89,7 +91,9 @@ class Tubia {
         }
 
         // Call Google Analytics and Death Star.
-        this.analytics();
+        if(this.options.gdprTracking) {
+            this.analytics();
+        }
 
         // Load our styles first. So we don't get initial load flickering.
         utils.loadStyle('https://fonts.googleapis.com/css?family=Khand:400,700');
@@ -236,6 +240,7 @@ class Tubia {
         this.videoSearchPromise = new Promise((resolve, reject) => {
             const gameId = this.options.gameId.toString().replace(/-/g, '');
             const title = encodeURIComponent(this.options.title);
+            // utils.loadScript('./md5.js').then(() => {
             utils.loadScript('https://tubia.gamedistribution.com/libs/gd/md5.js').then(() => {
                 const pageId = window.calcMD5(this.url);
                 const videoFindUrl = `https://walkthrough.gamedistribution.com/api/player/findv3/?pageId=${pageId}&gameId=${gameId}&title=${title}&domain=${domain}`;
@@ -473,6 +478,7 @@ class Tubia {
                 'progress',
                 'current-time',
                 'duration',
+                'play',
                 'mute',
                 'fullscreen',
             ];
@@ -485,7 +491,8 @@ class Tubia {
             };
 
             // We don't want certain options when our view is too small.
-            if ((this.innerContainer.offsetWidth >= 768)) {
+            if ((this.innerContainer.offsetWidth >= 400)
+                && (!/Mobi/.test(navigator.userAgent))) {
                 controls.push('volume');
                 controls.push('settings');
                 // controls.push('captions');
@@ -499,7 +506,8 @@ class Tubia {
 
             // Create the Plyr instance.
             this.player = new Plyr('#plyr__tubia', {
-                debug: this.options.debug,
+                debug: true, // this.options.debug,
+                // iconUrl: './sprite.svg',
                 iconUrl: 'https://tubia.gamedistribution.com/libs/gd/sprite.svg',
                 title: (json.detail && json.detail.length > 0) ? json.detail[0].title : '',
                 logo: (json.logoEnabled && !json.logoEnabled) ? json.logoEnabled : false,
@@ -507,11 +515,12 @@ class Tubia {
                 hideControls: (!/Mobi/.test(navigator.userAgent)), // Only on desktop.
                 ads: {
                     enabled: (json.adsEnabled && !json.adsEnabled) ? json.adsEnabled : true,
-                    video: (json.preRollEnabled && !json.preRollEnabled) ? json.preRollEnabled : true,
-                    overlay: (json.subBannerEnabled && !json.subBannerEnabled) ? json.subBannerEnabled : true,
+                    prerollEnabled: (json.preRollEnabled && !json.preRollEnabled) ? json.preRollEnabled : true,
+                    midrollEnabled: (json.subBannerEnabled && !json.subBannerEnabled) ? json.subBannerEnabled : true,
                     videoInterval: (json.preRollSecond && !json.preRollSecond) ? json.preRollSecond : 300,
                     overlayInterval: (json.subBannerSecond && !json.subBannerSecond) ? json.subBannerSecond : 15,
                     tag: (json.adsEnabled && !json.addFreeActive) ? this.adTag : '',
+                    gdprTargeting: this.options.gdprTargeting,
                 },
                 keyboard: {
                     global: true,

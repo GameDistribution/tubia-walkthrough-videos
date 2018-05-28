@@ -381,27 +381,29 @@ const controls = {
 
     // Create logo
     createLogo() {
-        const svg = `
+        const svg = ` 
                 <?xml version="1.0" encoding="utf-8"?>
-                <svg preserveAspectRatio="xMinYMin meet" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="7.66 107.033 237.047 36.63">
+                <svg preserveAspectRatio="xMinYMin meet" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                     viewBox="0 0 359 74" style="enable-background:new 0 0 359 74;" xml:space="preserve">
                 <g>
-                    <path shape-rendering="optimizeQuality" fill="#FFFFFF" d="M75.696,109.75H58.565v-2.716H96.17v2.716H78.969v33.496h-3.203V109.75H75.696z"/>
-                    <path shape-rendering="optimizeQuality" fill="#FFFFFF" d="M147.006,143.245v-36.212h24.025c5.641,0,8.564,2.298,8.564,8.705c0,4.387-0.695,7.381-5.292,8.635v0.07
-                        c4.735,0.975,5.989,4.178,5.989,8.705c0,6.546-3.135,10.098-9.193,10.098H147.006z M170.334,123.12
-                        c4.596,0,6.059-3.134,6.059-7.242c0-5.989-3.342-6.128-5.85-6.128h-20.265v13.37H170.334z M150.209,140.529h19.012
-                        c5.292,0,7.869-1.811,7.869-7.104c0-3.203-0.976-7.59-6.477-7.59h-20.475L150.209,140.529L150.209,140.529z"/>
-                    <path shape-rendering="optimizeQuality" fill="#FFFFFF" d="M195.683,107.033v36.212h-3.204v-36.212H195.683z"/>
-                    <path shape-rendering="optimizeQuality" fill="#FFFFFF" d="M240.668,143.176h4.039l-17.967-35.307h-3.898l-17.967,35.307h3.76l4.805-9.401h22.563L240.668,143.176z
-                         M214.833,130.92l9.889-19.36h0.069l9.68,19.36H214.833z"/>
-                    <path shape-rendering="optimizeQuality" fill="#FFFFFF" d="M133.147,107.033v22.493c0,4.735,0,11.421-7.382,11.421h-11.908c-7.382,0-7.382-6.686-7.382-11.421v-22.493
-                        h-3.203v24.791c0,9.332,4.944,11.77,10.585,11.77h11.908c5.641,0,10.586-2.438,10.586-11.77v-24.791H133.147z"/>
+                    <path class="st0" d="M108.7,14.4H84.1v-3.9h54v3.9h-24.7v48.1h-4.6V14.4H108.7z"/>
+                    <path class="st0" d="M211.1,62.5v-52h34.5c8.1,0,12.3,3.3,12.3,12.5c0,6.3-1,10.6-7.6,12.4v0.1c6.8,1.4,8.6,6,8.6,12.5
+                        c0,9.4-4.5,14.5-13.2,14.5L211.1,62.5z M244.6,33.6c6.6,0,8.7-4.5,8.7-10.4c0-8.6-4.8-8.8-8.4-8.8h-29.1v19.2H244.6z M215.7,58.6
+                        H243c7.6,0,11.3-2.6,11.3-10.2c0-4.6-1.4-10.9-9.3-10.9h-29.4L215.7,58.6L215.7,58.6z"/>
+                    <path class="st0" d="M281,10.5v52h-4.6v-52L281,10.5z"/>
+                    <path class="st0" d="M345.6,62.4h5.8l-25.8-50.7H320l-25.8,50.7h5.4l6.9-13.5h32.4L345.6,62.4z M308.5,44.8L322.7,17h0.1l13.9,27.8
+                        H308.5z"/>
+                    <path class="st0" d="M191.2,10.5v32.3c0,6.8,0,16.4-10.6,16.4h-17.1c-10.6,0-10.6-9.6-10.6-16.4V10.5h-4.6v35.6
+                        c0,13.4,7.1,16.9,15.2,16.9h17.1c8.1,0,15.2-3.5,15.2-16.9V10.5H191.2z"/>
                 </g>
                 <g>
-                    <path shape-rendering="optimizeQuality" fill="#FFFFFF" d="M28.76,125.07l-7.938-5.432c-0.139-0.069-0.209-0.069-0.348,0c-0.139,0.07-0.139,0.14-0.139,0.279v10.863
-                        c0,0.141,0.069,0.209,0.139,0.279c0.069,0,0.139,0.069,0.139,0.069c0.07,0,0.139,0,0.139-0.069l7.939-5.432
-                        c0.139-0.07,0.139-0.14,0.139-0.279S28.83,125.139,28.76,125.07z"/>
-                    <path shape-rendering="optimizeQuality" fill="#FFFFFF" d="M23.538,143.663L7.66,134.541v-18.315l15.808-9.192l15.877,9.123v18.315L23.538,143.663z M9.958,133.217
-                        l13.58,7.8l13.51-7.869v-15.668l-13.58-7.729l-13.51,7.799V133.217z"/>
+                    <path class="st0" d="M33.9,63.7c-0.9,0-1.8-0.2-2.6-0.7L13.2,52.3c-1.6-0.9-2.5-2.6-2.5-4.4V26.2c0-1.8,1-3.5,2.5-4.4l18.1-10.7
+                        c1.6-1,3.6-1,5.3,0l18.1,10.7c1.6,0.9,2.5,2.6,2.5,4.4v21.6c0,1.8-1,3.5-2.5,4.4L36.5,63C35.7,63.5,34.8,63.7,33.9,63.7z
+                         M33.9,13.5c-0.4,0-0.7,0.1-1,0.3L14.8,24.5c-0.6,0.4-1,1-1,1.7v21.6c0,0.7,0.4,1.4,1,1.7l18.1,10.7c0.6,0.4,1.4,0.4,2.1,0L53,49.6
+                        c0.6-0.4,1-1,1-1.7V26.2c0-0.7-0.4-1.4-1-1.7L34.9,13.8C34.6,13.6,34.3,13.5,33.9,13.5z"/>
+                    <path class="st0" d="M41.2,36.2l-11-7.7l0,0l0,0c-0.1-0.1-0.3-0.1-0.5-0.1c-0.2,0-0.3,0-0.5,0.1c-0.3,0.2-0.5,0.5-0.5,0.8v15.4
+                        c0,0.4,0.2,0.7,0.5,0.8l0.1,0.1h0c0.1,0,0.2,0.1,0.3,0.1c0.1,0,0.3,0,0.6-0.2l10.9-7.6c0.3-0.2,0.5-0.5,0.5-0.8
+                        S41.4,36.4,41.2,36.2z"/>
                 </g>
                 </svg>
             `;
@@ -1168,6 +1170,26 @@ const controls = {
         const containerLeft = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.left));
         const containerRight = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.right));
 
+        // Show a logo
+        if (this.config.controls.includes('logo')) {
+            this.elements.container.appendChild(controls.createLogo.call(this, 'logo'));
+        }
+
+        // Video title
+        if (this.config.controls.includes('title')) {
+            container.appendChild(controls.createTitle.call(this, 'title'));
+        }
+
+        // Share button
+        // if (this.config.controls.includes('share')) {
+        //     container.appendChild(controls.createButton.call(this, 'share'));
+        // }
+
+        // Playlist button
+        if (this.config.controls.includes('playlist')) {
+            container.appendChild(controls.createButton.call(this, 'playlist'));
+        }
+
         // Restart button
         if (this.config.controls.includes('restart')) {
             containerLeft.appendChild(controls.createButton.call(this, 'restart'));
@@ -1209,7 +1231,6 @@ const controls = {
                 const tooltip = utils.createElement(
                     'span',
                     {
-                        role: 'tooltip',
                         class: this.config.classNames.tooltip,
                     },
                     '00:00',
@@ -1220,33 +1241,17 @@ const controls = {
             }
 
             this.elements.progress = progress;
-            // container.appendChild(this.elements.progress);
-            this.elements.container.appendChild(container.appendChild(this.elements.progress));
-        }
-
-        // Show a logo
-        if (this.config.controls.includes('logo')) {
-            this.elements.container.appendChild(controls.createLogo.call(this, 'logo'));
-        }
-
-        // Video title
-        if (this.config.controls.includes('title')) {
-            container.appendChild(controls.createTitle.call(this, 'title'));
-        }
-
-        // Share button
-        // if (this.config.controls.includes('share')) {
-        //     container.appendChild(controls.createButton.call(this, 'share'));
-        // }
-
-        // Playlist button
-        if (this.config.controls.includes('playlist')) {
-            container.appendChild(controls.createButton.call(this, 'playlist'));
+            container.appendChild(this.elements.progress);
         }
 
         // Media current time display
         if (this.config.controls.includes('current-time')) {
             containerLeft.appendChild(controls.createTime.call(this, 'currentTime'));
+        }
+
+        // Media duration display
+        if (this.config.controls.includes('duration')) {
+            containerLeft.appendChild(controls.createTime.call(this, 'duration'));
         }
 
         // Toggle mute button
@@ -1281,11 +1286,6 @@ const controls = {
             this.elements.volume = volume;
 
             containerLeft.appendChild(volume);
-        }
-
-        // Media duration display
-        if (this.config.controls.includes('duration')) {
-            containerRight.appendChild(controls.createTime.call(this, 'duration'));
         }
 
         // Toggle captions button

@@ -9,8 +9,7 @@
         //position: relative;
 
         position: absolute;
-        bottom: 0;
-        z-index: 2;
+        bottom: $plyr-control-spacing * 4.5;
         width: 100%;
 
         // Seek tooltip to show time

@@ -295,7 +295,7 @@ class Listeners {
             // If ads are enabled, wait for them first
             if (this.player.ads.enabled && !this.player.ads.initialized) {
                 // Wait for manager response
-                this.player.ads.managerPromise.then(() => this.player.ads.play()).catch(() => this.player.play());
+                this.player.ads.loaderPromise.then(() => this.player.ads.play()).catch(() => this.player.play());
             }
         });
 
