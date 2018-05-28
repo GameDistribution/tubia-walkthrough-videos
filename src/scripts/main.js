@@ -508,17 +508,17 @@ class Tubia {
                 // iconUrl: './sprite.svg',
                 iconUrl: 'https://tubia.gamedistribution.com/libs/gd/sprite.svg',
                 title: (json.detail && json.detail.length > 0) ? json.detail[0].title : '',
-                logo: (json.logoEnabled && !json.logoEnabled) ? json.logoEnabled : false,
+                logo: (json.logoEnabled) ? json.logoEnabled : false,
                 showPosterOnEnd: true,
                 hideControls: (!/Mobi/.test(navigator.userAgent)), // Only on desktop.
                 ads: {
-                    enabled: (json.adsEnabled && !json.adsEnabled) ? json.adsEnabled : true,
-                    prerollEnabled: (json.preRollEnabled && !json.preRollEnabled) ? json.preRollEnabled : true,
-                    midrollEnabled: (json.subBannerEnabled && !json.subBannerEnabled) ? json.subBannerEnabled : true,
-                    videoInterval: (json.preRollSecond && !json.preRollSecond) ? json.preRollSecond : 300,
-                    overlayInterval: (json.subBannerSecond && !json.subBannerSecond) ? json.subBannerSecond : 15,
-                    tag: (json.adsEnabled && !json.addFreeActive) ? this.adTag : '',
+                    enabenabledled: (json.adsEnabled) ? json.adsEnabled : true,
+                    prerollEnabled: (json.preRollEnabled) ? json.preRollEnabled : true,
+                    midrollEnabled: (json.subBannerEnabled) ? json.subBannerEnabled : true,
+                    videoInterval: (json.preRollSecond) ? json.preRollSecond : 300,
+                    overlayInterval: (json.subBannerSecond) ? json.subBannerSecond : 15,
                     gdprTargeting: this.options.gdprTargeting,
+                    tag: (json.adsEnabled && !json.addFreeActive) ? this.adTag : '',
                 },
                 keyboard: {
                     global: true,
@@ -531,7 +531,7 @@ class Tubia {
                     active: false,
                 },
                 fullscreen: {
-                    enabled: (json.fullScreenEnabled && !json.fullScreenEnabled) ? json.fullScreenEnabled : true,
+                    enabled: (json.fullScreenEnabled) ? json.fullScreenEnabled : true,
                 },
                 playlist,
                 controls,

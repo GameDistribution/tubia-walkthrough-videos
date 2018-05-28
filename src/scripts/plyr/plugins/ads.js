@@ -164,6 +164,8 @@ class Ads {
                 const intervalOverlay = Math.ceil(this.overlayInterval);
                 const intervalVideo = Math.ceil(this.videoInterval);
                 const duration = Math.floor(this.player.duration);
+                // For testing:
+                // this.player.debug.log(`currentTime: ${currentTime} | intervalVideo: ${intervalVideo} | intervalOverlay: ${intervalOverlay} | image: ${currentTime % intervalVideo === 0} | video: ${currentTime % intervalOverlay === 0}`);
                 if (currentTime % intervalVideo === 0
                     && currentTime !== this.previousMidrollTime
                     && currentTime < duration - intervalVideo) {
@@ -257,6 +259,7 @@ class Ads {
      * Request advertisements
      */
     requestAd() {
+        this.player.debug.log('MIDROLL: requestAd()');
         const { container } = this.player.elements;
 
         if (typeof google === 'undefined') {
