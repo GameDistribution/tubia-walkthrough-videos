@@ -220,7 +220,7 @@ class Tubia {
         const location = encodeURIComponent(this.url);
         const domain = encodeURIComponent(this.options.domain);
         const videoCounterData = `publisherId=${publisherId}&url=${location}&title=${this.options.title}&gameId=${this.options.gameId}&category=${this.options.category}&langCode=${this.options.langCode}`;
-        const videoCounterUrl = 'https://walkthrough.gamedistribution.com/api/player/find/';
+        const videoCounterUrl = 'https://api.tubia.com/api/player/find/';
         const videoCounterRequest = new Request(videoCounterUrl, {
             method: 'POST',
             body: videoCounterData, // JSON.stringify(videoCounterData),
@@ -243,7 +243,7 @@ class Tubia {
             // utils.loadScript('./md5.js').then(() => {
             utils.loadScript('https://tubia.gamedistribution.com/libs/gd/md5.js').then(() => {
                 const pageId = window.calcMD5(this.url);
-                const videoFindUrl = `https://walkthrough.gamedistribution.com/api/player/findv3/?pageId=${pageId}&gameId=${gameId}&title=${title}&domain=${domain}`;
+                const videoFindUrl = `https://api.tubia.com/api/player/findv3/?pageId=${pageId}&gameId=${gameId}&title=${title}&domain=${domain}`;
                 const videoSearchRequest = new Request(videoFindUrl, {
                     method: 'GET',
                 });
@@ -268,13 +268,11 @@ class Tubia {
 
         // Get the video data using the id returned from the videoSearchPromise.
         this.videoDataPromise = new Promise((resolve, reject) => {
-            // Todo: check if we dont want to use a tubia url instead of gamedistribution?
-            // Todo: The SSL certificate used to load resources from https://cdn.walkthrough.vooxe.com will be distrusted in M70. Once distrusted, users will be prevented from loading these resources. See https://g.co/chrome/symantecpkicerts for more information.
             this.videoSearchPromise.then((id) => {
                 // id.gameId is actually the videoId...
                 this.videoId = (typeof id !== 'undefined' && id.gameId && id.gameId !== '') ? id.gameId.toString().replace(/-/g, '') : '';
                 // Yes argument gameid is expecting the videoId...
-                const videoDataUrl = `https://walkthrough.gamedistribution.com/api/player/publish/?gameid=${this.videoId}&publisherid=${publisherId}&domain=${domain}`;
+                const videoDataUrl = `https://api.tubia.com/api/player/publish/?gameid=${this.videoId}&publisherid=${publisherId}&domain=${domain}`;
                 const videoDataRequest = new Request(videoDataUrl, {method: 'GET'});
 
                 // Record Tubia "Video Loaded" event in Tunnl.
@@ -296,7 +294,7 @@ class Tubia {
                     if (json.cuepoints && json.cuepoints.length <= 0) {
                         // Todo: Title property within related games JSON is always empty!!
                         // Request related video's as fallback to the playlist data.
-                        const relatedVideosUrl = `https://walkthrough.gamedistribution.com/api/RelatedVideo/?gameMd5=${this.options.gameId}&publisherId=${publisherId}&domain=${domain}&skip=0&take=10&orderBy=visit&sortDirection=desc&langCode=${this.options.langCode}`;
+                        const relatedVideosUrl = `https://api.tubia.com/api/RelatedVideo/?gameMd5=${this.options.gameId}&publisherId=${publisherId}&domain=${domain}&skip=0&take=10&orderBy=visit&sortDirection=desc&langCode=${this.options.langCode}`;
                         const relatedVideosRequest = new Request(relatedVideosUrl, {
                             method: 'GET',
                         });
@@ -396,7 +394,7 @@ class Tubia {
             this.innerContainer.classList.add('tubia__error');
         }
         // Send error report to Tubia.
-        (new Image()).src = `https://walkthrough.gamedistribution.com/api/playernotification?reasonid=${error}&url=${encodeURIComponent(this.url)}&videoid=${this.videoId}`;
+        (new Image()).src = `https://api.tubia.com/api/playernotification?reasonid=${error}&url=${encodeURIComponent(this.url)}&videoid=${this.videoId}`;
         /* eslint-disable */
         if (typeof window['ga'] !== 'undefined') {
             window['ga']('tubia.send', {
