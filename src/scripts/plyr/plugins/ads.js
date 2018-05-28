@@ -344,14 +344,14 @@ class Ads {
                 // If there is a re-request attempt for a post-roll then make
                 // sure we increment the adCount but still ask for a post-roll.
                 // The same goes for mid-rolls and pre-rolls.
-                if (this.requestAttempts === 0) {
+                if (requestAttempts === 0) {
                     // Next ad will be a pre-roll.
                     this.adPosition = 1;
                 }
             } else if(this.adPosition === 1) {
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_position', 'preroll');
                 this.player.debug.log('ADVERTISEMENT: ad_position: preroll');
-                if (this.requestAttempts === 0) {
+                if (requestAttempts === 0) {
                     // Next ad will be a mid-roll.
                     this.adPosition = 2;
                 }
@@ -371,9 +371,13 @@ class Ads {
                 // this.tag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator=';
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_position', 'subbanner');
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_midroll_count', positionCount.toString());
+                this.tag = utils.updateQueryStringParameter(this.tag, 'ad_type', '');
+                this.tag = utils.updateQueryStringParameter(this.tag, 'ad_skippable', '');
                 this.player.debug.log('ADVERTISEMENT: ad_position: subbanner');
                 this.player.debug.log(`ADVERTISEMENT: ad_midroll_count: ${positionCount}`);
-                if (this.requestAttempts === 0) {
+                this.player.debug.log('ADVERTISEMENT: ad_type: ');
+                this.player.debug.log('ADVERTISEMENT: ad_skippable: ');
+                if (requestAttempts === 0) {
                     // Reset back to a normal mid-roll.
                     this.adPosition = 2;
                 }
@@ -521,7 +525,7 @@ class Ads {
                 // Show the container when we get a non-linear ad.
                 // Because non-linear ads won't trigger CONTENT_PAUSE_REQUESTED.
                 if (!ad.isLinear()) {
-                    this.showAd();
+                    this.showAd('nonlinear');
                 }
                 break;
 
@@ -626,9 +630,10 @@ class Ads {
 
     /**
      * Show the advertisement container
+     * @param {String} adType
      */
-    showAd() {
-        this.elements.container.style.zIndex = '3';
+    showAd(adType) {
+        this.elements.container.style.zIndex = (adType === 'nonlinear') ? '3' : '4';
     }
 
     /**
