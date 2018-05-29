@@ -96,7 +96,7 @@
     // Plyr playing
     &.plyr--playing .plyr__control--overlaid {
         opacity: 0;
-        transform: translate(-50%, -40%) scale(0.5);
+        transform: translate(-50%, -40%) scale(0);
         // visibility: hidden;
     }
 

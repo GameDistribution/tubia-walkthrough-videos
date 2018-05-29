@@ -1,5 +1,5 @@
 [![npm](https://img.shields.io/npm/v/npm.svg)](https://nodejs.org/)
-[![GitHub version](https://img.shields.io/badge/version-0.0.2-blue.svg)](https://github.com/GameDistribution/tubia-walkthrough-videos/)
+[![GitHub version](https://img.shields.io/badge/version-0.0.5-blue.svg)](https://github.com/GameDistribution/tubia-walkthrough-videos/)
 [![Built with Grunt](https://cdn.gruntjs.com/builtwith.svg)](http://gruntjs.com/)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/GameDistribution/tubia-walkthrough-videos/blob/master/LICENSE)
 
@@ -22,14 +22,15 @@ window["TUBIA_OPTIONS"] = {
     "publisherId": '[YOUR PUBLISHER ID HERE]',
     "gameId": '[YOUR GAME ITS IDENTIFIER]',
     "title": '[YOUR GAME ITS TITLE]',
-    "category": '[A SINGLE CATEGORY NAME ASSOCIATED WITH YOUR GAME WITHIN YOUR WEBSITE]',
+    "gdprTracking": true,
+    "gdprTargeting": true,
 };
 (function (d, s, id) {
     var js, fjs = d.getElementsByTagName(s)[0];
     if (d.getElementById(id)) return;
     js = d.createElement(s);
     js.id = id;
-    js.src = 'https://tubia.gamedistribution.com/libs/gd/gd.min.js';
+    js.src = 'https://player.tubia.com/libs/gd/gd.min.js';
     fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'tubia-playerjs'));
 ```
@@ -40,13 +41,14 @@ You can use the following properties:
 
 | Property | Mandatory | Default | Description |
 | --- | --- | --- | --- |
-| container | Yes | {String} 'player' | The container element id value. The HTML5 player will be embedded within. |
+| container | No | {String} 'player' | The container element id value. The HTML5 player will be embedded within. |
 | publisherId | Yes | {String} '' | Your Tubia publisher identifier. |
 | gameId | Yes | {String} '' | A unique identifier of your page content. We use this data to match a video with your identifier. |
 | title | Yes | {String} '' | The name of your game. This values is used within the video player, but we also use this data to match a video with your title. |
-| category | Yes | {String} '' | The category of your game. We use this data to match a video with your category. The value can be the name or a number, as long as you give us a string value. |
 | colorMain | No | {String} '' | The main theme color of the HTML5 video player. |
 | colorAccent | No | {String} '' | The accent theme color of the HTML5 video player. |
+| gdprTracking | Yes | {Boolean} true | Enable client tracking solutions. |
+| gdprTargeting | Yes | {Boolean} null | Enable client advertisement targeting solutions. |
 | debug | No | {Boolean} false | Enable debugging. Please keep it to false when publishing. |
 
 ### Callbacks

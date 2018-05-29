@@ -365,7 +365,7 @@ module.exports = function (grunt) {
                         },
                     },
                     dist: {
-                        cwd: './lib/',
+                        cwd: './libs/',
                         src: ['**/*'],
                         dest: '',
                     },
@@ -376,7 +376,7 @@ module.exports = function (grunt) {
             console.log('Bucket: ' + bucket);
 
             if (folderIn === undefined && folderOut === undefined) {
-                console.log('Deploying: ./lib/ to gs://' + bucket + '/');
+                console.log('Deploying: ./libs/ to gs://' + bucket + '/');
             } else {
                 if (folderIn !== undefined) {
                     if (folderOut === undefined) {

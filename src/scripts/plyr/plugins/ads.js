@@ -39,6 +39,8 @@ class Ads {
         this.adPosition = 1;
         this.previousMidrollTime = 0;
         this.requestRunning = false;
+
+        // For testing:
         // this.tag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=480x70&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dnonlinear&correlator=';
         // this.tag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator=';
 
@@ -131,6 +133,7 @@ class Ads {
 
         // Run a pre-roll advertisement on first play.
         this.player.on('play', () => {
+            // Call the preroll.
             if (this.prerollEnabled) {
                 this.prerollEnabled = false;
                 this.adPosition = 1;
@@ -148,21 +151,29 @@ class Ads {
             this.player.debug.log('Starting a post-roll advertisement.');
         });
 
-        // Run an mid-roll video advertisement on a certain time
+        // Run a mid-roll non-linear or linear advertisement on a certain time
         // Timeupdate event updates ~250ms per second so we set a previousMidrollTime
-        // to avoid consecutive requests for ads, as it is quite a race
+        // to avoid consecutive requests for ads, as it is quite a race.
         this.player.on('timeupdate', () => {
+            // Try to request non-linear ad every this.overlayInterval, unless
+            // there is already one running. Try to request a linear ad every
+            // this.videoInterval seconds, we must kill any running non-linear
+            // advertisement before requesting this.
             if(this.midrollEnabled) {
                 const currentTime = Math.ceil(this.player.currentTime);
                 const intervalOverlay = Math.ceil(this.overlayInterval);
                 const intervalVideo = Math.ceil(this.videoInterval);
                 const duration = Math.floor(this.player.duration);
+                // For testing:
+                // this.player.debug.log(`currentTime: ${currentTime} | intervalVideo: ${intervalVideo} | intervalOverlay: ${intervalOverlay} | image: ${currentTime % intervalVideo === 0} | video: ${currentTime % intervalOverlay === 0}`);
                 if (currentTime % intervalVideo === 0
                     && currentTime !== this.previousMidrollTime
                     && currentTime < duration - intervalVideo) {
                     this.previousMidrollTime = currentTime;
                     this.adPosition = 3;
                     this.player.debug.log('Starting a video mid-roll advertisement.');
+                    // Make sure to kill the current running ad if there is any.
+                    // This is not really allowed, but whatever...
                     if (this.requestRunning) {
                         this.killCurrentAd();
                     }
@@ -170,13 +181,12 @@ class Ads {
                     this.requestAd();
                 } else if (currentTime % intervalOverlay === 0
                     && currentTime !== this.previousMidrollTime
-                    && currentTime < duration - intervalOverlay) {
+                    && currentTime < duration - intervalOverlay
+                    && !this.requestRunning) {
+                    // Make sure we don't re-request an ad when one is already running.
                     this.previousMidrollTime = currentTime;
                     this.adPosition = 2;
                     this.player.debug.log('Starting an overlay mid-roll advertisement.');
-                    if (this.requestRunning) {
-                        this.killCurrentAd();
-                    }
                     this.requestAttempts = 0;
                     this.requestAd();
                 }
@@ -249,6 +259,7 @@ class Ads {
      * Request advertisements
      */
     requestAd() {
+        this.player.debug.log('MIDROLL: requestAd()');
         const { container } = this.player.elements;
 
         if (typeof google === 'undefined') {
@@ -291,34 +302,28 @@ class Ads {
             this.player.debug.log(`ADVERTISEMENT: gdpr: npa=${(this.gdprTargeting) ? '1' : '0'}`);
 
             // Send a google event.
-            try {
-                /* eslint-disable */
-                if (typeof window['ga'] !== 'undefined') {
-                    const time = new Date();
-                    const h = time.getHours();
-                    const d = time.getDate();
-                    const m = time.getMonth();
-                    const y = time.getFullYear();
-                    let categoryName = '';
-                    if (this.adPosition === 0) {
-                        categoryName = 'AD_POSTROLL';
-                    } else if (this.adPosition === 1) {
-                        categoryName = 'AD_PREROLL';
-                    } else if (this.adPosition === 2) {
-                        categoryName = 'AD_MIDROLL';
-                    } else if (this.adPosition === 3) {
-                        categoryName = 'AD_MIDROLL_FULLSLOT'
-                    }
-                    window['ga']('tubia.send', {
-                        hitType: 'event',
-                        eventCategory: categoryName,
-                        eventAction: `${window.location.hostname} | h${h} d${d} m${m} y${y}`,
-                        eventLabel: this.tag,
-                    });
+            if (typeof window.ga !== 'undefined') {
+                const time = new Date();
+                const h = time.getHours();
+                const d = time.getDate();
+                const m = time.getMonth();
+                const y = time.getFullYear();
+                let categoryName = '';
+                if (this.adPosition === 0) {
+                    categoryName = 'AD_POSTROLL';
+                } else if (this.adPosition === 1) {
+                    categoryName = 'AD_PREROLL';
+                } else if (this.adPosition === 2) {
+                    categoryName = 'AD_MIDROLL';
+                } else if (this.adPosition === 3) {
+                    categoryName = 'AD_MIDROLL_FULLSLOT';
                 }
-                /* eslint-enable */
-            } catch (error) {
-                this.player.debug.log('Ads error', error);
+                window.ga('tubia.send', {
+                    hitType: 'event',
+                    eventCategory: categoryName,
+                    eventAction: `${window.location.hostname} | h${h} d${d} m${m} y${y}`,
+                    eventLabel: this.tag,
+                });
             }
 
             // Update our adTag. We add additional parameters so Tunnl
@@ -342,18 +347,20 @@ class Ads {
                 // If there is a re-request attempt for a post-roll then make
                 // sure we increment the adCount but still ask for a post-roll.
                 // The same goes for mid-rolls and pre-rolls.
-                if (this.requestAttempts === 0) {
+                if (requestAttempts === 0) {
                     // Next ad will be a pre-roll.
                     this.adPosition = 1;
                 }
             } else if(this.adPosition === 1) {
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_position', 'preroll');
                 this.player.debug.log('ADVERTISEMENT: ad_position: preroll');
-                if (this.requestAttempts === 0) {
+                if (requestAttempts === 0) {
                     // Next ad will be a mid-roll.
                     this.adPosition = 2;
                 }
             } else if(this.adPosition === 2) {
+                // For testing:
+                // this.tag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=480x70&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dnonlinear&correlator=';
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_position', 'subbanner');
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_midroll_count', positionCount.toString());
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_type', 'image');
@@ -363,11 +370,17 @@ class Ads {
                 this.player.debug.log('ADVERTISEMENT: ad_type: image');
                 this.player.debug.log('ADVERTISEMENT: ad_skippable: 0');
             } else if(this.adPosition === 3) {
+                // For testing:
+                // this.tag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator=';
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_position', 'subbanner');
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_midroll_count', positionCount.toString());
+                this.tag = utils.updateQueryStringParameter(this.tag, 'ad_type', '');
+                this.tag = utils.updateQueryStringParameter(this.tag, 'ad_skippable', '');
                 this.player.debug.log('ADVERTISEMENT: ad_position: subbanner');
                 this.player.debug.log(`ADVERTISEMENT: ad_midroll_count: ${positionCount}`);
-                if (this.requestAttempts === 0) {
+                this.player.debug.log('ADVERTISEMENT: ad_type: ');
+                this.player.debug.log('ADVERTISEMENT: ad_skippable: ');
+                if (requestAttempts === 0) {
                     // Reset back to a normal mid-roll.
                     this.adPosition = 2;
                 }
@@ -515,7 +528,7 @@ class Ads {
                 // Show the container when we get a non-linear ad.
                 // Because non-linear ads won't trigger CONTENT_PAUSE_REQUESTED.
                 if (!ad.isLinear()) {
-                    this.showAd();
+                    this.showAd('nonlinear');
                 }
                 break;
 
@@ -620,9 +633,10 @@ class Ads {
 
     /**
      * Show the advertisement container
+     * @param {String} adType
      */
-    showAd() {
-        this.elements.container.style.zIndex = '3';
+    showAd(adType) {
+        this.elements.container.style.zIndex = (adType === 'nonlinear') ? '3' : '4';
     }
 
     /**
