@@ -642,8 +642,8 @@ class Tubia {
                 m.parentNode.insertBefore(ds, m);
             })(window, document, 'script',
                 'https://game.gamemonkey.org/static/main.min.js');
-            /* eslint-enable */
         }
+        /* eslint-enable */
     }
 }
 
