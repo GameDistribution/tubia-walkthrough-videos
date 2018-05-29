@@ -37,7 +37,7 @@ class Tubia {
             colorAccent: '',
             // domain: 'bgames.com',
             domain: window.location.href.toLowerCase().replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').split('/')[0],
-            gdprTracking: true,
+            gdprTracking: null,
             gdprTargeting: null,
             onStart() {
             },
@@ -91,9 +91,7 @@ class Tubia {
         }
 
         // Call Google Analytics and Death Star.
-        if(this.options.gdprTracking) {
-            this.analytics();
-        }
+        this.analytics();
 
         // Load our styles first. So we don't get initial load flickering.
         utils.loadStyle('https://fonts.googleapis.com/css?family=Khand:400,700');
@@ -605,40 +603,47 @@ class Tubia {
                 'https://www.google-analytics.com/analytics.js', 'ga');
         }
         window['ga']('create', 'UA-102831738-1', {'name': 'tubia'}, 'auto');
-        // Inject Death Star id's to the page view.
-        const lcl = utils.getCookie('brzcrz_local');
-        if (lcl) {
-            window['ga']('tubia.set', 'userId', lcl);
-            window['ga']('tubia.set', 'dimension1', lcl);
-        }
         window['ga']('tubia.send', 'pageview');
+
+        // Anonymize IP.
+        if(!this.options.gdprTracking) {
+            window['ga']('set', 'anonymizeIp', true);
+        }
 
         // Project Death Star.
         // https://bitbucket.org/keygamesnetwork/datacollectionservice
-        const script = document.createElement('script');
-        script.innerHTML = `
-            var DS_OPTIONS = {
-                id: 'TUBIA',
-                success: function(id) {
-                    window['ga']('tubia.set', 'userId', id); 
-                    window['ga']('tubia.set', 'dimension1', id);
-                    window['ga']('tubia.set', 'dimension2', '${this.options.category.toLowerCase()}');
-                }
+        if(this.options.gdprTracking) {
+            // Inject Death Star id's to the page view.
+            const lcl = utils.getCookie('brzcrz_local');
+            if (lcl) {
+                window['ga']('tubia.set', 'userId', lcl);
+                window['ga']('tubia.set', 'dimension1', lcl);
             }
-        `;
-        document.head.appendChild(script);
+            const script = document.createElement('script');
+            script.innerHTML = `
+                var DS_OPTIONS = {
+                    id: 'TUBIA',
+                    success: function(id) {
+                        window['ga']('tubia.set', 'userId', id); 
+                        window['ga']('tubia.set', 'dimension1', id);
+                        window['ga']('tubia.set', 'dimension2', '${this.options.category.toLowerCase()}');
+                    }
+                }
+            `;
+            document.head.appendChild(script);
 
-        // Load Death Star
-        (function (window, document, element, source) {
-            const ds = document.createElement(element);
-            const m = document.getElementsByTagName(element)[0];
-            ds.type = 'text/javascript';
-            ds.async = true;
-            ds.src = source;
-            m.parentNode.insertBefore(ds, m);
-        })(window, document, 'script',
-            'https://game.gamemonkey.org/static/main.min.js');
-        /* eslint-enable */
+            // Load Death Star
+            (function (window, document, element, source) {
+                const ds = document.createElement(element);
+                const m = document.getElementsByTagName(element)[0];
+                ds.type = 'text/javascript';
+                ds.async = true;
+                ds.src = source;
+                m.parentNode.insertBefore(ds, m);
+            })(window, document, 'script',
+                'https://game.gamemonkey.org/static/main.min.js');
+            /* eslint-enable */
+        }
     }
 }
 
