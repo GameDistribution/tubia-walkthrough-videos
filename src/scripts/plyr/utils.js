@@ -195,8 +195,12 @@ const utils = {
         return new Promise((resolve, reject) => {
             const current = document.querySelector(`link[href="${url}"]`);
 
-            // Check script is not already referenced, if so wait for load
+            // Check script is not already referenced.
             if (current !== null) {
+                // Check script is not previously loaded.
+                if (current.getAttribute('data-loaded')) {
+                    resolve();
+                }
                 current.callbacks = current.callbacks || [];
                 current.callbacks.push(resolve);
                 return;
@@ -219,6 +223,7 @@ const utils = {
                 event => {
                     element.callbacks.forEach(cb => cb.call(null, event));
                     element.callbacks = null;
+                    element.setAttribute('data-loaded', 'true');
                 },
                 false,
             );
