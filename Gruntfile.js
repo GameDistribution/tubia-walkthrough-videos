@@ -41,7 +41,6 @@ module.exports = function (grunt) {
                 src: [
                     'src/index.html',
                     'src/index_legacy.html',
-                    'src/md5.js',
                 ],
                 dest: './libs/gd/',
             },
@@ -166,6 +165,22 @@ module.exports = function (grunt) {
             },
             lib: {
                 src: 'src/scripts/**/*.js',
+                dest: 'libs/.tmp/babel.js',
+            },
+        },
+
+        /**
+         * Add the md5 javascript library.
+         */
+        concat: {
+            options: {
+                separator: ';',
+            },
+            lib: {
+                src: [
+                    'src/libraries/md5.js',
+                    'libs/.tmp/babel.js',
+                ],
                 dest: 'libs/gd/gd.js',
             },
         },
@@ -209,7 +224,7 @@ module.exports = function (grunt) {
             },
             scripts: {
                 files: ['src/scripts/**/*.js'],
-                tasks: ['exec:eslint', 'browserify', 'uglify', 'duration'],
+                tasks: ['exec:eslint', 'browserify', 'concat', 'uglify', 'duration'],
             },
             css: {
                 files: ['src/styles/**/*.scss'],
@@ -238,7 +253,7 @@ module.exports = function (grunt) {
             options: {
                 server: './libs/gd',
                 watchTask: true,
-                port: 3000,
+                port: 8080,
             },
         },
     });
@@ -251,6 +266,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-browser-sync');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-browserify');
+    grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-banner');
     grunt.loadNpmTasks('grunt-svgstore');
@@ -297,6 +313,7 @@ module.exports = function (grunt) {
                 'postcss',
                 'exec:eslint',
                 'browserify',
+                'concat',
                 'sourcemaps',
                 'uglify',
                 'usebanner',
@@ -315,6 +332,7 @@ module.exports = function (grunt) {
                 'postcss',
                 'exec:eslint',
                 'browserify',
+                'concat',
                 'uglify',
                 'usebanner',
                 'svgstore',
