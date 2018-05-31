@@ -47,7 +47,7 @@ You can use the following properties:
 | title | Yes | {String} '' | The name of your game. This values is used within the video player, but we also use this data to match a video with your title. |
 | colorMain | No | {String} '' | The main theme color of the HTML5 video player. |
 | colorAccent | No | {String} '' | The accent theme color of the HTML5 video player. |
-| gdprTracking | Yes | {Boolean} true | Enable client tracking solutions. |
+| gdprTracking | Yes | {Boolean} null | Enable client tracking solutions. |
 | gdprTargeting | Yes | {Boolean} null | Enable client advertisement targeting solutions. |
 | debug | No | {Boolean} false | Enable debugging. Please keep it to false when publishing. |
 
