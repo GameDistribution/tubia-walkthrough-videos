@@ -72,6 +72,7 @@ class Ads {
                     });
             } else {
                 this.ready();
+                this.setupIMA();
             }
         }
     }

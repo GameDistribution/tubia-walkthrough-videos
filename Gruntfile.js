@@ -97,7 +97,9 @@ module.exports = function (grunt) {
             },
             files: {
                 src: [
+                    'libs/gd/gd.js',
                     'libs/gd/gd.min.js',
+                    'libs/gd/main.min.css',
                 ],
             },
         },
