@@ -1,5 +1,5 @@
 [![npm](https://img.shields.io/npm/v/npm.svg)](https://nodejs.org/)
-[![GitHub version](https://img.shields.io/badge/version-0.0.5-blue.svg)](https://github.com/GameDistribution/tubia-walkthrough-videos/)
+[![GitHub version](https://img.shields.io/badge/version-0.0.6-blue.svg)](https://github.com/GameDistribution/tubia-walkthrough-videos/)
 [![Built with Grunt](https://cdn.gruntjs.com/builtwith.svg)](http://gruntjs.com/)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/GameDistribution/tubia-walkthrough-videos/blob/master/LICENSE)
 
@@ -47,7 +47,7 @@ You can use the following properties:
 | title | Yes | {String} '' | The name of your game. This values is used within the video player, but we also use this data to match a video with your title. |
 | colorMain | No | {String} '' | The main theme color of the HTML5 video player. |
 | colorAccent | No | {String} '' | The accent theme color of the HTML5 video player. |
-| gdprTracking | Yes | {Boolean} true | Enable client tracking solutions. |
+| gdprTracking | Yes | {Boolean} null | Enable client tracking solutions. |
 | gdprTargeting | Yes | {Boolean} null | Enable client advertisement targeting solutions. |
 | debug | No | {Boolean} false | Enable debugging. Please keep it to false when publishing. |
 

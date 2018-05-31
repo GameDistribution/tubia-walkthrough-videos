@@ -6,8 +6,6 @@ import PackageJSON from '../../package.json';
 import Plyr from './plyr/plyr';
 import utils from './plyr/utils';
 
-const instance = null;
-
 /**
  * Tubia
  */
@@ -18,10 +16,22 @@ class Tubia {
      * @return {*}
      */
     constructor(options) {
-        // Make this a singleton.
-        if (instance) {
-            return instance;
+        // If no options are given.
+        if (!options || (Object.keys(options).length === 0 && options.constructor === Object)) {
+            return new Error('No settings have been given to Tubia...');
         }
+
+        // Set a version banner within the developer console.
+        /* eslint-disable */
+        const version = PackageJSON.version;
+        const banner = console.log(
+            '%c %c %c Tubia Video Walkthrough | Version: ' +
+            version + ' %c %c %c', 'background: #01567d',
+            'background: #00405c', 'color: #fff; background: #002333;',
+            'background: #00405c', 'background: #01567d',
+            'background: #006897');
+        console.log.apply(console, banner);
+        /* eslint-enable */
 
         // Set some defaults. We replace them with real given
         // values further down.
@@ -55,18 +65,6 @@ class Tubia {
             this.options = defaults;
         }
 
-        // Set a version banner within the developer console.
-        /* eslint-disable */
-        const version = PackageJSON.version;
-        const banner = console.log(
-            '%c %c %c Tubia Video Walkthrough | Version: ' +
-            version + ' %c %c %c', 'background: #01567d',
-            'background: #00405c', 'color: #fff; background: #002333;',
-            'background: #00405c', 'background: #01567d',
-            'background: #006897');
-        console.log.apply(console, banner);
-        /* eslint-enable */
-
         this.videoId = '';
         this.innerContainer = null;
         this.url = document.location.href;
@@ -80,90 +78,40 @@ class Tubia {
         this.videoDataPromise = null;
         this.transitionSpeed = 2000;
         this.startPlyrHandler = this.startPlyr.bind(this);
-
-        const container = document.getElementById(this.options.container);
-        if (container) {
-            this.innerContainer = document.createElement('div');
-            this.innerContainer.className = 'tubia';
-            container.appendChild(this.innerContainer);
-        } else {
-            return false;
-        }
+        this.player = null;
+        this.publisherId = this.options.publisherId.toString().replace(/-/g, '');
+        this.location = encodeURIComponent(this.url);
+        this.domain = encodeURIComponent(this.options.domain);
 
         // Call Google Analytics and Death Star.
         this.analytics();
 
-        // Load our styles first. So we don't get initial load flickering.
+        // Load our styles and fonts.
         utils.loadStyle('https://fonts.googleapis.com/css?family=Khand:400,700');
         // utils.loadStyle('./main.min.css').then(() => {
-        utils.loadStyle('https://tubia.gamedistribution.com/libs/gd/main.min.css').then(() => {
-            // Start our application. We load the player when the user clicks,
-            // as we don't want too many requests for our assets.
-            this.start();
-        }).catch((error) => {
-            this.onError(error);
-        });
-
-        // Set theme styles.
-        if(this.options.colorMain !== '' && this.options.colorAccent !== '') {
-            const css = `
-                .tubia .tubia__transition:after {
-                    background-color: ${this.options.colorMain};
+        utils.loadStyle('https://tubia.gamedistribution.com/libs/gd/main.min.css')
+            .then(() => {
+                // Create an inner container; within we load our player and do other stuff.
+                // We make sure to destroy any inner content if there are already things inside.
+                const container = document.getElementById(this.options.container);
+                if (container) {
+                    if(container.firstChild) {
+                        container.innerHTML = '';
+                    }
+                    // Now create the inner container.
+                    this.innerContainer = document.createElement('div');
+                    this.innerContainer.className = 'tubia';
+                    container.appendChild(this.innerContainer);
+                    // And add theme styles.
+                    this.setTheme(container);
+                } else {
+                    const message = 'There is no container element for Tubia set.';
+                    this.onError(message);
+                    throw new Error(message);
                 }
-                .tubia .tubia__transition:before {
-                    background-color: ${this.options.colorAccent};
-                }
-                .tubia .tubia__play-button .tubia__hexagon .tubia__hexagon-base, 
-                .tubia .tubia__play-button .tubia__hexagon .tubia__hexagon-line-animation,
-                .plyr .plyr__control .plyr__hexagon .plyr__hexagon-base {
-                    fill: ${this.options.colorMain};
-                    stroke: ${this.options.colorMain};
-                }
-                .tubia .tubia__hexagon-loader .tubia__hexagon .tubia__hexagon-base,
-                .plyr .plyr__control .plyr__hexagon .plyr__hexagon-base {
-                    stroke: ${this.options.colorMain};
-                }
-                .tubia .tubia__hexagon-loader .tubia__hexagon .tubia__hexagon-line-animation,
-                .plyr .plyr__control .plyr__hexagon .plyr__hexagon-line-animation {
-                    stroke: ${this.options.colorAccent};
-                }
-                .plyr.plyr--full-ui input[type=range] {
-                    color: ${this.options.colorMain};
-                }
-                .plyr .plyr__menu__container {
-                    background: ${this.options.colorMain};
-                }
-                .plyr .plyr__menu__container label.plyr__control input[type=radio]:checked+span {
-                    background: ${this.options.colorAccent};
-                }
-                .plyr .plyr__menu__container:after {
-                    border-top-color: ${this.options.colorMain};
-                }
-                .plyr .plyr__playlist ul li.active .plyr__count {
-                    border-color: ${this.options.colorMain};
-                    background-color: ${this.options.colorMain};
-                }
-                .plyr .plyr__playlist ul li:active .plyr__count {
-                    border-color: ${this.options.colorAccent};
-                }
-                .plyr .plyr__playlist:before {
-                    background-color: ${this.options.colorAccent};
-                }
-                .plyr .plyr__playlist:after {
-                    background-color: ${this.options.colorMain};
-                }
-            `;
-            // Add css
-            const head = document.head || document.getElementsByTagName('head')[0];
-            const style = document.createElement('style');
-            style.type = 'text/css';
-            if (style.styleSheet) {
-                style.styleSheet.cssText = css;
-            } else {
-                style.appendChild(document.createTextNode(css));
-            }
-            head.appendChild(style);
-        }
+                // Start the player.
+                this.start();
+            }).catch(() => this.onError('Something went wrong when loading the Tubia stylesheet.'));
     }
 
     /**
@@ -203,64 +151,30 @@ class Tubia {
         // Show a spinner loader, as this could take some time.
         this.hexagonLoader.classList.toggle('tubia__active');
 
-        // Todo: Triodor has not yet deployed the preflight request update, so no JSON!
-        // Send a post request to tell the "matching"-team which video is becoming important.
-        // It is basically for updating a click counter or whatever :P
-        // const videoCounterData = {
-        //     publisherId: this.options.publisherId,
-        //     url: document.location.href,
-        //     title: this.options.title,
-        //     gameId: this.options.gameId,
-        //     category: this.options.category,
-        //     langCode: this.options.langCode,
-        // };
-        const publisherId = this.options.publisherId.toString().replace(/-/g, '');
-        const location = encodeURIComponent(this.url);
-        const domain = encodeURIComponent(this.options.domain);
-        const videoCounterData = `publisherId=${publisherId}&url=${location}&title=${this.options.title}&gameId=${this.options.gameId}&category=${this.options.category}&langCode=${this.options.langCode}`;
-        const videoCounterUrl = 'https://api.tubia.com/api/player/find/';
-        const videoCounterRequest = new Request(videoCounterUrl, {
-            method: 'POST',
-            body: videoCounterData, // JSON.stringify(videoCounterData),
-            headers: new Headers({
-                'Content-Type': 'application/x-www-form-urlencoded', // application/json
-            }),
-        });
-        fetch(videoCounterRequest).then((response) => {
-            const contentType = response.headers.get('content-type');
-            if (!contentType || !contentType.includes('application/json')) {
-                throw new TypeError('Oops, we didn\'t get JSON!');
-            }
-        });
-
         // Search for a matching game within our Tubia database and return the id.
         // Todo: We can't get the poster image without doing these requests for data. Kind of sucks.
         this.videoSearchPromise = new Promise((resolve, reject) => {
             const gameId = this.options.gameId.toString().replace(/-/g, '');
             const title = encodeURIComponent(this.options.title);
-            // utils.loadScript('./md5.js').then(() => {
-            utils.loadScript('https://tubia.gamedistribution.com/libs/gd/md5.js').then(() => {
-                const pageId = window.calcMD5(this.url);
-                const videoFindUrl = `https://api.tubia.com/api/player/findv3/?pageId=${pageId}&gameId=${gameId}&title=${title}&domain=${domain}`;
-                const videoSearchRequest = new Request(videoFindUrl, {
-                    method: 'GET',
-                });
-                fetch(videoSearchRequest).then((response) => {
-                    const contentType = response.headers.get('content-type');
-                    if (!contentType || !contentType.includes('application/json')) {
-                        reject();
-                        throw new TypeError('Oops, we didn\'t get JSON!');
-                    } else {
-                        return response.json();
-                    }
-                }).then((json) => {
-                    resolve(json);
-                }).catch((error) => {
-                    this.onError(error);
+            const pageId = window.calcMD5(this.url);
+            const videoFindUrl = `https://api.tubia.com/api/player/findv3/?pageId=${pageId}&gameId=${gameId}&title=${title}&domain=${this.domain}`;
+            const videoSearchRequest = new Request(videoFindUrl, {
+                method: 'GET',
+            });
+            fetch(videoSearchRequest).then((response) => {
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
                     reject();
-                });
+                    throw new TypeError('Oops, we didn\'t get JSON!');
+                } else {
+                    return response.json();
+                }
+            }).then((json) => {
+                resolve(json);
             }).catch((error) => {
+                // Something went completely wrong. Shutdown.
                 this.onError(error);
+                reject();
             });
         });
 
@@ -270,14 +184,14 @@ class Tubia {
                 // id.gameId is actually the videoId...
                 this.videoId = (typeof id !== 'undefined' && id.gameId && id.gameId !== '') ? id.gameId.toString().replace(/-/g, '') : '';
                 // Yes argument gameid is expecting the videoId...
-                const videoDataUrl = `https://api.tubia.com/api/player/publish/?gameid=${this.videoId}&publisherid=${publisherId}&domain=${domain}`;
+                const videoDataUrl = `https://api.tubia.com/api/player/publish/?gameid=${this.videoId}&publisherid=${this.publisherId}&domain=${this.domain}`;
                 const videoDataRequest = new Request(videoDataUrl, {method: 'GET'});
 
                 // Record Tubia "Video Loaded" event in Tunnl.
-                (new Image()).src = `https://ana.tunnl.com/event?tub_id=${this.videoId}&eventtype=0&page_url=${location}`;
+                (new Image()).src = `https://ana.tunnl.com/event?tub_id=${this.videoId}&eventtype=0&page_url=${this.location}`;
 
                 // Set the ad tag using the given id.
-                this.adTag = `https://pub.tunnl.com/opp?page_url=${location}&player_width=640&player_height=480&tub_id=${this.videoId}&correlator=${Date.now()}`;
+                this.adTag = `https://pub.tunnl.com/opp?page_url=${this.location}&player_width=640&player_height=480&tub_id=${this.videoId}&correlator=${Date.now()}`;
                 // this.adTag = `https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpostpod&cmsid=496&vid=short_onecue&correlator=${Date.now()}`;
                 // this.adTag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpreonly&cmsid=496&vid=short_onecue&correlator=';
                 fetch(videoDataRequest).then((response) => {
@@ -289,10 +203,10 @@ class Tubia {
                         return response.json();
                     }
                 }).then(json => {
+                    // Request related video's as fallback to the playlist data.
                     if (json.cuepoints && json.cuepoints.length <= 0) {
                         // Todo: Title property within related games JSON is always empty!!
-                        // Request related video's as fallback to the playlist data.
-                        const relatedVideosUrl = `https://api.tubia.com/api/RelatedVideo/?gameMd5=${this.options.gameId}&publisherId=${publisherId}&domain=${domain}&skip=0&take=10&orderBy=visit&sortDirection=desc&langCode=${this.options.langCode}`;
+                        const relatedVideosUrl = `https://api.tubia.com/api/RelatedVideo/?gameMd5=${this.options.gameId}&publisherId=${this.publisherId}&domain=${this.domain}&skip=0&take=10&orderBy=visit&sortDirection=desc&langCode=${this.options.langCode}`;
                         const relatedVideosRequest = new Request(relatedVideosUrl, {
                             method: 'GET',
                         });
@@ -303,20 +217,21 @@ class Tubia {
                             } else {
                                 json.playlistType = 'related';
                                 json.cuepoints = response;
-                                console.log(json);
                                 resolve(json);
                             }
                         });
                     } else {
-                        console.log(json);
                         resolve(json);
                     }
                 }).catch((error) => {
+                    // Something went completely wrong. Shutdown.
                     this.onError(error);
                     reject(error);
                 });
             }).catch((error) => {
+                // Something went completely wrong. Shutdown.
                 this.onError(error);
+                reject();
             });
         });
 
@@ -325,6 +240,10 @@ class Tubia {
         // A user can click the play button to start loading the video player.
         this.videoDataPromise.then((json) => {
             if (!json) {
+                // No video data was found.
+                // Report to our matchmaking system so a video can be created.
+                this.reportToMatchmaking();
+                // Still close down Tubia.
                 this.onError('No video has been found!');
                 return;
             }
@@ -335,7 +254,7 @@ class Tubia {
             const poster = (json.pictures && json.pictures.length > 0) ? json.pictures[json.pictures.length - 1].link : '';
             this.posterUrl = poster.replace(/^http:\/\//i, 'https://');
 
-            // Check if the poster image exists the poster image.
+            // Check if the poster image exists.
             this.posterPosterElement = document.createElement('div');
             this.posterPosterElement.classList.add('tubia__poster');
             const checkImage = path =>
@@ -403,6 +322,8 @@ class Tubia {
             });
         }
         /* eslint-enable */
+
+        throw new Error(error);
     }
 
     /**
@@ -559,7 +480,7 @@ class Tubia {
                 }, this.transitionSpeed / 1.5);
 
                 // Record Tubia "Video Play" event in Tunnl.
-                (new Image()).src = `https://ana.tunnl.com/event?tub_id=${this.videoId}&eventtype=1&page_url=${location}`;
+                (new Image()).src = `https://ana.tunnl.com/event?tub_id=${this.videoId}&eventtype=1&page_url=${this.location}`;
 
                 /* eslint-disable */
                 if (typeof window['ga'] !== 'undefined') {
@@ -587,7 +508,7 @@ class Tubia {
     analytics() {
         /* eslint-disable */
         // Load Google Analytics so we can push out a Google event for
-        // each of our events.
+        // each of our events. We make sure this is only loaded once.
         if (typeof window['ga'] === 'undefined') {
             (function (i, s, o, g, r, a, m) {
                 i['GoogleAnalyticsObject'] = r;
@@ -601,64 +522,143 @@ class Tubia {
                 m.parentNode.insertBefore(a, m);
             })(window, document, 'script',
                 'https://www.google-analytics.com/analytics.js', 'ga');
-        }
-        window['ga']('create', 'UA-102831738-1', {'name': 'tubia'}, 'auto');
-        window['ga']('tubia.send', 'pageview');
+            window['ga']('create', 'UA-102831738-1', {'name': 'tubia'}, 'auto');
+            window['ga']('tubia.send', 'pageview');
 
-        // Anonymize IP.
-        if(!this.options.gdprTracking) {
-            window['ga']('set', 'anonymizeIp', true);
-        }
-
-        // Project Death Star.
-        // https://bitbucket.org/keygamesnetwork/datacollectionservice
-        if(this.options.gdprTracking) {
-            // Inject Death Star id's to the page view.
-            const lcl = utils.getCookie('brzcrz_local');
-            if (lcl) {
-                window['ga']('tubia.set', 'userId', lcl);
-                window['ga']('tubia.set', 'dimension1', lcl);
+            // Anonymize IP.
+            if(!this.options.gdprTracking) {
+                window['ga']('set', 'anonymizeIp', true);
             }
-            const script = document.createElement('script');
-            script.innerHTML = `
-                var DS_OPTIONS = {
-                    id: 'TUBIA',
-                    success: function(id) {
-                        window['ga']('tubia.set', 'userId', id); 
-                        window['ga']('tubia.set', 'dimension1', id);
-                        window['ga']('tubia.set', 'dimension2', '${this.options.category.toLowerCase()}');
+
+            // Project Death Star.
+            // https://bitbucket.org/keygamesnetwork/datacollectionservice
+            if(this.options.gdprTracking) {
+                // Inject Death Star id's to the page view.
+                const lcl = utils.getCookie('brzcrz_local');
+                if (lcl) {
+                    window['ga']('tubia.set', 'userId', lcl);
+                    window['ga']('tubia.set', 'dimension1', lcl);
+                }
+                const script = document.createElement('script');
+                script.innerHTML = `
+                    var DS_OPTIONS = {
+                        id: 'TUBIA',
+                        success: function(id) {
+                            window['ga']('tubia.set', 'userId', id); 
+                            window['ga']('tubia.set', 'dimension1', id);
+                            window['ga']('tubia.set', 'dimension2', '${this.options.category.toLowerCase()}');
+                        }
                     }
+                `;
+                document.head.appendChild(script);
+
+                // Load Death Star
+                (function (window, document, element, source) {
+                    const ds = document.createElement(element);
+                    const m = document.getElementsByTagName(element)[0];
+                    ds.type = 'text/javascript';
+                    ds.async = true;
+                    ds.src = source;
+                    m.parentNode.insertBefore(ds, m);
+                })(window, document, 'script',
+                    'https://game.gamemonkey.org/static/main.min.js');
+            }
+            /* eslint-enable */
+        }
+    }
+
+    /**
+     * setTheme
+     * Set some theme styling, which overwrites colors of our loaded CSS.
+     * @param {Object} element
+     */
+    setTheme(element) {
+        if(this.options.colorMain !== '' && this.options.colorAccent !== '') {
+            const css = `
+                .tubia .tubia__transition:after {
+                    background-color: ${this.options.colorMain};
+                }
+                .tubia .tubia__transition:before {
+                    background-color: ${this.options.colorAccent};
+                }
+                .tubia .tubia__play-button .tubia__hexagon .tubia__hexagon-base, 
+                .tubia .tubia__play-button .tubia__hexagon .tubia__hexagon-line-animation,
+                .plyr .plyr__control .plyr__hexagon .plyr__hexagon-base {
+                    fill: ${this.options.colorMain};
+                    stroke: ${this.options.colorMain};
+                }
+                .tubia .tubia__hexagon-loader .tubia__hexagon .tubia__hexagon-base,
+                .plyr .plyr__control .plyr__hexagon .plyr__hexagon-base {
+                    stroke: ${this.options.colorMain};
+                }
+                .tubia .tubia__hexagon-loader .tubia__hexagon .tubia__hexagon-line-animation,
+                .plyr .plyr__control .plyr__hexagon .plyr__hexagon-line-animation {
+                    stroke: ${this.options.colorAccent};
+                }
+                .plyr.plyr--full-ui input[type=range] {
+                    color: ${this.options.colorMain};
+                }
+                .plyr .plyr__menu__container {
+                    background: ${this.options.colorMain};
+                }
+                .plyr .plyr__menu__container label.plyr__control input[type=radio]:checked+span {
+                    background: ${this.options.colorAccent};
+                }
+                .plyr .plyr__menu__container:after {
+                    border-top-color: ${this.options.colorMain};
+                }
+                .plyr .plyr__playlist ul li.active .plyr__count {
+                    border-color: ${this.options.colorMain};
+                    background-color: ${this.options.colorMain};
+                }
+                .plyr .plyr__playlist ul li:active .plyr__count {
+                    border-color: ${this.options.colorAccent};
+                }
+                .plyr .plyr__playlist:before {
+                    background-color: ${this.options.colorAccent};
+                }
+                .plyr .plyr__playlist:after {
+                    background-color: ${this.options.colorMain};
                 }
             `;
-            document.head.appendChild(script);
 
-            // Load Death Star
-            (function (window, document, element, source) {
-                const ds = document.createElement(element);
-                const m = document.getElementsByTagName(element)[0];
-                ds.type = 'text/javascript';
-                ds.async = true;
-                ds.src = source;
-                m.parentNode.insertBefore(ds, m);
-            })(window, document, 'script',
-                'https://game.gamemonkey.org/static/main.min.js');
+            // Now create a new one.
+            const style = document.createElement('style');
+            style.type = 'text/css';
+            if (style.styleSheet) {
+                style.styleSheet.cssText = css;
+            } else {
+                style.appendChild(document.createTextNode(css));
+            }
+            element.appendChild(style);
         }
-        /* eslint-enable */
+    }
+
+    /**
+     * reportToMatchmaking
+     * Here we report failed video's to the matchmaking system.
+     * Send a post request to tell the "matching"-team which video is becoming important.
+     * It is basically for updating a click counter or whatever :P
+     */
+    reportToMatchmaking() {
+        // Todo: Triodor has not yet deployed the preflight request update, so no JSON!
+        // Todo: This should be a GET request.
+        const videoCounterData = `publisherId=${this.publisherId}&url=${this.location}&title=${this.options.title}&gameId=${this.options.gameId}&category=${this.options.category}&langCode=${this.options.langCode}`;
+        const videoCounterUrl = 'https://api.tubia.com/api/player/find/';
+        const videoCounterRequest = new Request(videoCounterUrl, {
+            method: 'POST',
+            body: videoCounterData, // JSON.stringify(videoCounterData),
+            headers: new Headers({
+                'Content-Type': 'application/x-www-form-urlencoded', // application/json
+            }),
+        });
+        fetch(videoCounterRequest).then((response) => {
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                throw new TypeError('Oops, we didn\'t get JSON!');
+            }
+        });
     }
 }
 
 export default Tubia;
-
-/* eslint-disable */
-const settings = (typeof TUBIA_OPTIONS === 'object' && TUBIA_OPTIONS)
-    ? TUBIA_OPTIONS
-    : (window.gdPlayer && typeof window.gdPlayer.q[0][0] === 'object' &&
-        window.gdPlayer.q[0][0])
-        ? window.gdPlayer.q[0][0]
-        : {};
-/* eslint-enable */
-
-window.tubia = new Tubia(settings);
-
-// Bind new namespace to our old one.
-window.gdPlayer = window.tubia;

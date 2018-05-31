@@ -5,8 +5,6 @@
 import 'babel-polyfill';
 import 'custom-event-polyfill';
 
-// import loadjs from 'loadjs';
-
 import support from './support';
 import { providers } from './types';
 
@@ -143,14 +141,6 @@ const utils = {
 
     // Load an external script
     loadScript(url) {
-        // Todo: removed loadjs, at least for now, as its breaking on spele.nl
-        // Todo: on spele we got loadjs.default is not a function as error.
-        // return new Promise((resolve, reject) => {
-        //     loadjs(url, {
-        //         success: resolve,
-        //         error: reject,
-        //     });
-        // });
         return new Promise((resolve, reject) => {
             const current = document.querySelector(`script[src="${url}"]`);
 
@@ -203,10 +193,14 @@ const utils = {
 
     loadStyle(url) {
         return new Promise((resolve, reject) => {
-            const current = document.querySelector(`link[src="${url}"]`);
+            const current = document.querySelector(`link[href="${url}"]`);
 
-            // Check script is not already referenced, if so wait for load
+            // Check script is not already referenced.
             if (current !== null) {
+                // Check script is not previously loaded.
+                if (current.getAttribute('data-loaded')) {
+                    resolve();
+                }
                 current.callbacks = current.callbacks || [];
                 current.callbacks.push(resolve);
                 return;
@@ -229,6 +223,7 @@ const utils = {
                 event => {
                     element.callbacks.forEach(cb => cb.call(null, event));
                     element.callbacks = null;
+                    element.setAttribute('data-loaded', 'true');
                 },
                 false,
             );
