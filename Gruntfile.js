@@ -98,8 +98,7 @@ module.exports = function (grunt) {
             files: {
                 src: [
                     'libs/gd/gd.js',
-                    'libs/gd/gd.min.js',
-                    'libs/gd/main.min.css',
+                    'libs/gd/main.css',
                 ],
             },
         },
@@ -114,7 +113,7 @@ module.exports = function (grunt) {
             },
             build: {
                 src: 'src/styles/plyr.scss',
-                dest: 'libs/gd/main.css',
+                dest: 'libs/.tmp/sass.css',
             },
         },
 
@@ -135,8 +134,8 @@ module.exports = function (grunt) {
                 ],
             },
             build: {
-                src: 'libs/gd/main.css',
-                dest: 'libs/gd/main.min.css',
+                src: 'libs/.tmp/sass.css',
+                dest: 'libs/gd/main.css',
             },
         },
 
@@ -183,7 +182,7 @@ module.exports = function (grunt) {
                     'src/libraries/md5.js',
                     'libs/.tmp/babel.js',
                 ],
-                dest: 'libs/gd/gd.js',
+                dest: 'libs/.tmp/concat.js',
             },
         },
 
@@ -211,8 +210,8 @@ module.exports = function (grunt) {
                 warnings: false,
             },
             lib: {
-                src: 'libs/gd/gd.js',
-                dest: 'libs/gd/gd.min.js',
+                src: 'libs/.tmp/concat.js',
+                dest: 'libs/gd/gd.js',
             },
         },
 

@@ -89,7 +89,7 @@ class Tubia {
         // Load our styles and fonts.
         utils.loadStyle('https://fonts.googleapis.com/css?family=Khand:400,700');
         // utils.loadStyle('./main.min.css').then(() => {
-        utils.loadStyle('https://tubia.gamedistribution.com/libs/gd/main.min.css')
+        utils.loadStyle('https://tubia.gamedistribution.com/libs/gd/main.css')
             .then(() => {
                 // Create an inner container; within we load our player and do other stuff.
                 // We make sure to destroy any inner content if there are already things inside.
@@ -423,7 +423,7 @@ class Tubia {
 
             // Create the Plyr instance.
             this.player = new Plyr('#plyr__tubia', {
-                debug: true, // this.options.debug,
+                debug: this.options.debug,
                 // iconUrl: './sprite.svg',
                 iconUrl: 'https://tubia.gamedistribution.com/libs/gd/sprite.svg',
                 title: (json.detail && json.detail.length > 0) ? json.detail[0].title : '',
@@ -434,7 +434,8 @@ class Tubia {
                     enabenabledled: (json.adsEnabled) ? json.adsEnabled : true,
                     prerollEnabled: (json.preRollEnabled) ? json.preRollEnabled : true,
                     midrollEnabled: (json.subBannerEnabled) ? json.subBannerEnabled : true,
-                    videoInterval: (json.preRollSecond) ? json.preRollSecond : 300,
+                    // Todo: Test with 1 minute something video midroll interval.
+                    videoInterval: 65, // (json.preRollSecond) ? json.preRollSecond : 300,
                     overlayInterval: (json.subBannerSecond) ? json.subBannerSecond : 15,
                     gdprTargeting: this.options.gdprTargeting,
                     tag: (json.adsEnabled && !json.addFreeActive) ? this.adTag : '',

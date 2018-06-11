@@ -1,20 +1,20 @@
 {
     "name": "@gamedistribution.com/tubia",
-    "version": "0.0.6",
+    "version": "0.0.7",
     "author": "Tubia.com",
-    "description": "Tubia.com Video Walkthrough",
+    "description": "Tubia.com HTML5 video player",
     "url": "https://tubia.com",
     "license": "MIT",
-    "main": "lib/main.js",
+    "main": "libs/gd/gd.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "directories": {
-        "doc": "https://github.com/gamedistribution/tubia/wiki"
+        "doc": "https://github.com/GameDistribution/tubia-walkthrough-videos/wiki"
     },
     "repository": {
         "type": "git",
-        "url": "git@github.com:gamedistribution/tubia.git"
+        "url": "git@github.com:GameDistribution/tubia-walkthrough-videos.git"
     },
     "dependencies": {
         "babel-polyfill": "^6.26.0",
