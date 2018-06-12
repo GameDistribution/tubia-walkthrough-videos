@@ -302,31 +302,6 @@ class Ads {
                 utils.updateQueryStringParameter(this.tag, 'npa', (this.gdprTargeting) ? '1' : '0') : this.tag;
             this.player.debug.log(`ADVERTISEMENT: gdpr: npa=${(this.gdprTargeting) ? '1' : '0'}`);
 
-            // Send a google event.
-            if (typeof window.ga !== 'undefined') {
-                const time = new Date();
-                const h = time.getHours();
-                const d = time.getDate();
-                const m = time.getMonth();
-                const y = time.getFullYear();
-                let categoryName = '';
-                if (this.adPosition === 0) {
-                    categoryName = 'AD_POSTROLL';
-                } else if (this.adPosition === 1) {
-                    categoryName = 'AD_PREROLL';
-                } else if (this.adPosition === 2) {
-                    categoryName = 'AD_MIDROLL';
-                } else if (this.adPosition === 3) {
-                    categoryName = 'AD_MIDROLL_FULLSLOT';
-                }
-                window.ga('tubia.send', {
-                    hitType: 'event',
-                    eventCategory: categoryName,
-                    eventAction: `${window.location.hostname} | h${h} d${d} m${m} y${y}`,
-                    eventLabel: this.tag,
-                });
-            }
-
             // Update our adTag. We add additional parameters so Tunnl
             // can use the values as new metrics within reporting.
             // It is also used to determine if we get an overlay or not.
@@ -344,6 +319,7 @@ class Ads {
             this.player.debug.log(`ADVERTISEMENT: ad_request_count: ${requestAttempts}`);
             if(this.adPosition === 0) {
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_position', 'postroll');
+                this.sendGoogleEventPosition(this.adPosition);
                 this.player.debug.log('ADVERTISEMENT: ad_position: postroll');
                 // If there is a re-request attempt for a post-roll then make
                 // sure we increment the adCount but still ask for a post-roll.
@@ -354,6 +330,7 @@ class Ads {
                 }
             } else if(this.adPosition === 1) {
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_position', 'preroll');
+                this.sendGoogleEventPosition(this.adPosition);
                 this.player.debug.log('ADVERTISEMENT: ad_position: preroll');
                 if (requestAttempts === 0) {
                     // Next ad will be a mid-roll.
@@ -366,6 +343,7 @@ class Ads {
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_midroll_count', positionCount.toString());
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_type', 'image');
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_skippable', '0');
+                this.sendGoogleEventPosition(this.adPosition);
                 this.player.debug.log('ADVERTISEMENT: ad_position: subbanner');
                 this.player.debug.log(`ADVERTISEMENT: ad_midroll_count: ${positionCount}`);
                 this.player.debug.log('ADVERTISEMENT: ad_type: image');
@@ -377,6 +355,7 @@ class Ads {
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_midroll_count', positionCount.toString());
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_type', '');
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_skippable', '');
+                this.sendGoogleEventPosition(this.adPosition);
                 this.player.debug.log('ADVERTISEMENT: ad_position: subbanner');
                 this.player.debug.log(`ADVERTISEMENT: ad_midroll_count: ${positionCount}`);
                 this.player.debug.log('ADVERTISEMENT: ad_type: ');
@@ -768,6 +747,37 @@ class Ads {
             this.player.debug.log(`Safety timer cleared from: ${from}`);
             clearTimeout(this.safetyTimer);
             this.safetyTimer = null;
+        }
+    }
+
+    /**
+     * sendGoogleEventPosition
+     * @param {number} adPosition
+     */
+    sendGoogleEventPosition(adPosition) {
+        // Send a google event.
+        if (typeof window.ga !== 'undefined') {
+            const time = new Date();
+            const h = time.getHours();
+            const d = time.getDate();
+            const m = time.getMonth();
+            const y = time.getFullYear();
+            let categoryName = '';
+            if (adPosition === 0) {
+                categoryName = 'AD_POSTROLL';
+            } else if (adPosition === 1) {
+                categoryName = 'AD_PREROLL';
+            } else if (adPosition === 2) {
+                categoryName = 'AD_MIDROLL';
+            } else if (adPosition === 3) {
+                categoryName = 'AD_MIDROLL_FULLSLOT';
+            }
+            window.ga('tubia.send', {
+                hitType: 'event',
+                eventCategory: categoryName,
+                eventAction: `${window.location.hostname} | h${h} d${d} m${m} y${y}`,
+                eventLabel: this.tag,
+            });
         }
     }
 }
