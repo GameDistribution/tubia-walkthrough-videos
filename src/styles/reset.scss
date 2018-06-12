@@ -156,8 +156,11 @@
 }
 
 .tubia *:hover,
-.plyr *:hover {
+.plyr *:hover,
+.tubia button:hover:not([disabled]),
+.plyr button:hover:not([disabled]) {
     box-shadow: none;
+    background: none;
 }
 
 .plyr,

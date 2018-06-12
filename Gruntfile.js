@@ -135,7 +135,7 @@ module.exports = function (grunt) {
             },
             build: {
                 src: 'libs/.tmp/sass.css',
-                dest: 'libs/gd/main.css',
+                dest: 'libs/gd/gd.css',
             },
         },
 

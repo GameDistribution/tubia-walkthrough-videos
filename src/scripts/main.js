@@ -89,7 +89,7 @@ class Tubia {
         // Load our styles and fonts.
         utils.loadStyle('https://fonts.googleapis.com/css?family=Khand:400,700');
         // utils.loadStyle('./main.min.css').then(() => {
-        utils.loadStyle('https://tubia.gamedistribution.com/libs/gd/main.css')
+        utils.loadStyle('https://tubia.gamedistribution.com/libs/gd/gd.css')
             .then(() => {
                 // Create an inner container; within we load our player and do other stuff.
                 // We make sure to destroy any inner content if there are already things inside.
@@ -251,6 +251,9 @@ class Tubia {
             // Return callback.
             this.options.onStart();
 
+            // Send callback to end-user containing our video data.
+            this.options.onFound(json);
+
             const poster = (json.pictures && json.pictures.length > 0) ? json.pictures[json.pictures.length - 1].link : '';
             this.posterUrl = poster.replace(/^http:\/\//i, 'https://');
 
@@ -360,12 +363,9 @@ class Tubia {
     loadPlyr() {
         this.videoDataPromise.then((json) => {
             if (!json) {
-                this.onError('No video has been found!');
+                this.onError('No video data has been found!');
                 return;
             }
-
-            // Send callback to end-user containing our video data.
-            this.options.onFound(json);
 
             // Create the HTML5 video element.
             const videoElement = document.createElement('video');
@@ -423,7 +423,7 @@ class Tubia {
 
             // Create the Plyr instance.
             this.player = new Plyr('#plyr__tubia', {
-                debug: this.options.debug,
+                debug: true, // this.options.debug,
                 // iconUrl: './sprite.svg',
                 iconUrl: 'https://tubia.gamedistribution.com/libs/gd/sprite.svg',
                 title: (json.detail && json.detail.length > 0) ? json.detail[0].title : '',
@@ -435,7 +435,7 @@ class Tubia {
                     prerollEnabled: (json.preRollEnabled) ? json.preRollEnabled : true,
                     midrollEnabled: (json.subBannerEnabled) ? json.subBannerEnabled : true,
                     // Todo: Test with 1 minute something video midroll interval.
-                    videoInterval: 65, // (json.preRollSecond) ? json.preRollSecond : 300,
+                    videoInterval: 60, // (json.preRollSecond) ? json.preRollSecond : 300,
                     overlayInterval: (json.subBannerSecond) ? json.subBannerSecond : 15,
                     gdprTargeting: this.options.gdprTargeting,
                     tag: (json.adsEnabled && !json.addFreeActive) ? this.adTag : '',
