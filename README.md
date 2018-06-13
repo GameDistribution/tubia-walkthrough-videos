@@ -15,6 +15,7 @@ Running into any issues? Check out the Wiki of the github repository before mail
 The player should be implemented within a page by loading it through our CDN. Specific information of the player features and usages can be found at the <a href="https://github.com/GameDistribution/tubia-walkthrough-videos/wiki" target="_blank">wiki</a>.
 
 ### Example
+## Embed as component
 Add the following script to your document.
 ```
 window["TUBIA_OPTIONS"] = {
@@ -34,6 +35,30 @@ window["TUBIA_OPTIONS"] = {
     fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'tubia-playerjs'));
 ```
+
+You can also initialise the Tubia instance by simply (re)creating it. This is useful for when you want to load Tubia within a web application.
+```
+new Tubia.Player.default({
+    "container": '[YOUR CONTAINER ELEMENT ID HERE]',
+    "publisherId": '[YOUR PUBLISHER ID HERE]',
+    "gameId": '[YOUR GAME ITS IDENTIFIER]',
+    "title": '[YOUR GAME ITS TITLE]',
+    "gdprTracking": [SET BY YOUR GDPR SOLUTION],
+    "gdprTargeting": [SET BY YOUR GDPR SOLUTION],
+});
+```
+
+## Embed iframed
+```
+<iframe 
+    scrolling="no" 
+    frameborder="0" 
+    allowfullscreen="allowfullscreen" 
+    style="margin: 0px; padding: 0px;" width="640" height="480" 
+    src="https://player.tubia.com/?pubid=[YOUR PUBLISHER ID HERE]&url=[URL ENCODED CURRENT PAGE URL]&title=[YOUR GAME ITS TITLE, ENCODED]&gameid=[YOUR GAME ITS IDENTIFIER]&lang=[GEO CODE]">
+</iframe>
+```
+You can use all of the properties described below as query variables within the iframe source url.
 
 ## Callbacks & Properties
 ### Properties
