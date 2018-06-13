@@ -1,5 +1,5 @@
 [![npm](https://img.shields.io/npm/v/npm.svg)](https://nodejs.org/)
-[![GitHub version](https://img.shields.io/badge/version-0.0.7-blue.svg)](https://github.com/GameDistribution/tubia-walkthrough-videos/)
+[![GitHub version](https://img.shields.io/badge/version-0.0.8-blue.svg)](https://github.com/GameDistribution/tubia-walkthrough-videos/)
 [![Built with Grunt](https://cdn.gruntjs.com/builtwith.svg)](http://gruntjs.com/)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/GameDistribution/tubia-walkthrough-videos/blob/master/LICENSE)
 
@@ -15,7 +15,7 @@ Running into any issues? Check out the Wiki of the github repository before mail
 The player should be implemented within a page by loading it through our CDN. Specific information of the player features and usages can be found at the <a href="https://github.com/GameDistribution/tubia-walkthrough-videos/wiki" target="_blank">wiki</a>.
 
 ### Example
-## Embed as component
+## Embed as web component
 Add the following script to your document.
 ```
 window["TUBIA_OPTIONS"] = {
@@ -36,7 +36,7 @@ window["TUBIA_OPTIONS"] = {
 }(document, 'script', 'tubia-playerjs'));
 ```
 
-You can also initialise the Tubia instance by simply (re)creating it. This is useful for when you want to load Tubia within a web application.
+You can also initialise the Tubia instance by simply (re)creating it. This is useful for when you want to load Tubia within a web application. Just make sure you pass the options as arguments in the constructor, instead of binding them to the window element. Otherwise the instance would auto initialise.
 ```
 new Tubia.Player.default({
     "container": '[YOUR CONTAINER ELEMENT ID HERE]',
@@ -48,7 +48,7 @@ new Tubia.Player.default({
 });
 ```
 
-## Embed iframed
+## Embed as <iframe>
 ```
 <iframe 
     scrolling="no" 

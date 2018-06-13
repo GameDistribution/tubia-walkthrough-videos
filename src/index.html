@@ -11,6 +11,14 @@
             margin: 0;
             padding: 0;
         }
+
+        #tubia-container {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+        }
     </style>
     <script>
         function getParameterByName(name) {
@@ -46,7 +54,7 @@
                 // console.log('Tubia started');
             },
             onFound: function (data) {
-                console.log(data);
+                // console.log(data);
             },
             onError: function (error) {
                 // console.log(error);
