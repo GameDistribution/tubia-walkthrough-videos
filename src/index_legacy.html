@@ -8,7 +8,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <script>
-        // Todo: create better implementation.
         var playerInstance;
 
         var settings = {
@@ -44,7 +43,7 @@
             a.async = 1;
             a.src = g;
             m.parentNode.insertBefore(a, m);
-        })(window, document, 'script', './gd.js?asdasdas', 'gdPlayer');
+        })(window, document, 'script', 'https://player.tubia.com/libs/gd/gd.js', 'gdPlayer');
         gdPlayer(settings);
     </script>
 </head>
