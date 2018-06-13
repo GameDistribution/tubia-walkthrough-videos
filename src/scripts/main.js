@@ -321,7 +321,7 @@ class Tubia {
             const y = time.getFullYear();
             window['ga']('tubia.send', {
                 hitType: 'event',
-                eventCategory: 'MAIN',
+                eventCategory: 'ERROR',
                 eventAction: `${this.options.domain} | h${h} d${d} m${m} y${y}`,
                 eventLabel: error,
             });
