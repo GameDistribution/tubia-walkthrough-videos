@@ -89,7 +89,7 @@ class Tubia {
         // Load our styles and fonts.
         utils.loadStyle('https://fonts.googleapis.com/css?family=Khand:400,700');
         // utils.loadStyle('./main.min.css').then(() => {
-        utils.loadStyle('https://tubia.gamedistribution.com/libs/gd/gd.css')
+        utils.loadStyle('https://player.tubia.com/libs/gd/gd.css')
             .then(() => {
                 // Create an inner container; within we load our player and do other stuff.
                 // We make sure to destroy any inner content if there are already things inside.
@@ -425,7 +425,7 @@ class Tubia {
             this.player = new Plyr('#plyr__tubia', {
                 debug: this.options.debug,
                 // iconUrl: './sprite.svg',
-                iconUrl: 'https://tubia.gamedistribution.com/libs/gd/sprite.svg',
+                iconUrl: 'https://player.tubia.com/libs/gd/sprite.svg',
                 title: (json.detail && json.detail.length > 0) ? json.detail[0].title : '',
                 logo: (json.logoEnabled) ? json.logoEnabled : false,
                 showPosterOnEnd: true,
