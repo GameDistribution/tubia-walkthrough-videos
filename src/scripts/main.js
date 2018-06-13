@@ -85,7 +85,7 @@ class Tubia {
 
         // Load our styles and fonts.
         utils.loadStyle('https://fonts.googleapis.com/css?family=Khand:400,700');
-        // utils.loadStyle('./main.min.css').then(() => {
+        // utils.loadStyle('./gd.css').then(() => {
         utils.loadStyle('https://player.tubia.com/libs/gd/gd.css')
             .then(() => {
                 // Create an inner container; within we load our player and do other stuff.
@@ -314,10 +314,15 @@ class Tubia {
         (new Image()).src = `https://api.tubia.com/api/playernotification?reasonid=${error}&url=${encodeURIComponent(this.options.url)}&videoid=${this.videoId}`;
         /* eslint-disable */
         if (typeof window['ga'] !== 'undefined') {
+            const time = new Date();
+            const h = time.getHours();
+            const d = time.getDate();
+            const m = time.getMonth();
+            const y = time.getFullYear();
             window['ga']('tubia.send', {
                 hitType: 'event',
                 eventCategory: 'MAIN',
-                eventAction: 'ERROR',
+                eventAction: `${this.options.domain} | h${h} d${d} m${m} y${y}`,
                 eventLabel: error,
             });
         }
@@ -479,17 +484,6 @@ class Tubia {
 
                 // Record Tubia "Video Play" event in Tunnl.
                 (new Image()).src = `https://ana.tunnl.com/event?tub_id=${this.videoId}&eventtype=1&page_url=${encodeURIComponent(this.options.url)}`;
-
-                /* eslint-disable */
-                if (typeof window['ga'] !== 'undefined') {
-                    window['ga']('tubia.send', {
-                        hitType: 'event',
-                        eventCategory: 'MAIN',
-                        eventAction: 'LOADED',
-                        eventLabel: sourceUrl,
-                    });
-                }
-                /* eslint-enable */
             });
             this.player.on('error', (error) => {
                 this.onError(error);
