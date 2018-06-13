@@ -20,34 +20,37 @@
             return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
         }
 
-        var publisherId = getParameterByName("pubid");
-        var gameId = getParameterByName("gameid");
-        var gameTitle = getParameterByName("title");
-        var langCode = getParameterByName("lang");
+        var url = getParameterByName('url');
+        var domain = url.toLowerCase().replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').split('/')[0];
+        var publisherId = getParameterByName('pubid');
+        var gameId = getParameterByName('gameid');
+        var gameTitle = getParameterByName('title');
+        var langCode = getParameterByName('lang');
+        var gdprTracking = getParameterByName('gdpr-tracking');
+        var gdprTargeting = getParameterByName('gdpr-targeting');
 
         window["TUBIA_OPTIONS"] = {
-            "debug": true,
+            "debug": false,
             "container": 'tubia-container',
             "publisherId": (publisherId) ? publisherId : 'dc63a91fa184423482808bed4d782320',
             "langCode": (langCode) ? langCode : 'en-us',
-            "colorMain": '#489CA8',
-            "colorAccent": '#ff0080',
             "gameId": (gameId) ? gameId : '49258a0e497c42b5b5d87887f24d27a6',
             "title": (gameTitle) ? gameTitle : 'Jewel Burst',
-            "category": 'puzzle',
-            "gdprTracking": true,
-            "gdprTargeting": true,
+            "url": (url) ? url : document.location.href,
+            "domain": (domain) ? domain : document.location.host,
+            "gdprTracking": (gdprTracking) ? gdprTracking : true,
+            "gdprTargeting": (gdprTargeting) ? gdprTargeting : true,
             onStart: function () {
-                console.log('Tubia started');
+                // console.log('Tubia started');
             },
             onFound: function (data) {
                 console.log(data);
             },
             onError: function (error) {
-                console.log(error);
+                // console.log(error);
             },
             onReady: function (player) {
-                console.log(player);
+                // console.log(player);
             },
         };
         (function (d, s, id) {

@@ -45,8 +45,8 @@ class Tubia {
             langCode: '',
             colorMain: '',
             colorAccent: '',
-            // domain: 'bgames.com',
-            domain: window.location.href.toLowerCase().replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').split('/')[0],
+            url: document.location.href,
+            domain: document.location.host,
             gdprTracking: null,
             gdprTargeting: null,
             onStart() {
@@ -67,7 +67,6 @@ class Tubia {
 
         this.videoId = '';
         this.innerContainer = null;
-        this.url = document.location.href;
         this.adTag = null;
         this.posterUrl = '';
         this.posterPosterElement = null;
@@ -80,8 +79,6 @@ class Tubia {
         this.startPlyrHandler = this.startPlyr.bind(this);
         this.player = null;
         this.publisherId = this.options.publisherId.toString().replace(/-/g, '');
-        this.location = encodeURIComponent(this.url);
-        this.domain = encodeURIComponent(this.options.domain);
 
         // Call Google Analytics and Death Star.
         this.analytics();
@@ -156,8 +153,8 @@ class Tubia {
         this.videoSearchPromise = new Promise((resolve, reject) => {
             const gameId = this.options.gameId.toString().replace(/-/g, '');
             const title = encodeURIComponent(this.options.title);
-            const pageId = window.calcMD5(this.url);
-            const videoFindUrl = `https://api.tubia.com/api/player/findv3/?pageId=${pageId}&gameId=${gameId}&title=${title}&domain=${this.domain}`;
+            const pageId = window.calcMD5(this.options.url);
+            const videoFindUrl = `https://api.tubia.com/api/player/findv3/?pageId=${pageId}&gameId=${gameId}&title=${title}&domain=${encodeURIComponent(this.options.domain)}`;
             const videoSearchRequest = new Request(videoFindUrl, {
                 method: 'GET',
             });
@@ -184,14 +181,14 @@ class Tubia {
                 // id.gameId is actually the videoId...
                 this.videoId = (typeof id !== 'undefined' && id.gameId && id.gameId !== '') ? id.gameId.toString().replace(/-/g, '') : '';
                 // Yes argument gameid is expecting the videoId...
-                const videoDataUrl = `https://api.tubia.com/api/player/publish/?gameid=${this.videoId}&publisherid=${this.publisherId}&domain=${this.domain}`;
+                const videoDataUrl = `https://api.tubia.com/api/player/publish/?gameid=${this.videoId}&publisherid=${this.publisherId}&domain=${encodeURIComponent(this.options.domain)}`;
                 const videoDataRequest = new Request(videoDataUrl, {method: 'GET'});
 
                 // Record Tubia "Video Loaded" event in Tunnl.
-                (new Image()).src = `https://ana.tunnl.com/event?tub_id=${this.videoId}&eventtype=0&page_url=${this.location}`;
+                (new Image()).src = `https://ana.tunnl.com/event?tub_id=${this.videoId}&eventtype=0&page_url=${encodeURIComponent(this.options.url)}`;
 
                 // Set the ad tag using the given id.
-                this.adTag = `https://pub.tunnl.com/opp?page_url=${this.location}&player_width=640&player_height=480&tub_id=${this.videoId}&correlator=${Date.now()}`;
+                this.adTag = `https://pub.tunnl.com/opp?page_url=${encodeURIComponent(this.options.url)}&player_width=640&player_height=480&tub_id=${this.videoId}&correlator=${Date.now()}`;
                 // this.adTag = `https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpostpod&cmsid=496&vid=short_onecue&correlator=${Date.now()}`;
                 // this.adTag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpreonly&cmsid=496&vid=short_onecue&correlator=';
                 fetch(videoDataRequest).then((response) => {
@@ -206,7 +203,7 @@ class Tubia {
                     // Request related video's as fallback to the playlist data.
                     if (json.cuepoints && json.cuepoints.length <= 0) {
                         // Todo: Title property within related games JSON is always empty!!
-                        const relatedVideosUrl = `https://api.tubia.com/api/RelatedVideo/?gameMd5=${this.options.gameId}&publisherId=${this.publisherId}&domain=${this.domain}&skip=0&take=10&orderBy=visit&sortDirection=desc&langCode=${this.options.langCode}`;
+                        const relatedVideosUrl = `https://api.tubia.com/api/RelatedVideo/?gameMd5=${this.options.gameId}&publisherId=${this.publisherId}&domain=${encodeURIComponent(this.options.domain)}&skip=0&take=10&orderBy=visit&sortDirection=desc&langCode=${this.options.langCode}`;
                         const relatedVideosRequest = new Request(relatedVideosUrl, {
                             method: 'GET',
                         });
@@ -314,7 +311,7 @@ class Tubia {
             this.innerContainer.classList.add('tubia__error');
         }
         // Send error report to Tubia.
-        (new Image()).src = `https://api.tubia.com/api/playernotification?reasonid=${error}&url=${encodeURIComponent(this.url)}&videoid=${this.videoId}`;
+        (new Image()).src = `https://api.tubia.com/api/playernotification?reasonid=${error}&url=${encodeURIComponent(this.options.url)}&videoid=${this.videoId}`;
         /* eslint-disable */
         if (typeof window['ga'] !== 'undefined') {
             window['ga']('tubia.send', {
@@ -481,7 +478,7 @@ class Tubia {
                 }, this.transitionSpeed / 1.5);
 
                 // Record Tubia "Video Play" event in Tunnl.
-                (new Image()).src = `https://ana.tunnl.com/event?tub_id=${this.videoId}&eventtype=1&page_url=${this.location}`;
+                (new Image()).src = `https://ana.tunnl.com/event?tub_id=${this.videoId}&eventtype=1&page_url=${encodeURIComponent(this.options.url)}`;
 
                 /* eslint-disable */
                 if (typeof window['ga'] !== 'undefined') {
@@ -644,7 +641,7 @@ class Tubia {
     reportToMatchmaking() {
         // Todo: Triodor has not yet deployed the preflight request update, so no JSON!
         // Todo: This should be a GET request.
-        const videoCounterData = `publisherId=${this.publisherId}&url=${this.location}&title=${this.options.title}&gameId=${this.options.gameId}&category=${this.options.category}&langCode=${this.options.langCode}`;
+        const videoCounterData = `publisherId=${this.publisherId}&url=${encodeURIComponent(this.options.url)}&title=${this.options.title}&gameId=${this.options.gameId}&category=${this.options.category}&langCode=${this.options.langCode}`;
         const videoCounterUrl = 'https://api.tubia.com/api/player/find/';
         const videoCounterRequest = new Request(videoCounterUrl, {
             method: 'POST',
