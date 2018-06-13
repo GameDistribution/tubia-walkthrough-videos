@@ -49,6 +49,7 @@ new Tubia.Player.default({
 ```
 
 ## Embed as <iframe>
+It is also possible to embed the Tubia video player within a simple <iframe> element. However, you won't be able to hook into the callbacks.
 ```
 <iframe 
     scrolling="no" 
