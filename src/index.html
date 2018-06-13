@@ -7,27 +7,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         body {
-            background: #5b002e;
+            background: #333;
             margin: 0;
             padding: 0;
         }
-
-        #tubia-container {
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-            max-width: 800px;
-            margin: auto;
-        }
     </style>
     <script>
+        function getParameterByName(name) {
+            name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+                results = regex.exec(location.search);
+            return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+        }
+
+        var publisherId = getParameterByName("pubid");
+        var gameId = getParameterByName("gameid");
+        var gameTitle = getParameterByName("title");
+        var langCode = getParameterByName("lang");
+
         window["TUBIA_OPTIONS"] = {
             "debug": true,
             "container": 'tubia-container',
-            "publisherId": 'dc63a91fa184423482808bed4d782320',
-            "langCode": 'en-us',
+            "publisherId": (publisherId) ? publisherId : 'dc63a91fa184423482808bed4d782320',
+            "langCode": (langCode) ? langCode : 'en-us',
             "colorMain": '#489CA8',
             "colorAccent": '#ff0080',
-            "gameId": '110104',
-            "title": 'Jewel Burst',
+            "gameId": (gameId) ? gameId : '49258a0e497c42b5b5d87887f24d27a6',
+            "title": (gameTitle) ? gameTitle : 'Jewel Burst',
             "category": 'puzzle',
             "gdprTracking": true,
             "gdprTargeting": true,
