@@ -108,7 +108,7 @@ The player is maintained on a public github repository.
 <a href="https://github.com/gamedistribution/tubia-walkthrough-videos" target="_blank">https://github.com/gamedistribution/tubia-walkthrough-videos</a>
 
 ## Deployment
-Deployment of this repository to production environments is done through TeamCity.
+Deployment of this repository to production environments is done through TeamCity. The `./src/index.html` file should be deployed manually within the root of the bucket. This file allows the embedding of the player within an iframe.
 
 ## Installation for development
 Install the following programs:
