@@ -34,7 +34,7 @@
         var gameTitle = getParameterByName('title');
         var urlLegacy = getParameterByName('url');
         var url = (typeof urlLegacy !== 'undefined' && urlLegacy !== '') ? urlLegacy : getParameterByName('pageurl');
-        var pageUrl = (typeof url !== 'undefined' && url !== '') ? url : document.location.href;
+        var pageUrl = (typeof url !== 'undefined' && url !== '') ? decodeURIComponent(url) : document.location.href;
         var domain = pageUrl.toLowerCase().replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').split('/')[0];
         var colorMain = getParameterByName('colormain');
         var colorAccent = getParameterByName('coloraccent');
