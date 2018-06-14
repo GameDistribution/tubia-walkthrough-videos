@@ -15,7 +15,7 @@ Running into any issues? Check out the Wiki of the github repository before mail
 The player should be implemented within a page by loading it through our CDN. Specific information of the player features and usages can be found at the <a href="https://github.com/GameDistribution/tubia-walkthrough-videos/wiki" target="_blank">wiki</a>.
 
 ### Example
-## Embed as web component
+#### Embed as web component
 Add the following script to your document.
 ```
 window["TUBIA_OPTIONS"] = {
@@ -48,7 +48,7 @@ new Tubia.Player.default({
 });
 ```
 
-## Embed as <iframe>
+#### Embed as <iframe>
 It is also possible to embed the Tubia video player within a simple <iframe> element. However, you won't be able to hook into the callbacks.
 ```
 <iframe 
