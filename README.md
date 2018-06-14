@@ -1,5 +1,5 @@
 [![npm](https://img.shields.io/npm/v/npm.svg)](https://nodejs.org/)
-[![GitHub version](https://img.shields.io/badge/version-0.0.8-blue.svg)](https://github.com/GameDistribution/tubia-walkthrough-videos/)
+[![GitHub version](https://img.shields.io/badge/version-0.0.9-blue.svg)](https://github.com/GameDistribution/tubia-walkthrough-videos/)
 [![Built with Grunt](https://cdn.gruntjs.com/builtwith.svg)](http://gruntjs.com/)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/GameDistribution/tubia-walkthrough-videos/blob/master/LICENSE)
 
@@ -12,10 +12,35 @@ Tubia.com offers walkthrough video’s to gaming publishers, for free. Many game
 Running into any issues? Check out the Wiki of the github repository before mailing to <a href="support@tubia.com" target="_blank">support@tubia.com</a>
 
 ## Implementation within a page
-The player should be implemented within a page by loading it through our CDN. Specific information of the player features and usages can be found at the <a href="https://github.com/GameDistribution/tubia-walkthrough-videos/wiki" target="_blank">wiki</a>.
+The player should be implemented within a page by embedding it within a simple iframe or as web component. Specific information of the player features and usages can be found at the <a href="https://github.com/GameDistribution/tubia-walkthrough-videos/wiki" target="_blank">wiki</a>.
 
-### Example
-#### Embed as web component
+### Embed as <iframe>
+It is also possible to embed the Tubia video player within a simple <iframe> element. However, you won't be able to hook into the callbacks.
+```
+<iframe 
+    scrolling="no" 
+    frameborder="0" 
+    allowfullscreen="allowfullscreen" 
+    style="margin: 0px; padding: 0px;" width="640" height="480" 
+    src="https://player.tubia.com/?publisherid=[YOUR PUBLISHER ID HERE]&gameid=[YOUR GAME ITS IDENTIFIER]&pageurl=[CURRENT PAGE URL ENCODED]&title=[YOUR GAME ITS URL ENCODED TITLE]&colormain=[PLAYER THEME HEX COLOR CODE]&coloraccent=[PLAYER THEME HEX COLOR CODE]&gdprtracking=[SET BY YOUR GDPR SOLUTION]&gdprtargeting=[SET BY YOUR GDPR SOLUTION]&langcode=[LANGUAGE CODE - REGION CODE]">
+</iframe>
+```
+Use the following query variables.
+
+| Property | Mandatory | Default |
+| --- | --- | --- |
+| publisherid | Yes | '' |
+| gameid | Yes | '' |
+| title | Yes | '' |
+| pageurl | Yes | '' |
+| colormain | No | '' |
+| coloraccent | No | '' |
+| gdprtracking | Mandatory for European end-users | '' |
+| gdprtargeting | Mandatory for European end-users | '' |
+| langcode | No | 'en-us' |
+| debug | No | '' |
+
+### Embed as web component
 Add the following script to your document.
 ```
 window["TUBIA_OPTIONS"] = {
@@ -48,21 +73,8 @@ new Tubia.Player.default({
 });
 ```
 
-#### Embed as <iframe>
-It is also possible to embed the Tubia video player within a simple <iframe> element. However, you won't be able to hook into the callbacks.
-```
-<iframe 
-    scrolling="no" 
-    frameborder="0" 
-    allowfullscreen="allowfullscreen" 
-    style="margin: 0px; padding: 0px;" width="640" height="480" 
-    src="https://player.tubia.com/?pubid=[YOUR PUBLISHER ID HERE]&url=[URL ENCODED CURRENT PAGE URL]&title=[YOUR GAME ITS TITLE, ENCODED]&gameid=[YOUR GAME ITS IDENTIFIER]&lang=[GEO CODE]">
-</iframe>
-```
-You can use all of the properties described below as query variables within the iframe source url.
-
-## Callbacks & Properties
-### Properties
+#### Callbacks & Properties
+##### Properties
 You can use the following properties:
 
 | Property | Mandatory | Default | Description |
@@ -73,21 +85,22 @@ You can use the following properties:
 | title | Yes | {String} '' | The name of your game. This values is used within the video player, but we also use this data to match a video with your title. |
 | colorMain | No | {String} '' | The main theme color of the HTML5 video player. |
 | colorAccent | No | {String} '' | The accent theme color of the HTML5 video player. |
-| gdprTracking | Yes | {Boolean} null | Enable client tracking solutions. |
-| gdprTargeting | Yes | {Boolean} null | Enable client advertisement targeting solutions. |
+| gdprTracking | Mandatory for European end-users | {Boolean} null | Enable client tracking solutions. |
+| gdprTargeting | Mandatory for European end-users | {Boolean} null | Enable client advertisement targeting solutions. |
+| langCode | No | 'en-us' | Currently only used for localising phrases within advertisements. |
 | debug | No | {Boolean} false | Enable debugging. Please keep it to false when publishing. |
 
-### Callbacks
+##### Callbacks
 You can hook into the following callbacks:
 
 | Callback | Returns | Description |
 | --- | --- | --- |
 | onStart | nothing | The very first moment everything is initializing. |
 | onFound | {Object} - Video data | When a video - matching with your game - has been found. |
-| onReady | {Object} - Player instance | When the HTML5 player is ready to play the video. |
+| onReady | {Object} - Player instance | When the HTML5 player is ready to play the video. This callback will only be returned when onStart and onFound have returned before. |
 | onError | {Object} - Error data | When any error happens inside of Tubia. |
 
-### Styling/ CSS
+#### Styling/ CSS
 The video player will be embedded straight into your web page as a component, so not within an iframe. This means you're free to completely style it to your wishes or even write plugins.
 
 ## Repository

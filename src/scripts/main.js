@@ -65,6 +65,8 @@ class Tubia {
             this.options = defaults;
         }
 
+        console.log(this.options);
+
         this.videoId = '';
         this.innerContainer = null;
         this.adTag = null;
