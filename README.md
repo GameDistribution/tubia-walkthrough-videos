@@ -27,18 +27,18 @@ It is also possible to embed the Tubia video player within a simple <iframe> ele
 ```
 Use the following query variables.
 
-| Property | Mandatory | Default |
-| --- | --- | --- |
-| publisherid | Yes | '' |
-| gameid | Yes | '' |
-| title | Yes | '' |
-| pageurl | Yes | '' |
-| colormain | No | '' |
-| coloraccent | No | '' |
-| gdprtracking | Mandatory for European end-users | '' |
-| gdprtargeting | Mandatory for European end-users | '' |
-| langcode | No | 'en-us' |
-| debug | No | '' |
+| Property | Mandatory | Default | Description |
+| --- | --- | --- | --- |
+| publisherid | Yes | '' | Your Tubia publisher identifier. |
+| gameid | Yes | '' | A unique identifier of your page content. We use this data to match a video with your identifier. |
+| title | Yes | '' | The name of your game. This values is used within the video player, but we also use this data to match a video with your title. |
+| pageurl | Yes | '' | The full URL of the current page. |
+| colormain | No | '' | The main theme color of the HTML5 video player, use a CSS hex code (ff0080), without the #. |
+| coloraccent | No | '' | The accent theme color of the HTML5 video player, use a CSS hex code (ff0080), without the #. |
+| gdprtracking | Mandatory for European end-users | '' | Enable client tracking solutions. |
+| gdprtargeting | Mandatory for European end-users | '' | Enable client advertisement targeting solutions. |
+| langcode | No | 'en-us' | Currently only used for localising phrases within advertisements. |
+| debug | No | '' | Enable debugging. Please keep it to false when publishing. |
 
 ### Embed as web component
 Add the following script to your document.
@@ -83,8 +83,8 @@ You can use the following properties:
 | publisherId | Yes | {String} '' | Your Tubia publisher identifier. |
 | gameId | Yes | {String} '' | A unique identifier of your page content. We use this data to match a video with your identifier. |
 | title | Yes | {String} '' | The name of your game. This values is used within the video player, but we also use this data to match a video with your title. |
-| colorMain | No | {String} '' | The main theme color of the HTML5 video player. |
-| colorAccent | No | {String} '' | The accent theme color of the HTML5 video player. |
+| colorMain | No | {String} '' | The main theme color of the HTML5 video player, you can use any CSS value, example; #ff0080. |
+| colorAccent | No | {String} '' | The accent theme color of the HTML5 video player, you can use any CSS value, example; rgba(255, 255, 0, 0.5). |
 | gdprTracking | Mandatory for European end-users | {Boolean} null | Enable client tracking solutions. |
 | gdprTargeting | Mandatory for European end-users | {Boolean} null | Enable client advertisement targeting solutions. |
 | langCode | No | 'en-us' | Currently only used for localising phrases within advertisements. |
