@@ -35,7 +35,7 @@
         var urlLegacy = getParameterByName('url');
         var url = (typeof urlLegacy !== 'undefined' && urlLegacy !== '') ? urlLegacy : getParameterByName('pageurl');
         var pageUrl = (typeof url !== 'undefined' && url !== '') ? decodeURIComponent(url) : document.location.href;
-        var domain = pageUrl.toLowerCase().replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').split('/')[0];
+        var domain = pageUrl.toLowerCase().replace(/^(?:https?:\/\/)?/i, '').split('/')[0];
         var colorMain = getParameterByName('colormain');
         var colorAccent = getParameterByName('coloraccent');
         var gdprTracking = getParameterByName('gdprtracking');
