@@ -1,6 +1,8 @@
 import 'es6-promise/auto';
 import 'whatwg-fetch';
-import 'rangetouch';
+// Todo: range touch is causing the following error:
+// Todo: Uncaught DOMException: Failed to execute 'insertRule' on 'CSSStyleSheet': Cannot access StyleSheet to insertRule
+// import 'rangetouch';
 
 import PackageJSON from '../../package.json';
 import Plyr from './plyr/plyr';
