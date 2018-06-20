@@ -40,7 +40,7 @@ class Tubia {
         const defaults = {
             debug: false,
             container: 'player',
-            gameId: 'something', // Todo: api.tubia.com expects something...
+            gameId: '0', // Todo: api.tubia.com expects something...
             publisherId: '',
             title: '',
             category: '',
@@ -110,8 +110,14 @@ class Tubia {
 
                     // Start the player.
                     this.start();
-                }).catch(() => {
-                    this.onError('Something went wrong when loading the Tubia stylesheet.');
+                }).catch((error) => {
+                    // If something went wrong with loading the stylesheet we get an Event.
+                    // Otherwise its just a regular error object.
+                    if (error.target) {
+                        this.onError('Something went wrong when loading the Tubia stylesheet.');
+                    } else {
+                        this.onError(error);
+                    }
                 });
         } else {
             this.onError('There is no container element for Tubia set.');
@@ -155,6 +161,11 @@ class Tubia {
         // Show a spinner loader, as this could take some time.
         this.hexagonLoader.classList.toggle('tubia__active');
 
+        // Increment the matchmaking counter so we can get a priority list for our editor.
+        // Yes its the most dumbass thing ever.
+        // Todo: Keep this logic within the backend.
+        this.reportToMatchmaking();
+
         // Search for a matching video within our Tubia database and return the id.
         // Todo: We can't get the poster image without doing these requests for data. Kind of sucks.
         this.videoSearchPromise = new Promise((resolve, reject) => {
@@ -183,7 +194,6 @@ class Tubia {
         });
 
         // Get the video data using the id returned from the videoSearchPromise.
-        // Or we get default data if no id is returned.
         this.videoDataPromise = new Promise((resolve, reject) => {
             this.videoSearchPromise.then((id) => {
                 // id.gameId is actually the videoId...
@@ -245,9 +255,6 @@ class Tubia {
         // A user can click the play button to start loading the video player.
         this.videoDataPromise.then((json) => {
             if (!json) {
-                // No video data was found.
-                // Report to our matchmaking system so a video can be created.
-                this.reportToMatchmaking();
                 // Still close down Tubia.
                 this.onError('No video has been found!');
                 return;
