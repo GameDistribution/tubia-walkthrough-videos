@@ -87,49 +87,35 @@ class Tubia {
         // Call Google Analytics and Death Star.
         this.analytics();
 
-        // Load our styles and fonts.
-        utils.loadStyle('https://fonts.googleapis.com/css?family=Khand:400,700');
-        // utils.loadStyle('./gd.css').then(() => {
-        utils.loadStyle('https://player.tubia.com/libs/gd/gd.css')
-            .then(() => {
-                // Create an inner container; within we load our player and do other stuff.
-                // We make sure to destroy any inner content if there are already things inside.
-                const container = document.getElementById(this.options.container);
-                if (container) {
-                    if(container.firstChild) {
+        const container = document.getElementById(this.options.container);
+        if (container) {
+            // Load our styles and fonts.
+            utils.loadStyle('https://fonts.googleapis.com/css?family=Khand:400,700');
+            // utils.loadStyle('./gd.css').then(() => {
+            utils.loadStyle('https://player.tubia.com/libs/gd/gd.css')
+                .then(() => {
+                    // Create an inner container; within we load our player and do other stuff.
+                    // We make sure to destroy any inner content if there are already things inside.
+                    if (container.firstChild) {
                         container.innerHTML = '';
                     }
+
                     // Now create the inner container.
                     this.innerContainer = document.createElement('div');
                     this.innerContainer.className = 'tubia';
                     container.appendChild(this.innerContainer);
+
                     // And add theme styles.
                     this.setTheme(container);
-                } else {
-                    const message = 'There is no container element for Tubia set.';
-                    this.onError(message);
-                    throw new Error(message);
-                }
-                // Start the player.
-                this.start();
-            }).catch((error) => {
-                /* eslint-disable */
-                if (typeof window['ga'] !== 'undefined') {
-                    const time = new Date();
-                    const h = time.getHours();
-                    const d = time.getDate();
-                    const m = time.getMonth();
-                    const y = time.getFullYear();
-                    window['ga']('tubia.send', {
-                        hitType: 'event',
-                        eventCategory: 'ERROR STYLESHEET',
-                        eventAction: `${this.options.domain} | h${h} d${d} m${m} y${y}`,
-                        eventLabel: error,
-                    });
-                }
-                /* eslint-enable */
-                this.onError('Something went wrong when loading the Tubia stylesheet.');
-            });
+
+                    // Start the player.
+                    this.start();
+                }).catch(() => {
+                    this.onError('Something went wrong when loading the Tubia stylesheet.');
+                });
+        } else {
+            this.onError('There is no container element for Tubia set.');
+        }
     }
 
     /**
@@ -326,13 +312,11 @@ class Tubia {
      * @param {String} error
      */
     onError(error) {
-        // Todo: I think Plyr has some error handling div?
         this.options.onError(error);
+        // Todo: I think Plyr has some error handling div?
         if (this.innerContainer) {
             this.innerContainer.classList.add('tubia__error');
         }
-        // Send error report to Tubia.
-        (new Image()).src = `https://api.tubia.com/api/playernotification?reasonid=${error}&url=${encodeURIComponent(this.options.url)}&videoid=${this.videoId}`;
         /* eslint-disable */
         if (typeof window['ga'] !== 'undefined') {
             const time = new Date();
@@ -350,6 +334,17 @@ class Tubia {
         /* eslint-enable */
 
         throw new Error(error);
+    }
+
+    /**
+     * userErrorReporting
+     * Users can report issues concerning the player.
+     * Todo: We don't support this feature yet. But i've added the request for future reference.
+     * @param {String} userErrorMessage
+     */
+    userErrorReporting(userErrorMessage) {
+        // Send error report to Tubia.
+        (new Image()).src = `https://api.tubia.com/api/playernotification?reasonid=${userErrorMessage}&url=${encodeURIComponent(this.options.url)}&videoid=${this.videoId}`;
     }
 
     /**
