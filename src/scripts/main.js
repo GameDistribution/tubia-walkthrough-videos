@@ -112,7 +112,24 @@ class Tubia {
                 }
                 // Start the player.
                 this.start();
-            }).catch(() => this.onError('Something went wrong when loading the Tubia stylesheet.'));
+            }).catch((error) => {
+                /* eslint-disable */
+                if (typeof window['ga'] !== 'undefined') {
+                    const time = new Date();
+                    const h = time.getHours();
+                    const d = time.getDate();
+                    const m = time.getMonth();
+                    const y = time.getFullYear();
+                    window['ga']('tubia.send', {
+                        hitType: 'event',
+                        eventCategory: 'ERROR STYLESHEET',
+                        eventAction: `${this.options.domain} | h${h} d${d} m${m} y${y}`,
+                        eventLabel: error,
+                    });
+                }
+                /* eslint-enable */
+                this.onError('Something went wrong when loading the Tubia stylesheet.');
+            });
     }
 
     /**
