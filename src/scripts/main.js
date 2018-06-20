@@ -40,7 +40,7 @@ class Tubia {
         const defaults = {
             debug: false,
             container: 'player',
-            gameId: '',
+            gameId: 'something', // Todo: api.tubia.com expects something...
             publisherId: '',
             title: '',
             category: '',
@@ -155,7 +155,7 @@ class Tubia {
         // Show a spinner loader, as this could take some time.
         this.hexagonLoader.classList.toggle('tubia__active');
 
-        // Search for a matching game within our Tubia database and return the id.
+        // Search for a matching video within our Tubia database and return the id.
         // Todo: We can't get the poster image without doing these requests for data. Kind of sucks.
         this.videoSearchPromise = new Promise((resolve, reject) => {
             const gameId = this.options.gameId.toString().replace(/-/g, '');
@@ -183,6 +183,7 @@ class Tubia {
         });
 
         // Get the video data using the id returned from the videoSearchPromise.
+        // Or we get default data if no id is returned.
         this.videoDataPromise = new Promise((resolve, reject) => {
             this.videoSearchPromise.then((id) => {
                 // id.gameId is actually the videoId...
