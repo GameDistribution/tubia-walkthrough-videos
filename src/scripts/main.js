@@ -87,41 +87,62 @@ class Tubia {
         // Call Google Analytics and Death Star.
         this.analytics();
 
-        const container = document.getElementById(this.options.container);
-        if (container) {
-            // Load our styles and fonts.
-            utils.loadStyle('https://fonts.googleapis.com/css?family=Khand:400,700');
-            // utils.loadStyle('./gd.css').then(() => {
-            utils.loadStyle('https://player.tubia.com/libs/gd/gd.css')
-                .then(() => {
-                    // Create an inner container; within we load our player and do other stuff.
-                    // We make sure to destroy any inner content if there are already things inside.
-                    if (container.firstChild) {
-                        container.innerHTML = '';
-                    }
+        // Make sure the DOM is ready!
+        // The Tubia instance sometimes gets called from the <head> by clients.
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById(this.options.container);
+            if (container) {
+                // Load our styles and fonts.
+                utils.loadStyle('https://fonts.googleapis.com/css?family=Khand:400,700')
+                    .catch(() => {
+                        /* eslint-disable */
+                        if (typeof window['ga'] !== 'undefined') {
+                            const time = new Date();
+                            const h = time.getHours();
+                            const d = time.getDate();
+                            const m = time.getMonth();
+                            const y = time.getFullYear();
+                            window['ga']('tubia.send', {
+                                hitType: 'event',
+                                eventCategory: 'ERROR',
+                                eventAction: `${this.options.domain} | h${h} d${d} m${m} y${y}`,
+                                eventLabel: 'Something went wrong loading Google fonts.',
+                            });
+                        }
+                        /* eslint-enable */
+                    });
+                // utils.loadStyle('./gd.css').then(() => {
+                utils.loadStyle('https://player.tubia.com/libs/gd/gd.css')
+                    .then(() => {
+                        // Create an inner container; within we load our player and do other stuff.
+                        // We make sure to destroy any inner content if there are already things inside.
+                        if (container.firstChild) {
+                            container.innerHTML = '';
+                        }
 
-                    // Now create the inner container.
-                    this.innerContainer = document.createElement('div');
-                    this.innerContainer.className = 'tubia';
-                    container.appendChild(this.innerContainer);
+                        // Now create the inner container.
+                        this.innerContainer = document.createElement('div');
+                        this.innerContainer.className = 'tubia';
+                        container.appendChild(this.innerContainer);
 
-                    // And add theme styles.
-                    this.setTheme(container);
+                        // And add theme styles.
+                        this.setTheme(container);
 
-                    // Start the player.
-                    this.start();
-                }).catch((error) => {
-                    // If something went wrong with loading the stylesheet we get an Event.
-                    // Otherwise its just a regular error object.
-                    if (error.target) {
-                        this.onError('Something went wrong when loading the Tubia stylesheet.');
-                    } else {
-                        this.onError(error);
-                    }
-                });
-        } else {
-            this.onError('There is no container element for Tubia set.');
-        }
+                        // Start the player.
+                        this.start();
+                    }).catch((error) => {
+                        // If something went wrong with loading the stylesheet we get an Event.
+                        // Otherwise its just a regular error object.
+                        if (error.target) {
+                            this.onError('Something went wrong when loading the Tubia stylesheet.');
+                        } else {
+                            this.onError(error);
+                        }
+                    });
+            } else {
+                this.onError('There is no container element for Tubia set.');
+            }
+        });
     }
 
     /**
