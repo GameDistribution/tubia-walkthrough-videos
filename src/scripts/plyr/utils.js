@@ -191,64 +191,6 @@ const utils = {
         });
     },
 
-    loadStyle(url) {
-        return new Promise((resolve, reject) => {
-            const current = document.querySelector(`link[href="${url}"]`);
-
-            // Check script is not already referenced.
-            if (current !== null) {
-                // Check script is not previously loaded.
-                if (current.getAttribute('data-loaded')) {
-                    resolve();
-                }
-                current.callbacks = current.callbacks || [];
-                current.callbacks.push(resolve);
-                return;
-            }
-
-            // Build the element
-            const element = document.createElement('link');
-
-            // Callback queue
-            element.callbacks = element.callbacks || [];
-            element.callbacks.push(resolve);
-
-            // Error queue
-            element.errors = element.errors || [];
-            element.errors.push(reject);
-
-            // Bind callback
-            element.addEventListener(
-                'load',
-                event => {
-                    element.callbacks.forEach(cb => cb.call(null, event));
-                    element.callbacks = null;
-                    element.setAttribute('data-loaded', 'true');
-                },
-                false,
-            );
-
-            // Bind error handling
-            element.addEventListener(
-                'error',
-                event => {
-                    element.errors.forEach(err => err.call(null, event));
-                    element.errors = null;
-                },
-                false,
-            );
-
-            // Set the URL after binding callback
-            element.type = 'text/css';
-            element.rel = 'stylesheet';
-            element.href = url;
-
-            // Inject
-            const headElement = document.head;
-            headElement.appendChild(element);
-        });
-    },
-
     // Load an external SVG sprite
     loadSprite(url, id) {
         if (!utils.is.string(url)) {
