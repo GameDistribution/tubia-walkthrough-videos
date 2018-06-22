@@ -103,74 +103,57 @@ class Tubia {
      * Initialise the Tubia application.
      */
     init() {
-        const headElement = document.head;
+        const container = document.getElementById(this.options.container);
+        if (container) {
+            // Load our styles and fonts.
+            utils.loadStyle('https://fonts.googleapis.com/css?family=Khand:400,700')
+                .catch(() => {
+                    /* eslint-disable */
+                    if (typeof window['ga'] !== 'undefined') {
+                        const time = new Date();
+                        const h = time.getHours();
+                        const d = time.getDate();
+                        const m = time.getMonth();
+                        const y = time.getFullYear();
+                        window['ga']('tubia.send', {
+                            hitType: 'event',
+                            eventCategory: 'ERROR',
+                            eventAction: `${this.options.domain} | h${h} d${d} m${m} y${y}`,
+                            eventLabel: 'Something went wrong loading Google fonts.',
+                        });
+                    }
+                    /* eslint-enable */
+                });
+            // utils.loadStyle('./gd.css').then(() => {
+            utils.loadStyle('https://player.tubia.com/libs/gd/gd.css')
+                .then(() => {
+                    // Create an inner container; within we load our player and do other stuff.
+                    // We make sure to destroy any inner content if there are already things inside.
+                    if (container.firstChild) {
+                        container.innerHTML = '';
+                    }
 
-        // Load Google fonts.
-        const fontStylesUrl = 'https://fonts.googleapis.com/css?family=Khand:400,700';
-        const currentFontStyles = document.querySelector(`link[href="${fontStylesUrl}"]`);
-        if (currentFontStyles === null) {
-            // Build the style element to load our stylesheet.
-            const fontStylesElement = document.createElement('link');
-            fontStylesElement.type = 'text/css';
-            fontStylesElement.rel = 'stylesheet';
-            fontStylesElement.onerror = () => {
-                /* eslint-disable */
-                if (typeof window['ga'] !== 'undefined') {
-                    const time = new Date();
-                    const h = time.getHours();
-                    const d = time.getDate();
-                    const m = time.getMonth();
-                    const y = time.getFullYear();
-                    window['ga']('tubia.send', {
-                        hitType: 'event',
-                        eventCategory: 'ERROR',
-                        eventAction: `${this.options.domain} | h${h} d${d} m${m} y${y}`,
-                        eventLabel: 'Something went wrong loading Google fonts.',
-                    });
-                }
-                /* eslint-enable */
-            };
-            fontStylesElement.href = fontStylesUrl;
+                    // Now create the inner container.
+                    this.innerContainer = document.createElement('div');
+                    this.innerContainer.className = 'tubia';
+                    container.appendChild(this.innerContainer);
 
-            // Inject
-            headElement.appendChild(fontStylesElement);
-        }
+                    // And add theme styles.
+                    this.setTheme(container);
 
-        // Load Tubia main stylesheet before starting the instance.
-        const mainStylesUrl = 'https://player.tubia.com/libs/gd/gd.css';
-        const currentMainStyles = document.querySelector(`link[href="${mainStylesUrl}"]`);
-        if (currentMainStyles === null) {
-            // Build the style element to load our stylesheet.
-            const mainStylesElement = document.createElement('link');
-            mainStylesElement.type = 'text/css';
-            mainStylesElement.rel = 'stylesheet';
-            mainStylesElement.onload = () => {
-                this.start();
-            };
-            mainStylesElement.onerror = () => {
-                /* eslint-disable */
-                if (typeof window['ga'] !== 'undefined') {
-                    const time = new Date();
-                    const h = time.getHours();
-                    const d = time.getDate();
-                    const m = time.getMonth();
-                    const y = time.getFullYear();
-                    window['ga']('tubia.send', {
-                        hitType: 'event',
-                        eventCategory: 'ERROR',
-                        eventAction: `${this.options.url}`,
-                        eventLabel: 'Failed to load stylesheet',
-                    });
-                }
-                /* eslint-enable */
-                this.onError('Something went wrong when loading the Tubia stylesheet.');
-            };
-            mainStylesElement.href = mainStylesUrl;
-
-            // Inject
-            headElement.appendChild(mainStylesElement);
+                    // Start the player.
+                    this.start();
+                }).catch((error) => {
+                    // If something went wrong with loading the stylesheet we get an Event.
+                    // Otherwise its just a regular error object.
+                    if (error.target) {
+                        this.onError('Something went wrong when loading the Tubia stylesheet.');
+                    } else {
+                        this.onError(error);
+                    }
+                });
         } else {
-            this.start();
+            this.onError('There is no container element for Tubia set.');
         }
     }
 
@@ -179,26 +162,6 @@ class Tubia {
      * Start the Tubia application.
      */
     start() {
-        const container = document.getElementById(this.options.container);
-        if (container) {
-            // Create an inner container; within we load our player and do other stuff.
-            // We make sure to destroy any inner content if there are already things inside.
-            if (container.firstChild) {
-                container.innerHTML = '';
-            }
-
-            // Now create the inner container.
-            this.innerContainer = document.createElement('div');
-            this.innerContainer.className = 'tubia';
-            container.appendChild(this.innerContainer);
-
-            // And add theme styles.
-            this.setTheme(container);
-        } else {
-            this.onError('There is no container element for Tubia set.');
-            return;
-        }
-
         const html = `
             <div class="tubia__transition"></div>
             <button class="tubia__play-button">
