@@ -148,6 +148,21 @@ class Tubia {
                 this.start();
             };
             mainStylesElement.onerror = () => {
+                /* eslint-disable */
+                if (typeof window['ga'] !== 'undefined') {
+                    const time = new Date();
+                    const h = time.getHours();
+                    const d = time.getDate();
+                    const m = time.getMonth();
+                    const y = time.getFullYear();
+                    window['ga']('tubia.send', {
+                        hitType: 'event',
+                        eventCategory: 'ERROR',
+                        eventAction: `${this.options.url}`,
+                        eventLabel: 'Failed to load stylesheet',
+                    });
+                }
+                /* eslint-enable */
                 this.onError('Something went wrong when loading the Tubia stylesheet.');
             };
             mainStylesElement.href = mainStylesUrl;
