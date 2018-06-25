@@ -557,7 +557,7 @@ class Tubia {
     analytics() {
         /* eslint-disable */
         // Load Google Analytics so we can push out a Google event for
-        // each of our events. We make sure this is only loaded once.
+        // each of our events.
         if (typeof window['ga'] === 'undefined') {
             (function (i, s, o, g, r, a, m) {
                 i['GoogleAnalyticsObject'] = r;
@@ -571,6 +571,8 @@ class Tubia {
                 m.parentNode.insertBefore(a, m);
             })(window, document, 'script',
                 'https://www.google-analytics.com/analytics.js', 'ga');
+        }
+        if (typeof window['ga'] !== 'undefined') {
             window['ga']('create', 'UA-102831738-1', {'name': 'tubia'}, 'auto');
             window['ga']('tubia.send', 'pageview');
 
