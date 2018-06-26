@@ -194,11 +194,6 @@ class Tubia {
         // Show a spinner loader, as this could take some time.
         this.hexagonLoader.classList.toggle('tubia__active');
 
-        // Increment the matchmaking counter so we can get a priority list for our editor.
-        // Yes its the most dumbass thing ever.
-        // Todo: Keep this logic within the backend.
-        this.reportToMatchmaking();
-
         // Search for a matching video within our Tubia database and return the id.
         // Todo: We can't get the poster image without doing these requests for data. Kind of sucks.
         this.videoSearchPromise = new Promise((resolve, reject) => {
@@ -288,9 +283,19 @@ class Tubia {
         // A user can click the play button to start loading the video player.
         this.videoDataPromise.then((json) => {
             if (!json) {
+                // Report missing video.
+                this.reportToMatchmaking();
                 // Still close down Tubia.
                 this.onError('No video has been found!');
+                // Stop the application.
                 return;
+            }
+
+            // Increment the matchmaking counter so we can get a priority list for our editor.
+            // We know if the video is missing when the backFillVideoId and videoId match.
+            // Yes its the most dumbass thing ever.
+            if(json.backFillVideoId === this.videoId) {
+                this.reportToMatchmaking();
             }
 
             // Return callback.
@@ -360,6 +365,9 @@ class Tubia {
         }
         /* eslint-disable */
         if (typeof window['ga'] !== 'undefined') {
+            const location =
+                (error === 'No video has been found!') ?
+                    this.options.url : this.options.domain;
             const time = new Date();
             const h = time.getHours();
             const d = time.getDate();
@@ -368,7 +376,7 @@ class Tubia {
             window['ga']('tubia.send', {
                 hitType: 'event',
                 eventCategory: 'ERROR',
-                eventAction: `${this.options.domain} | h${h} d${d} m${m} y${y}`,
+                eventAction: `${location} | h${h} d${d} m${m} y${y}`,
                 eventLabel: error,
             });
         }
@@ -692,6 +700,7 @@ class Tubia {
      * It is basically for updating a click counter or whatever :P
      */
     reportToMatchmaking() {
+        // Todo: Keep this logic within the backend.
         // Todo: Triodor has not yet deployed the preflight request update, so no JSON!
         // Todo: This should be a GET request.
         const videoCounterData = `publisherId=${this.publisherId}&url=${encodeURIComponent(this.options.url)}&title=${this.options.title}&gameId=${this.options.gameId}&category=${this.options.category}&langCode=${this.options.langCode}`;
