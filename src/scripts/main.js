@@ -217,6 +217,21 @@ class Tubia {
             }).catch((error) => {
                 // Something went completely wrong. Shutdown.
                 this.onError(error);
+                /* eslint-disable */
+                if (typeof window['ga'] !== 'undefined') {
+                    const time = new Date();
+                    const h = time.getHours();
+                    const d = time.getDate();
+                    const m = time.getMonth();
+                    const y = time.getFullYear();
+                    window['ga']('tubia.send', {
+                        hitType: 'event',
+                        eventCategory: 'ERROR',
+                        eventAction: `${this.options.domain} | h${h} d${d} m${m} y${y}`,
+                        eventLabel: `${error} | videoSearchRequest`,
+                    });
+                }
+                /* eslint-enable */
                 reject();
             });
         });
@@ -262,6 +277,22 @@ class Tubia {
                                 json.cuepoints = response;
                                 resolve(json);
                             }
+                        }).catch((error) => {
+                            /* eslint-disable */
+                            if (typeof window['ga'] !== 'undefined') {
+                                const time = new Date();
+                                const h = time.getHours();
+                                const d = time.getDate();
+                                const m = time.getMonth();
+                                const y = time.getFullYear();
+                                window['ga']('tubia.send', {
+                                    hitType: 'event',
+                                    eventCategory: 'ERROR',
+                                    eventAction: `${this.options.domain} | h${h} d${d} m${m} y${y}`,
+                                    eventLabel: `${error} | relatedVideosRequest`,
+                                });
+                            }
+                            /* eslint-enable */
                         });
                     } else {
                         resolve(json);
@@ -269,6 +300,21 @@ class Tubia {
                 }).catch((error) => {
                     // Something went completely wrong. Shutdown.
                     this.onError(error);
+                    /* eslint-disable */
+                    if (typeof window['ga'] !== 'undefined') {
+                        const time = new Date();
+                        const h = time.getHours();
+                        const d = time.getDate();
+                        const m = time.getMonth();
+                        const y = time.getFullYear();
+                        window['ga']('tubia.send', {
+                            hitType: 'event',
+                            eventCategory: 'ERROR',
+                            eventAction: `${this.options.domain} | h${h} d${d} m${m} y${y}`,
+                            eventLabel: `${error} | videoDataRequest`,
+                        });
+                    }
+                    /* eslint-enable */
                     reject(error);
                 });
             }).catch((error) => {
@@ -717,6 +763,22 @@ class Tubia {
             if (!contentType || !contentType.includes('application/json')) {
                 throw new TypeError('Oops, we didn\'t get JSON!');
             }
+        }).catch((error) => {
+            /* eslint-disable */
+            if (typeof window['ga'] !== 'undefined') {
+                const time = new Date();
+                const h = time.getHours();
+                const d = time.getDate();
+                const m = time.getMonth();
+                const y = time.getFullYear();
+                window['ga']('tubia.send', {
+                    hitType: 'event',
+                    eventCategory: 'ERROR',
+                    eventAction: `${this.options.domain} | h${h} d${d} m${m} y${y}`,
+                    eventLabel: `${error} | videoCounterRequest`,
+                });
+            }
+            /* eslint-enable */
         });
     }
 }
