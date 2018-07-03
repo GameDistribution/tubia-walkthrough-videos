@@ -482,6 +482,7 @@ class Ads {
             case google.ima.AdEvent.Type.LOADED:
                 dispatchEvent('loaded');
                 // Make sure that our ad containers have the correct size and styling.
+                // Ad.getVastMediaWidth() and Ad.getVastMediaHeight() are now released.
                 if (ad.isLinear()) {
                     utils.toggleClass(this.elements.container, this.player.config.classNames.nonLinearAdvertisement, false);
                     this.elements.container.style.width = '100%';

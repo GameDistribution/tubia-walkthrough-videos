@@ -147,13 +147,13 @@ class Tubia {
                     // If something went wrong with loading the stylesheet we get an Event.
                     // Otherwise its just a regular error object.
                     if (error.target) {
-                        this.onError('Something went wrong when loading the Tubia stylesheet.');
+                        this.onError('init loadStyle', 'Something went wrong when loading the Tubia stylesheet.');
                     } else {
-                        this.onError(error);
+                        this.onError('init loadStyle', error);
                     }
                 });
         } else {
-            this.onError('There is no container element for Tubia set.');
+            this.onError('init container', 'There is no container element for Tubia set.');
         }
     }
 
@@ -208,6 +208,21 @@ class Tubia {
                 const contentType = response.headers.get('content-type');
                 if (!contentType || !contentType.includes('application/json')) {
                     reject();
+                    /* eslint-disable */
+                    if (typeof window['ga'] !== 'undefined') {
+                        const time = new Date();
+                        const h = time.getHours();
+                        const d = time.getDate();
+                        const m = time.getMonth();
+                        const y = time.getFullYear();
+                        window['ga']('tubia.send', {
+                            hitType: 'event',
+                            eventCategory: 'ERROR',
+                            eventAction: `${this.options.domain} | h${h} d${d} m${m} y${y}`,
+                            eventLabel: `start videoSearchRequest | Oops, we didn\'t get JSON!`,
+                        });
+                    }
+                    /* eslint-enable */
                     throw new TypeError('Oops, we didn\'t get JSON!');
                 } else {
                     return response.json();
@@ -216,22 +231,7 @@ class Tubia {
                 resolve(json);
             }).catch((error) => {
                 // Something went completely wrong. Shutdown.
-                this.onError(error);
-                /* eslint-disable */
-                if (typeof window['ga'] !== 'undefined') {
-                    const time = new Date();
-                    const h = time.getHours();
-                    const d = time.getDate();
-                    const m = time.getMonth();
-                    const y = time.getFullYear();
-                    window['ga']('tubia.send', {
-                        hitType: 'event',
-                        eventCategory: 'ERROR',
-                        eventAction: `${this.options.domain} | h${h} d${d} m${m} y${y}`,
-                        eventLabel: `${error} | videoSearchRequest`,
-                    });
-                }
-                /* eslint-enable */
+                this.onError('start videoSearchPromise', error);
                 reject();
             });
         });
@@ -256,6 +256,21 @@ class Tubia {
                     const contentType = response.headers.get('content-type');
                     if (!contentType || !contentType.includes('application/json')) {
                         reject();
+                        /* eslint-disable */
+                        if (typeof window['ga'] !== 'undefined') {
+                            const time = new Date();
+                            const h = time.getHours();
+                            const d = time.getDate();
+                            const m = time.getMonth();
+                            const y = time.getFullYear();
+                            window['ga']('tubia.send', {
+                                hitType: 'event',
+                                eventCategory: 'ERROR',
+                                eventAction: `${this.options.domain} | h${h} d${d} m${m} y${y}`,
+                                eventLabel: `start videoDataRequest | Oops, we didn\'t get JSON!`,
+                            });
+                        }
+                        /* eslint-enable */
                         throw new TypeError('Oops, we didn\'t get JSON!');
                     } else {
                         return response.json();
@@ -289,7 +304,7 @@ class Tubia {
                                     hitType: 'event',
                                     eventCategory: 'ERROR',
                                     eventAction: `${this.options.domain} | h${h} d${d} m${m} y${y}`,
-                                    eventLabel: `${error} | relatedVideosRequest`,
+                                    eventLabel: `start relatedVideosRequest | ${error}`,
                                 });
                             }
                             /* eslint-enable */
@@ -299,27 +314,12 @@ class Tubia {
                     }
                 }).catch((error) => {
                     // Something went completely wrong. Shutdown.
-                    this.onError(error);
-                    /* eslint-disable */
-                    if (typeof window['ga'] !== 'undefined') {
-                        const time = new Date();
-                        const h = time.getHours();
-                        const d = time.getDate();
-                        const m = time.getMonth();
-                        const y = time.getFullYear();
-                        window['ga']('tubia.send', {
-                            hitType: 'event',
-                            eventCategory: 'ERROR',
-                            eventAction: `${this.options.domain} | h${h} d${d} m${m} y${y}`,
-                            eventLabel: `${error} | videoDataRequest`,
-                        });
-                    }
-                    /* eslint-enable */
+                    this.onError('start videoDataRequest', error);
                     reject(error);
                 });
             }).catch((error) => {
                 // Something went completely wrong. Shutdown.
-                this.onError(error);
+                this.onError('start videoSearchPromise', error);
                 reject();
             });
         });
@@ -332,7 +332,7 @@ class Tubia {
                 // Report missing video.
                 this.reportToMatchmaking();
                 // Still close down Tubia.
-                this.onError('No video has been found!');
+                this.onError('start videoDataPromise', 'No video has been found!');
                 // Stop the application.
                 return;
             }
@@ -401,9 +401,10 @@ class Tubia {
     /**
      * onError
      * Whenever we hit a problem while initializing Tubia.
+     * @param {String} origin
      * @param {String} error
      */
-    onError(error) {
+    onError(origin, error) {
         this.options.onError(error);
         // Todo: I think Plyr has some error handling div?
         if (this.innerContainer) {
@@ -423,7 +424,7 @@ class Tubia {
                 hitType: 'event',
                 eventCategory: 'ERROR',
                 eventAction: `${location} | h${h} d${d} m${m} y${y}`,
-                eventLabel: error,
+                eventLabel: `${origin} | ${error}`,
             });
         }
         /* eslint-enable */
@@ -476,7 +477,7 @@ class Tubia {
     loadPlyr() {
         this.videoDataPromise.then((json) => {
             if (!json) {
-                this.onError('No video data has been found!');
+                this.onError('loadPlyr json', 'No video data has been found!');
                 return;
             }
 
@@ -597,10 +598,10 @@ class Tubia {
                 (new Image()).src = `https://ana.tunnl.com/event?tub_id=${this.videoId}&eventtype=1&page_url=${encodeURIComponent(this.options.url)}`;
             });
             this.player.on('error', (error) => {
-                this.onError(error);
+                this.onError('loadPlyr player', error);
             });
         }).catch(error => {
-            this.onError(error);
+            this.onError('loadPlyr videoDataPromise', error);
         });
     }
 
