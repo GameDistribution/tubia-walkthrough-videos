@@ -413,7 +413,8 @@ class Tubia {
         /* eslint-disable */
         if (typeof window['ga'] !== 'undefined') {
             const location =
-                (error === 'No video has been found!') ?
+                (error === 'No video has been found!' ||
+                    origin === 'start videoSearchPromise') ?
                     this.options.url : this.options.domain;
             const time = new Date();
             const h = time.getHours();
