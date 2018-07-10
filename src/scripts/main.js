@@ -240,7 +240,7 @@ class Tubia {
         this.videoDataPromise = new Promise((resolve, reject) => {
             this.videoSearchPromise.then((id) => {
                 // id.gameId is actually the videoId...
-                this.videoId = (typeof id !== 'undefined' && id.gameId && id.gameId !== '') ? id.gameId.toString().replace(/-/g, '') : '';
+                this.videoId = (typeof id !== 'undefined' && id.gameId && id.gameId !== '') ? id.gameId.toString().replace(/-/g, '') : '0';
                 // Yes argument gameid is expecting the videoId...
                 const videoDataUrl = `https://api.tubia.com/api/player/publish/?gameid=${this.videoId}&publisherid=${this.publisherId}&domain=${encodeURIComponent(this.options.domain)}`;
                 const videoDataRequest = new Request(videoDataUrl, {method: 'GET'});
