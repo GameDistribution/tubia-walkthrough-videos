@@ -103,6 +103,19 @@ class Tubia {
      * Initialise the Tubia application.
      */
     init() {
+        // Todo: Temporary tracking of wrong domains at publishers.
+        /* eslint-disable */
+        if (typeof window['ga'] !== 'undefined' &&
+            document.currentScript) {
+            window['ga']('tubia.send', {
+                hitType: 'event',
+                eventCategory: 'LEGACY_URL_TRACKING',
+                eventAction: document.currentScript.src,
+                eventLabel: this.options.domain,
+            });
+        }
+        /* eslint-enable */
+
         const container = document.getElementById(this.options.container);
         if (container) {
             // Load our styles and fonts.
