@@ -290,7 +290,7 @@ class Tubia {
                     }
                 }).then(json => {
                     // Request related video's as fallback to the playlist data.
-                    if (json.cuepoints && json.cuepoints.length <= 0) {
+                    if (json && json.cuepoints && json.cuepoints.length <= 0) {
                         // Todo: Title property within related games JSON is always empty!!
                         const relatedVideosUrl = `https://api.tubia.com/api/RelatedVideo/?gameMd5=${this.options.gameId}&publisherId=${this.publisherId}&domain=${encodeURIComponent(this.options.domain)}&skip=0&take=10&orderBy=visit&sortDirection=desc&langCode=${this.options.langCode}`;
                         const relatedVideosRequest = new Request(relatedVideosUrl, {
@@ -557,7 +557,7 @@ class Tubia {
                 title: (json.detail && json.detail.length > 0) ? json.detail[0].title : '',
                 logo: (json.logoEnabled) ? json.logoEnabled : false,
                 showPosterOnEnd: true,
-                hideControls: (!/Mobi/.test(navigator.userAgent)), // Only on desktop.
+                hideControls: (!/Android/.test(navigator.userAgent)), // Hide on Android devices.
                 ads: {
                     enabenabledled: (json.adsEnabled) ? json.adsEnabled : true,
                     prerollEnabled: (json.preRollEnabled) ? json.preRollEnabled : true,

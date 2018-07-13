@@ -232,7 +232,7 @@ module.exports = function (grunt) {
                 tasks: ['sass', 'postcss', 'duration'],
             },
             html: {
-                files: ['src/index.html'],
+                files: ['src/index.html', 'src/index_legacy.html'],
                 tasks: ['copy'],
             },
             grunt: {
@@ -254,7 +254,7 @@ module.exports = function (grunt) {
             options: {
                 server: './libs/gd',
                 watchTask: true,
-                port: 8080,
+                port: 8081,
             },
         },
     });

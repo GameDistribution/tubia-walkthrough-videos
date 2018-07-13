@@ -236,7 +236,7 @@ class Ads {
         this.player.elements.container.appendChild(this.elements.container);
 
         // So we can run VPAID2
-        google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.INSECURE);
+        google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.ENABLED);
 
         // Set language
         google.ima.settings.setLocale(this.player.config.ads.language);
