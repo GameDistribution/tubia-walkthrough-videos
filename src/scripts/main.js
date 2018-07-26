@@ -642,7 +642,10 @@ class Tubia {
                 'https://www.google-analytics.com/analytics.js', 'ga');
         }
         if (typeof window['ga'] !== 'undefined') {
-            window['ga']('create', 'UA-102831738-1', {'name': 'tubia'}, 'auto');
+            window['ga']('create', 'UA-102831738-1', {
+                'name': 'tubia',
+                'cookieExpires': 90 * 86400,
+            }, 'auto');
             window['ga']('tubia.send', 'pageview');
 
             // Anonymize IP.
