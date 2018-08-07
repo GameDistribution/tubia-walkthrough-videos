@@ -239,7 +239,9 @@ class Ads {
         google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.ENABLED);
 
         // Set language
-        google.ima.settings.setLocale(this.player.config.ads.language);
+        if (!google.ima.settings.setLocale) {
+            google.ima.settings.setLocale(this.player.config.ads.language);
+        }
 
         // We assume the adContainer is the video container of the plyr element
         // that will house the ads
