@@ -47,7 +47,7 @@ class Tubia {
             langCode: '',
             colorMain: '',
             colorAccent: '',
-            url: document.location.href,
+            url: document.location.origin + document.location.pathname,
             domain: document.location.host,
             gdprTracking: null,
             gdprTargeting: null,
