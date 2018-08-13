@@ -48,6 +48,7 @@ class Tubia {
             colorMain: '',
             colorAccent: '',
             url: document.location.origin + document.location.pathname,
+            href: document.location.href,
             domain: document.location.host,
             gdprTracking: null,
             gdprTargeting: null,
@@ -213,7 +214,7 @@ class Tubia {
             const gameId = this.options.gameId.toString().replace(/-/g, '');
             const title = encodeURIComponent(this.options.title);
             const pageId = window.calcMD5(this.options.url);
-            const videoFindUrl = `https://api.tubia.com/api/player/findv3/?pageId=${pageId}&gameId=${gameId}&title=${title}&domain=${encodeURIComponent(this.options.domain)}`;
+            const videoFindUrl = `https://api.tubia.com/api/player/findv3/?pageId=${pageId}&href=${encodeURIComponent(this.options.href)}&gameId=${gameId}&title=${title}&domain=${encodeURIComponent(this.options.domain)}`;
             const videoSearchRequest = new Request(videoFindUrl, {
                 method: 'GET',
             });
