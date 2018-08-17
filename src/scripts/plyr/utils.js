@@ -996,20 +996,6 @@ const utils = {
         }, 0);
     },
 
-    // Get a cookie
-    getCookie(name) {
-        /* eslint-disable */
-        var nameEQ = name + '=';
-        var ca = document.cookie.split(';');
-        for (var i = 0; i < ca.length; i++) {
-            var c = ca[i];
-            while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
-        }
-        return null;
-        /* eslint-enable */
-    },
-
     updateQueryStringParameter(uri, key, value) {
         /* eslint-disable */
         const re = new RegExp('([?&])' + key + '=.*?(&|$)', 'i');

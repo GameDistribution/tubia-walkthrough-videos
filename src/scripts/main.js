@@ -654,38 +654,16 @@ class Tubia {
                 window['ga']('set', 'anonymizeIp', true);
             }
 
-            // Project Death Star.
-            // https://bitbucket.org/keygamesnetwork/datacollectionservice
+            // GameDistribution DMPKit Tag Manager
             if(this.options.gdprTracking) {
-                // Inject Death Star id's to the page view.
-                const lcl = utils.getCookie('brzcrz_local');
-                if (lcl) {
-                    window['ga']('tubia.set', 'userId', lcl);
-                    window['ga']('tubia.set', 'dimension1', lcl);
-                }
-                const script = document.createElement('script');
-                script.innerHTML = `
-                    var DS_OPTIONS = {
-                        id: 'TUBIA',
-                        success: function(id) {
-                            window['ga']('tubia.set', 'userId', id); 
-                            window['ga']('tubia.set', 'dimension1', id);
-                            window['ga']('tubia.set', 'dimension2', '${this.options.category.toLowerCase()}');
-                        }
-                    }
-                `;
-                document.head.appendChild(script);
-
-                // Load Death Star
-                (function (window, document, element, source) {
-                    const ds = document.createElement(element);
-                    const m = document.getElementsByTagName(element)[0];
-                    ds.type = 'text/javascript';
-                    ds.async = true;
-                    ds.src = source;
-                    m.parentNode.insertBefore(ds, m);
-                })(window, document, 'script',
-                    'https://game.gamemonkey.org/static/main.min.js');
+                (function (w, d, s, l, h, m) {
+                    w[l] = w[l] || [];
+                    const f = d.getElementsByTagName(s)[0],
+                        j = d.createElement(s), dl = l != 'dmpkitdl' ? '&l=' + l : '';
+                    j.async = true;
+                    j.src = '//' + m + '/tm.js?id=' + h + dl;
+                    f.parentNode.insertBefore(j, f);
+                })(window, document, 'script', 'dmpkitdl', 'ddc15dec-6bf1-4844-a362-c601005250e1', 'static-dmp.mediaglacier.com');
             }
             /* eslint-enable */
         }
