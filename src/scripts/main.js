@@ -49,7 +49,7 @@ class Tubia {
             colorAccent: '',
             url: document.location.origin + document.location.pathname,
             href: document.location.href,
-            domain: document.location.host,
+            domain: 'https://bgames.com', // document.location.host,
             gdprTracking: null,
             gdprTargeting: null,
             onStart() {
@@ -138,8 +138,8 @@ class Tubia {
                     }
                     /* eslint-enable */
                 });
-            // utils.loadStyle('./gd.css').then(() => {
-            utils.loadStyle('https://player.tubia.com/libs/gd/gd.css')
+            utils.loadStyle('./gd.css')
+            // utils.loadStyle('https://player.tubia.com/libs/gd/gd.css')
                 .then(() => {
                     // Create an inner container; within we load our player and do other stuff.
                     // We make sure to destroy any inner content if there are already things inside.
@@ -195,6 +195,7 @@ class Tubia {
                     <path class="tubia__hexagon-line-animation" d="M-1665.43,90.94V35.83a15.09,15.09,0,0,1,6.78-12.59l48.22-31.83a15.09,15.09,0,0,1,16-.38L-1547,19.13a15.09,15.09,0,0,1,7.39,13V90.94a15.09,15.09,0,0,1-7.21,12.87l-47.8,29.24a15.09,15.09,0,0,1-15.75,0l-47.8-29.24A15.09,15.09,0,0,1-1665.43,90.94Z" transform="translate(1667.43 13.09)"/>
                 </svg>
             </div>
+            <div id="tubia__display-ad" class="tubia__display-ad"></div>
         `;
 
         this.innerContainer.insertAdjacentHTML('beforeend', html);
@@ -409,6 +410,34 @@ class Tubia {
                     this.transitionElement.classList.toggle('tubia__active');
                 }, this.transitionSpeed);
             });
+
+            // Create a display advertisement which will reside on top of the poster image.
+            // load the DFP Script.
+            // Todo: only for certain domains.
+            utils.loadScript('https://www.googletagservices.com/tag/js/gpt.js').then(() => {
+                const slotId = 'tubia__display-ad';
+
+                // Set namespaces for DFP.
+                window.googletag = window.googletag || {};
+                window.googletag.cmd = window.googletag.cmd || [];
+
+                // Create the ad slot.
+                window.googletag.cmd.push(() => {
+                    /* eslint-disable */
+                    // const mapping = window.googletag.sizeMapping()
+                    //     .addSize([970, 250], [[970, 250], [970, 90], [728, 90]])
+                    //     .addSize([970, 90], [[970, 90], [728, 90]])
+                    //     .addSize([728, 90], [728, 90])
+                    //     .build();
+                    window.googletag.defineSlot('/21731147099/leaderboard_728x90_mid_page', [728, 90], slotId)
+                        // .defineSizeMapping(mapping)
+                        .setCollapseEmptyDiv(true, true)
+                        .addService(window.googletag.pubads());
+                    /* eslint-enabel */
+                    window.googletag.enableServices();
+                    window.googletag.display(slotId);
+                });
+            });
         });
     }
 
@@ -483,6 +512,14 @@ class Tubia {
             // Load our player.
             this.loadPlyr();
         }, 200); // Wait for the play button to hide.
+
+        // Destroy our display ad if it exists.
+        const displayAd = document.getElementById('tubia__display-ad');
+        if (displayAd) {
+            if (window.googletag)
+                window.googletag.destroySlots('tubia__display-ad');
+            displayAd.parentNode.removeChild(displayAd);
+        }
     }
 
     /**
