@@ -49,7 +49,7 @@ class Tubia {
             colorAccent: '',
             url: document.location.origin + document.location.pathname,
             href: document.location.href,
-            domain: 'https://bgames.com', // document.location.host,
+            domain: document.location.host,
             gdprTracking: null,
             gdprTargeting: null,
             onStart() {
@@ -138,8 +138,8 @@ class Tubia {
                     }
                     /* eslint-enable */
                 });
-            utils.loadStyle('./gd.css')
-            // utils.loadStyle('https://player.tubia.com/libs/gd/gd.css')
+            // utils.loadStyle('./gd.css')
+            utils.loadStyle('https://player.tubia.com/libs/gd/gd.css')
                 .then(() => {
                     // Create an inner container; within we load our player and do other stuff.
                     // We make sure to destroy any inner content if there are already things inside.
