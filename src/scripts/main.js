@@ -416,10 +416,10 @@ class Tubia {
             const slotId = 'tubia__display-ad';
             const slotElement = document.getElementById(slotId);
             if (slotElement
-                && this.options.domain === 'spele.nl'
-                && this.options.domain === 'funnygames.nl'
-                && this.options.domain === 'bgames.com'
-                && this.options.domain === 'plinga.com') {
+                && (this.options.domain === 'spele.nl'
+                || this.options.domain === 'www.funnygames.nl'
+                || this.options.domain === 'www.bgames.com'
+                || this.options.domain === 'www.plinga.com')) {
                 const slotWidth = slotElement.offsetWidth;
 
                 // Load DFP script.
