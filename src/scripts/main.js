@@ -414,30 +414,45 @@ class Tubia {
             // Create a display advertisement which will reside on top of the poster image.
             // load the DFP Script.
             // Todo: only for certain domains.
-            utils.loadScript('https://www.googletagservices.com/tag/js/gpt.js').then(() => {
-                const slotId = 'tubia__display-ad';
+            const slotId = 'tubia__display-ad';
+            const slotElement = document.getElementById(slotId);
+            if (slotElement
+                && this.options.domain === 'spele.nl'
+                && this.options.domain === 'funnygames.nl'
+                && this.options.domain === 'bgames.com'
+                && this.options.domain === 'plinga.com') {
+                const slotWidth = slotElement.offsetWidth;
+                utils.loadScript('https://www.googletagservices.com/tag/js/gpt.js').then(() => {
+                    // Set namespaces for DFP.
+                    window.googletag = window.googletag || {};
+                    window.googletag.cmd = window.googletag.cmd || [];
 
-                // Set namespaces for DFP.
-                window.googletag = window.googletag || {};
-                window.googletag.cmd = window.googletag.cmd || [];
+                    // Create the ad slot.
+                    window.googletag.cmd.push(() => {
+                        /* eslint-disable */
+                        let mapping = null;
+                        if (slotWidth >= 970) {
+                            mapping = window.googletag.sizeMapping()
+                                .addSize([970, 90], [[970, 90], [728, 90]])
+                                .addSize([728, 90], [728, 90])
+                                .build();
+                        } else if (slotWidth >= 728) {
+                            mapping = window.googletag.sizeMapping()
+                                .addSize([728, 90], [728, 90])
+                                .build();
+                        }
 
-                // Create the ad slot.
-                window.googletag.cmd.push(() => {
-                    /* eslint-disable */
-                    // const mapping = window.googletag.sizeMapping()
-                    //     .addSize([970, 250], [[970, 250], [970, 90], [728, 90]])
-                    //     .addSize([970, 90], [[970, 90], [728, 90]])
-                    //     .addSize([728, 90], [728, 90])
-                    //     .build();
-                    window.googletag.defineSlot('/21731147099/leaderboard_728x90_mid_page', [728, 90], slotId)
-                        // .defineSizeMapping(mapping)
-                        .setCollapseEmptyDiv(true, true)
-                        .addService(window.googletag.pubads());
-                    /* eslint-enabel */
-                    window.googletag.enableServices();
-                    window.googletag.display(slotId);
+                        // window.googletag.defineSlot('1015413/TNL_NS-18062500055/TNL_T-18082776963_1', [728, 90], slotId)
+                        window.googletag.defineSlot('/21731147099/leaderboard_728x90_mid_page', [728, 90], slotId)
+                            .defineSizeMapping(mapping)
+                            .setCollapseEmptyDiv(true, true)
+                            .addService(window.googletag.pubads());
+                        /* eslint-enable */
+                        window.googletag.enableServices();
+                        window.googletag.display(slotId);
+                    });
                 });
-            });
+            }
         });
     }
 
