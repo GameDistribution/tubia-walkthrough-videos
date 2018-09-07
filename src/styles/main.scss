@@ -26,6 +26,11 @@
     }
 
     .plyr {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
         transition: opacity 1s cubic-bezier(0.4, 0.0, 1, 1);
         opacity: 0;
         &.tubia__active {
@@ -174,6 +179,19 @@
         }
     }
 
+    .tubia__display-ad {
+        position: absolute;
+        z-index: 4;
+        width: 100%;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        iframe {
+            width: 100%;
+            height: 90px;
+        }
+    }
+
     @keyframes dash {
         0% {
             /* Stroke-dasharray: first value is the width of the animated stroke(aka dash); second value is the width of the space between each dash.
@@ -216,13 +234,5 @@
         100% {
             transform: scaleX(-1);
         }
-    }
-
-    .plyr {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
     }
 }
