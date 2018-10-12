@@ -445,7 +445,7 @@ class Tubia {
                     }
 
                     // window.googletag.defineSlot('1015413/TNL_NS-18062500055/TNL_T-18082776963_1', [728, 90], slotId)
-                    window.googletag.defineSlot('/21731147099/leaderboard_728x90_mid_page', [728, 90], slotId)
+                    window.googletag.defineSlot('/21731147099/Tubia_prestart_leaderboard', [728, 90], slotId)
                         .defineSizeMapping(mapping)
                         .setCollapseEmptyDiv(true, true)
                         .addService(window.googletag.pubads());
