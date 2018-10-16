@@ -1,5 +1,5 @@
 [![npm](https://img.shields.io/npm/v/npm.svg)](https://nodejs.org/)
-[![GitHub version](https://img.shields.io/badge/version-1.0.10-green.svg)](https://github.com/GameDistribution/tubia-walkthrough-videos/)
+[![GitHub version](https://img.shields.io/badge/version-1.0.11-green.svg)](https://github.com/GameDistribution/tubia-walkthrough-videos/)
 [![Built with Grunt](https://cdn.gruntjs.com/builtwith.svg)](http://gruntjs.com/)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/GameDistribution/tubia-walkthrough-videos/blob/master/LICENSE)
 
@@ -73,6 +73,9 @@ new Tubia.Player.default({
 });
 ```
 
+#### Matching video's
+Once successfully embedded it can take up to a day for a video to be matched with your game page.
+
 #### Callbacks & Properties
 ##### Properties
 You can use the following properties:
@@ -97,6 +100,7 @@ You can hook into the following callbacks:
 | --- | --- | --- |
 | onStart | nothing | The very first moment everything is initializing. |
 | onFound | {Object} - Video data | When a video - matching with your game - has been found. |
+| onNotFound | {Object} - Error message | When a video - matching with your game - could not be found. |
 | onReady | {Object} - Player instance | When the HTML5 player is ready to play the video. This callback will only be returned when onStart and onFound have returned before. |
 | onError | {Object} - Error data | When any error happens inside of Tubia. |
 

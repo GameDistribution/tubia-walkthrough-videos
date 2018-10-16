@@ -91,19 +91,131 @@ class Tubia {
         // Make sure the DOM is ready!
         // The Tubia instance sometimes gets called from the <head> by clients.
         if (document.readyState === 'interactive' || document.readyState === 'complete') {
-            this.init();
+            this.start();
         } else {
             document.addEventListener('DOMContentLoaded', () => {
-                this.init();
+                this.start();
             });
         }
     }
 
     /**
-     * init
-     * Initialise the Tubia application.
+     * start
+     * Initialise the Tubia application. Fetch the data.
      */
-    init() {
+    start() {
+        // Invoke callback.
+        this.options.onStart();
+
+        // Search for a matching video within our Tubia database and return the id.
+        // Todo: We can't get the poster image without doing these requests for data. Kind of sucks.
+        this.videoSearchPromise = new Promise((resolve, reject) => {
+            const gameId = this.options.gameId.toString().replace(/-/g, '');
+            const title = encodeURIComponent(this.options.title);
+            const pageId = window.calcMD5(this.options.url);
+            const videoFindUrl = `https://api.tubia.com/api/player/findv3/?pageId=${pageId}&href=${encodeURIComponent(this.options.href)}&gameId=${gameId}&title=${title}&domain=${encodeURIComponent(this.options.domain)}`;
+            const videoSearchRequest = new Request(videoFindUrl, {
+                method: 'GET',
+            });
+            fetch(videoSearchRequest)
+                .then((response) => response.text())
+                .then((text) => text.length ? JSON.parse(text) : {})
+                .then(data => {
+                    // Set the videoId.
+                    // id.gameId is actually the videoId...
+                    if (data && data.gameId && data.gameId !== '') {
+                        this.videoId = data.gameId.toString().replace(/-/g, '');
+                    } else {
+                        this.videoId = '0';
+                    }
+
+                    resolve();
+                })
+                .catch(error => reject(error));
+        });
+
+        // Get the video data using the id returned from the videoSearchPromise.
+        this.videoDataPromise = new Promise((resolve, reject) => {
+            this.videoSearchPromise.then(() => {
+                // Yes argument gameid is expecting the videoId...
+                const videoDataUrl = `https://api.tubia.com/api/player/publish/?gameid=${this.videoId}&publisherid=${this.publisherId}&domain=${encodeURIComponent(this.options.domain)}`;
+                const videoDataRequest = new Request(videoDataUrl, {method: 'GET'});
+
+                // Record Tubia "Video Loaded" event in Tunnl.
+                (new Image()).src = `https://ana.tunnl.com/event?tub_id=${this.videoId}&eventtype=0&page_url=${encodeURIComponent(this.options.url)}`;
+
+                // Set the ad tag using the given id.
+                this.adTag = `https://pub.tunnl.com/opp?page_url=${encodeURIComponent(this.options.url)}&player_width=640&player_height=480&tub_id=${this.videoId}&correlator=${Date.now()}`;
+                // this.adTag = `https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpostpod&cmsid=496&vid=short_onecue&correlator=${Date.now()}`;
+                // this.adTag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpreonly&cmsid=496&vid=short_onecue&correlator=';
+                fetch(videoDataRequest)
+                    .then((response) => response.text())
+                    .then((text) => text.length ? JSON.parse(text) : {})
+                    .then(data => {
+                        if (!data) {
+                            throw new Error('No video has been found!');
+                        }
+
+                        // Invoke callback to end-user containing our video data.
+                        this.options.onFound(data);
+
+                        // Increment the matchmaking counter so we can get a priority list for our editor.
+                        // We know if the video is missing when the backFillVideoId and videoId match.
+                        // Yes its the most dumbass thing ever.
+                        if (data.backFillVideoId === this.videoId) {
+                            this.reportToMatchmaking();
+                        }
+
+                        // Now check if we need to do an additional request in case
+                        // we do not have data to populate our "level select" feature.
+                        // If so then we fetch related games.
+                        if (data.cuepoints && data.cuepoints.length > 0) {
+                            resolve(data);
+                        } else {
+                            // Todo: Title property within related games JSON is always empty!!
+                            const relatedVideosUrl = `https://api.tubia.com/api/RelatedVideo/?gameMd5=${this.options.gameId}&publisherId=${this.publisherId}&domain=${encodeURIComponent(this.options.domain)}&skip=0&take=10&orderBy=visit&sortDirection=desc&langCode=${this.options.langCode}`;
+                            const relatedVideosRequest = new Request(relatedVideosUrl, {
+                                method: 'GET',
+                            });
+                            fetch(relatedVideosRequest)
+                                .then((response) => response.text())
+                                .then((text) => text.length ? JSON.parse(text) : {})
+                                .then((related) => {
+                                    data.playlistType = 'related';
+                                    data.cuepoints = related;
+                                    resolve(data);
+                                }).catch((error) => {
+                                    /* eslint-disable */
+                                    if (typeof window['ga'] !== 'undefined') {
+                                        const time = new Date();
+                                        const h = time.getHours();
+                                        const d = time.getDate();
+                                        const m = time.getMonth();
+                                        const y = time.getFullYear();
+                                        window['ga']('tubia.send', {
+                                            hitType: 'event',
+                                            eventCategory: 'ERROR',
+                                            eventAction: `${this.options.domain} | h${h} d${d} m${m} y${y}`,
+                                            eventLabel: `start relatedVideosRequest | ${error}`,
+                                        });
+                                    }
+                                    /* eslint-enable */
+                                });
+                        }
+                    }).catch(error => reject(error));
+            }).catch(error => reject(error));
+        });
+
+        this.videoDataPromise
+            .then(() => this.loadExternals())
+            .catch(error => this.notFound('start videoDataPromise', error));
+    }
+
+    /**
+     * loadExternals
+     * Load stysheets and fonts and any other external files
+     */
+    loadExternals() {
         // Todo: Temporary tracking of wrong domains at publishers.
         /* eslint-disable */
         // if (typeof window['ga'] !== 'undefined' &&
@@ -138,8 +250,9 @@ class Tubia {
                     }
                     /* eslint-enable */
                 });
-            // utils.loadStyle('./gd.css')
-            utils.loadStyle('https://player.tubia.com/libs/gd/gd.css')
+            utils.loadStyle((this.options.domain === 'localhost:8081')
+                ? './gd.css'
+                : 'https://player.tubia.com/libs/gd/gd.css')
                 .then(() => {
                     // Create an inner container; within we load our player and do other stuff.
                     // We make sure to destroy any inner content if there are already things inside.
@@ -155,8 +268,8 @@ class Tubia {
                     // And add theme styles.
                     this.setTheme(container);
 
-                    // Start the player.
-                    this.start();
+                    // Create the markup now that we have the stylesheets and main container ready.
+                    this.createMarkup();
                 }).catch((error) => {
                     // If something went wrong with loading the stylesheet we get an Event.
                     // Otherwise its just a regular error object.
@@ -172,10 +285,10 @@ class Tubia {
     }
 
     /**
-     * start
-     * Start the Tubia application.
+     * createMarkup
+     * Create the markup for the Tubia application.
      */
-    start() {
+    createMarkup() {
         const html = `
             <div class="tubia__transition"></div>
             <button class="tubia__play-button">
@@ -209,162 +322,10 @@ class Tubia {
         // Show a spinner loader, as this could take some time.
         this.hexagonLoader.classList.toggle('tubia__active');
 
-        // Search for a matching video within our Tubia database and return the id.
-        // Todo: We can't get the poster image without doing these requests for data. Kind of sucks.
-        this.videoSearchPromise = new Promise((resolve, reject) => {
-            const gameId = this.options.gameId.toString().replace(/-/g, '');
-            const title = encodeURIComponent(this.options.title);
-            const pageId = window.calcMD5(this.options.url);
-            const videoFindUrl = `https://api.tubia.com/api/player/findv3/?pageId=${pageId}&href=${encodeURIComponent(this.options.href)}&gameId=${gameId}&title=${title}&domain=${encodeURIComponent(this.options.domain)}`;
-            const videoSearchRequest = new Request(videoFindUrl, {
-                method: 'GET',
-            });
-            fetch(videoSearchRequest).then((response) => {
-                const contentType = response.headers.get('content-type');
-                if (!contentType || !contentType.includes('application/json')) {
-                    reject();
-                    /* eslint-disable */
-                    if (typeof window['ga'] !== 'undefined') {
-                        const time = new Date();
-                        const h = time.getHours();
-                        const d = time.getDate();
-                        const m = time.getMonth();
-                        const y = time.getFullYear();
-                        window['ga']('tubia.send', {
-                            hitType: 'event',
-                            eventCategory: 'ERROR',
-                            eventAction: `${this.options.domain} | h${h} d${d} m${m} y${y}`,
-                            eventLabel: `start videoSearchRequest | Oops, we didn\'t get JSON!`,
-                        });
-                    }
-                    /* eslint-enable */
-                    throw new TypeError('Oops, we didn\'t get JSON!');
-                } else {
-                    return response.json();
-                }
-            }).then((json) => {
-                resolve(json);
-            }).catch((error) => {
-                // Something went completely wrong. Shutdown.
-                this.onError('start videoSearchPromise', error);
-                reject();
-            });
-        });
-
-        // Get the video data using the id returned from the videoSearchPromise.
-        this.videoDataPromise = new Promise((resolve, reject) => {
-            this.videoSearchPromise.then((id) => {
-                // id.gameId is actually the videoId...
-                this.videoId = (typeof id !== 'undefined' && id.gameId && id.gameId !== '') ? id.gameId.toString().replace(/-/g, '') : '0';
-                // Yes argument gameid is expecting the videoId...
-                const videoDataUrl = `https://api.tubia.com/api/player/publish/?gameid=${this.videoId}&publisherid=${this.publisherId}&domain=${encodeURIComponent(this.options.domain)}`;
-                const videoDataRequest = new Request(videoDataUrl, {method: 'GET'});
-
-                // Record Tubia "Video Loaded" event in Tunnl.
-                (new Image()).src = `https://ana.tunnl.com/event?tub_id=${this.videoId}&eventtype=0&page_url=${encodeURIComponent(this.options.url)}`;
-
-                // Set the ad tag using the given id.
-                this.adTag = `https://pub.tunnl.com/opp?page_url=${encodeURIComponent(this.options.url)}&player_width=640&player_height=480&tub_id=${this.videoId}&correlator=${Date.now()}`;
-                // this.adTag = `https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpostpod&cmsid=496&vid=short_onecue&correlator=${Date.now()}`;
-                // this.adTag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpreonly&cmsid=496&vid=short_onecue&correlator=';
-                fetch(videoDataRequest).then((response) => {
-                    const contentType = response.headers.get('content-type');
-                    if (!contentType || !contentType.includes('application/json')) {
-                        reject();
-                        /* eslint-disable */
-                        if (typeof window['ga'] !== 'undefined') {
-                            const time = new Date();
-                            const h = time.getHours();
-                            const d = time.getDate();
-                            const m = time.getMonth();
-                            const y = time.getFullYear();
-                            window['ga']('tubia.send', {
-                                hitType: 'event',
-                                eventCategory: 'ERROR',
-                                eventAction: `${this.options.domain} | h${h} d${d} m${m} y${y}`,
-                                eventLabel: `start videoDataRequest | Oops, we didn\'t get JSON!`,
-                            });
-                        }
-                        /* eslint-enable */
-                        throw new TypeError('Oops, we didn\'t get JSON!');
-                    } else {
-                        return response.json();
-                    }
-                }).then(json => {
-                    // Request related video's as fallback to the playlist data.
-                    if (json && json.cuepoints && json.cuepoints.length <= 0) {
-                        // Todo: Title property within related games JSON is always empty!!
-                        const relatedVideosUrl = `https://api.tubia.com/api/RelatedVideo/?gameMd5=${this.options.gameId}&publisherId=${this.publisherId}&domain=${encodeURIComponent(this.options.domain)}&skip=0&take=10&orderBy=visit&sortDirection=desc&langCode=${this.options.langCode}`;
-                        const relatedVideosRequest = new Request(relatedVideosUrl, {
-                            method: 'GET',
-                        });
-                        fetch(relatedVideosRequest).then((response) => {
-                            const contentType = response.headers.get('content-type');
-                            if (!contentType || !contentType.includes('application/json')) {
-                                throw new TypeError('Oops, we didn\'t get JSON!');
-                            } else {
-                                json.playlistType = 'related';
-                                json.cuepoints = response;
-                                resolve(json);
-                            }
-                        }).catch((error) => {
-                            /* eslint-disable */
-                            if (typeof window['ga'] !== 'undefined') {
-                                const time = new Date();
-                                const h = time.getHours();
-                                const d = time.getDate();
-                                const m = time.getMonth();
-                                const y = time.getFullYear();
-                                window['ga']('tubia.send', {
-                                    hitType: 'event',
-                                    eventCategory: 'ERROR',
-                                    eventAction: `${this.options.domain} | h${h} d${d} m${m} y${y}`,
-                                    eventLabel: `start relatedVideosRequest | ${error}`,
-                                });
-                            }
-                            /* eslint-enable */
-                        });
-                    } else {
-                        resolve(json);
-                    }
-                }).catch((error) => {
-                    // Something went completely wrong. Shutdown.
-                    this.onError('start videoDataRequest', error);
-                    reject(error);
-                });
-            }).catch((error) => {
-                // Something went completely wrong. Shutdown.
-                this.onError('start videoSearchPromise', error);
-                reject();
-            });
-        });
-
         // We start with showing a poster image with a play button.
         // By not loading the actual player we save some requests and overall page load.
         // A user can click the play button to start loading the video player.
         this.videoDataPromise.then((json) => {
-            if (!json) {
-                // Report missing video.
-                this.reportToMatchmaking();
-                // Still close down Tubia.
-                this.onError('start videoDataPromise', 'No video has been found!');
-                // Stop the application.
-                return;
-            }
-
-            // Increment the matchmaking counter so we can get a priority list for our editor.
-            // We know if the video is missing when the backFillVideoId and videoId match.
-            // Yes its the most dumbass thing ever.
-            if(json.backFillVideoId === this.videoId) {
-                this.reportToMatchmaking();
-            }
-
-            // Return callback.
-            this.options.onStart();
-
-            // Send callback to end-user containing our video data.
-            this.options.onFound(json);
-
             const poster = (json.pictures && json.pictures.length > 0) ? json.pictures[json.pictures.length - 1].link : '';
             this.posterUrl = poster.replace(/^http:\/\//i, 'https://');
 
@@ -458,6 +419,37 @@ class Tubia {
     }
 
     /**
+     * notFound
+     * Whenever we failed to load a video.
+     * @param {String} origin
+     * @param {String} message
+     */
+    notFound(origin, message) {
+        this.options.onNotFound(message);
+
+        // Report missing video.
+        this.reportToMatchmaking();
+
+        /* eslint-disable */
+        if (typeof window['ga'] !== 'undefined') {
+            const time = new Date();
+            const h = time.getHours();
+            const d = time.getDate();
+            const m = time.getMonth();
+            const y = time.getFullYear();
+            window['ga']('tubia.send', {
+                hitType: 'event',
+                eventCategory: 'VIDEO_NOT_FOUND',
+                eventAction: `${this.options.url} | h${h} d${d} m${m} y${y}`,
+                eventLabel: `${origin} | ${message}`,
+            });
+        }
+        /* eslint-enable */
+
+        throw new Error(message);
+    }
+
+    /**
      * onError
      * Whenever we hit a problem while initializing Tubia.
      * @param {String} origin
@@ -465,16 +457,14 @@ class Tubia {
      */
     onError(origin, error) {
         this.options.onError(error);
+
         // Todo: I think Plyr has some error handling div?
         if (this.innerContainer) {
             this.innerContainer.classList.add('tubia__error');
         }
+
         /* eslint-disable */
         if (typeof window['ga'] !== 'undefined') {
-            const location =
-                (error === 'No video has been found!' ||
-                    origin === 'start videoSearchPromise') ?
-                    this.options.url : this.options.domain;
             const time = new Date();
             const h = time.getHours();
             const d = time.getDate();
@@ -483,7 +473,7 @@ class Tubia {
             window['ga']('tubia.send', {
                 hitType: 'event',
                 eventCategory: 'ERROR',
-                eventAction: `${location} | h${h} d${d} m${m} y${y}`,
+                eventAction: `${this.options.domain} | h${h} d${d} m${m} y${y}`,
                 eventLabel: `${origin} | ${error}`,
             });
         }
@@ -606,8 +596,9 @@ class Tubia {
             // Create the Plyr instance.
             this.player = new Plyr('#plyr__tubia', {
                 debug: this.options.debug,
-                // iconUrl: './sprite.svg',
-                iconUrl: 'https://player.tubia.com/libs/gd/sprite.svg',
+                iconUrl: (this.options.domain === 'localhost:8081')
+                    ? './sprite.svg'
+                    : 'https://player.tubia.com/libs/gd/sprite.svg',
                 title: (json.detail && json.detail.length > 0) ? json.detail[0].title : '',
                 logo: (json.logoEnabled) ? json.logoEnabled : false,
                 showPosterOnEnd: true,

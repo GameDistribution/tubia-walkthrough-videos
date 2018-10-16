@@ -41,6 +41,7 @@ module.exports = function (grunt) {
                 src: [
                     'src/index.html',
                     'src/index_legacy.html',
+                    'src/development.html'
                 ],
                 dest: './libs/gd/',
             },
@@ -232,7 +233,7 @@ module.exports = function (grunt) {
                 tasks: ['sass', 'postcss', 'duration'],
             },
             html: {
-                files: ['src/index.html', 'src/index_legacy.html'],
+                files: ['src/index.html', 'src/index_legacy.html', 'src/development.html'],
                 tasks: ['copy'],
             },
             grunt: {
