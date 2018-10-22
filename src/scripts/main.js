@@ -56,6 +56,8 @@ class Tubia {
             },
             onFound() {
             },
+            onNotFound() {
+            },
             onError() {
             },
             onReady() {
