@@ -52,6 +52,7 @@ class Tubia {
             domain: document.location.host,
             gdprTracking: null,
             gdprTargeting: null,
+            keys: null, // Tunnl tracking keys.
             onStart() {
             },
             onFound() {
@@ -150,6 +151,15 @@ class Tubia {
                 this.adTag = `https://pub.tunnl.com/opp?page_url=${encodeURIComponent(this.options.url)}&player_width=640&player_height=480&tub_id=${this.videoId}&correlator=${Date.now()}`;
                 // this.adTag = `https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpostpod&cmsid=496&vid=short_onecue&correlator=${Date.now()}`;
                 // this.adTag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpreonly&cmsid=496&vid=short_onecue&correlator=';
+
+                // Set custom tracking keys for Tunnl.
+                if (this.options.keys) {
+                    const keys = Object.entries(this.options.keys);
+                    keys.forEach(key => {
+                        this.adTag = utils.updateQueryStringParameter(this.adTag, key[0], key[1]);
+                    });
+                }
+
                 fetch(videoDataRequest)
                     .then((response) => response.text())
                     .then((text) => text.length ? JSON.parse(text) : {})
