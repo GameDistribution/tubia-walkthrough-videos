@@ -43,6 +43,8 @@
         var langLegacy = getParameterByName('lang');
         var lang = (typeof langLegacy !== 'undefined' && langLegacy !== '') ? langLegacy : getParameterByName('langcode');
         var debug = getParameterByName('debug');
+        var testing = getParameterByName('testing');
+        var videoInterval = getParameterByName('videointerval');
 
         window["TUBIA_OPTIONS"] = {
             "container": 'tubia-container',
@@ -57,6 +59,8 @@
             "gdprTargeting": (gdprTargeting) ? gdprTargeting : null,
             "langCode": (typeof lang !== 'undefined' && lang !== '') ? lang : 'en-us',
             "debug": (typeof debug !== 'undefined' && debug !== '' && debug !== 'false'),
+            "testing": (typeof testing !== 'undefined' && testing !== '' && testing !== 'false'),
+            "videoInterval": (videoInterval) ? videoInterval : null, // Todo: testing...
             onStart: function () {
                 // console.log('Tubia started');
             },

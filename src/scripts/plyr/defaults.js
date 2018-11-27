@@ -421,13 +421,14 @@ const defaults = {
     // Register for an account here: http://vi.ai/publisher-video-monetization/?aid=plyrio
     ads: {
         enabled: true,
+        headerBidding: false,
         prerollEnabled: true,
         midrollEnabled: true,
         videoInterval: 60,
         overlayInterval: 15,
         gdprTargeting: null,
         tag: '',
-        headerBidding: true,
+        keys: null,
     },
 };
 

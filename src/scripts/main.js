@@ -39,6 +39,7 @@ class Tubia {
         // values further down.
         const defaults = {
             debug: false,
+            testing: false,
             container: 'player',
             gameId: '0', // Todo: api.tubia.com expects something...
             publisherId: '',
@@ -53,6 +54,7 @@ class Tubia {
             gdprTracking: null,
             gdprTargeting: null,
             keys: null, // Tunnl tracking keys.
+            videoInterval: null, // // Todo: testing. Video midroll interval.
             onStart() {
             },
             onFound() {
@@ -70,6 +72,159 @@ class Tubia {
         } else {
             this.options = defaults;
         }
+
+        // Video header bidding domains.
+        const testDomains = [
+            'localhost:8081',
+            'player.tubia.com',
+            // 'hellokids.com',
+            // 'fr.hellokids.com',
+            // 'es.hellokids.com',
+            // 'de.hellokids.com',
+            // 'pt.hellokids.com',
+            'bgames.com',
+            // 'keygames.com',
+            // 'spele.nl',
+            // 'spele.be',
+            // 'oyungemisi.com',
+            // 'spielspiele.de',
+            // 'spiels.at',
+            // 'misjuegos.com',
+            // 'waznygry.pl',
+            // 'clavejuegos.com',
+            // 'jouerjouer.com',
+            // 'spiels.ch',
+            // 'cadajuego.es',
+            // 'nyckelspel.se',
+            // 'starbie.co.uk',
+            // 'hryhry.net',
+            // 'jogojogar.com',
+            // 'minigioco.it',
+            // '1001igry.ru',
+            // 'pelaaleikkia.com',
+            // 'cadajogo.com.br',
+            // 'cadajogo.com',
+            // 'funny-games.co.uk',
+            // 'funnygames.gr',
+            // 'funnygames.nl',
+            // 'funnygames.pl',
+            // 'funnygames.be',
+            // 'funnygames.ro',
+            // 'funnygames.com.tr',
+            // 'funnygames.us',
+            // 'funnygames.com.br',
+            // 'funnygames.lt',
+            // 'funnygames.se',
+            // 'funnygames.hu',
+            // 'funnygames.it',
+            // 'funnygames.fr',
+            // 'funnygames.in',
+            // 'funnygames.ch',
+            // 'funnygames.biz',
+            // 'funnygames.es',
+            // 'funnygames.at',
+            // 'funnygames.com.co',
+            // 'funnygames.fi',
+            // 'funnygames.jp',
+            // 'funnygames.eu',
+            // 'funnygames.ru',
+            // 'funnygames.org',
+            // 'funnygames.dk',
+            // 'funnygames.vn',
+            // 'funnygames.com.mx',
+            // 'funnygames.pt',
+            // 'funnygames.cn',
+            // 'funnygames.no',
+            // 'funnygames.asia',
+            // 'funnygames.pk',
+            // 'funnygames.co.id',
+            // 'funnygames.ph',
+            // 'funnygames.com.ng',
+            // 'funnygames.ie',
+            // 'funnygames.kr',
+            // 'funnygames.cz',
+            // 'funnygames.ir',
+            // 'spelletjesoverzicht.nl',
+            // 'games.co.za',
+            // 'youdagames.com',
+            // 'vex3.games',
+            // 'fbrq.io',
+            // 'gamesmiracle.com',
+            // 'mahjong.nl',
+            // 'barbiegame.com.ua',
+            // 'frivjogosonline.com.br',
+            // '365escape.com',
+            // 'kizi.com',
+            // 'yepi.com',
+            // 'wuki.com',
+            // 'spilxl.dk',
+            // 'spillespill.no',
+            // 'speltuin.nl',
+            // 'spelo.se',
+            // 'paixnidiaxl.gr',
+            // 'juegosjuegos.ws',
+            // 'jetztspielen.ws',
+            // 'jatekokxl.hu',
+            // 'isladejuegos.es',
+            // 'isladejuegos.co.ve',
+            // 'isladejuegos.com.pe',
+            // 'isladejuegos.com.mx',
+            // 'isladejuegos.com.co',
+            // 'isladejuegos.com.ar',
+            // 'igrixl.ru',
+            // 'grajteraz.pl',
+            // 'giochixl.it',
+            // 'gierkionline.pl',
+            // 'gamesxl.com',
+            // 'elkspel.nl',
+            // 'admeen.com',
+            // '1001spiele.de',
+            // '1001spiele.at',
+            // '1001pelit.com',
+            // '1001jogos.pt',
+            // '1001jogos.com.br',
+            // '1001jeux.fr',
+            // '1001hry.cz',
+            // '1001giochi.it',
+            // '1001games.fr',
+            // '1001games.co.uk',
+            // 'gry.pl',
+            // 'oyunskor.com',
+            // 'juegos.com',
+            // 'a10.com',
+            // 'girlsgogames.com',
+            // 'agame.com',
+            // 'spelletjes.nl',
+            // 'jeux.fr',
+            // 'girlsgogames.ru',
+            // 'juegosdechicas.com',
+            // 'gioco.it',
+            // 'ojogos.com.br',
+            // 'gamesgames.com',
+            // 'games.co.id',
+            // 'jetztspielen.de',
+            // 'spel.nl',
+            // 'spela.se',
+            // 'jeu.fr',
+            // 'spielen.com',
+            // 'giochi.it',
+            // 'games.co.uk',
+            // 'girlsgogames.fr',
+            // 'ourgames.ru',
+            // 'flashgames.ru',
+            // 'girlsgogames.co.uk',
+            // 'girlsgogames.it',
+            // 'permainan.co.id',
+            // 'mousebreaker.com',
+            // 'girlsgogames.de',
+            // 'girlsgogames.co.id',
+            // 'gameplayer.io',
+            // 'oyunoyna.com',
+            // 'spilgames.com',
+            // 'girlsgogames.com.br',
+            // 'girlsgogames.se',
+        ];
+        this.options.testing = this.options.testing || testDomains.indexOf(this.options.domain) > -1;
 
         console.log(this.options);
 
@@ -151,14 +306,6 @@ class Tubia {
                 this.adTag = `https://pub.tunnl.com/opp?page_url=${encodeURIComponent(this.options.url)}&player_width=640&player_height=480&tub_id=${this.videoId}&correlator=${Date.now()}`;
                 // this.adTag = `https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpostpod&cmsid=496&vid=short_onecue&correlator=${Date.now()}`;
                 // this.adTag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpreonly&cmsid=496&vid=short_onecue&correlator=';
-
-                // Set custom tracking keys for Tunnl.
-                if (this.options.keys) {
-                    const keys = Object.entries(this.options.keys);
-                    keys.forEach(key => {
-                        this.adTag = utils.updateQueryStringParameter(this.adTag, key[0], key[1]);
-                    });
-                }
 
                 fetch(videoDataRequest)
                     .then((response) => response.text())
@@ -616,14 +763,17 @@ class Tubia {
                 showPosterOnEnd: true,
                 hideControls: (!/Android/.test(navigator.userAgent)), // Hide on Android devices.
                 ads: {
-                    enabenabledled: (json.adsEnabled) ? json.adsEnabled : true,
+                    enabled: (json.adsEnabled) ? json.adsEnabled : true,
+                    headerBidding: this.options.testing,
                     prerollEnabled: (json.preRollEnabled) ? json.preRollEnabled : true,
                     midrollEnabled: (json.subBannerEnabled) ? json.subBannerEnabled : true,
                     // Todo: Test with 1 minute something video midroll interval.
                     // videoInterval: 60, // (json.preRollSecond) ? json.preRollSecond : 300,
                     // overlayInterval: (json.subBannerSecond) ? json.subBannerSecond : 15,
+                    videoInterval: this.options.videoInterval ? this.options.videoInterval : 60, // Todo: testing.
                     gdprTargeting: this.options.gdprTargeting,
                     tag: (json.adsEnabled && !json.addFreeActive) ? this.adTag : '',
+                    keys: this.options.keys,
                 },
                 keyboard: {
                     global: true,

@@ -22,6 +22,7 @@ class Ads {
         this.enabled = player.isHTML5 && player.isVideo && utils.is.string(this.tag) && this.tag.length;
         this.gdprTargeting = player.config.ads.gdprTargeting;
         this.headerBidding = player.config.ads.headerBidding;
+        this.keys = player.config.ads.keys;
 
         this.prerollEnabled = player.config.ads.prerollEnabled;
         this.midrollEnabled = player.config.ads.midrollEnabled;
@@ -37,7 +38,6 @@ class Ads {
         };
         this.events = {};
         this.safetyTimer = null;
-        this.requestAttempts = 0;
         this.adCount = 0;
         this.adPosition = 1;
         this.previousMidrollTime = 0;
@@ -195,7 +195,6 @@ class Ads {
             if (this.prerollEnabled) {
                 this.prerollEnabled = false;
                 this.adPosition = 1;
-                this.requestAttempts = 0;
                 this.requestAd()
                     .then(vastUrl => this.loadAd(vastUrl))
                     .catch(error => this.player.debug.log(error));
@@ -206,7 +205,6 @@ class Ads {
         // Run a post-roll advertisement and complete the ads loader
         this.player.on('ended', () => {
             this.adPosition = 0; // Make sure we register a post-roll.
-            this.requestAttempts = 0;
             this.requestAd()
                 .then(vastUrl => this.loadAd(vastUrl))
                 .catch(error => this.player.debug.log(error));
@@ -234,13 +232,12 @@ class Ads {
                     && currentTime < duration - intervalVideo) {
                     this.previousMidrollTime = currentTime;
                     this.adPosition = 3;
-                    this.player.debug.log('Starting a header bidding video mid-roll advertisement.');
+                    this.player.debug.log('Starting a video mid-roll advertisement.');
                     // Make sure to kill the current running ad if there is any.
                     // This is not really allowed, but whatever...
                     if (this.requestRunning) {
                         this.killCurrentAd();
                     }
-                    this.requestAttempts = 0;
                     this.requestAd()
                         .then(vastUrl => this.loadAd(vastUrl))
                         .catch(error => this.player.debug.log(error));
@@ -256,7 +253,6 @@ class Ads {
                     if (this.requestRunning) {
                         this.killCurrentAd();
                     }
-                    this.requestAttempts = 0;
                     this.requestAd()
                         .then(vastUrl => this.loadAd(vastUrl))
                         .catch(error => this.player.debug.log(error));
@@ -269,7 +265,6 @@ class Ads {
                     this.previousMidrollTime = currentTime;
                     this.adPosition = 2;
                     this.player.debug.log('Starting an overlay mid-roll advertisement.');
-                    this.requestAttempts = 0;
                     this.requestAd()
                         .then(vastUrl => this.loadAd(vastUrl))
                         .catch(error => this.player.debug.log(error));
@@ -359,10 +354,22 @@ class Ads {
             try {
                 this.player.debug.log('----- ADVERTISEMENT ------');
 
-                this.tunnlReportingKeys()
+                // Get/ Create the VAST XML URL or return reporting keys.
+                this.reportingKeys()
                     .then((data) => {
+                        // REGULAR.
+                        // Check if we simply got a VAST URL back.
+                        if (typeof data === 'string' || data instanceof String) {
+                            resolve(data);
+                            return;
+                        }
+
+                        // HEADER BIDDING.
+                        // We got an object with keys, so we know this
+                        // will be a header bidding ad request.
                         if (typeof window.idhbgd.requestAds === 'undefined') {
                             reject(new Error('Prebid.js wrapper script hit an error or didn\'t exist!'));
+                            return;
                         }
 
                         // Create the ad unit name based on given Tunnl data.
@@ -404,17 +411,25 @@ class Ads {
     }
 
     /**
-     * tunnlReportingKeys
+     * reportingKeys
      * Tunnl reporting needs its own custom tracking keys.
-     * @return {Promise<any>}
+     * @return {Promise<any>} - Object containing keys or a VAST URL.
      * @private
      */
-    tunnlReportingKeys() {
+    reportingKeys() {
         return new Promise((resolve) => {
             // GDPR personalised advertisement ruling.
             this.tag = (this.gdprTargeting !== null) ?
                 utils.updateQueryStringParameter(this.tag, 'npa', (this.gdprTargeting) ? '1' : '0') : this.tag;
             this.player.debug.log(`ADVERTISEMENT: gdpr: npa=${(this.gdprTargeting) ? '1' : '0'}`);
+
+            // Set custom tracking keys for Tunnl.
+            if (this.keys) {
+                const keys = Object.entries(this.keys);
+                keys.forEach(key => {
+                    this.adTag = utils.updateQueryStringParameter(this.adTag, key[0], key[1]);
+                });
+            }
 
             // Update our adTag. We add additional parameters so Tunnl
             // can use the values as new metrics within reporting.
@@ -426,30 +441,24 @@ class Ads {
             // 3 - mid-roll video
             this.adCount += 1;
             const positionCount = this.adCount - 1;
-            const requestAttempts = this.requestAttempts + 1;
             this.tag = utils.updateQueryStringParameter(this.tag, 'ad_count', this.adCount);
-            this.tag = utils.updateQueryStringParameter(this.tag, 'ad_request_count', requestAttempts.toString());
+            this.tag = utils.updateQueryStringParameter(this.tag, 'ad_request_count', '1');
             this.player.debug.log(`ADVERTISEMENT: ad_count: ${this.adCount}`);
-            this.player.debug.log(`ADVERTISEMENT: ad_request_count: ${requestAttempts}`);
+            this.player.debug.log('ADVERTISEMENT: ad_request_count: 1');
             if(this.adPosition === 0) {
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_position', 'postroll');
                 this.sendGoogleEventPosition(this.adPosition);
                 this.player.debug.log('ADVERTISEMENT: ad_position: postroll');
-                // If there is a re-request attempt for a post-roll then make
-                // sure we increment the adCount but still ask for a post-roll.
-                // The same goes for mid-rolls and pre-rolls.
-                if (requestAttempts === 0) {
-                    // Next ad will be a pre-roll.
-                    this.adPosition = 1;
-                }
+
+                // Next ad will be a pre-roll.
+                this.adPosition = 1;
             } else if(this.adPosition === 1) {
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_position', 'preroll');
                 this.sendGoogleEventPosition(this.adPosition);
                 this.player.debug.log('ADVERTISEMENT: ad_position: preroll');
-                if (requestAttempts === 0) {
-                    // Next ad will be a mid-roll.
-                    this.adPosition = 2;
-                }
+
+                // Next ad will be a mid-roll.
+                this.adPosition = 2;
             } else if(this.adPosition === 2) {
                 // For testing:
                 // this.tag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=480x70&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dnonlinear&correlator=';
@@ -474,63 +483,65 @@ class Ads {
                 this.player.debug.log(`ADVERTISEMENT: ad_midroll_count: ${positionCount}`);
                 this.player.debug.log('ADVERTISEMENT: ad_type: ');
                 this.player.debug.log('ADVERTISEMENT: ad_skippable: ');
-                if (requestAttempts === 0) {
-                    // Reset back to a normal mid-roll.
-                    this.adPosition = 2;
-                }
+
+                // Reset back to a normal mid-roll.
+                this.adPosition = 2;
             }
 
-            // Enable video header bidding.
-            // Todo: allow non video header bidding as well.
-            this.tag = utils.updateQueryStringParameter(this.tag, 'hb', 'on');
+            if (this.headerBidding) {
+                // Enable header bidding.
+                this.tag = utils.updateQueryStringParameter(this.tag, 'hb', 'on');
 
-            const request = new Request(this.tag, {method: 'GET'});
-            fetch(request)
-                .then((response) => response.text())
-                .then((text) => text.length ? JSON.parse(text) : {})
-                .then(keys => {
-                    // Increment the reporting counter.
-                    if (this.adTypeCount === 1) this.adCount = 0;
+                // Appearantly we're ready for header bidding, fetch the reporting keys.
+                // We pass on these keys to the Prebid wrapper, which returns us an
+                // updated VAST XML tag.
+                const request = new Request(this.tag, {method: 'GET'});
+                fetch(request)
+                    .then((response) => response.text())
+                    .then((text) => text.length ? JSON.parse(text) : {})
+                    .then(keys => {
+                        // Increment the reporting counter.
+                        if (this.adPosition === 1) this.adCount = 0;
 
-                    resolve(keys);
-                })
-                .catch(error => {
-                    // Failed the request. Still at pre-roll.
-                    this.requestAttempts = 1;
+                        resolve(keys);
+                    })
+                    .catch(error => {
+                        this.player.debug.log(error);
 
-                    this.player.debug.log(error);
+                        // Todo: set proper defaults!
+                        const keys = {
+                            'tid': 'TNL_T-17102571517',
+                            'nsid': 'TNL_NS-18062500055',
+                            'tnl_tid': 'T-17102571517',
+                            'tnl_nsid': 'NS-18062500055',
+                            'tnl_pw': '640',
+                            'tnl_ph': '480',
+                            'tnl_pt': '22',
+                            'tnl_pid': 'P-17101800031',
+                            'tnl_paid': '4040',
+                            'tnl_ad_type': 'video_image',
+                            'tnl_asset_id': '0',
+                            'tnl_ad_pos': this.adPosition,
+                            'tnl_skippable': '1',
+                            'tnl_cp1': '',
+                            'tnl_cp2': '',
+                            'tnl_cp3': '',
+                            'tnl_cp4': '',
+                            'tnl_cp5': '',
+                            'tnl_cp6': '',
+                            'tnl_campaign': '2',
+                            'tnl_gdpr': '0',
+                            'tnl_gdpr_consent': '1',
+                        };
 
-                    // Todo: set proper defaults!
-                    const keys = {
-                        'tid': 'TNL_T-17102571517',
-                        'nsid': 'TNL_NS-18062500055',
-                        'tnl_tid': 'T-17102571517',
-                        'tnl_nsid': 'NS-18062500055',
-                        'tnl_pw': '640',
-                        'tnl_ph': '480',
-                        'tnl_pt': '22',
-                        'tnl_pid': 'P-17101800031',
-                        'tnl_paid': '4040',
-                        'tnl_ad_type': 'video_image',
-                        'tnl_asset_id': '0',
-                        'tnl_ad_pos': this.adPosition,
-                        'tnl_skippable': '1',
-                        'tnl_cp1': '',
-                        'tnl_cp2': '',
-                        'tnl_cp3': '',
-                        'tnl_cp4': '',
-                        'tnl_cp5': '',
-                        'tnl_cp6': '',
-                        'tnl_campaign': '2',
-                        'tnl_gdpr': '0',
-                        'tnl_gdpr_consent': '1',
-                    };
+                        // Increment the reporting counter.
+                        if (this.adPosition === 1) this.adCount = 0;
 
-                    // Increment the reporting counter.
-                    if (this.adPosition === 1) this.adCount = 0;
-
-                    resolve(keys);
-                });
+                        resolve(keys);
+                    });
+            } else {
+                resolve(this.tag);
+            }
         });
     }
 
@@ -557,18 +568,21 @@ class Ads {
 
             this.player.debug.log(adsRequest.adTagUrl);
 
-            // Specify the linear and nonlinear slot sizes. This helps
-            // the SDK to select the correct creative if multiple are returned.
+            // Specify the linear and nonlinear slot sizes. This helps the SDK
+            // to select the correct creative if multiple are returned
             adsRequest.linearAdSlotWidth = container.offsetWidth;
             adsRequest.linearAdSlotHeight = container.offsetHeight;
             adsRequest.nonLinearAdSlotWidth = container.offsetWidth;
-            adsRequest.nonLinearAdSlotHeight = container.offsetHeight;
 
-            // We don't want overlays as we do not have
-            // a video player as underlying content!
-            // Non-linear ads usually do not invoke the ALL_ADS_COMPLETED.
-            // That would cause lots of problems of course...
-            adsRequest.forceNonLinearFullSlot = true;
+            // Set a small height when we want to run a midroll on order to enforce an IAB leaderboard.
+            const isMidrollDesktop = (this.adPosition === 2 && (!/Mobi/.test(navigator.userAgent)));
+            adsRequest.nonLinearAdSlotHeight = (isMidrollDesktop) ? 120 : container.offsetHeight;
+            this.player.debug.log(`ADVERTISEMENT: nonLinearAdSlotWidth: ${container.offsetWidth}`);
+            this.player.debug.log(`ADVERTISEMENT: nonLinearAdSlotHeight: ${adsRequest.nonLinearAdSlotHeight}`);
+
+            // We don't want non-linear FULL SLOT ads when we're running mid-rolls on desktop
+            adsRequest.forceNonLinearFullSlot = (!isMidrollDesktop);
+            this.player.debug.log(`ADVERTISEMENT: forceNonLinearFullSlot: ${(!isMidrollDesktop)}`);
 
             // Get us some ads!
             this.loader.requestAds(adsRequest);
@@ -861,31 +875,15 @@ class Ads {
                 this.manager.destroy();
             }
 
-            // Preload new ads by doing a new request.
-            // Only try once. Only for 1 specific domain; testing purposes.
-            if (this.requestAttempts === 0) {
-                this.player.debug.log('Trying to request an advertisement again in 3 seconds...');
+            // Hide the advertisement.
+            this.hideAd();
 
-                // Increment our request attempt count.
-                this.requestAttempts += 1;
+            // We're done with the current request.
+            this.requestRunning = false;
 
-                // Try a new request. Good chance we might get an ad now.
-                // Set a delay so our DSP can adjust its price.
-                setTimeout(() => {
-                    // We're done with the current request.
-                    this.requestRunning = false;
-
-                    // Make the "automatic" request.
-                    this.requestAd()
-                        .then(vastUrl => this.loadAd(vastUrl))
-                        .catch(error => this.player.debug.log(error));
-                }, 3000);
-            } else {
-                // Hide the advertisement.
-                this.hideAd();
-
-                // We're done with the current request.
-                this.requestRunning = false;
+            // Play our video.
+            if (this.player.currentTime < this.player.duration) {
+                this.player.play();
             }
         }).catch(() => {
             this.player.debug.warn(new Error('adsLoaderPromise failed to load.'));
