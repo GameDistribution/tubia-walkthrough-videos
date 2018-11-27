@@ -224,7 +224,8 @@ class Tubia {
             // 'girlsgogames.com.br',
             // 'girlsgogames.se',
         ];
-        this.options.testing = this.options.testing || testDomains.indexOf(this.options.domain) > -1;
+        this.options.testing = this.options.testing || testDomains.indexOf(this.options.domain.replace(/^(?:https?:\/\/)?(?:\/\/)?(?:www\.)?/i, '').split('/')[0],) > -1;
+        this.options.debug = this.options.testing;
 
         console.log(this.options);
 
@@ -812,7 +813,7 @@ class Tubia {
                     // Return ready callback for our clients.
                     this.options.onReady(this.player);
                     // Start playing.
-                    this.player.play();
+                    // this.player.play();
                 }, this.transitionSpeed / 1.5);
 
                 // Record Tubia "Video Play" event in Tunnl.

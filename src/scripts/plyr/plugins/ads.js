@@ -50,7 +50,13 @@ class Ads {
         // Setup a promise to resolve when the IMA manager is ready
         this.loaderPromise = new Promise((resolve, reject) => {
             this.player.on('adsloaderready', resolve);
-            this.on('error', () => reject(new Error('Initial loaderPromise failed to load.')));
+            this.on('error', () => {
+                // The advertisement failed! Continue video...
+                this.player.play();
+
+                // Reject our loader promise.
+                reject(new Error('Initial loaderPromise failed to load.'));
+            });
         });
 
         // Load Google IMA HTML5 SDK.
@@ -63,8 +69,8 @@ class Ads {
 
         // Prebid.
         if (this.headerBidding) {
-            window.idhbgd = window.idhbgd || {};
-            window.idhbgd.que = window.idhbgd.que || [];
+            window.idhbtubia = window.idhbtubia || {};
+            window.idhbtubia.que = window.idhbtubia.que || [];
         }
     }
 
@@ -97,22 +103,22 @@ class Ads {
 
         const prebidJS = new Promise((resolve, reject) => {
             if (this.headerBidding
-                && (typeof window.idhbgd === 'undefined' || typeof window.idhbgd.que === 'undefined')) {
+                && (typeof window.idhbtubia === 'undefined' || typeof window.idhbtubia.que === 'undefined')) {
                 const src = (this.debug)
-                    ? 'https://test-hb.improvedigital.com/pbw/gameDistribution.min.js'
-                    : 'https://hb.improvedigital.com/pbw/gameDistribution.min.js';
+                    ? 'https://test-hb.improvedigital.com/pbw/tubia.min.js'
+                    : 'https://hb.improvedigital.com/pbw/tubia.min.js';
                 const script = document.getElementsByTagName('script')[0];
                 const ima = document.createElement('script');
                 ima.type = 'text/javascript';
-                ima.id = 'idhbgd';
+                ima.id = 'idhbtubia';
                 ima.async = true;
                 ima.src = src;
                 ima.onload = () => {
                     try {
                         // Show some header bidding logging.
                         if (this.debug) {
-                            window.idhbgd.getConfig();
-                            window.idhbgd.debug(true);
+                            window.idhbtubia.getConfig();
+                            window.idhbtubia.debug(true);
                         }
                         resolve();
                     } catch (e) {
@@ -145,6 +151,17 @@ class Ads {
         // Clear the safety timer
         this.loaderPromise.then(() => {
             this.clearSafetyTimer('onAdsManagerLoaded()');
+
+            // Preload the preroll.
+            // Start playing the advertisement when ready.
+            if (this.prerollEnabled) {
+                this.prerollEnabled = false;
+                this.adPosition = 1;
+                this.requestAd()
+                    .then(vastUrl => this.loadAd(vastUrl))
+                    .catch(error => this.player.debug.log(error));
+                this.player.debug.log('Starting a pre-roll advertisement.');
+            }
         });
 
         // Subscribe to the LOADED event as we will want to clear our initial
@@ -186,19 +203,6 @@ class Ads {
                         }
                     });
                 }
-            }
-        });
-
-        // Run a pre-roll advertisement on first play.
-        this.player.on('play', () => {
-            // Call the preroll.
-            if (this.prerollEnabled) {
-                this.prerollEnabled = false;
-                this.adPosition = 1;
-                this.requestAd()
-                    .then(vastUrl => this.loadAd(vastUrl))
-                    .catch(error => this.player.debug.log(error));
-                this.player.debug.log('Starting a pre-roll advertisement.');
             }
         });
 
@@ -310,6 +314,7 @@ class Ads {
         // Create the container for our advertisements
         this.elements.container = utils.createElement('div', {
             class: this.player.config.classNames.ads,
+            id: 'tubia__advertisement_slot', // Element id is needed by SpotX.
         });
         this.player.elements.container.appendChild(this.elements.container);
 
@@ -367,7 +372,7 @@ class Ads {
                         // HEADER BIDDING.
                         // We got an object with keys, so we know this
                         // will be a header bidding ad request.
-                        if (typeof window.idhbgd.requestAds === 'undefined') {
+                        if (typeof window.idhbtubia.requestAds === 'undefined') {
                             reject(new Error('Prebid.js wrapper script hit an error or didn\'t exist!'));
                             return;
                         }
@@ -389,12 +394,12 @@ class Ads {
                         Object.assign(data, {tnl_system: '1'});
 
                         // Make the request for a VAST tag from the Prebid.js wrapper.
-                        // Get logging from the wrapper using: ?idhbgd_debug=true
-                        // To get a copy of the current config: copy(idhbgd.getConfig());
-                        window.idhbgd.que.push(() => {
-                            window.idhbgd.setAdserverTargeting(data);
-                            window.idhbgd.setDfpAdUnitCode(unit);
-                            window.idhbgd.requestAds({
+                        // Get logging from the wrapper using: ?idhbtubia_debug=true
+                        // To get a copy of the current config: copy(idhbtubia.getConfig());
+                        window.idhbtubia.que.push(() => {
+                            window.idhbtubia.setAdserverTargeting(data);
+                            window.idhbtubia.setDfpAdUnitCode(unit);
+                            window.idhbtubia.requestAds({
                                 callback: vastUrl => {
                                     resolve(vastUrl);
                                 },
@@ -476,13 +481,13 @@ class Ads {
                 // this.tag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator=';
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_position', 'subbanner');
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_midroll_count', positionCount.toString());
-                this.tag = utils.updateQueryStringParameter(this.tag, 'ad_type', '');
-                this.tag = utils.updateQueryStringParameter(this.tag, 'ad_skippable', '');
+                this.tag = utils.updateQueryStringParameter(this.tag, 'ad_type', 'video_image');
+                this.tag = utils.updateQueryStringParameter(this.tag, 'ad_skippable', '1');
                 this.sendGoogleEventPosition(this.adPosition);
                 this.player.debug.log('ADVERTISEMENT: ad_position: subbanner');
                 this.player.debug.log(`ADVERTISEMENT: ad_midroll_count: ${positionCount}`);
-                this.player.debug.log('ADVERTISEMENT: ad_type: ');
-                this.player.debug.log('ADVERTISEMENT: ad_skippable: ');
+                this.player.debug.log('ADVERTISEMENT: ad_type: video_image');
+                this.player.debug.log('ADVERTISEMENT: ad_skippable: 1');
 
                 // Reset back to a normal mid-roll.
                 this.adPosition = 2;
