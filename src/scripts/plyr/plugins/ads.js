@@ -588,6 +588,12 @@ class Ads {
         const settings = new google.ima.AdsRenderingSettings();
         settings.enablePreloading = true;
         settings.restoreCustomPlaybackStateOnAdBreakComplete = true;
+        // settings.useStyledLinearAds = false;
+        // Make sure we always have an ad timer.
+        settings.uiElements = [
+            google.ima.UiElements.AD_ATTRIBUTION,
+            google.ima.UiElements.COUNTDOWN,
+        ];
 
         // The SDK is polling currentTime on the contentPlayback. And needs a duration
         // so it can determine when to start the mid- and post-roll
