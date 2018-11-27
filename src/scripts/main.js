@@ -620,8 +620,8 @@ class Tubia {
                     prerollEnabled: (json.preRollEnabled) ? json.preRollEnabled : true,
                     midrollEnabled: (json.subBannerEnabled) ? json.subBannerEnabled : true,
                     // Todo: Test with 1 minute something video midroll interval.
-                    videoInterval: 60, // (json.preRollSecond) ? json.preRollSecond : 300,
-                    overlayInterval: (json.subBannerSecond) ? json.subBannerSecond : 15,
+                    // videoInterval: 60, // (json.preRollSecond) ? json.preRollSecond : 300,
+                    // overlayInterval: (json.subBannerSecond) ? json.subBannerSecond : 15,
                     gdprTargeting: this.options.gdprTargeting,
                     tag: (json.adsEnabled && !json.addFreeActive) ? this.adTag : '',
                 },

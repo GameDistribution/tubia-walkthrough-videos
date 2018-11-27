@@ -16,9 +16,12 @@ class Ads {
      */
     constructor(player) {
         this.player = player;
+
         this.tag = player.config.ads.tag;
+        this.debug = player.config.debug;
         this.enabled = player.isHTML5 && player.isVideo && utils.is.string(this.tag) && this.tag.length;
         this.gdprTargeting = player.config.ads.gdprTargeting;
+        this.headerBidding = player.config.ads.headerBidding;
 
         this.prerollEnabled = player.config.ads.prerollEnabled;
         this.midrollEnabled = player.config.ads.midrollEnabled;
@@ -50,31 +53,85 @@ class Ads {
             this.on('error', () => reject(new Error('Initial loaderPromise failed to load.')));
         });
 
-        this.load();
+        // Load Google IMA HTML5 SDK.
+        if (this.enabled) {
+            this.load().then(() => {
+                this.ready();
+                this.setupIMA();
+            }).catch(error => this.trigger('error', error));
+        }
+
+        // Prebid.
+        if (this.headerBidding) {
+            window.idhbgd = window.idhbgd || {};
+            window.idhbgd.que = window.idhbgd.que || [];
+        }
     }
 
     /**
      * Load the IMA SDK
      */
     load() {
-        if (this.enabled) {
-            // Check if the Google IMA3 SDK is loaded or load it ourselves
+        const IMA = new Promise((resolve, reject) => {
             if (!utils.is.object(window.google) || !utils.is.object(window.google.ima)) {
-                utils
-                    .loadScript(this.player.config.urls.googleIMA.api)
-                    .then(() => {
-                        this.ready();
-                        this.setupIMA();
-                    })
-                    .catch(() => {
-                        // Script failed to load or is blocked
-                        this.trigger('error', new Error('Google IMA SDK failed to load'));
-                    });
+                const src = (this.debug)
+                    // ? '//imasdk.googleapis.com/js/sdkloader/ima3_debug.js'
+                    ? '//imasdk.googleapis.com/js/sdkloader/ima3.js'
+                    : '//imasdk.googleapis.com/js/sdkloader/ima3.js';
+                const script = document.getElementsByTagName('script')[0];
+                const ima = document.createElement('script');
+                ima.type = 'text/javascript';
+                ima.async = true;
+                ima.src = src;
+                ima.onload = () => {
+                    resolve();
+                };
+                ima.onerror = (error) => {
+                    reject(error);
+                };
+                script.parentNode.insertBefore(ima, script);
             } else {
-                this.ready();
-                this.setupIMA();
+                resolve();
             }
-        }
+        });
+
+        const prebidJS = new Promise((resolve, reject) => {
+            if (this.headerBidding
+                && (typeof window.idhbgd === 'undefined' || typeof window.idhbgd.que === 'undefined')) {
+                const src = (this.debug)
+                    ? 'https://test-hb.improvedigital.com/pbw/gameDistribution.min.js'
+                    : 'https://hb.improvedigital.com/pbw/gameDistribution.min.js';
+                const script = document.getElementsByTagName('script')[0];
+                const ima = document.createElement('script');
+                ima.type = 'text/javascript';
+                ima.id = 'idhbgd';
+                ima.async = true;
+                ima.src = src;
+                ima.onload = () => {
+                    try {
+                        // Show some header bidding logging.
+                        if (this.debug) {
+                            window.idhbgd.getConfig();
+                            window.idhbgd.debug(true);
+                        }
+                        resolve();
+                    } catch (e) {
+                        reject(e);
+                    }
+                };
+                ima.onerror = (error) => {
+                    reject(error);
+                };
+                script.parentNode.insertBefore(ima, script);
+            } else {
+                resolve();
+            }
+        });
+
+        return Promise.all([
+            IMA,
+            prebidJS,
+        ]);
     }
 
     /**
@@ -139,7 +196,9 @@ class Ads {
                 this.prerollEnabled = false;
                 this.adPosition = 1;
                 this.requestAttempts = 0;
-                this.requestAd();
+                this.requestAd()
+                    .then(vastUrl => this.loadAd(vastUrl))
+                    .catch(error => this.player.debug.log(error));
                 this.player.debug.log('Starting a pre-roll advertisement.');
             }
         });
@@ -148,7 +207,9 @@ class Ads {
         this.player.on('ended', () => {
             this.adPosition = 0; // Make sure we register a post-roll.
             this.requestAttempts = 0;
-            this.requestAd();
+            this.requestAd()
+                .then(vastUrl => this.loadAd(vastUrl))
+                .catch(error => this.player.debug.log(error));
             this.player.debug.log('Starting a post-roll advertisement.');
         });
 
@@ -165,9 +226,26 @@ class Ads {
                 const intervalOverlay = Math.ceil(this.overlayInterval);
                 const intervalVideo = Math.ceil(this.videoInterval);
                 const duration = Math.floor(this.player.duration);
-                // For testing:
-                // this.player.debug.log(`currentTime: ${currentTime} | intervalVideo: ${intervalVideo} | intervalOverlay: ${intervalOverlay} | image: ${currentTime % intervalVideo === 0} | video: ${currentTime % intervalOverlay === 0}`);
-                if (currentTime % intervalVideo === 0
+
+                // Standard midroll video when header bidding is enabled.
+                // Otherwise we do a mix of non-linear video and linear.
+                if (this.headerBidding  && currentTime % intervalVideo === 0
+                    && currentTime !== this.previousMidrollTime
+                    && currentTime < duration - intervalVideo) {
+                    this.previousMidrollTime = currentTime;
+                    this.adPosition = 3;
+                    this.player.debug.log('Starting a header bidding video mid-roll advertisement.');
+                    // Make sure to kill the current running ad if there is any.
+                    // This is not really allowed, but whatever...
+                    if (this.requestRunning) {
+                        this.killCurrentAd();
+                    }
+                    this.requestAttempts = 0;
+                    this.requestAd()
+                        .then(vastUrl => this.loadAd(vastUrl))
+                        .catch(error => this.player.debug.log(error));
+                } else if (!this.headerBidding
+                    && currentTime % intervalVideo === 0
                     && currentTime !== this.previousMidrollTime
                     && currentTime < duration - intervalVideo) {
                     this.previousMidrollTime = currentTime;
@@ -179,8 +257,11 @@ class Ads {
                         this.killCurrentAd();
                     }
                     this.requestAttempts = 0;
-                    this.requestAd();
-                } else if (currentTime % intervalOverlay === 0
+                    this.requestAd()
+                        .then(vastUrl => this.loadAd(vastUrl))
+                        .catch(error => this.player.debug.log(error));
+                } else if (!this.headerBidding
+                    && currentTime % intervalOverlay === 0
                     && currentTime !== this.previousMidrollTime
                     && currentTime < duration - intervalOverlay
                     && !this.requestRunning) {
@@ -189,7 +270,9 @@ class Ads {
                     this.adPosition = 2;
                     this.player.debug.log('Starting an overlay mid-roll advertisement.');
                     this.requestAttempts = 0;
-                    this.requestAd();
+                    this.requestAd()
+                        .then(vastUrl => this.loadAd(vastUrl))
+                        .catch(error => this.player.debug.log(error));
                 }
             }
         });
@@ -236,7 +319,7 @@ class Ads {
         this.player.elements.container.appendChild(this.elements.container);
 
         // So we can run VPAID2
-        google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.ENABLED);
+        google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.INSECURE);
 
         // Set language
         if (!google.ima.settings.setLocale) {
@@ -259,46 +342,75 @@ class Ads {
     }
 
     /**
-     * Request advertisements
+     * requestAd
+     * Request advertisements.
+     * @return {Promise} Promise that returns DFP vast url like https://pubads.g.doubleclick.net/...
+     * @public
      */
     requestAd() {
-        this.player.debug.log('MIDROLL: requestAd()');
-        const { container } = this.player.elements;
+        return new Promise((resolve, reject) => {
+            if (this.requestRunning) {
+                this.player.debug.log('A request is already running');
+                return;
+            }
 
-        if (typeof google === 'undefined') {
-            this.trigger('error', 'Unable to request ad, google IMA SDK not defined.');
-            return;
-        }
+            this.requestRunning = true;
 
-        if (this.requestRunning) {
-            this.player.debug.log('A request is already running');
-            return;
-        }
+            try {
+                this.player.debug.log('----- ADVERTISEMENT ------');
 
-        this.requestRunning = true;
+                this.tunnlReportingKeys()
+                    .then((data) => {
+                        if (typeof window.idhbgd.requestAds === 'undefined') {
+                            reject(new Error('Prebid.js wrapper script hit an error or didn\'t exist!'));
+                        }
 
-        try {
-            // Request new video ads
-            const adsRequest = new google.ima.AdsRequest();
+                        // Create the ad unit name based on given Tunnl data.
+                        // Default is the gamedistribution.com ad unit.
+                        const nsid = data.nsid ? data.nsid : 'TNL_T-17102571517';
+                        const tid = data.tid ? data.tid : 'TNL_NS-18050800052';
+                        const unit = `${nsid}/${tid}`;
 
-            this.player.debug.log('----- ADVERTISEMENT ------');
+                        // Make sure to remove these properties as we don't
+                        // want to pass them as key values.
+                        delete data.nsid;
+                        delete data.tid;
 
-            // Specify the linear and nonlinear slot sizes. This helps the SDK
-            // to select the correct creative if multiple are returned
-            adsRequest.linearAdSlotWidth = container.offsetWidth;
-            adsRequest.linearAdSlotHeight = container.offsetHeight;
-            adsRequest.nonLinearAdSlotWidth = container.offsetWidth;
+                        this.player.debug.log(unit, 'info');
 
-            // Set a small height when we want to run a midroll on order to enforce an IAB leaderboard.
-            const isMidrollDesktop = (this.adPosition === 2 && (!/Mobi/.test(navigator.userAgent)));
-            adsRequest.nonLinearAdSlotHeight = (isMidrollDesktop) ? 120 : container.offsetHeight;
-            this.player.debug.log(`ADVERTISEMENT: nonLinearAdSlotWidth: ${container.offsetWidth}`);
-            this.player.debug.log(`ADVERTISEMENT: nonLinearAdSlotHeight: ${adsRequest.nonLinearAdSlotHeight}`);
+                        // Add test parameter for Tunnl.
+                        Object.assign(data, {tnl_system: '1'});
 
-            // We don't want non-linear FULL SLOT ads when we're running mid-rolls on desktop
-            adsRequest.forceNonLinearFullSlot = (!isMidrollDesktop);
-            this.player.debug.log(`ADVERTISEMENT: forceNonLinearFullSlot: ${(!isMidrollDesktop)}`);
+                        // Make the request for a VAST tag from the Prebid.js wrapper.
+                        // Get logging from the wrapper using: ?idhbgd_debug=true
+                        // To get a copy of the current config: copy(idhbgd.getConfig());
+                        window.idhbgd.que.push(() => {
+                            window.idhbgd.setAdserverTargeting(data);
+                            window.idhbgd.setDfpAdUnitCode(unit);
+                            window.idhbgd.requestAds({
+                                callback: vastUrl => {
+                                    resolve(vastUrl);
+                                },
+                            });
+                        });
+                    })
+                    .catch(error => {
+                        reject(error);
+                    });
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
 
+    /**
+     * tunnlReportingKeys
+     * Tunnl reporting needs its own custom tracking keys.
+     * @return {Promise<any>}
+     * @private
+     */
+    tunnlReportingKeys() {
+        return new Promise((resolve) => {
             // GDPR personalised advertisement ruling.
             this.tag = (this.gdprTargeting !== null) ?
                 utils.updateQueryStringParameter(this.tag, 'npa', (this.gdprTargeting) ? '1' : '0') : this.tag;
@@ -368,13 +480,97 @@ class Ads {
                 }
             }
 
-            adsRequest.adTagUrl = this.tag;
-            this.player.debug.log(`ADVERTISEMENT: ${this.tag}`);
+            // Enable video header bidding.
+            // Todo: allow non video header bidding as well.
+            this.tag = utils.updateQueryStringParameter(this.tag, 'hb', 'on');
 
-            // https://developers.google.com/interactive-media-ads/docs/sdks/html5/desktop-autoplay
-            // request.setAdWillAutoPlay(false);
-            // request.setAdWillPlayMuted(false);
+            const request = new Request(this.tag, {method: 'GET'});
+            fetch(request)
+                .then((response) => response.text())
+                .then((text) => text.length ? JSON.parse(text) : {})
+                .then(keys => {
+                    // Increment the reporting counter.
+                    if (this.adTypeCount === 1) this.adCount = 0;
 
+                    resolve(keys);
+                })
+                .catch(error => {
+                    // Failed the request. Still at pre-roll.
+                    this.requestAttempts = 1;
+
+                    this.player.debug.log(error);
+
+                    // Todo: set proper defaults!
+                    const keys = {
+                        'tid': 'TNL_T-17102571517',
+                        'nsid': 'TNL_NS-18062500055',
+                        'tnl_tid': 'T-17102571517',
+                        'tnl_nsid': 'NS-18062500055',
+                        'tnl_pw': '640',
+                        'tnl_ph': '480',
+                        'tnl_pt': '22',
+                        'tnl_pid': 'P-17101800031',
+                        'tnl_paid': '4040',
+                        'tnl_ad_type': 'video_image',
+                        'tnl_asset_id': '0',
+                        'tnl_ad_pos': this.adPosition,
+                        'tnl_skippable': '1',
+                        'tnl_cp1': '',
+                        'tnl_cp2': '',
+                        'tnl_cp3': '',
+                        'tnl_cp4': '',
+                        'tnl_cp5': '',
+                        'tnl_cp6': '',
+                        'tnl_campaign': '2',
+                        'tnl_gdpr': '0',
+                        'tnl_gdpr_consent': '1',
+                    };
+
+                    // Increment the reporting counter.
+                    if (this.adPosition === 1) this.adCount = 0;
+
+                    resolve(keys);
+                });
+        });
+    }
+
+    /**
+     * _loadAd
+     * Load advertisements.
+     * @param {String} vastUrl
+     * @public
+     */
+    loadAd(vastUrl) {
+        const { container } = this.player.elements;
+
+        if (typeof google === 'undefined') {
+            this.trigger('error', 'Unable to request ad, google IMA SDK not defined.');
+            return;
+        }
+
+        try {
+            // Request video new ads.
+            const adsRequest = new google.ima.AdsRequest();
+
+            // Set the VAST tag.
+            adsRequest.adTagUrl = vastUrl;
+
+            this.player.debug.log(adsRequest.adTagUrl);
+
+            // Specify the linear and nonlinear slot sizes. This helps
+            // the SDK to select the correct creative if multiple are returned.
+            adsRequest.linearAdSlotWidth = container.offsetWidth;
+            adsRequest.linearAdSlotHeight = container.offsetHeight;
+            adsRequest.nonLinearAdSlotWidth = container.offsetWidth;
+            adsRequest.nonLinearAdSlotHeight = container.offsetHeight;
+
+            // We don't want overlays as we do not have
+            // a video player as underlying content!
+            // Non-linear ads usually do not invoke the ALL_ADS_COMPLETED.
+            // That would cause lots of problems of course...
+            adsRequest.forceNonLinearFullSlot = true;
+
+            // Get us some ads!
             this.loader.requestAds(adsRequest);
         } catch (e) {
             this.onAdError(e);
@@ -674,7 +870,9 @@ class Ads {
                     this.requestRunning = false;
 
                     // Make the "automatic" request.
-                    this.requestAd();
+                    this.requestAd()
+                        .then(vastUrl => this.loadAd(vastUrl))
+                        .catch(error => this.player.debug.log(error));
                 }, 3000);
             } else {
                 // Hide the advertisement.
