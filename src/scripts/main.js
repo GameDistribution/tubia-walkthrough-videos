@@ -225,7 +225,7 @@ class Tubia {
             // 'girlsgogames.se',
         ];
         this.options.testing = this.options.testing || testDomains.indexOf(this.options.domain.replace(/^(?:https?:\/\/)?(?:\/\/)?(?:www\.)?/i, '').split('/')[0],) > -1;
-        this.options.debug = this.options.testing;
+        this.options.debug = !this.options.debug ? this.options.testing : this.options.debug;
 
         console.log(this.options);
 

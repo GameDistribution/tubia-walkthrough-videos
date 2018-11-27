@@ -28,6 +28,7 @@ class Ads {
         this.midrollEnabled = player.config.ads.midrollEnabled;
         this.videoInterval = player.config.ads.videoInterval;
         this.overlayInterval = player.config.ads.overlayInterval;
+        this.isMidrollDesktop = false;
 
         this.loader = null;
         this.manager = null;
@@ -157,10 +158,10 @@ class Ads {
             if (this.prerollEnabled) {
                 this.prerollEnabled = false;
                 this.adPosition = 1;
+                this.player.debug.log('Starting a pre-roll advertisement.');
                 this.requestAd()
                     .then(vastUrl => this.loadAd(vastUrl))
                     .catch(error => this.player.debug.log(error));
-                this.player.debug.log('Starting a pre-roll advertisement.');
             }
         });
 
@@ -359,6 +360,9 @@ class Ads {
             try {
                 this.player.debug.log('----- ADVERTISEMENT ------');
 
+                // Update midroll value for some old overlay ad stuff.
+                this.isMidrollDesktop = (this.adPosition === 2 && (!/Mobi/.test(navigator.userAgent)));
+
                 // Get/ Create the VAST XML URL or return reporting keys.
                 this.reportingKeys()
                     .then((data) => {
@@ -450,21 +454,21 @@ class Ads {
             this.tag = utils.updateQueryStringParameter(this.tag, 'ad_request_count', '1');
             this.player.debug.log(`ADVERTISEMENT: ad_count: ${this.adCount}`);
             this.player.debug.log('ADVERTISEMENT: ad_request_count: 1');
-            if(this.adPosition === 0) {
+            if (this.adPosition === 0) {
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_position', 'postroll');
                 this.sendGoogleEventPosition(this.adPosition);
                 this.player.debug.log('ADVERTISEMENT: ad_position: postroll');
 
                 // Next ad will be a pre-roll.
                 this.adPosition = 1;
-            } else if(this.adPosition === 1) {
+            } else if (this.adPosition === 1) {
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_position', 'preroll');
                 this.sendGoogleEventPosition(this.adPosition);
                 this.player.debug.log('ADVERTISEMENT: ad_position: preroll');
 
                 // Next ad will be a mid-roll.
                 this.adPosition = 2;
-            } else if(this.adPosition === 2) {
+            } else if (this.adPosition === 2) {
                 // For testing:
                 // this.tag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=480x70&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dnonlinear&correlator=';
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_position', 'subbanner');
@@ -476,18 +480,18 @@ class Ads {
                 this.player.debug.log(`ADVERTISEMENT: ad_midroll_count: ${positionCount}`);
                 this.player.debug.log('ADVERTISEMENT: ad_type: image');
                 this.player.debug.log('ADVERTISEMENT: ad_skippable: 0');
-            } else if(this.adPosition === 3) {
+            } else if (this.adPosition === 3) {
                 // For testing:
                 // this.tag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator=';
-                this.tag = utils.updateQueryStringParameter(this.tag, 'ad_position', 'subbanner');
+                this.tag = utils.updateQueryStringParameter(this.tag, 'ad_position', 'midroll');
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_midroll_count', positionCount.toString());
-                this.tag = utils.updateQueryStringParameter(this.tag, 'ad_type', 'video_image');
-                this.tag = utils.updateQueryStringParameter(this.tag, 'ad_skippable', '1');
+                this.tag = utils.updateQueryStringParameter(this.tag, 'ad_type', '');
+                this.tag = utils.updateQueryStringParameter(this.tag, 'ad_skippable', '');
                 this.sendGoogleEventPosition(this.adPosition);
-                this.player.debug.log('ADVERTISEMENT: ad_position: subbanner');
+                this.player.debug.log('ADVERTISEMENT: ad_position: midroll');
                 this.player.debug.log(`ADVERTISEMENT: ad_midroll_count: ${positionCount}`);
-                this.player.debug.log('ADVERTISEMENT: ad_type: video_image');
-                this.player.debug.log('ADVERTISEMENT: ad_skippable: 1');
+                this.player.debug.log('ADVERTISEMENT: ad_type: ');
+                this.player.debug.log('ADVERTISEMENT: ad_skippable: ');
 
                 // Reset back to a normal mid-roll.
                 this.adPosition = 2;
@@ -580,14 +584,13 @@ class Ads {
             adsRequest.nonLinearAdSlotWidth = container.offsetWidth;
 
             // Set a small height when we want to run a midroll on order to enforce an IAB leaderboard.
-            const isMidrollDesktop = (this.adPosition === 2 && (!/Mobi/.test(navigator.userAgent)));
-            adsRequest.nonLinearAdSlotHeight = (isMidrollDesktop) ? 120 : container.offsetHeight;
+            adsRequest.nonLinearAdSlotHeight = (this.isMidrollDesktop) ? 120 : container.offsetHeight;
             this.player.debug.log(`ADVERTISEMENT: nonLinearAdSlotWidth: ${container.offsetWidth}`);
             this.player.debug.log(`ADVERTISEMENT: nonLinearAdSlotHeight: ${adsRequest.nonLinearAdSlotHeight}`);
 
             // We don't want non-linear FULL SLOT ads when we're running mid-rolls on desktop
-            adsRequest.forceNonLinearFullSlot = (!isMidrollDesktop);
-            this.player.debug.log(`ADVERTISEMENT: forceNonLinearFullSlot: ${(!isMidrollDesktop)}`);
+            adsRequest.forceNonLinearFullSlot = (!this.isMidrollDesktop);
+            this.player.debug.log(`ADVERTISEMENT: forceNonLinearFullSlot: ${(!this.isMidrollDesktop)}`);
 
             // Get us some ads!
             this.loader.requestAds(adsRequest);
