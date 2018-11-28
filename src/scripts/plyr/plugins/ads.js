@@ -433,11 +433,15 @@ class Ads {
             this.player.debug.log(`ADVERTISEMENT: gdpr: npa=${(this.gdprTargeting) ? '1' : '0'}`);
 
             // Set custom tracking keys for Tunnl.
-            if (this.keys) {
-                const keys = Object.entries(this.keys);
-                keys.forEach(key => {
-                    this.adTag = utils.updateQueryStringParameter(this.adTag, key[0], key[1]);
-                });
+            try {
+                if (this.keys) {
+                    const keys = Object.entries(JSON.parse(this.keys));
+                    keys.forEach(key => {
+                        this.tag = utils.updateQueryStringParameter(this.tag, key[0], key[1]);
+                    });
+                }
+            } catch(error) {
+                this.player.debug.warn(error);
             }
 
             // Update our adTag. We add additional parameters so Tunnl
