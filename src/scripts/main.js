@@ -774,7 +774,7 @@ class Tubia {
                     videoInterval: this.options.videoInterval ? this.options.videoInterval : 60, // Todo: testing.
                     gdprTargeting: this.options.gdprTargeting,
                     tag: (json.adsEnabled && !json.addFreeActive) ? this.adTag : '',
-                    keys: JSON.stringify(this.options.keys),
+                    keys: this.options.keys ? JSON.stringify(this.options.keys) : null,
                 },
                 keyboard: {
                     global: true,
