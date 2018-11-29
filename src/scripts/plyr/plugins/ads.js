@@ -82,8 +82,7 @@ class Ads {
         const IMA = new Promise((resolve, reject) => {
             if (!utils.is.object(window.google) || !utils.is.object(window.google.ima)) {
                 const src = (this.debug)
-                    // ? '//imasdk.googleapis.com/js/sdkloader/ima3_debug.js'
-                    ? '//imasdk.googleapis.com/js/sdkloader/ima3.js'
+                    ? '//imasdk.googleapis.com/js/sdkloader/ima3_debug.js'
                     : '//imasdk.googleapis.com/js/sdkloader/ima3.js';
                 const script = document.getElementsByTagName('script')[0];
                 const ima = document.createElement('script');
