@@ -41,7 +41,8 @@ module.exports = function (grunt) {
                 src: [
                     'src/index.html',
                     'src/index_legacy.html',
-                    'src/development.html'
+                    'src/development.html',
+                    'src/index_test.html',
                 ],
                 dest: './libs/gd/',
             },
@@ -154,9 +155,7 @@ module.exports = function (grunt) {
                             'env',
                             {
                                 targets: {
-                                    browsers: [
-                                        '> 1%',
-                                    ],
+                                    browsers: ['> 1%'],
                                 },
                                 debug: false,
                                 useBuiltIns: true,
@@ -226,14 +225,29 @@ module.exports = function (grunt) {
             },
             scripts: {
                 files: ['src/scripts/**/*.js'],
-                tasks: ['exec:eslint', 'browserify', 'concat', 'uglify', 'duration'],
+                tasks: [
+                    'exec:eslint',
+                    'browserify',
+                    'concat',
+                    'uglify',
+                    'duration',
+                ],
             },
             css: {
                 files: ['src/styles/**/*.scss'],
-                tasks: ['sass', 'postcss', 'duration'],
+                tasks: [
+                    'sass',
+                    'postcss',
+                    'duration',
+                ],
             },
             html: {
-                files: ['src/index.html', 'src/index_legacy.html', 'src/development.html'],
+                files: [
+                    'src/index.html',
+                    'src/index_legacy.html',
+                    'src/development.html',
+                    'src/index_test.html',
+                ],
                 tasks: ['copy'],
             },
             grunt: {
@@ -248,9 +262,7 @@ module.exports = function (grunt) {
          */
         browserSync: {
             bsFiles: {
-                src: [
-                    'libs/gd/',
-                ],
+                src: ['libs/gd/'],
             },
             options: {
                 server: './libs/gd',
@@ -339,7 +351,8 @@ module.exports = function (grunt) {
                 'usebanner',
                 'svgstore',
                 'copy',
-                'duration'];
+                'duration',
+            ];
             grunt.task.run(tasksArray);
         });
     grunt.registerTask('deploy',

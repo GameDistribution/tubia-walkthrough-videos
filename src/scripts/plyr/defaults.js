@@ -215,9 +215,6 @@ const defaults = {
         youtube: {
             api: 'https://www.youtube.com/iframe_api',
         },
-        googleIMA: {
-            api: 'https://imasdk.googleapis.com/js/sdkloader/ima3.js',
-        },
     },
 
     // Custom control listeners
@@ -424,12 +421,14 @@ const defaults = {
     // Register for an account here: http://vi.ai/publisher-video-monetization/?aid=plyrio
     ads: {
         enabled: true,
+        headerBidding: false,
         prerollEnabled: true,
         midrollEnabled: true,
-        videoInterval: 300,
+        videoInterval: 60,
         overlayInterval: 15,
         gdprTargeting: null,
         tag: '',
+        keys: null,
     },
 };
 

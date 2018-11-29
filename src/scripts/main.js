@@ -39,6 +39,7 @@ class Tubia {
         // values further down.
         const defaults = {
             debug: false,
+            testing: false,
             container: 'player',
             gameId: '0', // Todo: api.tubia.com expects something...
             publisherId: '',
@@ -53,6 +54,7 @@ class Tubia {
             gdprTracking: null,
             gdprTargeting: null,
             keys: null, // Tunnl tracking keys.
+            videoInterval: null, // // Todo: testing. Video midroll interval.
             onStart() {
             },
             onFound() {
@@ -70,6 +72,14 @@ class Tubia {
         } else {
             this.options = defaults;
         }
+
+        // Test domains.
+        const testDomains = [
+            'localhost:8081',
+            'player.tubia.com',
+        ];
+        this.options.testing = this.options.testing || testDomains.indexOf(this.options.domain.replace(/^(?:https?:\/\/)?(?:\/\/)?(?:www\.)?/i, '').split('/')[0]) > -1;
+        this.options.debug = !this.options.debug ? this.options.testing : this.options.debug;
 
         console.log(this.options);
 
@@ -151,14 +161,6 @@ class Tubia {
                 this.adTag = `https://pub.tunnl.com/opp?page_url=${encodeURIComponent(this.options.url)}&player_width=640&player_height=480&tub_id=${this.videoId}&correlator=${Date.now()}`;
                 // this.adTag = `https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpostpod&cmsid=496&vid=short_onecue&correlator=${Date.now()}`;
                 // this.adTag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpreonly&cmsid=496&vid=short_onecue&correlator=';
-
-                // Set custom tracking keys for Tunnl.
-                if (this.options.keys) {
-                    const keys = Object.entries(this.options.keys);
-                    keys.forEach(key => {
-                        this.adTag = utils.updateQueryStringParameter(this.adTag, key[0], key[1]);
-                    });
-                }
 
                 fetch(videoDataRequest)
                     .then((response) => response.text())
@@ -616,14 +618,17 @@ class Tubia {
                 showPosterOnEnd: true,
                 hideControls: (!/Android/.test(navigator.userAgent)), // Hide on Android devices.
                 ads: {
-                    enabenabledled: (json.adsEnabled) ? json.adsEnabled : true,
+                    enabled: (json.adsEnabled) ? json.adsEnabled : true,
+                    headerBidding: true,
                     prerollEnabled: (json.preRollEnabled) ? json.preRollEnabled : true,
                     midrollEnabled: (json.subBannerEnabled) ? json.subBannerEnabled : true,
                     // Todo: Test with 1 minute something video midroll interval.
-                    videoInterval: 60, // (json.preRollSecond) ? json.preRollSecond : 300,
-                    overlayInterval: (json.subBannerSecond) ? json.subBannerSecond : 15,
+                    // videoInterval: 60, // (json.preRollSecond) ? json.preRollSecond : 300,
+                    // overlayInterval: (json.subBannerSecond) ? json.subBannerSecond : 15,
+                    videoInterval: this.options.videoInterval ? this.options.videoInterval : 60, // Todo: testing.
                     gdprTargeting: this.options.gdprTargeting,
                     tag: (json.adsEnabled && !json.addFreeActive) ? this.adTag : '',
+                    keys: this.options.keys ? JSON.stringify(this.options.keys) : null,
                 },
                 keyboard: {
                     global: true,
@@ -662,7 +667,7 @@ class Tubia {
                     // Return ready callback for our clients.
                     this.options.onReady(this.player);
                     // Start playing.
-                    this.player.play();
+                    // this.player.play();
                 }, this.transitionSpeed / 1.5);
 
                 // Record Tubia "Video Play" event in Tunnl.
