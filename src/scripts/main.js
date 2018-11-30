@@ -609,7 +609,7 @@ class Tubia {
 
             // Create the Plyr instance.
             this.player = new Plyr('#plyr__tubia', {
-                debug: this.options.debug,
+                debug: true, // this.options.debug,
                 iconUrl: (this.options.domain === 'localhost:8081')
                     ? './sprite.svg'
                     : 'https://player.tubia.com/libs/gd/sprite.svg',
@@ -625,7 +625,6 @@ class Tubia {
                     // Todo: Test with 1 minute something video midroll interval.
                     // videoInterval: 60, // (json.preRollSecond) ? json.preRollSecond : 300,
                     // overlayInterval: (json.subBannerSecond) ? json.subBannerSecond : 15,
-                    videoInterval: this.options.videoInterval ? this.options.videoInterval : 60, // Todo: testing.
                     gdprTargeting: this.options.gdprTargeting,
                     tag: (json.adsEnabled && !json.addFreeActive) ? this.adTag : '',
                     keys: this.options.keys ? JSON.stringify(this.options.keys) : null,

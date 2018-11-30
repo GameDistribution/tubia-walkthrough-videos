@@ -28,7 +28,6 @@ class Ads {
         this.midrollEnabled = player.config.ads.midrollEnabled;
         this.videoInterval = player.config.ads.videoInterval;
         this.overlayInterval = player.config.ads.overlayInterval;
-        this.isMidrollDesktop = false;
 
         this.loader = null;
         this.manager = null;
@@ -69,10 +68,8 @@ class Ads {
         }
 
         // Prebid.
-        if (this.headerBidding) {
-            window.idhbtubia = window.idhbtubia || {};
-            window.idhbtubia.que = window.idhbtubia.que || [];
-        }
+        window.idhbtubia = window.idhbtubia || {};
+        window.idhbtubia.que = window.idhbtubia.que || [];
     }
 
     /**
@@ -102,8 +99,7 @@ class Ads {
         });
 
         const prebidJS = new Promise((resolve, reject) => {
-            if (this.headerBidding
-                && (typeof window.idhbtubia === 'undefined' || typeof window.idhbtubia.que === 'undefined')) {
+            if (typeof window.idhbtubia === 'undefined' || typeof window.idhbtubia.que === 'undefined') {
                 const src = (this.debug)
                     ? 'https://test-hb.improvedigital.com/pbw/tubia.min.js'
                     : 'https://hb.improvedigital.com/pbw/tubia.min.js';
@@ -230,45 +226,30 @@ class Ads {
                 const duration = Math.floor(this.player.duration);
 
                 // Standard midroll video when header bidding is enabled.
-                // Otherwise we do a mix of non-linear video and linear.
-                if (this.headerBidding  && currentTime % intervalVideo === 0
+                // Otherwise we do a mix of non-linear and linear.
+                if (currentTime % intervalVideo === 0
                     && currentTime !== this.previousMidrollTime
                     && currentTime < duration - intervalVideo) {
                     this.previousMidrollTime = currentTime;
                     this.adPosition = 3;
-                    this.player.debug.log('Starting a video mid-roll advertisement.');
+                    this.player.debug.log('Starting a linear mid-roll advertisement.');
                     // Make sure to kill the current running ad if there is any.
                     // This is not really allowed, but whatever...
+                    // As there is a great chance we have a non-linear ad present.
                     if (this.requestRunning) {
                         this.killCurrentAd();
                     }
                     this.requestAd()
                         .then(vastUrl => this.loadAd(vastUrl))
                         .catch(error => this.player.debug.log(error));
-                } else if (!this.headerBidding
-                    && currentTime % intervalVideo === 0
-                    && currentTime !== this.previousMidrollTime
-                    && currentTime < duration - intervalVideo) {
-                    this.previousMidrollTime = currentTime;
-                    this.adPosition = 3;
-                    this.player.debug.log('Starting a video mid-roll advertisement.');
-                    // Make sure to kill the current running ad if there is any.
-                    // This is not really allowed, but whatever...
-                    if (this.requestRunning) {
-                        this.killCurrentAd();
-                    }
-                    this.requestAd()
-                        .then(vastUrl => this.loadAd(vastUrl))
-                        .catch(error => this.player.debug.log(error));
-                } else if (!this.headerBidding
-                    && currentTime % intervalOverlay === 0
+                } else if (currentTime % intervalOverlay === 0
                     && currentTime !== this.previousMidrollTime
                     && currentTime < duration - intervalOverlay
                     && !this.requestRunning) {
                     // Make sure we don't re-request an ad when one is already running.
                     this.previousMidrollTime = currentTime;
                     this.adPosition = 2;
-                    this.player.debug.log('Starting an overlay mid-roll advertisement.');
+                    this.player.debug.log('Starting a non-linear mid-roll advertisement.');
                     this.requestAd()
                         .then(vastUrl => this.loadAd(vastUrl))
                         .catch(error => this.player.debug.log(error));
@@ -359,9 +340,6 @@ class Ads {
             try {
                 this.player.debug.log('----- ADVERTISEMENT ------');
 
-                // Update midroll value for some old overlay ad stuff.
-                this.isMidrollDesktop = (this.adPosition === 2 && (!/Mobi/.test(navigator.userAgent)));
-
                 // Get/ Create the VAST XML URL or return reporting keys.
                 this.reportingKeys()
                     .then((data) => {
@@ -443,14 +421,14 @@ class Ads {
                 this.player.debug.warn(error);
             }
 
-            // Update our adTag. We add additional parameters so Tunnl
+            // Update our tag. We add additional parameters so Tunnl
             // can use the values as new metrics within reporting.
             // It is also used to determine if we get an overlay or not.
-            // And even if the mid-roll should be an overlay or video.
+            // And even if the mid-roll should be non-linear or linear.
             // 0 - post-roll
             // 1 - pre-roll
-            // 2 - mid-roll overlay
-            // 3 - mid-roll video
+            // 2 - mid-roll "subbanner" non-linear
+            // 3 - mid-roll linear
             this.adCount += 1;
             const positionCount = this.adCount - 1;
             this.tag = utils.updateQueryStringParameter(this.tag, 'ad_count', this.adCount);
@@ -459,18 +437,16 @@ class Ads {
             this.player.debug.log('ADVERTISEMENT: ad_request_count: 1');
             if (this.adPosition === 0) {
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_position', 'postroll');
+                this.tag = utils.updateQueryStringParameter(this.tag, 'hb', 'on');
                 this.sendGoogleEventPosition(this.adPosition);
                 this.player.debug.log('ADVERTISEMENT: ad_position: postroll');
-
-                // Next ad will be a pre-roll.
-                this.adPosition = 1;
+                this.player.debug.log('ADVERTISEMENT: hb: on');
             } else if (this.adPosition === 1) {
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_position', 'preroll');
+                this.tag = utils.updateQueryStringParameter(this.tag, 'hb', 'on');
                 this.sendGoogleEventPosition(this.adPosition);
                 this.player.debug.log('ADVERTISEMENT: ad_position: preroll');
-
-                // Next ad will be a mid-roll.
-                this.adPosition = 2;
+                this.player.debug.log('ADVERTISEMENT: hb: on');
             } else if (this.adPosition === 2) {
                 // For testing:
                 // this.tag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=480x70&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dnonlinear&correlator=';
@@ -478,11 +454,13 @@ class Ads {
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_midroll_count', positionCount.toString());
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_type', 'image');
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_skippable', '0');
+                this.tag = utils.updateQueryStringParameter(this.tag, 'hb', 'off');
                 this.sendGoogleEventPosition(this.adPosition);
                 this.player.debug.log('ADVERTISEMENT: ad_position: subbanner');
                 this.player.debug.log(`ADVERTISEMENT: ad_midroll_count: ${positionCount}`);
                 this.player.debug.log('ADVERTISEMENT: ad_type: image');
                 this.player.debug.log('ADVERTISEMENT: ad_skippable: 0');
+                this.player.debug.log('ADVERTISEMENT: hb: off');
             } else if (this.adPosition === 3) {
                 // For testing:
                 // this.tag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator=';
@@ -490,17 +468,19 @@ class Ads {
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_midroll_count', positionCount.toString());
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_type', '');
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_skippable', '');
+                this.tag = utils.updateQueryStringParameter(this.tag, 'hb', 'on');
                 this.sendGoogleEventPosition(this.adPosition);
                 this.player.debug.log('ADVERTISEMENT: ad_position: midroll');
                 this.player.debug.log(`ADVERTISEMENT: ad_midroll_count: ${positionCount}`);
                 this.player.debug.log('ADVERTISEMENT: ad_type: ');
                 this.player.debug.log('ADVERTISEMENT: ad_skippable: ');
-
-                // Reset back to a normal mid-roll.
-                this.adPosition = 2;
+                this.player.debug.log('ADVERTISEMENT: hb: on');
             }
 
-            if (this.headerBidding) {
+            // If we want to run an old school non-linear ad.
+            if (this.adPosition === 2) {
+                resolve(this.tag);
+            } else {
                 // Enable header bidding.
                 this.tag = utils.updateQueryStringParameter(this.tag, 'hb', 'on');
 
@@ -511,12 +491,7 @@ class Ads {
                 fetch(request)
                     .then((response) => response.text())
                     .then((text) => text.length ? JSON.parse(text) : {})
-                    .then(keys => {
-                        // Increment the reporting counter.
-                        if (this.adPosition === 1) this.adCount = 0;
-
-                        resolve(keys);
-                    })
+                    .then(keys => resolve(keys))
                     .catch(error => {
                         this.player.debug.log(error);
 
@@ -546,13 +521,8 @@ class Ads {
                             'tnl_gdpr_consent': '1',
                         };
 
-                        // Increment the reporting counter.
-                        if (this.adPosition === 1) this.adCount = 0;
-
                         resolve(keys);
                     });
-            } else {
-                resolve(this.tag);
             }
         });
     }
@@ -587,13 +557,29 @@ class Ads {
             adsRequest.nonLinearAdSlotWidth = container.offsetWidth;
 
             // Set a small height when we want to run a midroll on order to enforce an IAB leaderboard.
-            adsRequest.nonLinearAdSlotHeight = (this.isMidrollDesktop) ? 120 : container.offsetHeight;
+            // Update midroll value for some old overlay ad stuff.
+            const isMidrollDesktop = (this.adPosition === 2 && (!/Mobi/.test(navigator.userAgent)));
+            adsRequest.nonLinearAdSlotHeight = (isMidrollDesktop) ? 120 : container.offsetHeight;
             this.player.debug.log(`ADVERTISEMENT: nonLinearAdSlotWidth: ${container.offsetWidth}`);
             this.player.debug.log(`ADVERTISEMENT: nonLinearAdSlotHeight: ${adsRequest.nonLinearAdSlotHeight}`);
 
             // We don't want non-linear FULL SLOT ads when we're running mid-rolls on desktop
-            adsRequest.forceNonLinearFullSlot = (!this.isMidrollDesktop);
-            this.player.debug.log(`ADVERTISEMENT: forceNonLinearFullSlot: ${(!this.isMidrollDesktop)}`);
+            adsRequest.forceNonLinearFullSlot = (!isMidrollDesktop);
+            this.player.debug.log(`ADVERTISEMENT: forceNonLinearFullSlot: ${(!isMidrollDesktop)}`);
+
+            // Make sure we request the correct next ad.
+            // Regardless if it fails.
+            // 0 - post-roll
+            // 1 - pre-roll
+            // 2 - mid-roll "subbanner" non-linear
+            // 3 - mid-roll linear
+            if (this.adPosition === 0) {
+                this.adPosition = 1;
+            } else if (this.adPosition === 1 || this.adPosition === 2 || this.adPosition === 3) {
+                this.adPosition = 2;
+            } else {
+                this.adPosition = 0;
+            }
 
             // Get us some ads!
             this.loader.requestAds(adsRequest);
