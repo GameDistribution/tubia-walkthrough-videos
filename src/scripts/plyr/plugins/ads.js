@@ -66,10 +66,6 @@ class Ads {
                 this.setupIMA();
             }).catch(error => this.trigger('error', error));
         }
-
-        // Prebid.
-        window.idhbtubia = window.idhbtubia || {};
-        window.idhbtubia.que = window.idhbtubia.que || [];
     }
 
     /**
@@ -78,8 +74,12 @@ class Ads {
     load() {
         const IMA = new Promise((resolve, reject) => {
             if (!utils.is.object(window.google) || !utils.is.object(window.google.ima)) {
+                window.google = window.google || {};
+                window.google.ima = window.google.ima || {};
+
                 const src = (this.debug)
-                    ? '//imasdk.googleapis.com/js/sdkloader/ima3_debug.js'
+                    // ? '//imasdk.googleapis.com/js/sdkloader/ima3_debug.js'
+                    ? '//imasdk.googleapis.com/js/sdkloader/ima3.js'
                     : '//imasdk.googleapis.com/js/sdkloader/ima3.js';
                 const script = document.getElementsByTagName('script')[0];
                 const ima = document.createElement('script');
@@ -99,9 +99,13 @@ class Ads {
         });
 
         const prebidJS = new Promise((resolve, reject) => {
-            if (typeof window.idhbtubia === 'undefined' || typeof window.idhbtubia.que === 'undefined') {
+            if (!utils.is.object(window.idhbtubia) || !utils.is.array(window.idhbtubia.que)) {
+                window.idhbtubia = window.idhbtubia || {};
+                window.idhbtubia.que = window.idhbtubia.que || [];
+
                 const src = (this.debug)
-                    ? 'https://test-hb.improvedigital.com/pbw/tubia.min.js'
+                    // ? 'https://test-hb.improvedigital.com/pbw/tubia.min.js'
+                    ? 'https://hb.improvedigital.com/pbw/tubia.min.js'
                     : 'https://hb.improvedigital.com/pbw/tubia.min.js';
                 const script = document.getElementsByTagName('script')[0];
                 const ima = document.createElement('script');
@@ -361,7 +365,7 @@ class Ads {
                         // Create the ad unit name based on given Tunnl data.
                         // Default is the gamedistribution.com ad unit.
                         const nsid = data.nsid ? data.nsid : 'TNL_T-17102571517';
-                        const tid = data.tid ? data.tid : 'TNL_NS-18050800052';
+                        const tid = data.tid ? data.tid : 'TNL_NS-18062500055';
                         const unit = `${nsid}/${tid}`;
 
                         // Make sure to remove these properties as we don't
@@ -730,21 +734,22 @@ class Ads {
 
             case google.ima.AdEvent.Type.IMPRESSION:
                 dispatchEvent('impression');
+                /* eslint-disable */
                 // Send a google event.
-                try {
-                    /* eslint-disable */
-                    if (typeof window['ga'] !== 'undefined') {
-                        window['ga']('tubia.send', {
-                            hitType: 'event',
-                            eventCategory: 'AD',
-                            eventAction: 'IMPRESSION',
-                            eventLabel: this.adPosition,
-                        });
-                    }
-                    /* eslint-enable */
-                } catch (error) {
-                    this.player.debug.log('Ads error', error);
+                if (typeof window.ga !== 'undefined') {
+                    const time = new Date();
+                    const h = time.getHours();
+                    const d = time.getDate();
+                    const m = time.getMonth();
+                    const y = time.getFullYear();
+                    window.ga('tubia.send', {
+                        hitType: 'event',
+                        eventCategory: 'AD',
+                        eventAction: 'IMPRESSION',
+                        eventLabel: `${window.location.hostname} | h${h} d${d} m${m} y${y}`,
+                    });
                 }
+                /* eslint-enable */
                 break;
 
             case google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED:
@@ -810,7 +815,6 @@ class Ads {
         this.cancel();
         this.player.debug.warn('Ads error', event);
 
-        // Send a google event.
         try {
             /* eslint-disable */
             if (typeof window['ga'] !== 'undefined') {
@@ -818,12 +822,48 @@ class Ads {
                     hitType: 'event',
                     eventCategory: 'AD',
                     eventAction: 'AD_ERROR',
-                    eventLabel: event.getError(),
+                    eventLabel: event.getError().toString(),
                 });
             }
             /* eslint-enable */
-        } catch (error) {
-            this.player.debug.log('Ads error', error);
+
+            // Check which bidder served us a possible broken advertisement.
+            // We can call on a Prebid.js method. If it exists we report it.
+            // If there is no winning bid we assume the problem lies with AdExchange.
+            if (utils.is.object(window.pbjstubia)){
+                const winningBid = window.pbjstubia.getHighestCpmBids();
+                if (winningBid.length > 0) {
+                    if (this.debug) {
+                        this.player.debug.log('Failed bid', winningBid[0]);
+                    }
+                    const bidder = winningBid[0].bidder ? winningBid[0].bidder : 'no bidder';
+                    const adId = winningBid[0].adId ? winningBid[0].adId : 'no ad identifier';
+                    const vastUrl = winningBid[0].vastUrl ? winningBid[0].vastUrl.substring(0, 300) : 'no VAST URL';
+                    /* eslint-disable */
+                    if (typeof window['ga'] !== 'undefined') {
+                        window['ga']('tubia.send', {
+                            hitType: 'event',
+                            eventCategory: 'AD_ERROR',
+                            eventAction: `${bidder} | ${adId} | ${vastUrl}`,
+                            eventLabel: event.getError().toString(),
+                        });
+                    }
+                    /* eslint-enable */
+                } else {
+                    /* eslint-disable */
+                    if (typeof window['ga'] !== 'undefined') {
+                        window['ga']('tubia.send', {
+                            hitType: 'event',
+                            eventCategory: 'AD_ERROR',
+                            eventAction: `adsense`,
+                            eventLabel: event.getError().toString(),
+                        });
+                    }
+                    /* eslint-enable */
+                }
+            }
+        } catch(error) {
+            this.player.debug.warn('error', error);
         }
     }
 
