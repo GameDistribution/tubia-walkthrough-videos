@@ -79,8 +79,8 @@ class Ads {
                 window.google.ima = window.google.ima || {};
 
                 const src = (this.debug)
-                    // ? '//imasdk.googleapis.com/js/sdkloader/ima3_debug.js'
-                    ? '//imasdk.googleapis.com/js/sdkloader/ima3.js'
+                    ? '//imasdk.googleapis.com/js/sdkloader/ima3_debug.js'
+                    // ? '//imasdk.googleapis.com/js/sdkloader/ima3.js'
                     : '//imasdk.googleapis.com/js/sdkloader/ima3.js';
                 const script = document.getElementsByTagName('script')[0];
                 const ima = document.createElement('script');
@@ -105,8 +105,8 @@ class Ads {
                 window.idhbtubia.que = window.idhbtubia.que || [];
 
                 const src = (this.debug)
-                    // ? 'https://test-hb.improvedigital.com/pbw/tubia.min.js'
-                    ? 'https://hb.improvedigital.com/pbw/tubia.min.js'
+                    ? 'https://test-hb.improvedigital.com/pbw/tubia.min.js'
+                    // ? 'https://hb.improvedigital.com/pbw/tubia.min.js'
                     : 'https://hb.improvedigital.com/pbw/tubia.min.js';
                 const script = document.getElementsByTagName('script')[0];
                 const ima = document.createElement('script');
