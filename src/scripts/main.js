@@ -201,15 +201,10 @@ class Tubia {
                                 }).catch((error) => {
                                     /* eslint-disable */
                                     if (typeof window['ga'] !== 'undefined') {
-                                        const time = new Date();
-                                        const h = time.getHours();
-                                        const d = time.getDate();
-                                        const m = time.getMonth();
-                                        const y = time.getFullYear();
                                         window['ga']('tubia.send', {
                                             hitType: 'event',
                                             eventCategory: 'ERROR',
-                                            eventAction: `${this.options.domain} | h${h} d${d} m${m} y${y}`,
+                                            eventAction: this.options.domain,
                                             eventLabel: `start relatedVideosRequest | ${error}`,
                                         });
                                     }
@@ -250,15 +245,10 @@ class Tubia {
                 .catch(() => {
                     /* eslint-disable */
                     if (typeof window['ga'] !== 'undefined') {
-                        const time = new Date();
-                        const h = time.getHours();
-                        const d = time.getDate();
-                        const m = time.getMonth();
-                        const y = time.getFullYear();
                         window['ga']('tubia.send', {
                             hitType: 'event',
                             eventCategory: 'ERROR',
-                            eventAction: `${this.options.domain} | h${h} d${d} m${m} y${y}`,
+                            eventAction: this.options.domain,
                             eventLabel: 'Something went wrong loading Google fonts.',
                         });
                     }
@@ -446,15 +436,10 @@ class Tubia {
 
         /* eslint-disable */
         if (typeof window['ga'] !== 'undefined') {
-            const time = new Date();
-            const h = time.getHours();
-            const d = time.getDate();
-            const m = time.getMonth();
-            const y = time.getFullYear();
             window['ga']('tubia.send', {
                 hitType: 'event',
                 eventCategory: 'VIDEO_NOT_FOUND',
-                eventAction: `${this.options.url} | h${h} d${d} m${m} y${y}`,
+                eventAction: this.options.url,
                 eventLabel: `${origin} | ${message}`,
             });
         }
@@ -479,15 +464,10 @@ class Tubia {
 
         /* eslint-disable */
         if (typeof window['ga'] !== 'undefined') {
-            const time = new Date();
-            const h = time.getHours();
-            const d = time.getDate();
-            const m = time.getMonth();
-            const y = time.getFullYear();
             window['ga']('tubia.send', {
                 hitType: 'event',
                 eventCategory: 'ERROR',
-                eventAction: `${this.options.domain} | h${h} d${d} m${m} y${y}`,
+                eventAction: 'this.options.domain',
                 eventLabel: `${origin} | ${error}`,
             });
         }
@@ -628,6 +608,7 @@ class Tubia {
                     gdprTargeting: this.options.gdprTargeting,
                     tag: (json.adsEnabled && !json.addFreeActive) ? this.adTag : '',
                     keys: this.options.keys ? JSON.stringify(this.options.keys) : null,
+                    domain: this.options.domain,
                 },
                 keyboard: {
                     global: true,
@@ -823,15 +804,10 @@ class Tubia {
         }).catch((error) => {
             /* eslint-disable */
             if (typeof window['ga'] !== 'undefined') {
-                const time = new Date();
-                const h = time.getHours();
-                const d = time.getDate();
-                const m = time.getMonth();
-                const y = time.getFullYear();
                 window['ga']('tubia.send', {
                     hitType: 'event',
                     eventCategory: 'ERROR',
-                    eventAction: `${this.options.domain} | h${h} d${d} m${m} y${y}`,
+                    eventAction: this.options.domain,
                     eventLabel: `${error} | videoCounterRequest`,
                 });
             }

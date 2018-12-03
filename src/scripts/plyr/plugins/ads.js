@@ -23,6 +23,7 @@ class Ads {
         this.gdprTargeting = player.config.ads.gdprTargeting;
         this.headerBidding = player.config.ads.headerBidding;
         this.keys = player.config.ads.keys;
+        this.domain = player.config.ads.domain;
 
         this.prerollEnabled = player.config.ads.prerollEnabled;
         this.midrollEnabled = player.config.ads.midrollEnabled;
@@ -744,9 +745,9 @@ class Ads {
                     const y = time.getFullYear();
                     window.ga('tubia.send', {
                         hitType: 'event',
-                        eventCategory: 'AD',
-                        eventAction: 'IMPRESSION',
-                        eventLabel: `${window.location.hostname} | h${h} d${d} m${m} y${y}`,
+                        eventCategory: 'IMPRESSION',
+                        eventAction: this.domain,
+                        eventLabel: `h${h} d${d} m${m} y${y}`,
                     });
                 }
                 /* eslint-enable */
@@ -809,20 +810,20 @@ class Ads {
 
     /**
      * Any ad error handling comes through here
+     * https://developers.google.com/interactive-media-ads/docs/sdks/html5/v3/apis#ima.AdError.getErrorCode
      * @param {Event} event
      */
     onAdError(event) {
         this.cancel();
-        this.player.debug.warn('Ads error', event);
 
         try {
             /* eslint-disable */
             if (typeof window['ga'] !== 'undefined') {
                 window['ga']('tubia.send', {
                     hitType: 'event',
-                    eventCategory: 'AD',
-                    eventAction: 'AD_ERROR',
-                    eventLabel: event.getError().toString(),
+                    eventCategory: event.getError().getType().toUpperCase(),
+                    eventAction: event.getError().getErrorCode().toString() || event.getError().getVastErrorCode().toString(),
+                    eventLabel: event.getError().getMessage(),
                 });
             }
             /* eslint-enable */
@@ -830,39 +831,29 @@ class Ads {
             // Check which bidder served us a possible broken advertisement.
             // We can call on a Prebid.js method. If it exists we report it.
             // If there is no winning bid we assume the problem lies with AdExchange.
-            if (utils.is.object(window.pbjstubia)){
-                const winningBid = window.pbjstubia.getHighestCpmBids();
-                if (winningBid.length > 0) {
+            if (utils.is.object(window.pbjstubia)) {
+                window.pbjstubia.getHighestCpmBids().forEach((winner) => {
                     if (this.debug) {
-                        this.player.debug.log('Failed bid', winningBid[0]);
+                        this.player.debug.log('Failed bid', winner);
                     }
-                    const bidder = winningBid[0].bidder ? winningBid[0].bidder : 'no bidder';
-                    const adId = winningBid[0].adId ? winningBid[0].adId : 'no ad identifier';
-                    const vastUrl = winningBid[0].vastUrl ? winningBid[0].vastUrl.substring(0, 300) : 'no VAST URL';
+
+                    const adId = winner.adId ? winner.adId : 'no ad identifier';
+                    const vastUrl = winner.vastUrl ? winner.vastUrl.substring(0, 500) : null;
+                    const vastXML = winner.vastXML ? winner.vastXML.substring(0, 500) : null;
+
                     /* eslint-disable */
-                    if (typeof window['ga'] !== 'undefined') {
+                    if (typeof window['ga'] !== 'undefined' && winner.bidder) {
                         window['ga']('tubia.send', {
                             hitType: 'event',
-                            eventCategory: 'AD_ERROR',
-                            eventAction: `${bidder} | ${adId} | ${vastUrl}`,
-                            eventLabel: event.getError().toString(),
+                            eventCategory: winner.bidder.toUpperCase(),
+                            eventAction: `${adId} | ${vastUrl || vastXML}`,
+                            eventLabel: `${event.getError().getErrorCode().toString() || event.getError().getVastErrorCode().toString()} | ${event.getError().getMessage()}`,
                         });
                     }
                     /* eslint-enable */
-                } else {
-                    /* eslint-disable */
-                    if (typeof window['ga'] !== 'undefined') {
-                        window['ga']('tubia.send', {
-                            hitType: 'event',
-                            eventCategory: 'AD_ERROR',
-                            eventAction: `adsense`,
-                            eventLabel: event.getError().toString(),
-                        });
-                    }
-                    /* eslint-enable */
-                }
+                });
             }
-        } catch(error) {
+        } catch (error) {
             this.player.debug.warn('error', error);
         }
     }
@@ -1006,19 +997,19 @@ class Ads {
             const y = time.getFullYear();
             let categoryName = '';
             if (adPosition === 0) {
-                categoryName = 'AD_POSTROLL';
+                categoryName = 'POSTROLL';
             } else if (adPosition === 1) {
-                categoryName = 'AD_PREROLL';
+                categoryName = 'PREROLL';
             } else if (adPosition === 2) {
-                categoryName = 'AD_MIDROLL';
+                categoryName = 'MIDROLL_NON_LINEAR';
             } else if (adPosition === 3) {
-                categoryName = 'AD_MIDROLL_FULLSLOT';
+                categoryName = 'MIDROLL_LINEAR';
             }
             window.ga('tubia.send', {
                 hitType: 'event',
                 eventCategory: categoryName,
-                eventAction: `${window.location.hostname} | h${h} d${d} m${m} y${y}`,
-                eventLabel: this.tag,
+                eventAction: this.domain,
+                eventLabel: `h${h} d${d} m${m} y${y}`,
             });
         }
     }

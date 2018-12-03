@@ -429,6 +429,7 @@ const defaults = {
         gdprTargeting: null,
         tag: '',
         keys: null,
+        domain: 'gamedistribution.com',
     },
 };
 
