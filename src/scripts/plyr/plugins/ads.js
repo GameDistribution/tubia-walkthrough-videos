@@ -837,17 +837,16 @@ class Ads {
                         this.player.debug.log('Failed bid', winner);
                     }
 
-                    const adId = winner.adId ? winner.adId : 'no ad identifier';
-                    const vastXML = winner.vastXML ? winner.vastXML.substring(0, 500) : null;
-                    const vastUrl = winner.vastUrl ? winner.vastUrl.substring(0, 500) : null;
+                    const adId = winner.adId ? winner.adId : null;
+                    const creativeId =  winner.creativeId ? winner.creativeId : null;
 
                     /* eslint-disable */
                     if (typeof window['ga'] !== 'undefined' && winner.bidder) {
                         window['ga']('tubia.send', {
                             hitType: 'event',
                             eventCategory: winner.bidder.toUpperCase(),
-                            eventAction: `${adId} | ${vastXML || vastUrl}`,
-                            eventLabel: `${event.getError().getErrorCode().toString() || event.getError().getVastErrorCode().toString()} | ${event.getError().getMessage()}`,
+                            eventAction: `${event.getError().getErrorCode().toString() || event.getError().getVastErrorCode().toString()} | ${event.getError().getMessage()}`,
+                            eventLabel: `${adId} | ${creativeId}`,
                         });
                     }
                     /* eslint-enable */

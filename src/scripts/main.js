@@ -589,7 +589,7 @@ class Tubia {
 
             // Create the Plyr instance.
             this.player = new Plyr('#plyr__tubia', {
-                debug: this.options.debug,
+                debug: true, // this.options.debug,
                 iconUrl: (this.options.domain === 'localhost:8081')
                     ? './sprite.svg'
                     : 'https://player.tubia.com/libs/gd/sprite.svg',
