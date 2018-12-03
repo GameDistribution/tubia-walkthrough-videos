@@ -382,15 +382,10 @@ class Ads {
                         // Send event for Tunnl debugging.
                         /* eslint-disable */
                         if (typeof window['ga'] !== 'undefined') {
-                            const time = new Date();
-                            const h = time.getHours();
-                            const d = time.getDate();
-                            const m = time.getMonth();
-                            const y = time.getFullYear();
                             window['ga']('tubia.send', {
                                 hitType: 'event',
                                 eventCategory: 'AD_REQUEST',
-                                eventAction: `${this.domain} | h${h} d${d} m${m} y${y}`,
+                                eventAction: this.domain,
                                 eventLabel: unit,
                             });
                         }
@@ -542,15 +537,10 @@ class Ads {
                         // Send event for Tunnl debugging.
                         /* eslint-disable */
                         if (typeof window['ga'] !== 'undefined') {
-                            const time = new Date();
-                            const h = time.getHours();
-                            const d = time.getDate();
-                            const m = time.getMonth();
-                            const y = time.getFullYear();
                             window['ga']('gd.send', {
                                 hitType: 'event',
                                 eventCategory: 'AD_REQUEST_FALLBACK',
-                                eventAction: `${this.domain} | h${h} d${d} m${m} y${y}`,
+                                eventAction: this.domain,
                                 eventLabel: error,
                             });
                         }
