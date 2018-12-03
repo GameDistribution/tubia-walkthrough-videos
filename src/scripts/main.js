@@ -48,9 +48,9 @@ class Tubia {
             langCode: '',
             colorMain: '',
             colorAccent: '',
-            url: document.location.origin + document.location.pathname,
-            href: document.location.href,
-            domain: document.location.host,
+            url: document.location.origin + document.location.pathname || 'https://gamedistribution.com/',
+            href: document.location.href || 'https://gamedistribution.com/',
+            domain: document.location.host || 'gamedistribution.com',
             gdprTracking: null,
             gdprTargeting: null,
             keys: null, // Tunnl tracking keys.
@@ -467,7 +467,7 @@ class Tubia {
             window['ga']('tubia.send', {
                 hitType: 'event',
                 eventCategory: 'ERROR',
-                eventAction: 'this.options.domain',
+                eventAction: this.options.domain,
                 eventLabel: `${origin} | ${error}`,
             });
         }
@@ -589,7 +589,7 @@ class Tubia {
 
             // Create the Plyr instance.
             this.player = new Plyr('#plyr__tubia', {
-                debug: true, // this.options.debug,
+                debug: this.options.debug,
                 iconUrl: (this.options.domain === 'localhost:8081')
                     ? './sprite.svg'
                     : 'https://player.tubia.com/libs/gd/sprite.svg',

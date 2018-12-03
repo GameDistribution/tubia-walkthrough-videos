@@ -735,21 +735,67 @@ class Ads {
 
             case google.ima.AdEvent.Type.IMPRESSION:
                 dispatchEvent('impression');
-                /* eslint-disable */
-                // Send a google event.
-                if (typeof window.ga !== 'undefined') {
+
+                try {
                     const time = new Date();
                     const h = time.getHours();
                     const d = time.getDate();
                     const m = time.getMonth();
                     const y = time.getFullYear();
-                    window.ga('tubia.send', {
-                        hitType: 'event',
-                        eventCategory: 'IMPRESSION',
-                        eventAction: this.domain,
-                        eventLabel: `h${h} d${d} m${m} y${y}`,
-                    });
+
+                    /* eslint-disable */
+                    if (typeof window.ga !== 'undefined') {
+                        window.ga('tubia.send', {
+                            hitType: 'event',
+                            eventCategory: 'IMPRESSION',
+                            eventAction: this.domain,
+                            eventLabel: `h${h} d${d} m${m} y${y}`,
+                        });
+                    }
+                    /* eslint-enable */
+
+                    // Check which bidder served us the impression.
+                    // We can call on a Prebid.js method. If it exists we report it.
+                    // Our default ad provider is Ad Exchange.
+                    if (utils.is.object(window.pbjstubia)) {
+                        const winners = window.pbjstubia.getHighestCpmBids();
+                        if (this.debug) {
+                            this.player.debug.log('Winner(s)', winners);
+                        }
+                        // Todo: There can be multiple winners...
+                        if (winners.length > 0) {
+                            winners.forEach((winner) => {
+
+                                /* eslint-disable */
+                                if (typeof window['ga'] !== 'undefined' && winner.bidder) {
+                                    window['ga']('tubia.send', {
+                                        hitType: 'event',
+                                        eventCategory: `IMPRESSION_${winner.bidder.toUpperCase()}`,
+                                        eventAction: this.domain,
+                                        eventLabel: `h${h} d${d} m${m} y${y}`,
+                                    });
+                                }
+                                /* eslint-enable */
+                            });
+                        } else {
+                            /* eslint-disable */
+                            if (typeof window['ga'] !== 'undefined') {
+                                window['ga']('tubia.send', {
+                                    hitType: 'event',
+                                    eventCategory: 'IMPRESSION_ADEXCHANGE',
+                                    eventAction: this.domain,
+                                    eventLabel: `h${h} d${d} m${m} y${y}`,
+                                });
+                            }
+                            /* eslint-enable */
+                        }
+                    }
+                } catch (error) {
+                    this.player.debug.warn('error', error);
                 }
+
+
+
                 /* eslint-enable */
                 break;
 
@@ -821,7 +867,7 @@ class Ads {
             if (typeof window['ga'] !== 'undefined') {
                 window['ga']('tubia.send', {
                     hitType: 'event',
-                    eventCategory: event.getError().getType().toUpperCase(),
+                    eventCategory: 'AD_ERROR',
                     eventAction: event.getError().getErrorCode().toString() || event.getError().getVastErrorCode().toString(),
                     eventLabel: event.getError().getMessage(),
                 });
@@ -831,26 +877,41 @@ class Ads {
             // Check which bidder served us a possible broken advertisement.
             // We can call on a Prebid.js method. If it exists we report it.
             // If there is no winning bid we assume the problem lies with AdExchange.
+            // As our default ad provider is Ad Exchange.
             if (utils.is.object(window.pbjstubia)) {
-                window.pbjstubia.getHighestCpmBids().forEach((winner) => {
-                    if (this.debug) {
-                        this.player.debug.log('Failed bid', winner);
-                    }
+                const winners = window.pbjstubia.getHighestCpmBids();
+                if (this.debug) {
+                    this.player.debug.log('Failed winner(s)', winners);
+                }
+                // Todo: There can be multiple winners...
+                if (winners.length > 0) {
+                    winners.forEach((winner) => {
+                        const adId = winner.adId ? winner.adId : null;
+                        const creativeId = winner.creativeId ? winner.creativeId : null;
 
-                    const adId = winner.adId ? winner.adId : null;
-                    const creativeId =  winner.creativeId ? winner.creativeId : null;
-
+                        /* eslint-disable */
+                        if (typeof window['ga'] !== 'undefined' && winner.bidder) {
+                            window['ga']('tubia.send', {
+                                hitType: 'event',
+                                eventCategory: `AD_ERROR_${winner.bidder.toUpperCase()}`,
+                                eventAction: event.getError().getErrorCode().toString() || event.getError().getVastErrorCode().toString(),
+                                eventLabel: `${adId} | ${creativeId}`,
+                            });
+                        }
+                        /* eslint-enable */
+                    });
+                } else {
                     /* eslint-disable */
-                    if (typeof window['ga'] !== 'undefined' && winner.bidder) {
+                    if (typeof window['ga'] !== 'undefined') {
                         window['ga']('tubia.send', {
                             hitType: 'event',
-                            eventCategory: winner.bidder.toUpperCase(),
-                            eventAction: `${event.getError().getErrorCode().toString() || event.getError().getVastErrorCode().toString()} | ${event.getError().getMessage()}`,
-                            eventLabel: `${adId} | ${creativeId}`,
+                            eventCategory: 'AD_ERROR_ADEXCHANGE',
+                            eventAction: event.getError().getErrorCode().toString() || event.getError().getVastErrorCode().toString(),
+                            eventLabel: event.getError().getMessage(),
                         });
                     }
                     /* eslint-enable */
-                });
+                }
             }
         } catch (error) {
             this.player.debug.warn('error', error);
