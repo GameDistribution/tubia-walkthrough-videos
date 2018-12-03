@@ -40,7 +40,7 @@ class Ads {
         this.events = {};
         this.safetyTimer = null;
         this.adCount = 0;
-        this.adPosition = 1;
+        this.adPosition = 0;
         this.previousMidrollTime = 0;
         this.requestRunning = false;
 
@@ -156,8 +156,8 @@ class Ads {
             // Preload the preroll.
             // Start playing the advertisement when ready.
             if (this.prerollEnabled) {
-                this.prerollEnabled = false;
                 this.adPosition = 1;
+                this.prerollEnabled = false;
                 this.player.debug.log('Starting a pre-roll advertisement.');
                 this.requestAd()
                     .then(vastUrl => this.loadAd(vastUrl))
@@ -443,13 +443,11 @@ class Ads {
             if (this.adPosition === 0) {
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_position', 'postroll');
                 this.tag = utils.updateQueryStringParameter(this.tag, 'hb', 'on');
-                this.sendGoogleEventPosition(this.adPosition);
                 this.player.debug.log('ADVERTISEMENT: ad_position: postroll');
                 this.player.debug.log('ADVERTISEMENT: hb: on');
             } else if (this.adPosition === 1) {
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_position', 'preroll');
                 this.tag = utils.updateQueryStringParameter(this.tag, 'hb', 'on');
-                this.sendGoogleEventPosition(this.adPosition);
                 this.player.debug.log('ADVERTISEMENT: ad_position: preroll');
                 this.player.debug.log('ADVERTISEMENT: hb: on');
             } else if (this.adPosition === 2) {
@@ -460,7 +458,6 @@ class Ads {
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_type', 'image');
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_skippable', '0');
                 this.tag = utils.updateQueryStringParameter(this.tag, 'hb', 'off');
-                this.sendGoogleEventPosition(this.adPosition);
                 this.player.debug.log('ADVERTISEMENT: ad_position: subbanner');
                 this.player.debug.log(`ADVERTISEMENT: ad_midroll_count: ${positionCount}`);
                 this.player.debug.log('ADVERTISEMENT: ad_type: image');
@@ -474,7 +471,6 @@ class Ads {
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_type', '');
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_skippable', '');
                 this.tag = utils.updateQueryStringParameter(this.tag, 'hb', 'on');
-                this.sendGoogleEventPosition(this.adPosition);
                 this.player.debug.log('ADVERTISEMENT: ad_position: midroll');
                 this.player.debug.log(`ADVERTISEMENT: ad_midroll_count: ${positionCount}`);
                 this.player.debug.log('ADVERTISEMENT: ad_type: ');
@@ -561,8 +557,7 @@ class Ads {
             adsRequest.linearAdSlotHeight = container.offsetHeight;
             adsRequest.nonLinearAdSlotWidth = container.offsetWidth;
 
-            // Set a small height when we want to run a midroll on order to enforce an IAB leaderboard.
-            // Update midroll value for some old overlay ad stuff.
+            // Set a small height, when we want to run a non linear in order to enforce an IAB leaderboard.
             const isMidrollDesktop = (this.adPosition === 2 && (!/Mobi/.test(navigator.userAgent)));
             adsRequest.nonLinearAdSlotHeight = (isMidrollDesktop) ? 120 : container.offsetHeight;
             this.player.debug.log(`ADVERTISEMENT: nonLinearAdSlotWidth: ${container.offsetWidth}`);
@@ -572,19 +567,32 @@ class Ads {
             adsRequest.forceNonLinearFullSlot = (!isMidrollDesktop);
             this.player.debug.log(`ADVERTISEMENT: forceNonLinearFullSlot: ${(!isMidrollDesktop)}`);
 
-            // Make sure we request the correct next ad.
-            // Regardless if it fails.
-            // 0 - post-roll
-            // 1 - pre-roll
-            // 2 - mid-roll "subbanner" non-linear
-            // 3 - mid-roll linear
-            if (this.adPosition === 0) {
-                this.adPosition = 1;
-            } else if (this.adPosition === 1 || this.adPosition === 2 || this.adPosition === 3) {
-                this.adPosition = 2;
-            } else {
-                this.adPosition = 0;
+            // Send event for Tunnl debugging.
+            /* eslint-disable */
+            if (typeof window['ga'] !== 'undefined') {
+                const time = new Date();
+                const h = time.getHours();
+                const d = time.getDate();
+                const m = time.getMonth();
+                const y = time.getFullYear();
+                let categoryName = '';
+                if (this.adPosition === 0) {
+                    categoryName = 'POSTROLL';
+                } else if (this.adPosition === 1) {
+                    categoryName = 'PREROLL';
+                } else if (this.adPosition === 2) {
+                    categoryName = 'MIDROLL_NON_LINEAR';
+                } else if (this.adPosition === 3) {
+                    categoryName = 'MIDROLL_LINEAR';
+                }
+                window.ga('tubia.send', {
+                    hitType: 'event',
+                    eventCategory: categoryName,
+                    eventAction: `${this.domain} | h${h} d${d} m${m} y${y}`,
+                    eventLabel: vastUrl,
+                });
             }
+            /* eslint-enable */
 
             // Get us some ads!
             this.loader.requestAds(adsRequest);
@@ -782,7 +790,7 @@ class Ads {
                             if (typeof window['ga'] !== 'undefined') {
                                 window['ga']('tubia.send', {
                                     hitType: 'event',
-                                    eventCategory: 'IMPRESSION_ADEXCHANGE',
+                                    eventCategory: `IMPRESSION_ADEXCHANGE${this.adPosition === 2 ? '_NON_LINEAR' : '_LINEAR'}`,
                                     eventAction: this.domain,
                                     eventLabel: `h${h} d${d} m${m} y${y}`,
                                 });
@@ -903,7 +911,7 @@ class Ads {
                     if (typeof window['ga'] !== 'undefined') {
                         window['ga']('tubia.send', {
                             hitType: 'event',
-                            eventCategory: 'AD_ERROR_ADEXCHANGE',
+                            eventCategory: `IMPRESSION_ADEXCHANGE${this.adPosition === 2 ? '_NON_LINEAR' : '_LINEAR'}`,
                             eventAction: event.getError().getErrorCode().toString() || event.getError().getVastErrorCode().toString(),
                             eventLabel: event.getError().getMessage(),
                         });
@@ -1038,37 +1046,6 @@ class Ads {
             this.player.debug.log(`Safety timer cleared from: ${from}`);
             clearTimeout(this.safetyTimer);
             this.safetyTimer = null;
-        }
-    }
-
-    /**
-     * sendGoogleEventPosition
-     * @param {number} adPosition
-     */
-    sendGoogleEventPosition(adPosition) {
-        // Send a google event.
-        if (typeof window.ga !== 'undefined') {
-            const time = new Date();
-            const h = time.getHours();
-            const d = time.getDate();
-            const m = time.getMonth();
-            const y = time.getFullYear();
-            let categoryName = '';
-            if (adPosition === 0) {
-                categoryName = 'POSTROLL';
-            } else if (adPosition === 1) {
-                categoryName = 'PREROLL';
-            } else if (adPosition === 2) {
-                categoryName = 'MIDROLL_NON_LINEAR';
-            } else if (adPosition === 3) {
-                categoryName = 'MIDROLL_LINEAR';
-            }
-            window.ga('tubia.send', {
-                hitType: 'event',
-                eventCategory: categoryName,
-                eventAction: this.domain,
-                eventLabel: `h${h} d${d} m${m} y${y}`,
-            });
         }
     }
 }
