@@ -794,8 +794,6 @@ class Ads {
                     this.player.debug.warn('error', error);
                 }
 
-
-
                 /* eslint-enable */
                 break;
 
