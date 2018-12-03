@@ -379,6 +379,23 @@ class Ads {
                         // Add test parameter for Tunnl.
                         Object.assign(data, {tnl_system: '1'});
 
+                        // Send event for Tunnl debugging.
+                        /* eslint-disable */
+                        if (typeof window['ga'] !== 'undefined') {
+                            const time = new Date();
+                            const h = time.getHours();
+                            const d = time.getDate();
+                            const m = time.getMonth();
+                            const y = time.getFullYear();
+                            window['ga']('tubia.send', {
+                                hitType: 'event',
+                                eventCategory: 'AD_REQUEST',
+                                eventAction: `${this.domain} | h${h} d${d} m${m} y${y}`,
+                                eventLabel: unit,
+                            });
+                        }
+                        /* eslint-enable */
+
                         // Make the request for a VAST tag from the Prebid.js wrapper.
                         // Get logging from the wrapper using: ?idhbtubia_debug=true
                         // To get a copy of the current config: copy(idhbtubia.getConfig());
@@ -521,6 +538,23 @@ class Ads {
                             'tnl_gdpr': '0',
                             'tnl_gdpr_consent': '1',
                         };
+
+                        // Send event for Tunnl debugging.
+                        /* eslint-disable */
+                        if (typeof window['ga'] !== 'undefined') {
+                            const time = new Date();
+                            const h = time.getHours();
+                            const d = time.getDate();
+                            const m = time.getMonth();
+                            const y = time.getFullYear();
+                            window['ga']('gd.send', {
+                                hitType: 'event',
+                                eventCategory: 'AD_REQUEST_FALLBACK',
+                                eventAction: `${this.domain} | h${h} d${d} m${m} y${y}`,
+                                eventLabel: error,
+                            });
+                        }
+                        /* eslint-enable */
 
                         resolve(keys);
                     });
