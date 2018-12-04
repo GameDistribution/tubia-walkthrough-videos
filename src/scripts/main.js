@@ -380,7 +380,9 @@ class Tubia {
             // load the DFP Script.
             const slotId = 'tubia__display-ad';
             const slotElement = document.getElementById(slotId);
+            const isIE11 = !!window.MSInputMethodContext && !!document.documentMode;
             if (slotElement
+                && !isIE11
                 && (this.options.domain === 'spele.nl'
                 || this.options.domain === 'www.funnygames.nl'
                 || this.options.domain === 'www.bgames.com'
