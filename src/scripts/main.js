@@ -387,40 +387,40 @@ class Tubia {
                 || this.options.domain === 'www.funnygames.nl'
                 || this.options.domain === 'www.bgames.com'
                 || this.options.domain === 'www.plinga.com')) {
-                const slotWidth = slotElement.offsetWidth;
 
                 // Load DFP script.
-                utils.loadScript('https://www.googletagservices.com/tag/js/gpt.js');
+                utils.loadScript(this.options.debug
+                    ? 'https://test-hb.improvedigital.com/pbw/tubia.min.js'
+                    : 'https://hb.improvedigital.com/pbw/tubia.min.js')
+                    .then(() => {
+                        // Set header bidding name space.
+                        window.idhbtubia = window.idhbtubia || {};
+                        window.idhbtubia.que = window.idhbtubia.que || [];
 
-                // Set namespaces for DFP.
-                window.googletag = window.googletag || {};
-                window.googletag.cmd = window.googletag.cmd || [];
+                        // Show some header bidding logging.
+                        if (this.options.debug) {
+                            window.idhbtubia.getConfig();
+                            window.idhbtubia.debug(true);
+                        }
 
-                // Create the ad slot.
-                window.googletag.cmd.push(() => {
-                    /* eslint-disable */
-                    let mapping = null;
-                    if (slotWidth >= 970) {
-                        mapping = window.googletag.sizeMapping()
-                            .addSize([970, 90], [[970, 90], [728, 90]])
-                            .addSize([728, 90], [728, 90])
-                            .build();
-                    } else if (slotWidth >= 728) {
-                        mapping = window.googletag.sizeMapping()
-                            .addSize([728, 90], [728, 90])
-                            .build();
-                    }
-
-                    // window.googletag.defineSlot('1015413/TNL_NS-18062500055/TNL_T-18082776963_1', [728, 90], slotId)
-                    // window.googletag.defineSlot('/21731147099/Tubia_prestart_leaderboard', [728, 90], slotId)
-                    window.googletag.defineSlot('/1015413/Tubia_prestart_leaderboard', [728, 90], slotId)
-                        .defineSizeMapping(mapping)
-                        .setCollapseEmptyDiv(true, true)
-                        .addService(window.googletag.pubads());
-                    /* eslint-enable */
-                    window.googletag.enableServices();
-                    window.googletag.display(slotId);
-                });
+                        // Load the ad.
+                        window.idhbtubia.que.push(() => {
+                            window.idhbtubia.setAdserverTargeting({
+                                tnl_ad_pos: 'tubia_leaderboard',
+                            });
+                            window.idhbtubia.requestAds({
+                                slotIds: [slotId],
+                                callback: (response) => {
+                                    if (this.options.debug) {
+                                        console.log('window.idhbtubia.requestAds callback returned:', response);
+                                    }
+                                },
+                            });
+                        });
+                    })
+                    .catch(error => {
+                        this.onError('init loadStyle', error);
+                    });
             }
         });
     }

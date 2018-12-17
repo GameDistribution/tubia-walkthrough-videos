@@ -109,12 +109,12 @@ class Ads {
                     // ? 'https://hb.improvedigital.com/pbw/tubia.min.js'
                     : 'https://hb.improvedigital.com/pbw/tubia.min.js';
                 const script = document.getElementsByTagName('script')[0];
-                const ima = document.createElement('script');
-                ima.type = 'text/javascript';
-                ima.id = 'idhbtubia';
-                ima.async = true;
-                ima.src = src;
-                ima.onload = () => {
+                const hb = document.createElement('script');
+                hb.type = 'text/javascript';
+                hb.id = 'idhbtubia';
+                hb.async = true;
+                hb.src = src;
+                hb.onload = () => {
                     try {
                         // Show some header bidding logging.
                         if (this.debug) {
@@ -126,10 +126,10 @@ class Ads {
                         reject(e);
                     }
                 };
-                ima.onerror = (error) => {
+                hb.onerror = (error) => {
                     reject(error);
                 };
-                script.parentNode.insertBefore(ima, script);
+                script.parentNode.insertBefore(hb, script);
             } else {
                 resolve();
             }
