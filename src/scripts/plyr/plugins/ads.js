@@ -314,7 +314,10 @@ class Ads {
 
         // We assume the adContainer is the video container of the plyr element
         // that will house the ads
-        this.elements.displayContainer = new google.ima.AdDisplayContainer(this.elements.container);
+        this.elements.displayContainer = new google.ima.AdDisplayContainer(
+            this.elements.container,
+            this.player.elements.original,
+        );
 
         // Create ads loader
         this.loader = new google.ima.AdsLoader(this.elements.displayContainer);
@@ -645,7 +648,7 @@ class Ads {
 
         // The SDK is polling currentTime on the contentPlayback. And needs a duration
         // so it can determine when to start the mid- and post-roll
-        this.manager = adsManagerLoadedEvent.getAdsManager(this.player, settings);
+        this.manager = adsManagerLoadedEvent.getAdsManager(this.player.elements.original, settings);
 
         // Get the cue points for any mid-rolls by filtering out the pre- and post-roll
         this.cuePoints = this.manager.getCuePoints();
