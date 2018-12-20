@@ -100,6 +100,8 @@ class Ads {
         });
 
         const prebidJS = new Promise((resolve, reject) => {
+            // The display ad defined within main.js also uses the same hb namespace
+            // and also loads the same script. If this happens, just resolve.
             if (!utils.is.object(window.idhbtubia) || !utils.is.array(window.idhbtubia.que)) {
                 window.idhbtubia = window.idhbtubia || {};
                 window.idhbtubia.que = window.idhbtubia.que || [];

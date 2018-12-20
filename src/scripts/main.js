@@ -609,7 +609,7 @@ class Tubia {
                     // videoInterval: 60, // (json.preRollSecond) ? json.preRollSecond : 300,
                     // overlayInterval: (json.subBannerSecond) ? json.subBannerSecond : 15,
                     gdprTargeting: this.options.gdprTargeting,
-                    tag: (json.adsEnabled && !json.addFreeActive) ? this.adTag : '',
+                    tag: (json.adsEnabled && !json.addFreeActive) || this.options.debug ? this.adTag : '',
                     keys: this.options.keys ? JSON.stringify(this.options.keys) : null,
                     domain: this.options.domain,
                 },
