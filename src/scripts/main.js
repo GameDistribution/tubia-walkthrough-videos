@@ -381,13 +381,7 @@ class Tubia {
             const slotId = 'tubia__display-ad';
             const slotElement = document.getElementById(slotId);
             const isIE11 = !!window.MSInputMethodContext && !!document.documentMode;
-            if (slotElement
-                && !isIE11
-                && (this.options.domain === 'spele.nl'
-                || this.options.domain === 'www.funnygames.nl'
-                || this.options.domain === 'www.bgames.com'
-                || this.options.domain === 'www.plinga.com')) {
-
+            if (slotElement && !isIE11) {
                 // Load DFP script.
                 utils.loadScript(this.options.debug
                     ? 'https://test-hb.improvedigital.com/pbw/tubia.min.js'
