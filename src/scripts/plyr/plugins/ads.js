@@ -372,7 +372,7 @@ class Ads {
                         // Create the ad unit name based on given Tunnl data.
                         // Default is the gamedistribution.com ad unit.
                         const nsid = data.nsid ? data.nsid : 'TNL_T-17102571517';
-                        const tid = data.tid ? data.tid : 'TNL_NS-18062500055';
+                        const tid = data.tid ? data.tid : 'TNL_NS-18101700058';
                         const unit = `${nsid}/${tid}`;
 
                         // Make sure to remove these properties as we don't
@@ -515,17 +515,14 @@ class Ads {
                     .catch(error => {
                         this.player.debug.log(error);
 
-                        // Todo: set proper defaults!
                         const keys = {
                             'tid': 'TNL_T-17102571517',
-                            'nsid': 'TNL_NS-18062500055',
+                            'nsid': 'TNL_NS-18101700058',
                             'tnl_tid': 'T-17102571517',
-                            'tnl_nsid': 'NS-18062500055',
-                            'tnl_pw': '640',
-                            'tnl_ph': '480',
+                            'tnl_nsid': 'NS-18101700058',
                             'tnl_pt': '22',
                             'tnl_pid': 'P-17101800031',
-                            'tnl_paid': '4040',
+                            'tnl_paid': '17',
                             'tnl_ad_type': 'video_image',
                             'tnl_asset_id': '0',
                             'tnl_ad_pos': this.adPosition,
@@ -539,6 +536,7 @@ class Ads {
                             'tnl_campaign': '2',
                             'tnl_gdpr': '0',
                             'tnl_gdpr_consent': '1',
+                            'consent_string': 'BOWJjG9OWJjG9CLAAAENBx-AAAAiDAAA',
                         };
 
                         // Send event for Tunnl debugging.
