@@ -378,44 +378,50 @@ class Tubia {
 
             // Create a display advertisement which will reside on top of the poster image.
             // load the DFP Script.
-            // const slotId = 'tubia__display-ad';
-            // const slotElement = document.getElementById(slotId);
-            // const isIE11 = !!window.MSInputMethodContext && !!document.documentMode;
-            // if (slotElement && !isIE11) {
-            //     // Load DFP script.
-            //     utils.loadScript(this.options.debug
-            //         ? 'https://test-hb.improvedigital.com/pbw/tubia.min.js'
-            //         : 'https://hb.improvedigital.com/pbw/tubia.min.js')
-            //         .then(() => {
-            //             // Set header bidding name space.
-            //             window.idhbtubia = window.idhbtubia || {};
-            //             window.idhbtubia.que = window.idhbtubia.que || [];
-            //
-            //             // Show some header bidding logging.
-            //             if (this.options.debug) {
-            //                 window.idhbtubia.getConfig();
-            //                 window.idhbtubia.debug(true);
-            //             }
-            //
-            //             // Load the ad.
-            //             window.idhbtubia.que.push(() => {
-            //                 window.idhbtubia.setAdserverTargeting({
-            //                     tnl_ad_pos: 'tubia_leaderboard',
-            //                 });
-            //                 window.idhbtubia.requestAds({
-            //                     slotIds: [slotId],
-            //                     callback: (response) => {
-            //                         if (this.options.debug) {
-            //                             console.log('window.idhbtubia.requestAds callback returned:', response);
-            //                         }
-            //                     },
-            //                 });
-            //             });
-            //         })
-            //         .catch(error => {
-            //             this.onError('init loadStyle', error);
-            //         });
-            // }
+            const slotId = 'tubia__display-ad';
+            const slotElement = document.getElementById(slotId);
+            const isIE11 = !!window.MSInputMethodContext && !!document.documentMode;
+            if (slotElement
+                && !isIE11
+                && (this.options.domain === 'spele.nl'
+                || this.options.domain === 'www.funnygames.nl'
+                || this.options.domain === 'www.bgames.com'
+                || this.options.domain === 'www.plinga.com')) {
+
+                // Load DFP script.
+                utils.loadScript(this.options.debug
+                    ? 'https://test-hb.improvedigital.com/pbw/tubia.min.js'
+                    : 'https://hb.improvedigital.com/pbw/tubia.min.js')
+                    .then(() => {
+                        // Set header bidding name space.
+                        window.idhbtubia = window.idhbtubia || {};
+                        window.idhbtubia.que = window.idhbtubia.que || [];
+
+                        // Show some header bidding logging.
+                        if (this.options.debug) {
+                            window.idhbtubia.getConfig();
+                            window.idhbtubia.debug(true);
+                        }
+
+                        // Load the ad.
+                        window.idhbtubia.que.push(() => {
+                            window.idhbtubia.setAdserverTargeting({
+                                tnl_ad_pos: 'tubia_leaderboard',
+                            });
+                            window.idhbtubia.requestAds({
+                                slotIds: [slotId],
+                                callback: (response) => {
+                                    if (this.options.debug) {
+                                        console.log('window.idhbtubia.requestAds callback returned:', response);
+                                    }
+                                },
+                            });
+                        });
+                    })
+                    .catch(error => {
+                        this.onError('init loadStyle', error);
+                    });
+            }
         });
     }
 
