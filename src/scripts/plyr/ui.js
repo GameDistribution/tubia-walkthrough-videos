@@ -7,6 +7,7 @@ import captions from './captions';
 import controls from './controls';
 import i18n from './i18n';
 import playlist from './playlist';
+import morevideos  from './morevideos';
 
 const ui = {
     addStyleHook() {
@@ -59,6 +60,9 @@ const ui = {
 
         // Playlist
         playlist.setup.call(this);
+
+        // morevideos
+        morevideos.setup.call(this);
 
         // Captions
         captions.setup.call(this);
@@ -289,6 +293,7 @@ const ui = {
 
     // Handle time change event
     timeUpdate(event) {
+
         // Only invert if only one time element is displayed and used for both duration and currentTime
         const invert = !utils.is.element(this.elements.display.duration) && this.config.invertTime;
 

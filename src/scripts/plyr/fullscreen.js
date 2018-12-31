@@ -11,7 +11,7 @@ function onChange() {
     if (!this.enabled) {
         return;
     }
-
+    
     // Update toggle button
     const button = this.player.elements.buttons.fullscreen;
     if (utils.is.element(button)) {
@@ -193,7 +193,8 @@ class Fullscreen {
         } else if (!Fullscreen.native) {
             toggleFallback.call(this, false);
         } else if (!this.prefix) {
-            document.cancelFullScreen();
+            document.webkitCancelFullScreen();
+            //document.cancelFullScreen();
         } else if (!utils.is.empty(this.prefix)) {
             const action = this.prefix === 'moz' ? 'Cancel' : 'Exit';
             document[`${this.prefix}${action}${this.name}`]();

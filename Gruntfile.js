@@ -110,13 +110,22 @@ module.exports = function (grunt) {
          */
         sass: {
             options: {
-                sourcemap: 'none',
+                sourcemap: true,
                 style: 'nested', // no need for config.rb
             },
             build: {
                 src: 'src/styles/plyr.scss',
                 dest: 'libs/.tmp/sass.css',
             },
+
+            // options: {
+            //     sourceMap: true
+            // },
+            // dist: {
+            //     files: {
+            //         'libs/.tmp/sass.css': 'src/styles/plyr.scss'
+            //     }
+            // }
         },
 
         /**
@@ -194,7 +203,7 @@ module.exports = function (grunt) {
             options: {
                 position: 'top',
                 linebreak: true,
-                sourceMap: false,
+                sourceMap: true,
                 sourceMapIncludeSources: false,
                 compress: {
                     sequences: true,

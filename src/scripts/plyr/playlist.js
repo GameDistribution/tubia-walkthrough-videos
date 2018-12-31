@@ -29,10 +29,6 @@ const playlist = {
             this.elements.playlist = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.playlist));
             const listItem = utils.createElement('ul');
             this.elements.playlist.appendChild(listItem);
-            const listItemShadow = utils.createElement('div', {
-                class: 'plyr__shadow',
-            });
-            this.elements.playlist.appendChild(listItemShadow);
             utils.insertAfter(this.elements.playlist, this.elements.wrapper);
         }
 
@@ -72,7 +68,7 @@ const playlist = {
         } else {
             this.playlist.active = active;
         }
-
+        
         if (active) {
             utils.toggleClass(this.elements.container, this.config.classNames.playlist.active, true);
             utils.toggleState(this.elements.buttons.playlist, true);

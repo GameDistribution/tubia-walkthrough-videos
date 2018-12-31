@@ -13,7 +13,7 @@ const defaults = {
     debug: false,
 
     // Auto play (if supported)
-    autoplay: false,
+    autoplay: true,
 
     // Only allow one media playing at once (vimeo only)
     autopause: true,
@@ -22,7 +22,7 @@ const defaults = {
     seekTime: 10,
 
     // Default volume
-    volume: 1,
+    volume: .5,
     muted: false,
 
     // Pass a custom duration
@@ -90,13 +90,7 @@ const defaults = {
     speed: {
         selected: 1,
         options: [
-            0.5,
-            0.75,
-            1,
-            1.25,
-            1.5,
-            1.75,
-            2,
+            1
         ],
     },
 
@@ -108,13 +102,13 @@ const defaults = {
 
     // Display tooltips
     tooltips: {
-        controls: false,
+        controls: true,
         seek: true,
     },
 
     // Captions settings
     captions: {
-        active: false,
+        active: true,
         language: window.navigator.language.split('-')[0],
     },
 
@@ -139,6 +133,14 @@ const defaults = {
         data: [],
     },
 
+    // morevideos settings
+    morevideos: {
+        enabled: true,
+        active: false,
+        type:'cue',
+        data: []
+    },
+
     // Sharing settings
     share: {
         enabled: true,
@@ -151,7 +153,7 @@ const defaults = {
         // 'restart',
         // 'rewind',
         'play',
-        // 'fast-forward',
+        'fast-forward',
         'progress',
         'current-time',
         'mute',
@@ -202,6 +204,9 @@ const defaults = {
         playlist: 'Playlist',
         playlistOpen: 'Open playlist',
         playlistClose: 'Close playlist',
+        morevideos:'More Videos',
+        morevideosOpen:'Open More Videos',
+        morevideosClose:'Close More Videos',
         share: 'Share',
         shareOpen: 'Open sharing',
         shareClose: 'Close sharing',
@@ -216,6 +221,7 @@ const defaults = {
             api: 'https://www.youtube.com/iframe_api',
         },
     },
+
 
     // Custom control listeners
     listeners: {
@@ -236,6 +242,7 @@ const defaults = {
         loop: null,
         language: null,
         playlist: null,
+        morevideos: null,
         share: null,
     },
 
@@ -269,6 +276,8 @@ const defaults = {
         'exitfullscreen',
         'playlistenabled',
         'playlistdisabled',
+        'morevideosenabled',
+        'morevideosdisabled',
         'shareenabled',
         'sharedisabled',
         'captionsenabled',
@@ -302,6 +311,10 @@ const defaults = {
     selectors: {
         editable: 'input, textarea, select, [contenteditable]',
         container: '.plyr',
+        videContainer : '#tubia-container',
+        playerVideo :'#plyr__tubia',
+        playerSource:'#plyr__tubia source',
+        playerTitle : '.plyr__title',
         controls: {
             container: null,
             wrapper: '.plyr__controls',
@@ -323,6 +336,7 @@ const defaults = {
             settings: '[data-plyr="settings"]',
             loop: '[data-plyr="loop"]',
             playlist: '[data-plyr="playlist"]',
+            morevideos: '[data-plyr="morevideos"]',
             share: '[data-plyr="share"]',
         },
         inputs: {
@@ -343,6 +357,7 @@ const defaults = {
         progress: '.plyr__progress',
         captions: '.plyr__captions',
         playlist: '.plyr__playlist',
+        morevideos: '.plyr__morevideos',
         share: '.plyr__share',
         menu: {
             quality: '.js-plyr__menu__list--quality',
@@ -398,11 +413,17 @@ const defaults = {
             active: 'plyr--playlist-active',
             button: 'plyr--playlist-button',
         },
+        morevideos: {
+            enabled: 'plyr--morevideos-enabled',
+            active: 'plyr--morevideos-active',
+            button: 'plyr--morevideos-button'
+        },
         share: {
             enabled: 'plyr--share-enabled',
             active: 'plyr--share-active',
         },
     },
+    
 
     // Embed attributes
     attributes: {

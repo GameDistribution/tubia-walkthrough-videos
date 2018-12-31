@@ -7,7 +7,33 @@
     &.plyr--full-ui ::-webkit-media-text-track-container {
         display: none;
     }
+    .plyr__levelCaptions{
+        animation: plyr-fade-in 0.3s ease;
+        bottom:-40px;
+        color: $plyr-captions-color;
+        font-size: $plyr-font-size-captions-small;
+        left: 0;
+        padding: $plyr-control-spacing;
+        position: absolute;
+        text-align: center;
+        transform: translateY(-($plyr-control-spacing * 4));
+        transition: transform 0.4s ease-in-out;
+        width: 100%;
 
+        span {
+            background: $plyr-captions-bg;
+            border-radius: 2px;
+            box-decoration-break: clone;
+            line-height: 185%;
+            padding: 0.2em 0.5em;
+            white-space: pre-wrap;
+
+            // Firefox adds a <div> when using getCueAsHTML()
+            div {
+                display: inline;
+            }
+    }
+}
     .plyr__captions {
         animation: plyr-fade-in 0.3s ease;
         bottom: 0;

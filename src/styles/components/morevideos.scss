@@ -1,0 +1,173 @@
+.plyr {
+    .plyr--morevideos-button {
+
+        position: absolute;
+        top: 0px;
+        right: 25px;
+        color: #fff;
+
+
+        &:before {
+            content: "...";
+            font-size: 2em;
+            font-weight: 600;
+        }
+    }
+
+    .plyr__morevideos {
+        position: absolute;
+        z-index: 2;
+        bottom: 55px;
+        height: 150px;
+        // max-height: 100%;
+        width: 100%;
+        overflow: hidden;
+        // display: none;
+        transform-origin: bottom;
+        transform: scaleY(0);
+        background-color: #000;
+    }
+
+
+    // morevideos is enabled.
+    &.plyr--morevideos-enabled {
+        .plyr__morevideos {
+            display: block;
+        }
+    }
+
+    // When the morevideos is displayed
+    &.plyr--morevideos-enabled.plyr--morevideos-active:not(.plyr--hide-controls) {
+        .plyr__morevideos {
+            transform: scaleY(1);
+
+            // visibility: visible;
+            &:before {
+                transform: scaleY(1);
+                transition: transform 0.2s cubic-bezier(.51, .92, .24, 1.15);
+            }
+
+            &:after {
+                transform: scaleY(1);
+                transition: transform 0.4s cubic-bezier(.51, .92, .24, 1.15);
+                transition-delay: 0.1s;
+            }
+
+            .plyr__background,
+            .plyr__shadow {
+                opacity: 1;
+                transition: all .1s linear;
+            }
+
+            ul {
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+
+                li {
+                    span {
+                        opacity: 1;
+                        transition: all .1s linear;
+                    }
+
+                    &:before {
+                        transform: scaleY(1);
+                        transition: transform 0.1s cubic-bezier(.51, .92, .24, 1.15);
+                    }
+
+                    // Todo: write some SASS logic for this.
+                    /* &:nth-child(1):before {
+                    transition-delay: 0.6s;
+                }
+                &:nth-child(2):before {
+                    transition-delay: 0.65s;
+                }
+                &:nth-child(3):before {
+                    transition-delay: 0.7s;
+                }
+                &:nth-child(4):before {
+                    transition-delay: 0.75s;
+                }
+                &:nth-child(5):before {
+                    transition-delay: 0.8s;
+                }
+                &:nth-child(6):before {
+                    transition-delay: 0.85s;
+                }
+                &:nth-child(7):before {
+                    transition-delay: 0.9s;
+                }
+                &:nth-child(8):before {
+                    transition-delay: 0.95s;
+                }
+                &:nth-child(n+9):before {
+                    transition-delay: 1s;
+                }*/
+                }
+            }
+        }
+    }
+
+    // When the playlist is hidden
+    &.plyr--morevideos-enabled:not(.plyr--morevideos-active) {
+        .plyr__morevideos {
+            transform: scaleY(0);
+            transition: transform 0s linear;
+            transition-delay: 1s;
+
+      
+
+            ul li {
+                span {
+                    opacity: 0;
+                    transition: opacity 0.1s linear;
+                    transition-delay: 0s;
+                }
+
+                &:before {
+                    transform: scaleY(0);
+                    transition: transform 0.2s cubic-bezier(.51, .92, .24, 1.15);
+                    transition-delay: 0.2s;
+                }
+
+                // Todo: write some SASS logic for this.
+                &:nth-child(1):before {
+                    transition-delay: 0.3s;
+                }
+
+                &:nth-child(2):before {
+                    transition-delay: 0.35s;
+                }
+
+                &:nth-child(3):before {
+                    transition-delay: 0.4s;
+                }
+
+                &:nth-child(4):before {
+                    transition-delay: 0.45s;
+                }
+
+                &:nth-child(5):before {
+                    transition-delay: 0.5s;
+                }
+
+                &:nth-child(6):before {
+                    transition-delay: 0.55s;
+                }
+
+                &:nth-child(7):before {
+                    transition-delay: 0.6s;
+                }
+
+                &:nth-child(8):before {
+                    transition-delay: 0.65s;
+                }
+
+                &:nth-child(n+9):before {
+                    transition-delay: 0.7s;
+                }
+            }
+        }
+    }
+
+
+}

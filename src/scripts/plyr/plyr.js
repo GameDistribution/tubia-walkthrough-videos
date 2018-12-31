@@ -98,7 +98,12 @@ class Plyr {
             active: null,
         };
 
-        // Playlist
+        // morevideos
+        this.morevideos = {
+            active: null,
+        };
+
+        // Share
         this.share = {
             active: null,
         };
@@ -953,6 +958,38 @@ class Plyr {
 
         // Trigger an event
         utils.dispatchEvent.call(this, this.media, this.playlist.active ? 'playlistenabled' : 'playlistdisabled');
+    }
+
+    /**
+     * Toggle morevideos
+     * @param {boolean} input - Whether to enable morevideos
+     */
+    toggleMoreVideos(input) {
+        // If there's no full support, or there's no caption toggle
+        if (!this.supported.ui || !utils.is.element(this.elements.buttons.morevideos)) {
+            return;
+        }
+
+        // If the method is called without parameter, toggle based on current value
+        const show = utils.is.boolean(input) ? input : this.elements.container.className.indexOf(this.config.classNames.morevideos.active) === -1;
+
+        // Nothing to change...
+        if (this.morevideos.active === show) {
+            return;
+        }
+
+        // Set global
+        this.morevideos.active = show;
+
+
+        // Toggle state
+        utils.toggleState(this.elements.buttons.morevideos, this.morevideos.active);
+
+        // Add class hook
+        utils.toggleClass(this.elements.container, this.config.classNames.morevideos.active, this.morevideos.active);
+
+        // Trigger an event
+        utils.dispatchEvent.call(this, this.media, this.morevideos.active ? 'morevideosenabled' : 'morevideosdisabled');
     }
 
     /**
