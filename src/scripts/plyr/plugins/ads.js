@@ -935,7 +935,7 @@ class Ads {
                     if (typeof window['ga'] !== 'undefined') {
                         window['ga']('tubia.send', {
                             hitType: 'event',
-                            eventCategory: `IMPRESSION_ADEXCHANGE${this.adPosition === 2 ? '_NON_LINEAR' : '_LINEAR'}`,
+                            eventCategory: `AD_ERROR_ADEXCHANGE${this.adPosition === 2 ? '_NON_LINEAR' : '_LINEAR'}`,
                             eventAction: event.getError().getErrorCode().toString() || event.getError().getVastErrorCode().toString(),
                             eventLabel: event.getError().getMessage(),
                         });
