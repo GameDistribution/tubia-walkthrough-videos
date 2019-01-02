@@ -158,7 +158,7 @@ class Tubia {
                 (new Image()).src = `https://ana.tunnl.com/event?tub_id=${this.videoId}&eventtype=0&page_url=${encodeURIComponent(this.options.url)}`;
 
                 // Set the ad tag using the given id.
-                this.adTag = `https://pub.tunnl.com/opp?page_url=${encodeURIComponent(this.options.url)}&player_width=640&player_height=480&tub_id=${this.videoId}&correlator=${Date.now()}`;
+                this.adTag = `https://pub.tunnl.com/opp?page_url=${encodeURIComponent(this.options.url)}&tub_id=${this.videoId}&correlator=${Date.now()}`;
                 // this.adTag = `https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpostpod&cmsid=496&vid=short_onecue&correlator=${Date.now()}`;
                 // this.adTag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpreonly&cmsid=496&vid=short_onecue&correlator=';
 
@@ -387,40 +387,40 @@ class Tubia {
                 || this.options.domain === 'www.funnygames.nl'
                 || this.options.domain === 'www.bgames.com'
                 || this.options.domain === 'www.plinga.com')) {
-                const slotWidth = slotElement.offsetWidth;
 
                 // Load DFP script.
-                utils.loadScript('https://www.googletagservices.com/tag/js/gpt.js');
+                utils.loadScript(this.options.debug
+                    ? 'https://test-hb.improvedigital.com/pbw/tubia.min.js'
+                    : 'https://hb.improvedigital.com/pbw/tubia.min.js')
+                    .then(() => {
+                        // Set header bidding name space.
+                        window.idhbtubia = window.idhbtubia || {};
+                        window.idhbtubia.que = window.idhbtubia.que || [];
 
-                // Set namespaces for DFP.
-                window.googletag = window.googletag || {};
-                window.googletag.cmd = window.googletag.cmd || [];
+                        // Show some header bidding logging.
+                        if (this.options.debug) {
+                            window.idhbtubia.getConfig();
+                            window.idhbtubia.debug(true);
+                        }
 
-                // Create the ad slot.
-                window.googletag.cmd.push(() => {
-                    /* eslint-disable */
-                    let mapping = null;
-                    if (slotWidth >= 970) {
-                        mapping = window.googletag.sizeMapping()
-                            .addSize([970, 90], [[970, 90], [728, 90]])
-                            .addSize([728, 90], [728, 90])
-                            .build();
-                    } else if (slotWidth >= 728) {
-                        mapping = window.googletag.sizeMapping()
-                            .addSize([728, 90], [728, 90])
-                            .build();
-                    }
-
-                    // window.googletag.defineSlot('1015413/TNL_NS-18062500055/TNL_T-18082776963_1', [728, 90], slotId)
-                    // window.googletag.defineSlot('/21731147099/Tubia_prestart_leaderboard', [728, 90], slotId)
-                    window.googletag.defineSlot('/1015413/Tubia_prestart_leaderboard', [728, 90], slotId)
-                        .defineSizeMapping(mapping)
-                        .setCollapseEmptyDiv(true, true)
-                        .addService(window.googletag.pubads());
-                    /* eslint-enable */
-                    window.googletag.enableServices();
-                    window.googletag.display(slotId);
-                });
+                        // Load the ad.
+                        window.idhbtubia.que.push(() => {
+                            window.idhbtubia.setAdserverTargeting({
+                                tnl_ad_pos: 'tubia_leaderboard',
+                            });
+                            window.idhbtubia.requestAds({
+                                slotIds: [slotId],
+                                callback: (response) => {
+                                    if (this.options.debug) {
+                                        console.log('window.idhbtubia.requestAds callback returned:', response);
+                                    }
+                                },
+                            });
+                        });
+                    })
+                    .catch(error => {
+                        this.onError('init loadStyle', error);
+                    });
             }
         });
     }
@@ -609,7 +609,7 @@ class Tubia {
                     // videoInterval: 60, // (json.preRollSecond) ? json.preRollSecond : 300,
                     // overlayInterval: (json.subBannerSecond) ? json.subBannerSecond : 15,
                     gdprTargeting: this.options.gdprTargeting,
-                    tag: (json.adsEnabled && !json.addFreeActive) ? this.adTag : '',
+                    tag: (json.adsEnabled && !json.addFreeActive) || this.options.debug ? this.adTag : '',
                     keys: this.options.keys ? JSON.stringify(this.options.keys) : null,
                     domain: this.options.domain,
                 },
@@ -697,19 +697,6 @@ class Tubia {
             if(!this.options.gdprTracking) {
                 window['ga']('set', 'anonymizeIp', true);
             }
-
-            // GameDistribution DMPKit Tag Manager
-            if(this.options.gdprTracking) {
-                (function (w, d, s, l, h, m) {
-                    w[l] = w[l] || [];
-                    const f = d.getElementsByTagName(s)[0],
-                        j = d.createElement(s), dl = l != 'dmpkitdl' ? '&l=' + l : '';
-                    j.async = true;
-                    j.src = '//' + m + '/tm.js?id=' + h + dl;
-                    f.parentNode.insertBefore(j, f);
-                })(window, document, 'script', 'dmpkitdl', 'ddc15dec-6bf1-4844-a362-c601005250e1', 'static-dmp.mediaglacier.com');
-            }
-            /* eslint-enable */
         }
     }
 
