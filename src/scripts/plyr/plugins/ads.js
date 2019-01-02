@@ -24,6 +24,7 @@ class Ads {
         this.headerBidding = player.config.ads.headerBidding;
         this.keys = player.config.ads.keys;
         this.domain = player.config.ads.domain;
+        this.category = player.config.ads.category;
 
         this.prerollEnabled = player.config.ads.prerollEnabled;
         this.midrollEnabled = player.config.ads.midrollEnabled;
@@ -383,7 +384,10 @@ class Ads {
                         this.player.debug.log(unit, 'info');
 
                         // Add test parameter for Tunnl.
-                        Object.assign(data, {tnl_system: '1'});
+                        Object.assign(data, {
+                            tnl_system: '1',
+                            tnl_tubia_category: this.category.toLowerCase(),
+                        });
 
                         // Send event for Tunnl debugging.
                         /* eslint-disable */
@@ -537,6 +541,7 @@ class Ads {
                             'tnl_gdpr': '0',
                             'tnl_gdpr_consent': '1',
                             'consent_string': 'BOWJjG9OWJjG9CLAAAENBx-AAAAiDAAA',
+                            'tnl_tubia_category': this.category.toLowerCase(),
                         };
 
                         // Send event for Tunnl debugging.

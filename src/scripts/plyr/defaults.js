@@ -430,6 +430,7 @@ const defaults = {
         tag: '',
         keys: null,
         domain: 'gamedistribution.com',
+        category: '',
     },
 };
 

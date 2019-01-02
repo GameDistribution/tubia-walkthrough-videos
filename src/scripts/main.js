@@ -142,6 +142,11 @@ class Tubia {
                         this.videoId = '0';
                     }
 
+                    // Set the category.
+                    if (data && data.category && data.category !== '' && this.options.category === '') {
+                        this.options.category = data.category;
+                    }
+
                     resolve();
                 })
                 .catch(error => reject(error));
@@ -612,6 +617,7 @@ class Tubia {
                     tag: (json.adsEnabled && !json.addFreeActive) || this.options.debug ? this.adTag : '',
                     keys: this.options.keys ? JSON.stringify(this.options.keys) : null,
                     domain: this.options.domain,
+                    category: this.options.category,
                 },
                 keyboard: {
                     global: true,
