@@ -235,7 +235,7 @@ module.exports = function (grunt) {
             scripts: {
                 files: ['src/scripts/**/*.js'],
                 tasks: [
-                    // 'exec:eslint',
+                    'exec:eslint',
                     'browserify',
                     'concat',
                     'uglify',
@@ -334,7 +334,7 @@ module.exports = function (grunt) {
                 'copy',
                 'sass',
                 'postcss',
-                // 'exec:eslint',
+                'exec:eslint',
                 'browserify',
                 'concat',
                 'sourcemaps',
@@ -353,7 +353,7 @@ module.exports = function (grunt) {
                 'clean',
                 'sass',
                 'postcss',
-                // 'exec:eslint',
+                'exec:eslint',
                 'browserify',
                 'concat',
                 'uglify',
