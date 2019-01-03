@@ -4,6 +4,7 @@ import defaults from './defaults';
 class CueMark {
     constructor(player) {
 
+        
         var self = this;
 
         self.player = player;
