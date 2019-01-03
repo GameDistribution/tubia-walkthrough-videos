@@ -5,7 +5,10 @@
 // License: The MIT License (MIT)
 // ==========================================================================
 
-import { providers, types } from './types';
+import {
+    providers,
+    types
+} from './types';
 import defaults from './defaults';
 import support from './support';
 import utils from './utils';
@@ -54,8 +57,7 @@ class Plyr {
         }
 
         // Set config
-        this.config = utils.extend(
-            {},
+        this.config = utils.extend({},
             defaults,
             options || {},
             (() => {
@@ -481,7 +483,9 @@ class Plyr {
      * Get buffered
      */
     get buffered() {
-        const { buffered } = this.media;
+        const {
+            buffered
+        } = this.media;
 
         // YouTube / Vimeo return a float between 0-1
         if (utils.is.number(buffered)) {
@@ -539,7 +543,9 @@ class Plyr {
 
         // Use config if all else fails
         if (!utils.is.number(volume)) {
-            ({ volume } = this.config);
+            ({
+                volume
+            } = this.config);
         }
 
         // Maximum is volumeMax
@@ -965,6 +971,9 @@ class Plyr {
      * @param {boolean} input - Whether to enable morevideos
      */
     toggleMoreVideos(input) {
+
+
+
         // If there's no full support, or there's no caption toggle
         if (!this.supported.ui || !utils.is.element(this.elements.buttons.morevideos)) {
             return;
@@ -990,6 +999,7 @@ class Plyr {
 
         // Trigger an event
         utils.dispatchEvent.call(this, this.media, this.morevideos.active ? 'morevideosenabled' : 'morevideosdisabled');
+
     }
 
     /**
@@ -1156,6 +1166,8 @@ class Plyr {
         if (!show || this.playing) {
             this.timers.controls = setTimeout(() => {
                 // We need controls of course...
+
+
                 if (!utils.is.element(this.elements.controls)) {
                     return;
                 }
@@ -1174,11 +1186,14 @@ class Plyr {
                 const toggled = utils.toggleClass(this.elements.container, this.config.classNames.hideControls, true);
 
                 // Trigger event and close menu
+
                 if (toggled) {
                     utils.dispatchEvent.call(this, this.media, 'controlshidden');
 
                     if (this.config.controls.includes('settings') && !utils.is.empty(this.config.settings)) {
                         controls.toggleMenu.call(this, false);
+                        this.toggleMoreVideos(false);
+                        this.togglePlaylist(false);
                     }
                 }
             }, delay);

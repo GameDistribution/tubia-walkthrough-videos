@@ -142,7 +142,7 @@ class Tubia {
             const gameId = this.options.gameId.toString().replace(/-/g, "");
             const title = encodeURIComponent(this.options.title);
             //const pageId = window.calcMD5(this.options.url);
-            const pageId = window.calcMD5(this.options.url);
+            const pageId = "5f915b29ae2a8d678ea1cbf812abedae";
             const videoFindUrl = `https://api.tubia.com/api/player/findv3/?pageId=${pageId}&href=${encodeURIComponent(
                 this.options.href
             )}&gameId=${gameId}&title=${title}&domain=${encodeURIComponent(
@@ -182,6 +182,8 @@ class Tubia {
 
                     //delete later and change var to const
                    
+                    videoDataUrl = 'https://api.tubia.com/api/player/publish/?gameid=48cb136b65a69e8c2aa22913a0d91b2f&publisherid=88e25571535d4aeb8842e9e2c6150513&domain=kizi.com';
+                    
 
                     const videoDataRequest = new Request(videoDataUrl, {
                         method: "GET"
@@ -477,7 +479,7 @@ class Tubia {
 
 
                 // setup how to play
-                this.howToPlay = new HowToPlay(this);
+                // this.howToPlay = new HowToPlay(this);
             });
 
             // Create a display advertisement which will reside on top of the poster image.

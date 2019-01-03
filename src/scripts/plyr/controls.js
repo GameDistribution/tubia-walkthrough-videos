@@ -10,6 +10,7 @@ import captions from "./captions";
 import html5 from "./html5";
 import playlist from "./playlist";
 import morevideos from "./morevideos";
+import mark from './cuemark';
 
 // Sniff out the browser
 const browser = utils.getBrowser();
@@ -333,6 +334,7 @@ const controls = {
 
         return button;
     },
+    
 
     // Create an <input type='range'>
     createRange(type, attributes) {
@@ -971,6 +973,7 @@ const controls = {
 
     // Show/hide menu
     toggleMenu(event) {
+
         const {
             form
         } = this.elements.settings;
@@ -985,6 +988,8 @@ const controls = {
             event :
             utils.is.element(form) &&
             form.getAttribute("aria-hidden") === "true";
+
+
 
         if (utils.is.event(event)) {
             const isMenuItem =
@@ -1475,7 +1480,47 @@ const controls = {
             progress.appendChild(seek.input);
 
 
-            controls.CreateProgressLevel.call(this, progress);
+            // controls.CreateProgressLevel.call(this, progress);
+            if (this.config.playlist.type === "cue") {
+                const items = playlist.getData.call(this).map(item => ({
+                    link: item.cuePoint / 1000,
+                    name: item.name
+                }));
+
+          
+                setTimeout(() => {
+                    this.mark = new mark(this);
+                    items.forEach((item, index) => {
+                        var counter = index + 1;
+                        let itemNumber = 0;
+                        if (counter > 1) {
+                            const cuePercentage = counter == 1 ? 0 : (item.link / this.duration) * 100;
+                            if (counter.toString().length === 1) {
+                                itemNumber = `0${counter}`;
+                            } else {
+                                itemNumber = counter;
+                            }
+                            const cueElement = utils.createElement("span", {
+                                class: "plyr__cues--progress"
+                            });
+
+
+                            cueElement.style.left = `${cuePercentage.toString()}%`;
+
+
+                        
+                            cueElement.dataset.cue = item.link;
+                            cueElement.dataset.value = counter;
+
+                            progress.appendChild(cueElement);
+                            this.mark.create(cueElement);
+
+                            
+                        }
+
+                    });
+                }, 2000);
+            }
 
 
 
@@ -1764,20 +1809,20 @@ const controls = {
 
     ClearAllLevels() {
 
-        console.log('eeee',document.querySelectorAll('.plyr__cues--progress'));
-        [].forEach.call(document.querySelectorAll('.plyr__cues--progress'),function(e){
-            console.log('eeee',e)
-            console.log('eeee',e.parentNode)
+        console.log('eeee', document.querySelectorAll('.plyr__cues--progress'));
+        [].forEach.call(document.querySelectorAll('.plyr__cues--progress'), function (e) {
+            console.log('eeee', e)
+            console.log('eeee', e.parentNode)
             e.parentNode.removeChild(e);
-          
-          });
+
+        });
     },
 
     CreateProgressLevel(progress) {
-        var counter=0;
-        var cuePercentage=0;
+        var counter = 0;
+        var cuePercentage = 0;
 
-        console.log('this',this);
+        console.log('this', this);
 
         controls.ClearAllLevels.call(this);
 
@@ -1787,15 +1832,15 @@ const controls = {
                 name: item.name
             }));
 
-            
+
 
             items.forEach((item, index) => {
-                 counter = index + 1;
+                counter = index + 1;
                 let itemNumber = 0;
                 setTimeout(() => {
-                     cuePercentage = (item.link / this.duration) * 100;
+                    cuePercentage = (item.link / this.duration) * 100;
 
-                     console.log('indexim_'+item.link);
+                    console.log('indexim_' + item.link);
 
                     if (counter.toString().length === 1) {
                         itemNumber = `0${counter}`;

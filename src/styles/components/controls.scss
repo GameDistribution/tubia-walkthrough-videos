@@ -3,6 +3,13 @@
 // --------------------------------------------------------------
 
 .plyr {
+
+    // .plyr__playlist{
+    //     .active{
+    //         .plyr__count
+    //     }
+    // }
+
     // Hide native controls
     &.plyr--full-ui ::-webkit-media-controls {
         display: none;
@@ -159,13 +166,14 @@
     }
 
 .plyr__cues--progress {
+    border-radius: 50%;
     position: absolute;
     width: 10px;
     height: $plyr-range-track-height;
-    background:$plyr-video-control-color;
+    background:$plyr-video-control-cue-color;
     top: -$plyr-range-track-height;
     z-index: 1;
-    pointer-events: none;
+    // pointer-events: none;
 }
     // Audio controls
     &.plyr--audio .plyr__controls {

@@ -1,7 +1,8 @@
 <!doctype html>
 <html lang="en">
+
 <head>
-    <meta charset="utf-8"/>
+    <meta charset="utf-8" />
     <title>Tubia</title>
     <meta name="description" content="Tubia walkthrough video's">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -19,6 +20,7 @@
             bottom: 0;
             left: 0;
         }
+
     </style>
     <script>
         function getParameterByName(name) {
@@ -29,7 +31,8 @@
         }
 
         var publisherIdLegacy = getParameterByName('pubid');
-        var publisherId = (typeof publisherIdLegacy !== 'undefined' && publisherIdLegacy !== '') ? publisherIdLegacy : getParameterByName('publisherid');
+        var publisherId = (typeof publisherIdLegacy !== 'undefined' && publisherIdLegacy !== '') ? publisherIdLegacy :
+            getParameterByName('publisherid');
         var gameId = getParameterByName('gameid');
         var gameTitle = getParameterByName('title');
         var urlLegacy = getParameterByName('url');
@@ -41,7 +44,8 @@
         var gdprTracking = getParameterByName('gdprtracking');
         var gdprTargeting = getParameterByName('gdprtargeting');
         var langLegacy = getParameterByName('lang');
-        var lang = (typeof langLegacy !== 'undefined' && langLegacy !== '') ? langLegacy : getParameterByName('langcode');
+        var lang = (typeof langLegacy !== 'undefined' && langLegacy !== '') ? langLegacy : getParameterByName(
+            'langcode');
         var debug = getParameterByName('debug');
 
         window["TUBIA_OPTIONS"] = {
@@ -51,8 +55,8 @@
             "title": (typeof gameTitle !== 'undefined' && gameTitle !== '') ? gameTitle : 'Jewel Burst',
             "url": pageUrl,
             "domain": domain,
-            "colorMain" : (typeof colorMain !== 'undefined' && colorMain !== '') ? '#' + colorMain : '',
-            "colorAccent" : (typeof colorAccent !== 'undefined' && colorAccent !== '') ? '#' + colorAccent : '',
+            "colorMain": (typeof colorMain !== 'undefined' && colorMain !== '') ? '#' + colorMain : '',
+            "colorAccent": (typeof colorAccent !== 'undefined' && colorAccent !== '') ? '#' + colorAccent : '',
             "gdprTracking": (gdprTracking) ? gdprTracking : null,
             "gdprTargeting": (gdprTargeting) ? gdprTargeting : null,
             "langCode": (typeof lang !== 'undefined' && lang !== '') ? lang : 'en-us',
@@ -75,15 +79,16 @@
             if (d.getElementById(id)) return;
             js = d.createElement(s);
             js.id = id;
-            js.src = 'https://player.tubia.com/libs/gd/gd.js';
+            js.src = './gd.js';
             fjs.parentNode.insertBefore(js, fjs);
         }(document, 'script', 'tubia-playerjs'));
+
     </script>
 </head>
 
 <body>
 
-<div id="tubia-container"></div>
+    <div id="tubia-container"></div>
 
 </body>
 

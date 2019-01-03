@@ -10,8 +10,13 @@ class HowToPlay {
                 close: 'tubia__how-to-player--close',
                 hide: 'tubia__how-to-player-hide'
         };
-
         this.CreateHowToPlay();
+    }
+
+    destroy() {
+        setTimeout(() => {
+            document.querySelector(`.${this.class.wrapper}`).remove();
+        }, 1500);
     }
 
     CreateHowToPlay() {
@@ -23,10 +28,9 @@ class HowToPlay {
             document.querySelector(defaults.selectors.videContainer).scrollIntoView({
                 behavior: 'smooth'
             });
-            setTimeout(() => {
-                this.player.playButton.click();
-                wrapper.setAttribute('class', `${this.class.wrapper} ${this.class.hide}`);
-            }, 1500);
+            this.player.playButton.click();
+            wrapper.setAttribute('class', `${this.class.wrapper} ${this.class.hide}`);
+            this.destroy();
         });
 
         wrapper.style.backgroundImage = `url('${this.player.posterUrl}')`;
@@ -41,12 +45,13 @@ class HowToPlay {
 
         close.addEventListener("click", (evt) => {
             wrapper.setAttribute('class', `${this.class.wrapper} ${this.class.hide}`);
+            this.destroy();
         })
 
         wrapper.appendChild(label);
         wrapper.appendChild(close);
         document.getElementsByTagName('body')[0].appendChild(wrapper);
-        
+
         setTimeout(() => {
             wrapper.setAttribute('class', this.class.wrapper);
         }, 3000);

@@ -34,6 +34,11 @@ const morevideos = {
             // this.elements.morevideos.appendChild(listItem);
 
             this.elements.controls.appendChild(this.elements.morevideos);
+
+
+            var caption = utils.createElement('div',{class:'morevideos--caption'},'More Videos');
+
+            this.elements.morevideos.appendChild(caption);
             // utils.insertAfter(this.elements.morevideos, this.elements.controls);
         }
 
@@ -57,6 +62,11 @@ const morevideos = {
     // Get the playlist data
     getData() {
         return Array.from(this.config.morevideos.data || []);
+    },
+
+    hide(){
+        utils.toggleClass(this.elements.container, this.config.classNames.morevideos.active, false);
+        utils.toggleState(this.elements.buttons.morevideos, false);
     },
 
     show() {

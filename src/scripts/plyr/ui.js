@@ -7,7 +7,7 @@ import captions from './captions';
 import controls from './controls';
 import i18n from './i18n';
 import playlist from './playlist';
-import morevideos  from './morevideos';
+import morevideos from './morevideos';
 
 const ui = {
     addStyleHook() {
@@ -103,6 +103,7 @@ const ui = {
         ui.setTitle.call(this);
     },
 
+
     // Setup aria attribute for play and iframe title
     setTitle() {
         // Find the current text
@@ -145,11 +146,15 @@ const ui = {
         utils.toggleClass(this.elements.container, this.config.classNames.playing, this.playing);
         utils.toggleClass(this.elements.container, this.config.classNames.stopped, this.paused);
 
+        if (this.paused)
+            this.toggleMoreVideos(true);
+
         // Set ARIA state
         utils.toggleState(this.elements.buttons.play, this.playing);
 
         // Toggle controls
         this.toggleControls(!this.playing);
+
     },
 
     // Check if media is loading
@@ -264,7 +269,7 @@ const ui = {
 
                     break;
 
-                // Check buffer status
+                    // Check buffer status
                 case 'playing':
                 case 'progress':
                     ui.setProgress.call(this, this.elements.display.buffer, this.buffered * 100);

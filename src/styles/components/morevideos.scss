@@ -16,7 +16,7 @@
 
     .plyr__morevideos {
         position: absolute;
-        z-index: 2;
+        z-index: 1;
         bottom: 55px;
         height: 150px;
         // max-height: 100%;
@@ -25,7 +25,15 @@
         // display: none;
         transform-origin: bottom;
         transform: scaleY(0);
-        background-color: #000;
+        // background-color: #000;
+        background-color: rgba(225, 225, 225, 0.3);
+
+        .morevideos--caption {
+            color: #000;
+            font-weight: bold;
+            height: 20px;
+            font-size: 20px;
+        }
     }
 
 
@@ -112,9 +120,9 @@
         .plyr__morevideos {
             transform: scaleY(0);
             transition: transform 0s linear;
-            transition-delay: 1s;
+            transition-delay: 0.2s;
 
-      
+
 
             ul li {
                 span {

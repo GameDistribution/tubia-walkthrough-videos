@@ -1,20 +1,21 @@
 .plyr {
-
     .plyr__playlist {
         position: absolute;
         z-index: 3;
         bottom: 48px;
-        right: 20px;
-        height: 90%;
+        right: 15px;
+        height: 40%;
         max-height: 100%;
         width: 200px;
         overflow: hidden;
         display: none;
         transform-origin: right;
         transform: scaleX(0);
+
         @media (max-width: $plyr-bp-sm) {
             width: 150px;
         }
+
         ul {
             position: absolute;
             z-index: 3;
@@ -25,7 +26,9 @@
             padding: 0px 3px;
             margin: 0;
             overflow: auto;
+
             li {
+                background: #333;
                 position: relative;
                 display: flex;
                 align-items: center;
@@ -33,76 +36,85 @@
                 margin: 0;
                 padding-bottom: 3px;
                 text-align: left;
-                cursor: pointer;
+
                 color: $plyr-video-control-color;
-                height: 40px;
-                margin-bottom:2px;
+                height: 30px;
+                margin-bottom: 1px;
                 overflow: hidden;
 
                 &:last-of-type {
                     margin-bottom: 5px;
                 }
+
                 &:hover {
+                    filter: grayscale(.5);
                     .plyr__count {
-                        color: $plyr-video-control-color-hover;
-                        border-color: $plyr-video-control-color-hover;
+                        background-color: $plyr-color-main;
+                        color: $plyr-video-control-cue-color-hover;
+
                     }
+
                     .plyr_name {
-                        color: $plyr-video-control-color-hover;
+                       color: $plyr-video-control-color-hover;
                     }
-                    .plyr__background {
-                        filter: grayscale(.5);
-                        
-                    }
+
                 }
                 &:active {
+                    background: transparent;
                     .plyr__count {
-                        color: $plyr-video-control-color-hover;
-                        border-color: $plyr-color-accent;
+                        background-color: $plyr-color-main;
+                        color: $plyr-video-control-cue-color-hover;
                     }
+
                     .plyr__background {
                         background: $plyr-color-main;
                         border-radius: 5px;
-                        filter:grayscale(0);
                     }
                 }
+
                 &.active {
                     .plyr__background {
-                        filter:grayscale(0);
+                        background: transparent;
                     }
+
                     .plyr__count {
                         background-color: $plyr-color-main;
-                        border-color: $plyr-color-accent;
-                        color: $plyr-video-control-color;
-                        filter: grayscale(0);
+                        color: $plyr-video-control-cue-color-hover;
+                        
                     }
+
                     .plyr_name {
                         color: $plyr-video-control-color-hover;
                     }
                 }
             }
         }
+
         span {
             z-index: 1;
             opacity: 0;
             font-weight: $plyr-font-weight-bold;
             font-size: $plyr-font-size-large;
             color: currentColor;
+
             @media (max-width: $plyr-bp-sm) {
                 font-size: $plyr-font-size-small;
             }
         }
+
         .plyr__count {
             margin: 20px 15px 20px 20px;
-            padding: 5px 5px 2px;
+            padding: 2px 4px 0px;
             border: 1px solid rgba(255, 255, 255, 0.5);
             line-height: 100%;
             border-radius: 1px;
             min-width: auto;
+
             @media (max-width: $plyr-bp-sm) {
                 margin: 10px 7.5px 10px 10px;
             }
         }
+
         .plyr_name {
             display: block;
             width: 100%;
@@ -111,31 +123,34 @@
             overflow: hidden;
             margin-right: 15px;
             text-transform: uppercase;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.5);
-            padding-bottom: 3px;
+            padding-bottom: 0px;
             padding-left: 0;
             line-height: 90%;
+
             @media not all and (min-resolution: .001dpcm) {
                 overflow: visible;
             }
+
             @media (max-width: $plyr-bp-sm) {
                 margin-right: 7.5px;
                 padding-top: 4px;
             }
         }
+
         .plyr__background {
-            background: $plyr-color-main;
+            cursor: pointer !important;
             border-radius: 5px;
             position: absolute;
-            z-index: 0;
+            z-index: 5;
             top: 0;
             left: 0;
             opacity: 0;
             width: 100%;
             height: 100%;
-            border-bottom: 3px solid $plyr-video-controls-bg;
-            filter: grayscale(1) contrast(0);
+            // border-bottom: 3px solid $plyr-video-controls-bg;
+            // filter: grayscale(1) contrast(0);
         }
+
         .plyr__shadow {
             opacity: 0;
             position: absolute;
@@ -146,6 +161,7 @@
             height: $plyr-control-spacing * 4.5;
             background: linear-gradient(0deg, rgba(0, 0, 0, 0.8) 10%, rgba(0, 0, 0, 0));
             transition: opacity 0s;
+
             @media (max-width: $plyr-bp-sm) {
                 height: 30px;
             }
@@ -163,35 +179,42 @@
     &.plyr--playlist-enabled.plyr--playlist-active:not(.plyr--hide-controls) {
         .plyr__playlist {
             transform: scaleX(1);
+
             // visibility: visible;
             &:before {
                 transform: scaleX(1);
-                transition: transform 0.2s cubic-bezier(.51,.92,.24,1.15);
+                transition: transform 0.2s cubic-bezier(.51, .92, .24, 1.15);
             }
+
             &:after {
                 transform: scaleX(1);
-                transition: transform 0.4s cubic-bezier(.51,.92,.24,1.15);
+                transition: transform 0.4s cubic-bezier(.51, .92, .24, 1.15);
                 transition-delay: 0.1s;
             }
+
             .plyr__background,
             .plyr__shadow {
                 opacity: 1;
                 transition: all .1s linear;
             }
+
             ul {
                 overflow-y: auto;
                 -webkit-overflow-scrolling: touch;
+
                 li {
                     span {
                         opacity: 1;
                         transition: all .1s linear;
                     }
+
                     &:before {
                         transform: scaleX(1);
-                        transition: transform 0.1s cubic-bezier(.51,.92,.24,1.15);
+                        transition: transform 0.1s cubic-bezier(.51, .92, .24, 1.15);
                     }
+
                     // Todo: write some SASS logic for this.
-                   /* &:nth-child(1):before {
+                    /* &:nth-child(1):before {
                         transition-delay: 0.6s;
                     }
                     &:nth-child(2):before {
@@ -228,58 +251,72 @@
         .plyr__playlist {
             transform: scaleX(0);
             transition: transform 0s linear;
-            transition-delay: 1s;
+            transition-delay: 0.1s;
+
             &:before {
                 transform: scaleX(0);
-                transition: transform 0.4s cubic-bezier(.51,.92,.24,1.15);
+                transition: transform 0.4s cubic-bezier(.51, .92, .24, 1.15);
                 transition-delay: 0.7s;
             }
+
             &:after {
                 transform: scaleX(0);
-                transition: transform 0.2s cubic-bezier(.51,.92,.24,1.15);
+                transition: transform 0.2s cubic-bezier(.51, .92, .24, 1.15);
                 transition-delay: 0.6s;
             }
+
             .plyr__background,
             .plyr__shadow {
                 opacity: 0;
                 transition: opacity 0.1s linear;
             }
+
             ul li {
                 span {
                     opacity: 0;
                     transition: opacity 0.1s linear;
                     transition-delay: 0s;
                 }
+
                 &:before {
                     transform: scaleX(0);
-                    transition: transform 0.2s cubic-bezier(.51,.92,.24,1.15);
+                    transition: transform 0.2s cubic-bezier(.51, .92, .24, 1.15);
                     transition-delay: 0.2s;
                 }
+
                 // Todo: write some SASS logic for this.
                 &:nth-child(1):before {
                     transition-delay: 0.3s;
                 }
+
                 &:nth-child(2):before {
                     transition-delay: 0.35s;
                 }
+
                 &:nth-child(3):before {
                     transition-delay: 0.4s;
                 }
+
                 &:nth-child(4):before {
                     transition-delay: 0.45s;
                 }
+
                 &:nth-child(5):before {
                     transition-delay: 0.5s;
                 }
+
                 &:nth-child(6):before {
                     transition-delay: 0.55s;
                 }
+
                 &:nth-child(7):before {
                     transition-delay: 0.6s;
                 }
+
                 &:nth-child(8):before {
                     transition-delay: 0.65s;
                 }
+
                 &:nth-child(n+9):before {
                     transition-delay: 0.7s;
                 }
