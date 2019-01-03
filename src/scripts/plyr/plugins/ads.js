@@ -43,6 +43,7 @@ class Ads {
         this.adPosition = 0;
         this.previousMidrollTime = 0;
         this.requestRunning = false;
+        this.slotId = 'tubia__advertisement_slot';
 
         // For testing:
         // this.tag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=480x70&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dnonlinear&correlator=';
@@ -100,6 +101,8 @@ class Ads {
         });
 
         const prebidJS = new Promise((resolve, reject) => {
+            // The display ad defined within main.js also uses the same hb namespace
+            // and also loads the same script. If this happens, just resolve.
             if (!utils.is.object(window.idhbtubia) || !utils.is.array(window.idhbtubia.que)) {
                 window.idhbtubia = window.idhbtubia || {};
                 window.idhbtubia.que = window.idhbtubia.que || [];
@@ -109,12 +112,12 @@ class Ads {
                     // ? 'https://hb.improvedigital.com/pbw/tubia.min.js'
                     : 'https://hb.improvedigital.com/pbw/tubia.min.js';
                 const script = document.getElementsByTagName('script')[0];
-                const ima = document.createElement('script');
-                ima.type = 'text/javascript';
-                ima.id = 'idhbtubia';
-                ima.async = true;
-                ima.src = src;
-                ima.onload = () => {
+                const hb = document.createElement('script');
+                hb.type = 'text/javascript';
+                hb.id = 'idhbtubia';
+                hb.async = true;
+                hb.src = src;
+                hb.onload = () => {
                     try {
                         // Show some header bidding logging.
                         if (this.debug) {
@@ -126,10 +129,10 @@ class Ads {
                         reject(e);
                     }
                 };
-                ima.onerror = (error) => {
+                hb.onerror = (error) => {
                     reject(error);
                 };
-                script.parentNode.insertBefore(ima, script);
+                script.parentNode.insertBefore(hb, script);
             } else {
                 resolve();
             }
@@ -300,7 +303,7 @@ class Ads {
         // Create the container for our advertisements
         this.elements.container = utils.createElement('div', {
             class: this.player.config.classNames.ads,
-            id: 'tubia__advertisement_slot', // Element id is needed by SpotX.
+            id: this.slotId, // Element id is needed by SpotX.
         });
         this.player.elements.container.appendChild(this.elements.container);
 
@@ -314,7 +317,10 @@ class Ads {
 
         // We assume the adContainer is the video container of the plyr element
         // that will house the ads
-        this.elements.displayContainer = new google.ima.AdDisplayContainer(this.elements.container);
+        this.elements.displayContainer = new google.ima.AdDisplayContainer(
+            this.elements.container,
+            this.player.elements.original,
+        );
 
         // Create ads loader
         this.loader = new google.ima.AdsLoader(this.elements.displayContainer);
@@ -366,7 +372,7 @@ class Ads {
                         // Create the ad unit name based on given Tunnl data.
                         // Default is the gamedistribution.com ad unit.
                         const nsid = data.nsid ? data.nsid : 'TNL_T-17102571517';
-                        const tid = data.tid ? data.tid : 'TNL_NS-18062500055';
+                        const tid = data.tid ? data.tid : 'TNL_NS-18101700058';
                         const unit = `${nsid}/${tid}`;
 
                         // Make sure to remove these properties as we don't
@@ -398,6 +404,7 @@ class Ads {
                             window.idhbtubia.setAdserverTargeting(data);
                             window.idhbtubia.setDfpAdUnitCode(unit);
                             window.idhbtubia.requestAds({
+                                slotIds: [this.slotId],
                                 callback: vastUrl => {
                                     resolve(vastUrl);
                                 },
@@ -508,17 +515,14 @@ class Ads {
                     .catch(error => {
                         this.player.debug.log(error);
 
-                        // Todo: set proper defaults!
                         const keys = {
                             'tid': 'TNL_T-17102571517',
-                            'nsid': 'TNL_NS-18062500055',
+                            'nsid': 'TNL_NS-18101700058',
                             'tnl_tid': 'T-17102571517',
-                            'tnl_nsid': 'NS-18062500055',
-                            'tnl_pw': '640',
-                            'tnl_ph': '480',
+                            'tnl_nsid': 'NS-18101700058',
                             'tnl_pt': '22',
                             'tnl_pid': 'P-17101800031',
-                            'tnl_paid': '4040',
+                            'tnl_paid': '17',
                             'tnl_ad_type': 'video_image',
                             'tnl_asset_id': '0',
                             'tnl_ad_pos': this.adPosition,
@@ -532,6 +536,7 @@ class Ads {
                             'tnl_campaign': '2',
                             'tnl_gdpr': '0',
                             'tnl_gdpr_consent': '1',
+                            'consent_string': 'BOWJjG9OWJjG9CLAAAENBx-AAAAiDAAA',
                         };
 
                         // Send event for Tunnl debugging.
@@ -645,7 +650,7 @@ class Ads {
 
         // The SDK is polling currentTime on the contentPlayback. And needs a duration
         // so it can determine when to start the mid- and post-roll
-        this.manager = adsManagerLoadedEvent.getAdsManager(this.player, settings);
+        this.manager = adsManagerLoadedEvent.getAdsManager(this.player.elements.original, settings);
 
         // Get the cue points for any mid-rolls by filtering out the pre- and post-roll
         this.cuePoints = this.manager.getCuePoints();
