@@ -182,7 +182,7 @@ class Tubia {
 
                     //delete later and change var to const
                    
-                    videoDataUrl = 'https://api.tubia.com/api/player/publish/?gameid=ff250481c0c34f63979c690b11cb0206&publisherid=88e25571535d4aeb8842e9e2c6150513&domain=kizi.com';
+                    // videoDataUrl = 'https://api.tubia.com/api/player/publish/?gameid=ff250481c0c34f63979c690b11cb0206&publisherid=88e25571535d4aeb8842e9e2c6150513&domain=kizi.com';
 
                     const videoDataRequest = new Request(videoDataUrl, {
                         method: "GET"
