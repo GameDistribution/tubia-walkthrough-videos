@@ -22,12 +22,13 @@ module.exports = function (grunt) {
         pkg: grunt.file.readJSON('package.json'),
 
         /**
-         * Use cmd to eslint.
+         * ESlint.
          */
-        exec: {
-            eslint: {
-                cmd: './node_modules/.bin/eslint --ext .js, src',
+        eslint: {
+            options: {
+                configFile: '.eslintrc.js',
             },
+            target: ['src'],
         },
 
         /**
@@ -226,7 +227,7 @@ module.exports = function (grunt) {
             scripts: {
                 files: ['src/scripts/**/*.js'],
                 tasks: [
-                    'exec:eslint',
+                    'eslint',
                     'browserify',
                     'concat',
                     'uglify',
@@ -273,7 +274,7 @@ module.exports = function (grunt) {
     });
 
     // General tasks.
-    grunt.loadNpmTasks('grunt-exec');
+    grunt.loadNpmTasks('grunt-eslint');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-google-cloud');
@@ -325,7 +326,7 @@ module.exports = function (grunt) {
                 'copy',
                 'sass',
                 'postcss',
-                'exec:eslint',
+                'eslint',
                 'browserify',
                 'concat',
                 'sourcemaps',
@@ -344,7 +345,7 @@ module.exports = function (grunt) {
                 'clean',
                 'sass',
                 'postcss',
-                'exec:eslint',
+                'eslint',
                 'browserify',
                 'concat',
                 'uglify',
