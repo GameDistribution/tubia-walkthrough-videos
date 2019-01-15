@@ -101,7 +101,8 @@ module.exports = function (grunt) {
             files: {
                 src: [
                     'libs/gd/gd.js',
-                    'libs/gd/gd.css',
+                    'libs/gd/main.min.css',
+                    'libs/gd/main.min.js',
                 ],
             },
         },
@@ -138,7 +139,7 @@ module.exports = function (grunt) {
             },
             build: {
                 src: 'libs/.tmp/sass.css',
-                dest: 'libs/gd/gd.css',
+                dest: 'libs/gd/main.min.css',
             },
         },
 
@@ -165,9 +166,13 @@ module.exports = function (grunt) {
                     },
                 ]],
             },
-            lib: {
+            build: {
                 src: 'src/scripts/**/*.js',
                 dest: 'libs/.tmp/babel.js',
+            },
+            entry: {
+                src: 'src/scripts/entry.js',
+                dest: 'libs/.tmp/gd.js',
             },
         },
 
@@ -178,12 +183,12 @@ module.exports = function (grunt) {
             options: {
                 separator: ';',
             },
-            lib: {
+            build: {
                 src: [
                     'src/libraries/md5.js',
                     'libs/.tmp/babel.js',
                 ],
-                dest: 'libs/.tmp/concat.js',
+                dest: 'libs/.tmp/main.js',
             },
         },
 
@@ -210,8 +215,12 @@ module.exports = function (grunt) {
                 beautify: false,
                 warnings: false,
             },
-            lib: {
-                src: 'libs/.tmp/concat.js',
+            build: {
+                src: 'libs/.tmp/main.js',
+                dest: 'libs/gd/main.min.js',
+            },
+            entry: {
+                src: 'libs/.tmp/gd.js',
                 dest: 'libs/gd/gd.js',
             },
         },

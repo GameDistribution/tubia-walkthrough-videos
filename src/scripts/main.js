@@ -260,8 +260,8 @@ class Tubia {
                     /* eslint-enable */
                 });
             utils.loadStyle((this.options.domain === 'localhost:8081')
-                ? './gd.css'
-                : 'https://player.tubia.com/libs/gd/gd.css')
+                ? './main.min.css'
+                : 'https://player.tubia.com/libs/gd/main.min.css')
                 .then(() => {
                     // Create an inner container; within we load our player and do other stuff.
                     // We make sure to destroy any inner content if there are already things inside.
