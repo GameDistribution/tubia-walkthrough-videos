@@ -46,8 +46,8 @@ class Tubia {
         const gdprTargeting = params.gdprtargeting || null;
         const langCodeLegacy = params.lang || params.langcode;
         const langCode = typeof langCodeLegacy !== 'undefined' && langCodeLegacy !== '' ? langCodeLegacy : 'en-us';
-        const debug = typeof params.debug !== 'undefined' && params.debug !== '' && params.debug !== 'false';
-        const testing = typeof params.testing !== 'undefined' && params.testing !== '' && params.testing !== 'false';
+        const debug = (typeof params.debug !== 'undefined' && params.debug !== '') && params.debug === 'true';
+        const testing = typeof params.testing !== 'undefined' || params.testing !== '' && params.debug === 'true';
         const videoInterval = params.videointerval || null;
         const category = params.category || '';
         const keys = params.keys || null;
@@ -68,18 +68,8 @@ class Tubia {
             debug,
             testing,
             videoInterval, // // Todo: testing. Video midroll interval.
-            category,
-            keys, // Tunnl tracking keys.
-            onStart() {
-            },
-            onFound() {
-            },
-            onNotFound() {
-            },
-            onError() {
-            },
-            onReady() {
-            },
+            category: JSON.parse(category),
+            keys: JSON.parse(keys), // Tunnl tracking keys.
         };
 
         // Test domains.
@@ -107,6 +97,7 @@ class Tubia {
         this.transitionSpeed = 2000;
         this.startPlyrHandler = this.startPlyr.bind(this);
         this.player = null;
+        this.origin = 'http://localhost:8081';
 
         this.container = document.getElementById('tubia-container');
         this.transitionElement = this.container.querySelector('.tubia__transition');
@@ -132,8 +123,8 @@ class Tubia {
      * Initialise the Tubia application. Fetch the data.
      */
     start() {
-        // Invoke callback.
-        this.options.onStart();
+        // Send event to our publisher.
+        parent.postMessage({name: 'onStart'}, this.origin);
 
         // Search for a matching video within our Tubia database and return the id.
         // Todo: We can't get the poster image without doing these requests for data. Kind of sucks.
@@ -191,7 +182,7 @@ class Tubia {
                         }
 
                         // Invoke callback to end-user containing our video data.
-                        this.options.onFound(data);
+                        parent.postMessage({name: 'onFound', payload: data}, this.origin);
 
                         // Increment the matchmaking counter so we can get a priority list for our editor.
                         // We know if the video is missing when the backFillVideoId and videoId match.
@@ -354,7 +345,7 @@ class Tubia {
      * @param {String} message
      */
     notFound(origin, message) {
-        this.options.onNotFound(message);
+        parent.postMessage({name: 'onNotFound', payload: message}, this.origin);
 
         // Report missing video.
         this.reportToMatchmaking();
@@ -380,7 +371,7 @@ class Tubia {
      * @param {String} error
      */
     onError(origin, error) {
-        this.options.onError(error);
+        parent.postMessage({name: 'onError', payload: error}, this.origin);
 
         // Todo: I think Plyr has some error handling div?
         if (this.container) {
@@ -571,7 +562,7 @@ class Tubia {
                     // Show the player.
                     this.player.elements.container.classList.toggle('tubia__active');
                     // Return ready callback for our clients.
-                    this.options.onReady(this.player);
+                    parent.postMessage({name: 'onReady'}, this.origin);
                     // Start playing.
                     // this.player.play();
                 }, this.transitionSpeed / 1.5);

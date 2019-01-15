@@ -20,10 +20,14 @@
         }
     </style>
     <script>
-        window["TUBIA_OPTIONS"] = {
-            "container": 'container-id',
-            "publisherId": 'dc63a91fa184423482808bed4d782321',
-            "title": 'Jewel Burst',
+        window.TUBIA_OPTIONS = {
+            container: 'container-id',
+            publisherId: 'dc63a91fa184423482808bed4d782321',
+            title: 'Jewel Burst',
+            category: 'Magic',
+            keys: {a_key: 1},
+            debug: true,
+            testing: true,
             onStart: function () {
                 console.log('Tubia started');
             },
@@ -45,7 +49,7 @@
             if (d.getElementById(id)) return;
             js = d.createElement(s);
             js.id = id;
-            js.src = 'https://player.tubia.com/libs/gd/gd.js';
+            js.src = './gd.js';
             fjs.parentNode.insertBefore(js, fjs);
         }(document, 'script', 'tubia-playerjs'));
     </script>

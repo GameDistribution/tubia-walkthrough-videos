@@ -28,17 +28,19 @@
         gdprtargeting: settings.gdprTargeting,
         langcode: settings.langCode,
         debug: settings.debug,
+        testing: settings.testing,
+        videointerval: settings.videoInterval,
+        category: settings.category,
+        keys: settings.keys,
     }];
 
-    let url = './index.html?';
+    let url = settings.debug ? './index_test.html?' : 'https://player.tubia.com/index.html?';
     settingsArray.forEach(setting => {
         url += Object.keys(setting)
             .filter(key => typeof setting[key] !== 'undefined')
-            .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(setting[key])}`)
+            .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(JSON.stringify(setting[key]))}`)
             .join('&');
     });
-
-    console.log(url);
 
     const frame = document.createElement('iframe');
     frame.src = url;
@@ -58,4 +60,38 @@
         console.error('There is no container element for Tubia set.');
     }
 
+    // Listen to events coming in from the Tubia iframe.
+    window.addEventListener('message', (event) => {
+        // Check if the origin domain is correct.
+        if (event.origin !== 'http://localhost:8081'
+            && event.origin !== 'https://player.tubia.com') return;
+        // Did we get data?
+        if (!event.data) return;
+        // What kind of data?
+        if (event.data.name === 'onStart') {
+            if (typeof window.TUBIA_OPTIONS.onStart === 'function') {
+                window.TUBIA_OPTIONS.onStart(event.data.payload);
+            }
+        }
+        if (event.data.name === 'onFound') {
+            if (typeof window.TUBIA_OPTIONS.onFound === 'function') {
+                window.TUBIA_OPTIONS.onFound(event.data.payload);
+            }
+        }
+        if (event.data.name === 'onNotFound') {
+            if (typeof window.TUBIA_OPTIONS.onNotFound === 'function') {
+                window.TUBIA_OPTIONS.onNotFound(event.data.payload);
+            }
+        }
+        if (event.data.name === 'onError') {
+            if (typeof window.TUBIA_OPTIONS.onError === 'function') {
+                window.TUBIA_OPTIONS.onError(event.data.payload);
+            }
+        }
+        if (event.data.name === 'onReady') {
+            if (typeof window.TUBIA_OPTIONS.onReady === 'function') {
+                window.TUBIA_OPTIONS.onReady(event.data.payload);
+            }
+        }
+    }, false);
 }());
