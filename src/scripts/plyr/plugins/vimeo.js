@@ -2,10 +2,10 @@
 // Vimeo plugin
 // ==========================================================================
 
-import utils from './../utils';
-import captions from './../captions';
-import controls from './../controls';
-import ui from './../ui';
+import utils from '../utils';
+import captions from '../captions';
+import controls from '../controls';
+import ui from '../ui';
 
 const vimeo = {
     setup() {

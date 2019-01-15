@@ -111,13 +111,14 @@ module.exports = function (grunt) {
          * Compiles SASS stylesheets into CSS.
          */
         sass: {
-            options: {
-                sourcemap: 'none',
-                style: 'nested', // no need for config.rb
-            },
             build: {
-                src: 'src/styles/plyr.scss',
-                dest: 'libs/.tmp/sass.css',
+                options: {
+                    sourcemap: 'auto',
+                    style: 'nested', // no need for config.rb
+                },
+                files: {
+                    'libs/gd/main.css': 'src/styles/plyr.scss',
+                },
             },
         },
 
@@ -138,7 +139,7 @@ module.exports = function (grunt) {
                 ],
             },
             build: {
-                src: 'libs/.tmp/sass.css',
+                src: 'libs/gd/main.css',
                 dest: 'libs/gd/main.min.css',
             },
         },
@@ -154,13 +155,12 @@ module.exports = function (grunt) {
                     'babelify',
                     {
                         presets: [[
-                            'env',
+                            '@babel/preset-env',
                             {
                                 targets: {
                                     browsers: ['> 1%'],
                                 },
                                 debug: false,
-                                useBuiltIns: true,
                             },
                         ]],
                     },
@@ -200,8 +200,8 @@ module.exports = function (grunt) {
             options: {
                 position: 'top',
                 linebreak: true,
-                sourceMap: false,
-                sourceMapIncludeSources: false,
+                sourceMap: true,
+                sourceMapIncludeSources: true,
                 compress: {
                     sequences: true,
                     dead_code: true,

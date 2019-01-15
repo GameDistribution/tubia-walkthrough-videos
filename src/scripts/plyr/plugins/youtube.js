@@ -2,9 +2,9 @@
 // YouTube plugin
 // ==========================================================================
 
-import utils from './../utils';
-import controls from './../controls';
-import ui from './../ui';
+import utils from '../utils';
+import controls from '../controls';
+import ui from '../ui';
 
 // Standardise YouTube quality unit
 function mapQualityUnit(input) {
