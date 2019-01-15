@@ -37,8 +37,8 @@ class Tubia {
         const publisherId = typeof publisherIdLegacy !== 'undefined' && publisherIdLegacy !== '' ? publisherIdLegacy : 'dc63a91fa184423482808bed4d782320';
         const gameId = typeof params.gameid !== 'undefined' && params.gameid !== '' ? params.gameid : '0';
         const title = typeof params.title !== 'undefined' && params.title !== '' ? params.title : 'Jewel Burst';
-        const url = document.location.origin ? document.location.origin + document.location.pathname : 'https://gamedistribution.com/';
-        const href = document.location.href ? document.location.href : 'https://gamedistribution.com/';
+        const url = params.url || 'https://gamedistribution.com/';
+        const href = params.href || 'https://gamedistribution.com/';
         const domain = url ? url.toLowerCase().replace(/^(?:https?:\/\/)?/i, '').split('/')[0] : 'gamedistribution.com';
         const colorMain = typeof params.colormain !== 'undefined' && params.colormain !== '' ? params.colormain : '';
         const colorAccent = typeof params.coloraccent !== 'undefined' && params.coloraccent !== '' ? params.coloraccent : '';
@@ -97,7 +97,7 @@ class Tubia {
         this.transitionSpeed = 2000;
         this.startPlyrHandler = this.startPlyr.bind(this);
         this.player = null;
-        this.origin = 'http://localhost:8081';
+        this.origin = url;
 
         this.container = document.getElementById('tubia-container');
         this.transitionElement = this.container.querySelector('.tubia__transition');
@@ -124,7 +124,11 @@ class Tubia {
      */
     start() {
         // Send event to our publisher.
-        parent.postMessage({name: 'onStart'}, this.origin);
+        try {
+            parent.postMessage({name: 'onStart'}, this.origin);
+        } catch (postMessageError) {
+            console.error(postMessageError);
+        }
 
         // Search for a matching video within our Tubia database and return the id.
         // Todo: We can't get the poster image without doing these requests for data. Kind of sucks.
@@ -182,7 +186,11 @@ class Tubia {
                         }
 
                         // Invoke callback to end-user containing our video data.
-                        parent.postMessage({name: 'onFound', payload: data}, this.origin);
+                        try {
+                            parent.postMessage({name: 'onFound', payload: data}, this.origin);
+                        } catch (postMessageError) {
+                            console.error(postMessageError);
+                        }
 
                         // Increment the matchmaking counter so we can get a priority list for our editor.
                         // We know if the video is missing when the backFillVideoId and videoId match.
@@ -345,7 +353,11 @@ class Tubia {
      * @param {String} message
      */
     notFound(origin, message) {
-        parent.postMessage({name: 'onNotFound', payload: message}, this.origin);
+        try {
+            parent.postMessage({name: 'onNotFound', payload: message}, this.origin);
+        } catch (postMessageError) {
+            console.error(postMessageError);
+        }
 
         // Report missing video.
         this.reportToMatchmaking();
@@ -371,7 +383,11 @@ class Tubia {
      * @param {String} error
      */
     onError(origin, error) {
-        parent.postMessage({name: 'onError', payload: error}, this.origin);
+        try {
+            parent.postMessage({name: 'onError', payload: error}, this.origin);
+        } catch (postMessageError) {
+            console.error(postMessageError);
+        }
 
         // Todo: I think Plyr has some error handling div?
         if (this.container) {
@@ -562,7 +578,11 @@ class Tubia {
                     // Show the player.
                     this.player.elements.container.classList.toggle('tubia__active');
                     // Return ready callback for our clients.
-                    parent.postMessage({name: 'onReady'}, this.origin);
+                    try {
+                        parent.postMessage({name: 'onReady'}, this.origin);
+                    } catch (postMessageError) {
+                        console.error(postMessageError);
+                    }
                     // Start playing.
                     // this.player.play();
                 }, this.transitionSpeed / 1.5);

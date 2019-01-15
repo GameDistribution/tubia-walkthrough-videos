@@ -21,7 +21,6 @@
         publisherid: settings.publisherId,
         title: settings.title,
         gameid: settings.gameId,
-        url: document.location.href,
         colormain: settings.colorMain,
         coloraccent: settings.colorAccent,
         gdprtracking: settings.gdprTracking,
@@ -32,9 +31,14 @@
         videointerval: settings.videoInterval,
         category: settings.category,
         keys: settings.keys,
+        url: document.location.origin + document.location.pathname,
+        href: document.location.href,
     }];
 
-    let url = settings.debug ? './index_test.html?' : 'https://player.tubia.com/index.html?';
+    // Todo: testing!
+    // let url = settings.debug ? './index_test.html?' : 'https://player.tubia.com/libs/gd/index.html?';
+    let url = 'https://player.tubia.com/libs/gd/index_test.html?';
+
     settingsArray.forEach(setting => {
         url += Object.keys(setting)
             .filter(key => typeof setting[key] !== 'undefined')
