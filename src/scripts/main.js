@@ -40,8 +40,8 @@ class Tubia {
         const url = document.location.origin ? document.location.origin + document.location.pathname : 'https://gamedistribution.com/';
         const href = document.location.href ? document.location.href : 'https://gamedistribution.com/';
         const domain = url ? url.toLowerCase().replace(/^(?:https?:\/\/)?/i, '').split('/')[0] : 'gamedistribution.com';
-        const colorMain = typeof params.colorMain !== 'undefined' && params.colorMain !== '' ? `#${params.colorMain}` : '';
-        const colorAccent = typeof params.colorAccent !== 'undefined' && params.colorAccent !== '' ? `#${params.colorAccent}` : '';
+        const colorMain = typeof params.colormain !== 'undefined' && params.colormain !== '' ? params.colormain : '';
+        const colorAccent = typeof params.coloraccent !== 'undefined' && params.coloraccent !== '' ? params.coloraccent : '';
         const gdprTracking = params.gdprtracking || null;
         const gdprTargeting = params.gdprtargeting || null;
         const langCodeLegacy = params.lang || params.langcode;
@@ -60,8 +60,8 @@ class Tubia {
             url,
             href,
             domain,
-            colorMain,
-            colorAccent,
+            colorMain: `#${colorMain}`,
+            colorAccent: `#${colorAccent}`,
             gdprTracking,
             gdprTargeting,
             langCode,

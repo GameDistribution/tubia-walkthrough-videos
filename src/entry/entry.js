@@ -38,7 +38,13 @@
     settingsArray.forEach(setting => {
         url += Object.keys(setting)
             .filter(key => typeof setting[key] !== 'undefined')
-            .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(JSON.stringify(setting[key]))}`)
+            .map(key => {
+                let value = setting[key];
+                if (key === 'category' || key === 'keys') {
+                    value = JSON.stringify(setting[key]);
+                }
+                return `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
+            })
             .join('&');
     });
 
