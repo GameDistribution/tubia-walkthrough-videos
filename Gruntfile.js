@@ -42,7 +42,7 @@ module.exports = function (grunt) {
                 src: [
                     'src/index.html',
                     'src/index_legacy.html',
-                    'src/development.html',
+                    'src/publisher.html',
                     'src/index_test.html',
                 ],
                 dest: './libs/gd/',
@@ -171,7 +171,7 @@ module.exports = function (grunt) {
                 dest: 'libs/.tmp/babel.js',
             },
             entry: {
-                src: 'src/scripts/entry.js',
+                src: 'src/entry/entry.js',
                 dest: 'libs/.tmp/gd.js',
             },
         },
@@ -201,7 +201,7 @@ module.exports = function (grunt) {
                 position: 'top',
                 linebreak: true,
                 sourceMap: true,
-                sourceMapIncludeSources: true,
+                sourceMapIncludeSources: false,
                 compress: {
                     sequences: true,
                     dead_code: true,
@@ -234,7 +234,10 @@ module.exports = function (grunt) {
                 debounceDelay: 250,
             },
             scripts: {
-                files: ['src/scripts/**/*.js'],
+                files: [
+                    'src/scripts/**/*.js',
+                    'src/entry/entry.js',
+                ],
                 tasks: [
                     'eslint',
                     'browserify',
@@ -255,7 +258,7 @@ module.exports = function (grunt) {
                 files: [
                     'src/index.html',
                     'src/index_legacy.html',
-                    'src/development.html',
+                    'src/publisher.html',
                     'src/index_test.html',
                 ],
                 tasks: ['copy'],

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
-    <title>Tubia</title>
+    <title>Publisher Web Page</title>
     <meta name="description" content="Tubia walkthrough video's">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
@@ -12,18 +12,17 @@
             padding: 0;
         }
 
-        #tubia-container {
-            position: absolute;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            left: 0;
+        #container-id {
+            position: relative;
+            max-width: 800px;
+            height: 450px;
+            margin: auto;
         }
     </style>
     <script>
         window["TUBIA_OPTIONS"] = {
-            "container": 'tubia-container',
-            "publisherId": 'dc63a91fa184423482808bed4d782320',
+            "container": 'container-id',
+            "publisherId": 'dc63a91fa184423482808bed4d782321',
             "title": 'Jewel Burst',
             onStart: function () {
                 console.log('Tubia started');
@@ -46,7 +45,7 @@
             if (d.getElementById(id)) return;
             js = d.createElement(s);
             js.id = id;
-            js.src = './main.min.js';
+            js.src = './gd.js';
             fjs.parentNode.insertBefore(js, fjs);
         }(document, 'script', 'tubia-playerjs'));
     </script>
@@ -54,7 +53,7 @@
 
 <body>
 
-<div id="tubia-container"></div>
+<div id="container-id"></div>
 
 </body>
 

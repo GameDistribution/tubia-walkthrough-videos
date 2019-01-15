@@ -64,85 +64,25 @@ class Ads {
 
         // Load Google IMA HTML5 SDK.
         if (this.enabled) {
-            this.load().then(() => {
-                this.ready();
-                this.setupIMA();
-            }).catch(error => this.trigger('error', error));
-        }
-    }
-
-    /**
-     * Load the IMA SDK
-     */
-    load() {
-        const IMA = new Promise((resolve, reject) => {
             if (!utils.is.object(window.google) || !utils.is.object(window.google.ima)) {
                 window.google = window.google || {};
                 window.google.ima = window.google.ima || {};
-
-                const src = (this.debug)
-                    ? '//imasdk.googleapis.com/js/sdkloader/ima3_debug.js'
-                    // ? '//imasdk.googleapis.com/js/sdkloader/ima3.js'
-                    : '//imasdk.googleapis.com/js/sdkloader/ima3.js';
-                const script = document.getElementsByTagName('script')[0];
-                const ima = document.createElement('script');
-                ima.type = 'text/javascript';
-                ima.async = true;
-                ima.src = src;
-                ima.onload = () => {
-                    resolve();
-                };
-                ima.onerror = (error) => {
-                    reject(error);
-                };
-                script.parentNode.insertBefore(ima, script);
-            } else {
-                resolve();
             }
-        });
 
-        const prebidJS = new Promise((resolve, reject) => {
-            // The display ad defined within main.js also uses the same hb namespace
-            // and also loads the same script. If this happens, just resolve.
             if (!utils.is.object(window.idhbtubia) || !utils.is.array(window.idhbtubia.que)) {
                 window.idhbtubia = window.idhbtubia || {};
                 window.idhbtubia.que = window.idhbtubia.que || [];
 
-                const src = (this.debug)
-                    ? 'https://test-hb.improvedigital.com/pbw/tubia.min.js'
-                    // ? 'https://hb.improvedigital.com/pbw/tubia.min.js'
-                    : 'https://hb.improvedigital.com/pbw/tubia.min.js';
-                const script = document.getElementsByTagName('script')[0];
-                const hb = document.createElement('script');
-                hb.type = 'text/javascript';
-                hb.id = 'idhbtubia';
-                hb.async = true;
-                hb.src = src;
-                hb.onload = () => {
-                    try {
-                        // Show some header bidding logging.
-                        if (this.debug) {
-                            window.idhbtubia.getConfig();
-                            window.idhbtubia.debug(true);
-                        }
-                        resolve();
-                    } catch (e) {
-                        reject(e);
-                    }
-                };
-                hb.onerror = (error) => {
-                    reject(error);
-                };
-                script.parentNode.insertBefore(hb, script);
-            } else {
-                resolve();
+                // Show some header bidding logging.
+                if (this.debug) {
+                    window.idhbtubia.getConfig();
+                    window.idhbtubia.debug(true);
+                }
             }
-        });
 
-        return Promise.all([
-            IMA,
-            prebidJS,
-        ]);
+            this.ready();
+            this.setupIMA();
+        }
     }
 
     /**

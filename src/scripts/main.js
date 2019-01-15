@@ -14,15 +14,9 @@ import utils from './plyr/utils';
 class Tubia {
     /**
      * Constructor of Tubia.
-     * @param {Object} options
      * @return {*}
      */
-    constructor(options) {
-        // If no options are given.
-        if (!options || (Object.keys(options).length === 0 && options.constructor === Object)) {
-            return new Error('No settings have been given to Tubia...');
-        }
-
+    constructor() {
         // Set a version banner within the developer console.
         /* eslint-disable */
         const version = PackageJSON.version;
@@ -35,26 +29,47 @@ class Tubia {
         console.log.apply(console, banner);
         /* eslint-enable */
 
-        // Set some defaults. We replace them with real given
-        // values further down.
-        const defaults = {
-            debug: false,
-            testing: false,
-            container: 'player',
-            gameId: '0', // Todo: api.tubia.com expects something...
-            publisherId: '',
-            title: '',
-            category: '',
-            langCode: '',
-            colorMain: '',
-            colorAccent: '',
-            url: document.location.origin + document.location.pathname || 'https://gamedistribution.com/',
-            href: document.location.href || 'https://gamedistribution.com/',
-            domain: document.location.host || 'gamedistribution.com',
-            gdprTracking: null,
-            gdprTargeting: null,
-            keys: null, // Tunnl tracking keys.
-            videoInterval: null, // // Todo: testing. Video midroll interval.
+        const params = utils.getUrlParams(document.location.href);
+
+        // Get URL parameter values from i-frame URL.
+        // We also have to deal with legacy parameters.
+        const publisherIdLegacy = params.pubid || params.publisherid;
+        const publisherId = typeof publisherIdLegacy !== 'undefined' && publisherIdLegacy !== '' ? publisherIdLegacy : 'dc63a91fa184423482808bed4d782320';
+        const gameId = typeof params.gameid !== 'undefined' && params.gameid !== '' ? params.gameid : '0';
+        const title = typeof params.title !== 'undefined' && params.title !== '' ? params.title : 'Jewel Burst';
+        const url = document.location.origin ? document.location.origin + document.location.pathname : 'https://gamedistribution.com/';
+        const href = document.location.href ? document.location.href : 'https://gamedistribution.com/';
+        const domain = url ? url.toLowerCase().replace(/^(?:https?:\/\/)?/i, '').split('/')[0] : 'gamedistribution.com';
+        const colorMain = typeof params.colorMain !== 'undefined' && params.colorMain !== '' ? `#${params.colorMain}` : '';
+        const colorAccent = typeof params.colorAccent !== 'undefined' && params.colorAccent !== '' ? `#${params.colorAccent}` : '';
+        const gdprTracking = params.gdprtracking || null;
+        const gdprTargeting = params.gdprtargeting || null;
+        const langCodeLegacy = params.lang || params.langcode;
+        const langCode = typeof langCodeLegacy !== 'undefined' && langCodeLegacy !== '' ? langCodeLegacy : 'en-us';
+        const debug = typeof params.debug !== 'undefined' && params.debug !== '' && params.debug !== 'false';
+        const testing = typeof params.testing !== 'undefined' && params.testing !== '' && params.testing !== 'false';
+        const videoInterval = params.videointerval || null;
+        const category = params.category || '';
+        const keys = params.keys || null;
+
+        // Populate the options object.
+        this.options = {
+            publisherId,
+            gameId,
+            title,
+            url,
+            href,
+            domain,
+            colorMain,
+            colorAccent,
+            gdprTracking,
+            gdprTargeting,
+            langCode,
+            debug,
+            testing,
+            videoInterval, // // Todo: testing. Video midroll interval.
+            category,
+            keys, // Tunnl tracking keys.
             onStart() {
             },
             onFound() {
@@ -67,24 +82,20 @@ class Tubia {
             },
         };
 
-        if (options) {
-            this.options = utils.extendDefaults(defaults, options);
-        } else {
-            this.options = defaults;
-        }
-
         // Test domains.
         const testDomains = [
             'localhost:8081',
             'player.tubia.com',
         ];
+
+        // Update options.
+        this.options.publisherId = this.options.publisherId.toString().replace(/-/g, '');
         this.options.testing = this.options.testing || testDomains.indexOf(this.options.domain.replace(/^(?:https?:\/\/)?(?:\/\/)?(?:www\.)?/i, '').split('/')[0]) > -1;
         this.options.debug = !this.options.debug ? this.options.testing : this.options.debug;
 
         console.log(this.options);
 
         this.videoId = '';
-        this.innerContainer = null;
         this.adTag = null;
         this.posterUrl = '';
         this.posterPosterElement = null;
@@ -96,7 +107,11 @@ class Tubia {
         this.transitionSpeed = 2000;
         this.startPlyrHandler = this.startPlyr.bind(this);
         this.player = null;
-        this.publisherId = this.options.publisherId.toString().replace(/-/g, '');
+
+        this.container = document.getElementById('tubia-container');
+        this.transitionElement = this.container.querySelector('.tubia__transition');
+        this.playButton = this.container.querySelector('.tubia__play-button');
+        this.hexagonLoader = this.container.querySelector('.tubia__hexagon-loader');
 
         // Call Google Analytics and Death Star.
         this.analytics();
@@ -156,7 +171,7 @@ class Tubia {
         this.videoDataPromise = new Promise((resolve, reject) => {
             this.videoSearchPromise.then(() => {
                 // Yes argument gameid is expecting the videoId...
-                const videoDataUrl = `https://api.tubia.com/api/player/publish/?gameid=${this.videoId}&publisherid=${this.publisherId}&domain=${encodeURIComponent(this.options.domain)}`;
+                const videoDataUrl = `https://api.tubia.com/api/player/publish/?gameid=${this.videoId}&publisherid=${this.options.publisherId}&domain=${encodeURIComponent(this.options.domain)}`;
                 const videoDataRequest = new Request(videoDataUrl, {method: 'GET'});
 
                 // Record Tubia "Video Loaded" event in Tunnl.
@@ -192,7 +207,7 @@ class Tubia {
                             resolve(data);
                         } else {
                             // Todo: Title property within related games JSON is always empty!!
-                            const relatedVideosUrl = `https://api.tubia.com/api/RelatedVideo/?gameMd5=${this.options.gameId}&publisherId=${this.publisherId}&domain=${encodeURIComponent(this.options.domain)}&skip=0&take=10&orderBy=visit&sortDirection=desc&langCode=${this.options.langCode}`;
+                            const relatedVideosUrl = `https://api.tubia.com/api/RelatedVideo/?gameMd5=${this.options.gameId}&publisherId=${this.options.publisherId}&domain=${encodeURIComponent(this.options.domain)}&skip=0&take=10&orderBy=visit&sortDirection=desc&langCode=${this.options.langCode}`;
                             const relatedVideosRequest = new Request(relatedVideosUrl, {
                                 method: 'GET',
                             });
@@ -221,76 +236,14 @@ class Tubia {
         });
 
         this.videoDataPromise
-            .then(() => this.loadExternals())
+            .then(() => {
+                // And add theme styles.
+                this.setTheme();
+
+                // Create the markup now that we have the stylesheets and main container ready.
+                this.createMarkup();
+            })
             .catch(error => this.notFound('start videoDataPromise', error));
-    }
-
-    /**
-     * loadExternals
-     * Load stysheets and fonts and any other external files
-     */
-    loadExternals() {
-        // Todo: Temporary tracking of wrong domains at publishers.
-        /* eslint-disable */
-        // if (typeof window['ga'] !== 'undefined' &&
-        //     document.currentScript) {
-        //     window['ga']('tubia.send', {
-        //         hitType: 'event',
-        //         eventCategory: 'LEGACY_URL_TRACKING',
-        //         eventAction: document.currentScript.src,
-        //         eventLabel: this.options.domain,
-        //     });
-        // }
-        /* eslint-enable */
-
-        const container = document.getElementById(this.options.container);
-        if (container) {
-            // Load our styles and fonts.
-            utils.loadStyle('https://fonts.googleapis.com/css?family=Khand:400,700')
-                .catch(() => {
-                    /* eslint-disable */
-                    if (typeof window['ga'] !== 'undefined') {
-                        window['ga']('tubia.send', {
-                            hitType: 'event',
-                            eventCategory: 'ERROR',
-                            eventAction: this.options.domain,
-                            eventLabel: 'Something went wrong loading Google fonts.',
-                        });
-                    }
-                    /* eslint-enable */
-                });
-            utils.loadStyle((this.options.domain === 'localhost:8081')
-                ? './main.min.css'
-                : 'https://player.tubia.com/libs/gd/main.min.css')
-                .then(() => {
-                    // Create an inner container; within we load our player and do other stuff.
-                    // We make sure to destroy any inner content if there are already things inside.
-                    if (container.firstChild) {
-                        container.innerHTML = '';
-                    }
-
-                    // Now create the inner container.
-                    this.innerContainer = document.createElement('div');
-                    this.innerContainer.className = 'tubia';
-                    container.appendChild(this.innerContainer);
-
-                    // And add theme styles.
-                    this.setTheme(container);
-
-                    // Create the markup now that we have the stylesheets and main container ready.
-                    this.createMarkup();
-                }).catch((error) => {
-                    // If something went wrong with loading the stylesheet we get an Event.
-                    // Otherwise its just a regular error object.
-                    if (error.target) {
-                        this.onError('init loadStyle', 'Something went wrong when loading the Tubia stylesheet.');
-                    } else {
-                        this.onError('init loadStyle', error);
-                    }
-                });
-        } else {
-            this.onError('init container', 'There is no container element for Tubia set.');
-        }
     }
 
     /**
@@ -298,35 +251,8 @@ class Tubia {
      * Create the markup for the Tubia application.
      */
     createMarkup() {
-        const html = `
-            <div class="tubia__transition"></div>
-            <button class="tubia__play-button">
-                <svg class="tubia__play-icon" viewBox="0 0 18 18" version="1.1" xmlns="http://www.w3.org/2000/svg">
-                    <g>
-                        <path d="M15.5615866,8.10002147 L3.87056367,0.225209313 C3.05219207,-0.33727727 2,0.225209313 2,1.12518784 L2,16.8748122 C2,17.7747907 3.05219207,18.3372773 3.87056367,17.7747907 L15.5615866,9.89997853 C16.1461378,9.44998927 16.1461378,8.55001073 15.5615866,8.10002147 L15.5615866,8.10002147 Z"/>
-                    </g>
-                </svg>
-                <svg class="tubia__hexagon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 129.78 150.37">
-                    <path class="tubia__hexagon-base" d="M-1665.43,90.94V35.83a15.09,15.09,0,0,1,6.78-12.59l48.22-31.83a15.09,15.09,0,0,1,16-.38L-1547,19.13a15.09,15.09,0,0,1,7.39,13V90.94a15.09,15.09,0,0,1-7.21,12.87l-47.8,29.24a15.09,15.09,0,0,1-15.75,0l-47.8-29.24A15.09,15.09,0,0,1-1665.43,90.94Z" transform="translate(1667.43 13.09)"/>
-                    <path class="tubia__hexagon-line-animation" d="M-1665.43,90.94V35.83a15.09,15.09,0,0,1,6.78-12.59l48.22-31.83a15.09,15.09,0,0,1,16-.38L-1547,19.13a15.09,15.09,0,0,1,7.39,13V90.94a15.09,15.09,0,0,1-7.21,12.87l-47.8,29.24a15.09,15.09,0,0,1-15.75,0l-47.8-29.24A15.09,15.09,0,0,1-1665.43,90.94Z" transform="translate(1667.43 13.09)"/>
-                </svg>
-            </button>
-            <div class="tubia__hexagon-loader">
-                <svg class="tubia__hexagon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 129.78 150.37">
-                    <path class="tubia__hexagon-base" d="M-1665.43,90.94V35.83a15.09,15.09,0,0,1,6.78-12.59l48.22-31.83a15.09,15.09,0,0,1,16-.38L-1547,19.13a15.09,15.09,0,0,1,7.39,13V90.94a15.09,15.09,0,0,1-7.21,12.87l-47.8,29.24a15.09,15.09,0,0,1-15.75,0l-47.8-29.24A15.09,15.09,0,0,1-1665.43,90.94Z" transform="translate(1667.43 13.09)"/>
-                    <path class="tubia__hexagon-line-animation" d="M-1665.43,90.94V35.83a15.09,15.09,0,0,1,6.78-12.59l48.22-31.83a15.09,15.09,0,0,1,16-.38L-1547,19.13a15.09,15.09,0,0,1,7.39,13V90.94a15.09,15.09,0,0,1-7.21,12.87l-47.8,29.24a15.09,15.09,0,0,1-15.75,0l-47.8-29.24A15.09,15.09,0,0,1-1665.43,90.94Z" transform="translate(1667.43 13.09)"/>
-                </svg>
-            </div>
-            <div id="tubia__display-ad" class="tubia__display-ad"></div>
-        `;
-
-        this.innerContainer.insertAdjacentHTML('beforeend', html);
-        this.transitionElement = this.innerContainer.querySelector('.tubia__transition');
-        this.playButton = this.innerContainer.querySelector('.tubia__play-button');
-        this.hexagonLoader = this.innerContainer.querySelector('.tubia__hexagon-loader');
-
         // Show the container.
-        this.innerContainer.classList.toggle('tubia__active');
+        this.container.classList.toggle('tubia__active');
 
         // Show a spinner loader, as this could take some time.
         this.hexagonLoader.classList.toggle('tubia__active');
@@ -368,7 +294,7 @@ class Tubia {
                     // Hide our spinner loader.
                     this.hexagonLoader.classList.toggle('tubia__active');
                     // Add our poster image.
-                    this.innerContainer.appendChild(this.posterPosterElement);
+                    this.container.appendChild(this.posterPosterElement);
 
                     // Create the play button.
                     this.playButton.classList.toggle('tubia__active');
@@ -393,39 +319,30 @@ class Tubia {
                 || this.options.domain === 'www.bgames.com'
                 || this.options.domain === 'www.plinga.com')) {
 
-                // Load DFP script.
-                utils.loadScript(this.options.debug
-                    ? 'https://test-hb.improvedigital.com/pbw/tubia.min.js'
-                    : 'https://hb.improvedigital.com/pbw/tubia.min.js')
-                    .then(() => {
-                        // Set header bidding name space.
-                        window.idhbtubia = window.idhbtubia || {};
-                        window.idhbtubia.que = window.idhbtubia.que || [];
+                // Set header bidding name space.
+                window.idhbtubia = window.idhbtubia || {};
+                window.idhbtubia.que = window.idhbtubia.que || [];
 
-                        // Show some header bidding logging.
-                        if (this.options.debug) {
-                            window.idhbtubia.getConfig();
-                            window.idhbtubia.debug(true);
-                        }
+                // Show some header bidding logging.
+                if (this.options.debug) {
+                    window.idhbtubia.getConfig();
+                    window.idhbtubia.debug(true);
+                }
 
-                        // Load the ad.
-                        window.idhbtubia.que.push(() => {
-                            window.idhbtubia.setAdserverTargeting({
-                                tnl_ad_pos: 'tubia_leaderboard',
-                            });
-                            window.idhbtubia.requestAds({
-                                slotIds: [slotId],
-                                callback: (response) => {
-                                    if (this.options.debug) {
-                                        console.log('window.idhbtubia.requestAds callback returned:', response);
-                                    }
-                                },
-                            });
-                        });
-                    })
-                    .catch(error => {
-                        this.onError('init loadStyle', error);
+                // Load the ad.
+                window.idhbtubia.que.push(() => {
+                    window.idhbtubia.setAdserverTargeting({
+                        tnl_ad_pos: 'tubia_leaderboard',
                     });
+                    window.idhbtubia.requestAds({
+                        slotIds: [slotId],
+                        callback: (response) => {
+                            if (this.options.debug) {
+                                console.log('window.idhbtubia.requestAds callback returned:', response);
+                            }
+                        },
+                    });
+                });
             }
         });
     }
@@ -466,8 +383,8 @@ class Tubia {
         this.options.onError(error);
 
         // Todo: I think Plyr has some error handling div?
-        if (this.innerContainer) {
-            this.innerContainer.classList.add('tubia__error');
+        if (this.container) {
+            this.container.classList.add('tubia__error');
         }
 
         /* eslint-disable */
@@ -559,7 +476,7 @@ class Tubia {
             videoSource.type = sourceType;
 
             videoElement.appendChild(videoSource);
-            this.innerContainer.appendChild(videoElement);
+            this.container.appendChild(videoElement);
 
             // Create the video player.
             const controls = [
@@ -582,7 +499,7 @@ class Tubia {
             };
 
             // We don't want certain options when our view is too small.
-            if ((this.innerContainer.offsetWidth >= 400)
+            if ((this.container.offsetWidth >= 400)
                 && (!/Mobi/.test(navigator.userAgent))) {
                 controls.push('volume');
                 controls.push('settings');
@@ -709,9 +626,8 @@ class Tubia {
     /**
      * setTheme
      * Set some theme styling, which overwrites colors of our loaded CSS.
-     * @param {Object} element
      */
-    setTheme(element) {
+    setTheme() {
         if(this.options.colorMain !== '' && this.options.colorAccent !== '') {
             const css = `
                 .tubia .tubia__transition:after {
@@ -769,7 +685,7 @@ class Tubia {
             } else {
                 style.appendChild(document.createTextNode(css));
             }
-            element.appendChild(style);
+            this.container.appendChild(style);
         }
     }
 
@@ -783,7 +699,7 @@ class Tubia {
         // Todo: Keep this logic within the backend.
         // Todo: Triodor has not yet deployed the preflight request update, so no JSON!
         // Todo: This should be a GET request.
-        const videoCounterData = `publisherId=${this.publisherId}&url=${encodeURIComponent(this.options.url)}&title=${this.options.title}&gameId=${this.options.gameId}&category=${this.options.category}&langCode=${this.options.langCode}`;
+        const videoCounterData = `publisherId=${this.options.publisherId}&url=${encodeURIComponent(this.options.url)}&title=${this.options.title}&gameId=${this.options.gameId}&category=${this.options.category}&langCode=${this.options.langCode}`;
         const videoCounterUrl = 'https://api.tubia.com/api/player/find/';
         const videoCounterRequest = new Request(videoCounterUrl, {
             method: 'POST',
@@ -813,3 +729,5 @@ class Tubia {
 }
 
 export default Tubia;
+
+window.Tubia = new Tubia();

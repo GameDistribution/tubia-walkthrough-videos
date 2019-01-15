@@ -1,17 +1,16 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset="utf-8"/>
+    <meta charset="utf-8" />
     <title>Tubia</title>
-    <meta name="description" content="Tubia walkthrough video's">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Tubia walkthrough video's" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
         body {
             background: #333;
             margin: 0;
             padding: 0;
         }
-
         #tubia-container {
             position: absolute;
             top: 0;
@@ -20,70 +19,41 @@
             left: 0;
         }
     </style>
-    <script>
-        function getParameterByName(name) {
-            name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-                results = regex.exec(location.search);
-            return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-        }
 
-        var publisherIdLegacy = getParameterByName('pubid');
-        var publisherId = (typeof publisherIdLegacy !== 'undefined' && publisherIdLegacy !== '') ? publisherIdLegacy : getParameterByName('publisherid');
-        var gameId = getParameterByName('gameid');
-        var gameTitle = getParameterByName('title');
-        var urlLegacy = getParameterByName('url');
-        var url = (typeof urlLegacy !== 'undefined' && urlLegacy !== '') ? urlLegacy : getParameterByName('pageurl');
-        var pageUrl = (typeof url !== 'undefined' && url !== '') ? decodeURIComponent(url) : document.location.href;
-        var domain = pageUrl.toLowerCase().replace(/^(?:https?:\/\/)?/i, '').split('/')[0];
-        var colorMain = getParameterByName('colormain');
-        var colorAccent = getParameterByName('coloraccent');
-        var gdprTracking = getParameterByName('gdprtracking');
-        var gdprTargeting = getParameterByName('gdprtargeting');
-        var langLegacy = getParameterByName('lang');
-        var lang = (typeof langLegacy !== 'undefined' && langLegacy !== '') ? langLegacy : getParameterByName('langcode');
-        var debug = getParameterByName('debug');
+    <link href="https://fonts.googleapis.com/css?family=Khand:400,700" rel="stylesheet" />
+    <link href="./main.min.css" rel="stylesheet" />
 
-        window["TUBIA_OPTIONS"] = {
-            "container": 'tubia-container',
-            "publisherId": (typeof publisherId !== 'undefined' && publisherId !== '') ? publisherId : 'dc63a91fa184423482808bed4d782320',
-            "gameId": (typeof gameId !== 'undefined' && gameId !== '') ? gameId : '0',
-            "title": (typeof gameTitle !== 'undefined' && gameTitle !== '') ? gameTitle : 'Jewel Burst',
-            "url": pageUrl,
-            "domain": domain,
-            "colorMain" : (typeof colorMain !== 'undefined' && colorMain !== '') ? '#' + colorMain : '',
-            "colorAccent" : (typeof colorAccent !== 'undefined' && colorAccent !== '') ? '#' + colorAccent : '',
-            "gdprTracking": (gdprTracking) ? gdprTracking : null,
-            "gdprTargeting": (gdprTargeting) ? gdprTargeting : null,
-            "langCode": (typeof lang !== 'undefined' && lang !== '') ? lang : 'en-us',
-            "debug": (typeof debug !== 'undefined' && debug !== '' && debug !== 'false'),
-            onStart: function () {
-                // console.log('Tubia started');
-            },
-            onFound: function (data) {
-                // console.log(data);
-            },
-            onError: function (error) {
-                // console.log(error);
-            },
-            onReady: function (player) {
-                // console.log(player);
-            },
-        };
-        (function (d, s, id) {
-            var js, fjs = d.getElementsByTagName(s)[0];
-            if (d.getElementById(id)) return;
-            js = d.createElement(s);
-            js.id = id;
-            js.src = 'https://player.tubia.com/libs/gd/main.min.js';
-            fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'tubia-playerjs'));
-    </script>
+    <script type="application/javascript" src="https://imasdk.googleapis.com/js/sdkloader/ima3.js"></script>
+    <!--<script async type="application/javascript" src="https://test-hb.improvedigital.com/pbw/tubia.min.js"></script>-->
+    <script type="application/javascript" src="https://hb.improvedigital.com/pbw/tubia.min.js"></script>
+    <!--<script type="application/javascript" src="https://imasdk.googleapis.com/js/sdkloader/ima3_debug.js"></script>-->
 </head>
 
 <body>
 
-<div id="tubia-container"></div>
+<div id="tubia-container" class="tubia">
+    <div class="tubia__transition"></div>
+    <button class="tubia__play-button">
+        <svg class="tubia__play-icon" viewBox="0 0 18 18" version="1.1" xmlns="http://www.w3.org/2000/svg">
+            <g>
+                <path d="M15.5615866,8.10002147 L3.87056367,0.225209313 C3.05219207,-0.33727727 2,0.225209313 2,1.12518784 L2,16.8748122 C2,17.7747907 3.05219207,18.3372773 3.87056367,17.7747907 L15.5615866,9.89997853 C16.1461378,9.44998927 16.1461378,8.55001073 15.5615866,8.10002147 L15.5615866,8.10002147 Z"/>
+            </g>
+        </svg>
+        <svg class="tubia__hexagon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 129.78 150.37">
+            <path class="tubia__hexagon-base" d="M-1665.43,90.94V35.83a15.09,15.09,0,0,1,6.78-12.59l48.22-31.83a15.09,15.09,0,0,1,16-.38L-1547,19.13a15.09,15.09,0,0,1,7.39,13V90.94a15.09,15.09,0,0,1-7.21,12.87l-47.8,29.24a15.09,15.09,0,0,1-15.75,0l-47.8-29.24A15.09,15.09,0,0,1-1665.43,90.94Z" transform="translate(1667.43 13.09)"/>
+            <path class="tubia__hexagon-line-animation" d="M-1665.43,90.94V35.83a15.09,15.09,0,0,1,6.78-12.59l48.22-31.83a15.09,15.09,0,0,1,16-.38L-1547,19.13a15.09,15.09,0,0,1,7.39,13V90.94a15.09,15.09,0,0,1-7.21,12.87l-47.8,29.24a15.09,15.09,0,0,1-15.75,0l-47.8-29.24A15.09,15.09,0,0,1-1665.43,90.94Z" transform="translate(1667.43 13.09)"/>
+        </svg>
+    </button>
+    <div class="tubia__hexagon-loader">
+        <svg class="tubia__hexagon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 129.78 150.37">
+            <path class="tubia__hexagon-base" d="M-1665.43,90.94V35.83a15.09,15.09,0,0,1,6.78-12.59l48.22-31.83a15.09,15.09,0,0,1,16-.38L-1547,19.13a15.09,15.09,0,0,1,7.39,13V90.94a15.09,15.09,0,0,1-7.21,12.87l-47.8,29.24a15.09,15.09,0,0,1-15.75,0l-47.8-29.24A15.09,15.09,0,0,1-1665.43,90.94Z" transform="translate(1667.43 13.09)"/>
+            <path class="tubia__hexagon-line-animation" d="M-1665.43,90.94V35.83a15.09,15.09,0,0,1,6.78-12.59l48.22-31.83a15.09,15.09,0,0,1,16-.38L-1547,19.13a15.09,15.09,0,0,1,7.39,13V90.94a15.09,15.09,0,0,1-7.21,12.87l-47.8,29.24a15.09,15.09,0,0,1-15.75,0l-47.8-29.24A15.09,15.09,0,0,1-1665.43,90.94Z" transform="translate(1667.43 13.09)"/>
+        </svg>
+    </div>
+    <div id="tubia__display-ad" class="tubia__display-ad"></div>
+</div>
+
+<script type="application/javascript" src="./main.min.js"></script>
 
 </body>
 

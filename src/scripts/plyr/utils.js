@@ -74,21 +74,6 @@ const utils = {
         },
     },
 
-    extendDefaults(source, properties) {
-        /* eslint-disable */
-        let property;
-        for (property in properties) {
-            if (properties.hasOwnProperty(property)) {
-                if (properties[property] !== null &&
-                    typeof properties[property] !== 'undefined') {
-                    source[property] = properties[property];
-                }
-            }
-        }
-        return source;
-        /* eslint-enable */
-    },
-
     // Unfortunately, due to mixed support, UA sniffing is required
     getBrowser() {
         return {
