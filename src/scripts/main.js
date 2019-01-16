@@ -9,11 +9,11 @@ import Plyr from './plyr/plyr';
 import utils from './plyr/utils';
 
 /**
- * Tubia
+ * Player
  */
-class Tubia {
+class Player {
     /**
-     * Constructor of Tubia.
+     * Constructor of Tubia Player.
      * @return {*}
      */
     constructor() {
@@ -29,7 +29,7 @@ class Tubia {
         console.log.apply(console, banner);
         /* eslint-enable */
 
-        const params = utils.getUrlParams(document.location.href);
+        const params = utils.getUrlParams(document.location.href) || {};
 
         // Get URL parameter values from i-frame URL.
         // We also have to deal with legacy parameters.
@@ -37,9 +37,9 @@ class Tubia {
         const publisherId = typeof publisherIdLegacy !== 'undefined' && publisherIdLegacy !== '' ? publisherIdLegacy : 'dc63a91fa184423482808bed4d782320';
         const gameId = typeof params.gameid !== 'undefined' && params.gameid !== '' ? params.gameid : '0';
         const title = typeof params.title !== 'undefined' && params.title !== '' ? params.title : 'Jewel Burst';
-        const url = params.url || 'https://gamedistribution.com/';
-        const href = params.href || 'https://gamedistribution.com/';
-        const domain = url ? url.toLowerCase().replace(/^(?:https?:\/\/)?/i, '').split('/')[0] : 'gamedistribution.com';
+        const url = params.url || document.location.origin + document.location.pathname;
+        const href = params.href || document.location.href;
+        const domain = url.toLowerCase().replace(/^(?:https?:\/\/)?/i, '').split('/')[0];
         const colorMain = typeof params.colormain !== 'undefined' && params.colormain !== '' ? params.colormain : '';
         const colorAccent = typeof params.coloraccent !== 'undefined' && params.coloraccent !== '' ? params.coloraccent : '';
         const gdprTracking = params.gdprtracking || null;
@@ -68,8 +68,8 @@ class Tubia {
             debug,
             testing,
             videoInterval, // // Todo: testing. Video midroll interval.
-            category: JSON.parse(category),
-            keys: JSON.parse(keys), // Tunnl tracking keys.
+            category: category ? JSON.parse(category) : '',
+            keys: keys ? JSON.parse(keys) : null, // Tunnl tracking keys.
         };
 
         // Test domains.
@@ -739,6 +739,6 @@ class Tubia {
     }
 }
 
-export default Tubia;
+export default Player;
 
-window.Tubia = new Tubia();
+window.Player = new Player();

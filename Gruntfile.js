@@ -169,11 +169,11 @@ module.exports = function (grunt) {
             },
             build: {
                 src: 'src/scripts/**/*.js',
-                dest: 'libs/.tmp/babel.js',
+                dest: 'libs/gd/main.js',
             },
             entry: {
                 src: 'src/entry/entry.js',
-                dest: 'libs/.tmp/gd.js',
+                dest: 'libs/gd/entry.js',
             },
         },
 
@@ -187,9 +187,9 @@ module.exports = function (grunt) {
             build: {
                 src: [
                     'src/libraries/md5.js',
-                    'libs/.tmp/babel.js',
+                    'libs/gd/main.js',
                 ],
-                dest: 'libs/.tmp/main.js',
+                dest: 'libs/gd/main.js',
             },
         },
 
@@ -217,11 +217,11 @@ module.exports = function (grunt) {
                 warnings: false,
             },
             build: {
-                src: 'libs/.tmp/main.js',
+                src: 'libs/gd/main.js',
                 dest: 'libs/gd/main.min.js',
             },
             entry: {
-                src: 'libs/.tmp/gd.js',
+                src: 'libs/gd/entry.js',
                 dest: 'libs/gd/gd.js',
             },
         },
@@ -237,13 +237,14 @@ module.exports = function (grunt) {
             scripts: {
                 files: [
                     'src/scripts/**/*.js',
-                    'src/entry/entry.js',
+                    'src/entry/**/*.js',
                 ],
                 tasks: [
                     'eslint',
                     'browserify',
                     'concat',
                     'uglify',
+                    'usebanner',
                     'duration',
                 ],
             },
@@ -252,6 +253,7 @@ module.exports = function (grunt) {
                 tasks: [
                     'sass',
                     'postcss',
+                    'usebanner',
                     'duration',
                 ],
             },
@@ -349,7 +351,8 @@ module.exports = function (grunt) {
                 'svgstore',
                 'duration',
                 'browserSync',
-                'watch'];
+                'watch',
+            ];
             grunt.task.run(tasksArray);
         });
     grunt.registerTask('build',
