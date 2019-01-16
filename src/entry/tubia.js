@@ -41,8 +41,6 @@ class Tubia {
             href: document.location.href,
         }];
 
-        console.log(this.options);
-
         // Todo: testing!
         // let url = settings.debug ? './index_test.html?' : 'https://player.tubia.com/libs/gd/index.html?';
         let url = 'https://player.tubia.com/libs/gd/index_test.html?';
@@ -60,6 +58,10 @@ class Tubia {
                 .join('&');
         });
 
+        const ratio = document.createElement('div');
+        ratio.style.position = 'relative';
+        ratio.style.padding = '56.25% 0 0 0';
+
         const frame = document.createElement('iframe');
         frame.src = url;
         frame.setAttribute('frameBorder', '0');
@@ -68,16 +70,15 @@ class Tubia {
         frame.style.position = 'absolute';
         frame.style.top = '0';
         frame.style.left = '0';
-        frame.style.width = '100%';
-        frame.style.height = '100%';
+        frame.style.width = this.options.width || '100%';
+        frame.style.height = this.options.height || '100%';
+        frame.width = this.options.width || '100%';
+        frame.height = this.options.height || '100%';
 
         const container = document.getElementById(this.options.container);
         if (container) {
-            if (container.offsetHeight <= 0) {
-                container.style.height = '100%';
-            }
-            container.style.position = 'relative';
-            container.appendChild(frame);
+            container.appendChild(ratio);
+            ratio.appendChild(frame);
         } else {
             console.error('There is no container element for Tubia set.');
         }

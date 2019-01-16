@@ -904,6 +904,16 @@ const utils = {
         return parser;
     },
 
+    parseJson(data) {
+        let ret = true;
+        try {
+            JSON.parse(data);
+        } catch (e) {
+            ret = false;
+        }
+        return ret;
+    },
+
     // Get URL query parameters
     getUrlParams(input) {
         let search = input;

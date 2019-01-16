@@ -68,8 +68,8 @@ class Player {
             debug,
             testing,
             videoInterval, // // Todo: testing. Video midroll interval.
-            category: category ? JSON.parse(category) : '',
-            keys: keys ? JSON.parse(keys) : null, // Tunnl tracking keys.
+            category: category ? utils.parseJson(category) : '',
+            keys: keys ? utils.parseJson(keys) : null, // Tunnl tracking keys.
         };
 
         // Test domains.
@@ -83,7 +83,7 @@ class Player {
         this.options.testing = this.options.testing || testDomains.indexOf(this.options.domain.replace(/^(?:https?:\/\/)?(?:\/\/)?(?:www\.)?/i, '').split('/')[0]) > -1;
         this.options.debug = !this.options.debug ? this.options.testing : this.options.debug;
 
-        console.log(this.options);
+        console.info(this.options);
 
         this.videoId = '';
         this.adTag = null;
@@ -99,7 +99,7 @@ class Player {
         this.player = null;
         this.origin = url;
 
-        this.container = document.getElementById('tubia-container');
+        this.container = document.getElementById('tubia');
         this.transitionElement = this.container.querySelector('.tubia__transition');
         this.playButton = this.container.querySelector('.tubia__play-button');
         this.hexagonLoader = this.container.querySelector('.tubia__hexagon-loader');
@@ -337,7 +337,7 @@ class Player {
                         slotIds: [slotId],
                         callback: (response) => {
                             if (this.options.debug) {
-                                console.log('window.idhbtubia.requestAds callback returned:', response);
+                                console.info('window.idhbtubia.requestAds callback returned:', response);
                             }
                         },
                     });
