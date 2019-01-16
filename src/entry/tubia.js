@@ -41,9 +41,7 @@ class Tubia {
             href: document.location.href,
         }];
 
-        // Todo: testing!
-        // let url = settings.debug ? './index_test.html?' : 'https://player.tubia.com/libs/gd/index.html?';
-        let url = 'https://player.tubia.com/libs/gd/index_test.html?';
+        let url = 'https://player.tubia.com/libs/gd/index.html?';
 
         settingsArray.forEach(setting => {
             url += Object.keys(setting)
