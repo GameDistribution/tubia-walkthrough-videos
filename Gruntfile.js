@@ -32,25 +32,6 @@ module.exports = function (grunt) {
         },
 
         /**
-         * Copies certain files over from the src folder to the build folder.
-         */
-        copy: {
-            lib: {
-                expand: true,
-                flatten: true,
-                cwd: './',
-                src: [
-                    'src/index.html',
-                    'src/index_legacy.html',
-                    'src/publisher.html',
-                    'src/developer.html',
-                    'src/index_test.html',
-                ],
-                dest: './libs/gd/',
-            },
-        },
-
-        /**
          * Cleans our build folder.
          */
         clean: {
@@ -257,16 +238,6 @@ module.exports = function (grunt) {
                     'duration',
                 ],
             },
-            html: {
-                files: [
-                    'src/index.html',
-                    'src/index_legacy.html',
-                    'src/publisher.html',
-                    'src/developer.html',
-                    'src/index_test.html',
-                ],
-                tasks: ['copy'],
-            },
             grunt: {
                 files: ['gruntfile.js'],
             },
@@ -279,10 +250,10 @@ module.exports = function (grunt) {
          */
         browserSync: {
             bsFiles: {
-                src: ['libs/gd/'],
+                src: ['./src/'],
             },
             options: {
-                server: './libs/gd',
+                server: './',
                 watchTask: true,
                 port: 8081,
             },
@@ -291,7 +262,6 @@ module.exports = function (grunt) {
 
     // General tasks.
     grunt.loadNpmTasks('grunt-eslint');
-    grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-google-cloud');
     grunt.loadNpmTasks('grunt-browser-sync');
@@ -339,7 +309,6 @@ module.exports = function (grunt) {
         'updates while developing.',
         function () {
             const tasksArray = [
-                'copy',
                 'sass',
                 'postcss',
                 'eslint',
@@ -368,7 +337,6 @@ module.exports = function (grunt) {
                 'uglify',
                 'usebanner',
                 'svgstore',
-                'copy',
                 'duration',
             ];
             grunt.task.run(tasksArray);
@@ -408,8 +376,8 @@ module.exports = function (grunt) {
                 gcs: {
                     options: {
                         credentials: key,
-                        project: project,
-                        bucket: bucket,
+                        project,
+                        bucket,
                         gzip: true,
                         metadata: {
                             'surrogate-key': 'gcs',

@@ -37,9 +37,6 @@ class Player {
         const publisherId = typeof publisherIdLegacy !== 'undefined' && publisherIdLegacy !== '' ? publisherIdLegacy : 'dc63a91fa184423482808bed4d782320';
         const gameId = typeof params.gameid !== 'undefined' && params.gameid !== '' ? params.gameid : '0';
         const title = typeof params.title !== 'undefined' && params.title !== '' ? params.title : 'Jewel Burst';
-        const url = params.url || document.location.origin + document.location.pathname;
-        const href = params.href || document.location.href;
-        const domain = url.toLowerCase().replace(/^(?:https?:\/\/)?/i, '').split('/')[0];
         const colorMain = typeof params.colormain !== 'undefined' && params.colormain !== '' ? params.colormain : '';
         const colorAccent = typeof params.coloraccent !== 'undefined' && params.coloraccent !== '' ? params.coloraccent : '';
         const gdprTracking = params.gdprtracking || null;
@@ -51,6 +48,12 @@ class Player {
         const videoInterval = params.videointerval || null;
         const category = params.category || '';
         const keys = params.keys || null;
+
+        // Set the URL's based on given (legacy) parameters.
+        const pageUrl = params.pageurl || params.url;
+        const url = pageUrl ? pageUrl.split('?')[0] : document.location.origin + document.location.pathname;
+        const href = pageUrl || document.location.href;
+        const domain = url.toLowerCase().replace(/^(?:https?:\/\/)?/i, '').split('/')[0];
 
         // Populate the options object.
         this.options = {
@@ -187,7 +190,9 @@ class Player {
 
                         // Invoke callback to end-user containing our video data.
                         try {
-                            parent.postMessage({name: 'onFound', payload: data}, this.origin);
+                            if (parent === top) {
+                                parent.postMessage({name: 'onFound', payload: data}, this.origin);
+                            }
                         } catch (postMessageError) {
                             console.error(postMessageError);
                         }
@@ -354,7 +359,7 @@ class Player {
      */
     notFound(origin, message) {
         try {
-            parent.postMessage({name: 'onNotFound', payload: message}, this.origin);
+            parent.postMessage({name: 'onNotFound', payload: 'No video has been found!'}, this.origin);
         } catch (postMessageError) {
             console.error(postMessageError);
         }

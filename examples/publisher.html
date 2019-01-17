@@ -17,12 +17,35 @@
         }
     </style>
     <script>
+        // window.TUBIA_OPTIONS = {
+        //     container: 'container-id',
+        //     publisherId: 'dc63a91fa184423482808bed4d782321',
+        //     title: 'Jewel Burst',
+        //     colorMain: 'ff0080',
+        //     colorAccent: '00ff80',
+        //     onStart: function () {
+        //         console.log('Tubia started');
+        //     },
+        //     onFound: function (data) {
+        //         console.info('Found the video: ', data);
+        //     },
+        //     onNotFound: function(data) {
+        //         console.info('Could not find the video: ', data);
+        //     },
+        //     onError: function (error) {
+        //         console.log(error);
+        //     },
+        //     onReady: function (player) {
+        //         console.info('Tubia is ready: ', player);
+        //     },
+        // };
+
         (function (d, s, id, l) {
             var js, fjs = d.getElementsByTagName(s)[0];
             if (d.getElementById(id)) return;
             js = d.createElement(s);
             js.id = id;
-            js.src = 'https://player.tubia.com/libs/gd/gd.js';
+            js.src = '/libs/gd/gd.js';
             js.onload = l;
             fjs.parentNode.insertBefore(js, fjs);
         }(document, 'script', 'tubia-playerjs', function () {

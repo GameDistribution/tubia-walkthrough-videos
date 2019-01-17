@@ -41,7 +41,11 @@ class Tubia {
             href: document.location.href,
         }];
 
-        let url = 'https://player.tubia.com/libs/gd/index.html?';
+        const domain = settingsArray[0].url.toLowerCase().replace(/^(?:https?:\/\/)?/i, '').split('/')[0];
+        console.log(domain);
+        let url = domain === 'localhost:8081'
+            ? '/index.html?'
+            : 'https://player.tubia.com/libs/gd/index.html?';
 
         settingsArray.forEach(setting => {
             url += Object.keys(setting)
@@ -56,16 +60,11 @@ class Tubia {
                 .join('&');
         });
 
-        const ratio = document.createElement('div');
-        ratio.style.position = 'relative';
-        ratio.style.padding = '56.25% 0 0 0';
-
         const frame = document.createElement('iframe');
         frame.src = url;
         frame.setAttribute('frameBorder', '0');
         frame.setAttribute('scrolling', 'no');
         frame.setAttribute('allowfullscreen', 'true');
-        frame.style.position = 'absolute';
         frame.style.top = '0';
         frame.style.left = '0';
         frame.style.width = this.options.width || '100%';
@@ -75,8 +74,17 @@ class Tubia {
 
         const container = document.getElementById(this.options.container);
         if (container) {
-            container.appendChild(ratio);
-            ratio.appendChild(frame);
+            if (typeof this.options.height === 'undefined') {
+                const ratio = document.createElement('div');
+                ratio.style.position = 'relative';
+                ratio.style.padding = '56.25% 0 0 0';
+                frame.style.position = 'absolute';
+                container.appendChild(ratio);
+                ratio.appendChild(frame);
+            } else {
+                container.appendChild(frame);
+            }
+
         } else {
             console.error('There is no container element for Tubia set.');
         }

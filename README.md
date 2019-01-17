@@ -11,16 +11,16 @@ Tubia.com offers walkthrough video’s to gaming publishers, for free. Many game
 Running into any issues? Check out the Wiki of the github repository before mailing to <a href="support@tubia.com" target="_blank">support@tubia.com</a>
 
 ## Implementation within a page
-The player should be implemented within a page by embedding it within a simple iframe or as web component. Specific information of the player features and usages can be found at the <a href="https://github.com/GameDistribution/tubia-walkthrough-videos/wiki" target="_blank">wiki</a>.
+The player should be implemented within a page by embedding it within a simple iframe or as component. Specific information of the player features and usages can be found at the <a href="https://github.com/GameDistribution/tubia-walkthrough-videos/wiki" target="_blank">wiki</a>.
 
 ### Embed as <iframe>
-It is also possible to embed the Tubia video player within a simple <iframe> element. However, you won't be able to hook into the callbacks.
+Embed the Tubia video player within a simple <iframe> element. However, you won't be able to hook into the callbacks.
 ```
 <iframe 
     scrolling="no" 
     frameborder="0" 
     allowfullscreen="allowfullscreen" 
-    style="margin: 0px; padding: 0px;" width="640" height="480" 
+    style="margin: 0; padding: 0;" width="640" height="480" 
     src="https://player.tubia.com/?publisherid=[YOUR PUBLISHER ID HERE]&gameid=[YOUR GAME ITS IDENTIFIER]&pageurl=[CURRENT PAGE URL ENCODED]&title=[YOUR GAME ITS URL ENCODED TITLE]&colormain=[PLAYER THEME HEX COLOR CODE]&coloraccent=[PLAYER THEME HEX COLOR CODE]&gdprtracking=[SET BY YOUR GDPR SOLUTION]&gdprtargeting=[SET BY YOUR GDPR SOLUTION]&langcode=[LANGUAGE CODE - REGION CODE]">
 </iframe>
 ```
@@ -39,16 +39,21 @@ Use the following query variables.
 | langcode | No | 'en-us' | Currently only used for localising phrases within advertisements. |
 | debug | No | '' | Enable debugging. Please keep it to false when publishing. |
 
-### Embed as web component
-Add the following script to your document.
+### Embed as component
+Add the following script to your document. This solution simply loads the Tubia player within a generated <iframe> element.
 ```
 window["TUBIA_OPTIONS"] = {
     "container": '[YOUR CONTAINER ELEMENT ID HERE]',
     "publisherId": '[YOUR PUBLISHER ID HERE]',
     "gameId": '[YOUR GAME ITS IDENTIFIER]',
     "title": '[YOUR GAME ITS TITLE]',
+    "colorMain": 'ff0080',
+    "colorAccent": '00ff80',
     "gdprTracking": true,
     "gdprTargeting": true,
+    onNotFound: function (data) {
+        console.info('Could not find the video: ', data);
+    },
 };
 (function (d, s, id) {
     var js, fjs = d.getElementsByTagName(s)[0];
@@ -67,13 +72,18 @@ new Tubia.Player.default({
     "publisherId": '[YOUR PUBLISHER ID HERE]',
     "gameId": '[YOUR GAME ITS IDENTIFIER]',
     "title": '[YOUR GAME ITS TITLE]',
+    "colorMain": '[HEX THEME COLOR]',
+    "colorAccent": '[HEX THEME ACCENT COLOR]',
     "gdprTracking": [SET BY YOUR GDPR SOLUTION],
     "gdprTargeting": [SET BY YOUR GDPR SOLUTION],
+    onNotFound: function (data) {
+        console.info('Could not find the video: ', data);
+    },
 });
 ```
 
 #### Matching video's
-Once successfully embedded it can take up to a day for a video to be matched with your game page.
+Once successfully embedded it can take up to a day for a video to be matched with your game page. Video matching is done automatically by matching your game title and your URL with known entries within our Tubia matchmaking system.
 
 #### Callbacks & Properties
 ##### Properties
@@ -117,6 +127,7 @@ Deployment of this repository to production environments is done through TeamCit
 Install the following programs:
 * [NodeJS LTS](https://nodejs.org/).
 * [Grunt](http://gruntjs.com/).
+* [SASS](https://sass-lang.com/install).
 
 Pull in the rest of the requirements using npm:
 ```
