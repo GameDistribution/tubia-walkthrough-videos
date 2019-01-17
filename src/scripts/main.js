@@ -46,8 +46,8 @@ class Player {
         const debug = (typeof params.debug !== 'undefined' && params.debug !== '') && params.debug === 'true';
         const testing = typeof params.testing !== 'undefined' || params.testing !== '' && params.debug === 'true';
         const videoInterval = params.videointerval || null;
-        const category = params.category || '';
-        const keys = params.keys || null;
+        const category = utils.parseJson(params.category);
+        const keys = utils.parseJson(params.keys);
 
         // Set the URL's based on given (legacy) parameters.
         const pageUrl = params.pageurl || params.url;
@@ -70,9 +70,9 @@ class Player {
             langCode,
             debug,
             testing,
-            videoInterval, // // Todo: testing. Video midroll interval.
-            category: category ? utils.parseJson(category) : '',
-            keys: keys ? utils.parseJson(keys) : null, // Tunnl tracking keys.
+            videoInterval, // Todo: testing. Video midroll interval.
+            category,
+            keys,
         };
 
         // Test domains.
@@ -528,7 +528,7 @@ class Player {
             this.player = new Plyr('#plyr__tubia', {
                 debug: this.options.debug,
                 iconUrl: (this.options.domain === 'localhost:8081')
-                    ? './sprite.svg'
+                    ? '/libs/gd/sprite.svg'
                     : 'https://player.tubia.com/libs/gd/sprite.svg',
                 title: (json.detail && json.detail.length > 0) ? json.detail[0].title : '',
                 logo: (json.logoEnabled) ? json.logoEnabled : false,

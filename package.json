@@ -5,7 +5,6 @@
     "description": "Tubia.com HTML5 video player",
     "url": "https://tubia.com",
     "license": "MIT",
-    "main": "libs/gd/gd.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },

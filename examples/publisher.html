@@ -45,7 +45,7 @@
             if (d.getElementById(id)) return;
             js = d.createElement(s);
             js.id = id;
-            js.src = '/libs/gd/gd.js';
+            js.src = '/libs/gd/gd.min.js';
             js.onload = l;
             fjs.parentNode.insertBefore(js, fjs);
         }(document, 'script', 'tubia-playerjs', function () {
@@ -55,6 +55,7 @@
                 title: 'Jewel Burst',
                 colorMain: 'ff0080',
                 colorAccent: '00ff80',
+                keys: {key: 1},
                 onStart: function () {
                     console.log('Tubia started');
                 },

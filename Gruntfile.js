@@ -83,6 +83,7 @@ module.exports = function (grunt) {
             files: {
                 src: [
                     'libs/gd/gd.js',
+                    'libs/gd/gd.min.js',
                     'libs/gd/main.min.css',
                     'libs/gd/main.min.js',
                 ],
@@ -201,9 +202,13 @@ module.exports = function (grunt) {
                 src: 'libs/gd/main.js',
                 dest: 'libs/gd/main.min.js',
             },
-            entry: {
+            legacy: {
                 src: 'libs/gd/entry.js',
                 dest: 'libs/gd/gd.js',
+            },
+            entry: {
+                src: 'libs/gd/entry.js',
+                dest: 'libs/gd/gd.min.js',
             },
         },
 

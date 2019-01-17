@@ -42,7 +42,6 @@ class Tubia {
         }];
 
         const domain = settingsArray[0].url.toLowerCase().replace(/^(?:https?:\/\/)?/i, '').split('/')[0];
-        console.log(domain);
         let url = domain === 'localhost:8081'
             ? '/index.html?'
             : 'https://player.tubia.com/libs/gd/index.html?';

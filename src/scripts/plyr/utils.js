@@ -905,13 +905,13 @@ const utils = {
     },
 
     parseJson(data) {
-        let ret = true;
+        if (!data) return null;
+
         try {
-            JSON.parse(data);
+            return JSON.parse(data);
         } catch (e) {
-            ret = false;
+            return data;
         }
-        return ret;
     },
 
     // Get URL query parameters

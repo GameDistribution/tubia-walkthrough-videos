@@ -60,7 +60,7 @@ window["TUBIA_OPTIONS"] = {
     if (d.getElementById(id)) return;
     js = d.createElement(s);
     js.id = id;
-    js.src = 'https://player.tubia.com/libs/gd/gd.js';
+    js.src = 'https://player.tubia.com/libs/gd/gd.min.js';
     fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'tubia-playerjs'));
 ```
