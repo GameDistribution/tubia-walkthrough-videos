@@ -530,7 +530,7 @@ class Player {
                 debug: this.options.debug,
                 iconUrl: (this.options.domain === 'localhost:8081')
                     ? '/libs/gd/sprite.svg'
-                    : 'https://player.tubia.com/libs/gd/sprite.svg',
+                    : 'https://player.tubia.com/test/libs/gd/sprite.svg',
                 title: (json.detail && json.detail.length > 0) ? json.detail[0].title : '',
                 logo: (json.logoEnabled) ? json.logoEnabled : false,
                 showPosterOnEnd: true,
