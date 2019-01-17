@@ -79,6 +79,7 @@ class Player {
         const testDomains = [
             'localhost:8081',
             'player.tubia.com',
+            'bgames.com',
         ];
 
         // Update options.

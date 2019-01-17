@@ -44,7 +44,7 @@ class Tubia {
         const domain = settingsArray[0].url.toLowerCase().replace(/^(?:https?:\/\/)?/i, '').split('/')[0];
         let url = domain === 'localhost:8081'
             ? '/index.html?'
-            : 'https://player.tubia.com/libs/gd/index.html?';
+            : 'https://player.tubia.com/index.html?';
 
         settingsArray.forEach(setting => {
             url += Object.keys(setting)
