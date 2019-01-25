@@ -1,3 +1,5 @@
+const sass = require('node-sass');
+
 /**
  * atob
  * @param {String} str
@@ -94,11 +96,11 @@ module.exports = function (grunt) {
          * Compiles SASS stylesheets into CSS.
          */
         sass: {
+            options: {
+                implementation: sass,
+                sourcemap: false,
+            },
             build: {
-                options: {
-                    sourcemap: 'auto',
-                    style: 'nested', // no need for config.rb
-                },
                 files: {
                     'libs/gd/main.css': 'src/styles/plyr.scss',
                 },
@@ -276,7 +278,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-banner');
     grunt.loadNpmTasks('grunt-svgstore');
-    grunt.loadNpmTasks('grunt-contrib-sass');
+    grunt.loadNpmTasks('grunt-sass');
     grunt.loadNpmTasks('grunt-postcss');
 
     // Register all tasks.
