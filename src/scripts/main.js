@@ -638,7 +638,7 @@ class Player {
 
             // Anonymize IP.
             if(!this.options.gdprTracking) {
-                window['ga']('set', 'anonymizeIp', true);
+                window['ga']('tubia.set', 'anonymizeIp', true);
             }
         }
     }
