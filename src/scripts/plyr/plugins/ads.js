@@ -25,7 +25,7 @@ class Ads {
         this.headerBidding = player.config.ads.headerBidding;
         this.keys = player.config.ads.keys;
         this.domain = player.config.ads.domain;
-        this.category = player.config.ads.category;
+        this.category = player.config.ads.category || '';
 
         this.prerollEnabled = player.config.ads.prerollEnabled;
         this.midrollEnabled = player.config.ads.midrollEnabled;

@@ -93,10 +93,6 @@ class Player {
         this.adTag = null;
         this.adTagLegacy = null;
         this.posterUrl = '';
-        this.posterPosterElement = null;
-        this.transitionElement = null;
-        this.playButton = null;
-        this.hexagonLoader = null;
         this.videoSearchPromise = null;
         this.videoDataPromise = null;
         this.transitionSpeed = 2000;
@@ -106,8 +102,9 @@ class Player {
 
         this.container = document.getElementById('tubia');
         this.transitionElement = this.container.querySelector('.tubia__transition');
-        this.playButton = this.container.querySelector('.tubia__play-button');
-        this.hexagonLoader = this.container.querySelector('.tubia__hexagon-loader');
+        this.playButton = null;
+        this.hexagonLoader = null;
+        this.posterPosterElement = null;
 
         // Call Google Analytics and Death Star.
         this.analytics();
@@ -258,6 +255,33 @@ class Player {
      * Create the markup for the Tubia application.
      */
     createMarkup() {
+        const html = `
+            <div class="tubia__transition"></div>
+            <button class="tubia__play-button">
+                <svg class="tubia__play-icon" viewBox="0 0 18 18" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                    <g>
+                        <path d="M15.5615866,8.10002147 L3.87056367,0.225209313 C3.05219207,-0.33727727 2,0.225209313 2,1.12518784 L2,16.8748122 C2,17.7747907 3.05219207,18.3372773 3.87056367,17.7747907 L15.5615866,9.89997853 C16.1461378,9.44998927 16.1461378,8.55001073 15.5615866,8.10002147 L15.5615866,8.10002147 Z"/>
+                    </g>
+                </svg>
+                <svg class="tubia__hexagon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 129.78 150.37">
+                    <path class="tubia__hexagon-base" d="M-1665.43,90.94V35.83a15.09,15.09,0,0,1,6.78-12.59l48.22-31.83a15.09,15.09,0,0,1,16-.38L-1547,19.13a15.09,15.09,0,0,1,7.39,13V90.94a15.09,15.09,0,0,1-7.21,12.87l-47.8,29.24a15.09,15.09,0,0,1-15.75,0l-47.8-29.24A15.09,15.09,0,0,1-1665.43,90.94Z" transform="translate(1667.43 13.09)"/>
+                    <path class="tubia__hexagon-line-animation" d="M-1665.43,90.94V35.83a15.09,15.09,0,0,1,6.78-12.59l48.22-31.83a15.09,15.09,0,0,1,16-.38L-1547,19.13a15.09,15.09,0,0,1,7.39,13V90.94a15.09,15.09,0,0,1-7.21,12.87l-47.8,29.24a15.09,15.09,0,0,1-15.75,0l-47.8-29.24A15.09,15.09,0,0,1-1665.43,90.94Z" transform="translate(1667.43 13.09)"/>
+                </svg>
+            </button>
+            <div class="tubia__hexagon-loader">
+                <svg class="tubia__hexagon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 129.78 150.37">
+                    <path class="tubia__hexagon-base" d="M-1665.43,90.94V35.83a15.09,15.09,0,0,1,6.78-12.59l48.22-31.83a15.09,15.09,0,0,1,16-.38L-1547,19.13a15.09,15.09,0,0,1,7.39,13V90.94a15.09,15.09,0,0,1-7.21,12.87l-47.8,29.24a15.09,15.09,0,0,1-15.75,0l-47.8-29.24A15.09,15.09,0,0,1-1665.43,90.94Z" transform="translate(1667.43 13.09)"/>
+                    <path class="tubia__hexagon-line-animation" d="M-1665.43,90.94V35.83a15.09,15.09,0,0,1,6.78-12.59l48.22-31.83a15.09,15.09,0,0,1,16-.38L-1547,19.13a15.09,15.09,0,0,1,7.39,13V90.94a15.09,15.09,0,0,1-7.21,12.87l-47.8,29.24a15.09,15.09,0,0,1-15.75,0l-47.8-29.24A15.09,15.09,0,0,1-1665.43,90.94Z" transform="translate(1667.43 13.09)"/>
+                </svg>
+            </div>
+            <div id="tubia__display-ad" class="tubia__display-ad"><iframe></iframe></div>
+        `;
+
+        this.container.insertAdjacentHTML('beforeend', html);
+        this.transitionElement = this.container.querySelector('.tubia__transition');
+        this.playButton = this.container.querySelector('.tubia__play-button');
+        this.hexagonLoader = this.container.querySelector('.tubia__hexagon-loader');
+
         // Show the container.
         this.container.classList.toggle('tubia__active');
 
@@ -294,24 +318,15 @@ class Player {
                     this.posterPosterElement.style.display = 'none';
                 }
 
-                // Start transition towards showing the poster image.
-                this.transitionElement.classList.toggle('tubia__active');
+                // Hide our spinner loader.
+                this.hexagonLoader.classList.toggle('tubia__active');
 
-                setTimeout(() => {
-                    // Hide our spinner loader.
-                    this.hexagonLoader.classList.toggle('tubia__active');
-                    // Add our poster image.
-                    this.container.appendChild(this.posterPosterElement);
+                // Add our poster image.
+                this.container.appendChild(this.posterPosterElement);
 
-                    // Create the play button.
-                    this.playButton.classList.toggle('tubia__active');
-                    this.playButton.addEventListener('click', this.startPlyrHandler, false);
-                }, this.transitionSpeed / 2);
-
-                setTimeout(() => {
-                    // Hide transition.
-                    this.transitionElement.classList.toggle('tubia__active');
-                }, this.transitionSpeed);
+                // Create the play button.
+                this.playButton.classList.toggle('tubia__active');
+                this.playButton.addEventListener('click', this.startPlyrHandler, false);
             });
 
             // Create a display advertisement which will reside on top of the poster image.
@@ -325,6 +340,23 @@ class Player {
                 || this.options.domain === 'www.funnygames.nl'
                 || this.options.domain === 'www.bgames.com'
                 || this.options.domain === 'www.plinga.com')) {
+                // Set adslot dimensions.
+                if (this.container.offsetWidth >= 970) {
+                    slotElement.style.width = '970px';
+                    slotElement.style.height = '90px';
+                } else if (this.container.offsetWidth >= 728) {
+                    slotElement.style.width = '728px';
+                    slotElement.style.height = '90px';
+                } else if (this.container.offsetWidth >= 468) {
+                    slotElement.style.width = '468px';
+                    slotElement.style.height = '60px';
+                } else {
+                    slotElement.style.width = '100%';
+                    slotElement.style.height = '60px';
+                }
+
+                // Show the slot.
+                slotElement.style.display = 'block';
 
                 // Set header bidding name space.
                 window.idhbtubia = window.idhbtubia || {};
@@ -432,10 +464,6 @@ class Player {
      * Method for animating into loading the Plyr player.
      */
     startPlyr() {
-        if(!this.playButton) {
-            return;
-        }
-
         // Remove our click listener to avoid double clicks.
         this.playButton.removeEventListener('click', this.startPlyrHandler, false);
 
@@ -456,8 +484,9 @@ class Player {
         // Destroy our display ad if it exists.
         const displayAd = document.getElementById('tubia__display-ad');
         if (displayAd) {
-            if (window.googletag)
+            if (window.googletag) {
                 window.googletag.destroySlots('tubia__display-ad');
+            }
             displayAd.parentNode.removeChild(displayAd);
         }
     }
@@ -592,8 +621,6 @@ class Player {
                     } catch (postMessageError) {
                         console.error(postMessageError);
                     }
-                    // Start playing.
-                    // this.player.play();
                 }, this.transitionSpeed / 1.5);
 
                 // Record Tubia "Video Play" event in Tunnl.
