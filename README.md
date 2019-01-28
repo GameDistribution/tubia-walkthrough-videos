@@ -21,7 +21,7 @@ Embed the Tubia video player within a simple <iframe> element. However, you won'
     frameborder="0" 
     allowfullscreen="allowfullscreen" 
     style="margin: 0; padding: 0;" width="640" height="480" 
-    src="https://player.tubia.com/?publisherid=[YOUR PUBLISHER ID HERE]&gameid=[YOUR GAME ITS IDENTIFIER]&pageurl=[CURRENT PAGE URL ENCODED]&title=[YOUR GAME ITS URL ENCODED TITLE]&colormain=[PLAYER THEME HEX COLOR CODE]&coloraccent=[PLAYER THEME HEX COLOR CODE]&gdprtracking=[SET BY YOUR GDPR SOLUTION]&gdprtargeting=[SET BY YOUR GDPR SOLUTION]&langcode=[LANGUAGE CODE - REGION CODE]">
+    src="https://player.tubia.com/?publisherid=[YOUR PUBLISHER ID HERE]&pageurl=[CURRENT PAGE URL ENCODED]&title=[YOUR GAME ITS URL ENCODED TITLE]&colormain=[PLAYER THEME HEX COLOR CODE]&coloraccent=[PLAYER THEME HEX COLOR CODE]&gdprtracking=[SET BY YOUR GDPR SOLUTION]&gdprtargeting=[SET BY YOUR GDPR SOLUTION]&langcode=[LANGUAGE CODE - REGION CODE]">
 </iframe>
 ```
 Use the following query variables.
@@ -29,7 +29,6 @@ Use the following query variables.
 | Property | Mandatory | Default | Description |
 | --- | --- | --- | --- |
 | publisherid | Yes | '' | Your Tubia publisher identifier. |
-| gameid | Yes | '' | A unique identifier of your page content. We use this data to match a video with your identifier. |
 | title | Yes | '' | The name of your game. This values is used within the video player, but we also use this data to match a video with your title. Make sure its value is URL encoded. |
 | pageurl | Yes | '' | The full URL of the current page, make sure its value is encoded. |
 | colormain | No | '' | The main theme color of the HTML5 video player, use a CSS hex code (ff0080), without the #. |
@@ -40,46 +39,23 @@ Use the following query variables.
 | debug | No | '' | Enable debugging. Please keep it to false when publishing. |
 
 ### Embed as component
-Add the following script to your document. This solution simply loads the Tubia player within a generated <iframe> element.
+Add the following script to your document. This solution simply loads the Tubia player within a generated <iframe> element. Using this implementation allows you to hook into the callback methods, which are invoked through the iframe using the PostMessage Web API.
 ```
-window["TUBIA_OPTIONS"] = {
-    "container": '[YOUR CONTAINER ELEMENT ID HERE]',
-    "publisherId": '[YOUR PUBLISHER ID HERE]',
-    "gameId": '[YOUR GAME ITS IDENTIFIER]',
-    "title": '[YOUR GAME ITS TITLE]',
-    "colorMain": 'ff0080',
-    "colorAccent": '00ff80',
-    "gdprTracking": true,
-    "gdprTargeting": true,
-    onNotFound: function (data) {
-        console.info('Could not find the video: ', data);
-    },
-};
-(function (d, s, id) {
-    var js, fjs = d.getElementsByTagName(s)[0];
-    if (d.getElementById(id)) return;
-    js = d.createElement(s);
-    js.id = id;
-    js.src = 'https://player.tubia.com/libs/gd/gd.min.js';
-    fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'tubia-playerjs'));
-```
-
-You can also initialise the Tubia instance by simply (re)creating it. This is useful for when you want to load Tubia within a web application. Just make sure you pass the options as arguments in the constructor, instead of binding them to the window element. Otherwise the instance would auto initialise.
-```
-new Tubia.Player.default({
-    "container": '[YOUR CONTAINER ELEMENT ID HERE]',
-    "publisherId": '[YOUR PUBLISHER ID HERE]',
-    "gameId": '[YOUR GAME ITS IDENTIFIER]',
-    "title": '[YOUR GAME ITS TITLE]',
-    "colorMain": '[HEX THEME COLOR]',
-    "colorAccent": '[HEX THEME ACCENT COLOR]',
-    "gdprTracking": [SET BY YOUR GDPR SOLUTION],
-    "gdprTargeting": [SET BY YOUR GDPR SOLUTION],
-    onNotFound: function (data) {
-        console.info('Could not find the video: ', data);
-    },
-});
+<script type="application/javascript">
+    window["TUBIA_OPTIONS"] = {
+        "container": '[YOUR CONTAINER ELEMENT ID HERE]',
+        "publisherId": '[YOUR PUBLISHER ID HERE]',
+        "title": '[YOUR GAME ITS TITLE]',
+        "colorMain": 'ff0080',
+        "colorAccent": '00ff80',
+        "gdprTracking": true,
+        "gdprTargeting": true,
+        "onNotFound": function (data) {
+            console.info('Could not find the video: ', data);
+        },
+    };
+    !function(e,t,a){var n,r=e.getElementsByTagName(t)[0];e.getElementById("tubia-playerjs")||((n=e.createElement(t)).async=!0,n.src="https://player.tubia.com/libs/gd/gd.min.js",r.parentNode.insertBefore(n,r))}(document,"script");
+</script>
 ```
 
 #### Matching video's
@@ -93,7 +69,6 @@ You can use the following properties:
 | --- | --- | --- | --- |
 | container | No | {String} 'player' | The container element id value. The HTML5 player will be embedded within. |
 | publisherId | Yes | {String} '' | Your Tubia publisher identifier. |
-| gameId | Yes | {String} '' | A unique identifier of your page content. We use this data to match a video with your identifier. |
 | title | Yes | {String} '' | The name of your game. This values is used within the video player, but we also use this data to match a video with your title. Make sure its value is URL encoded. |
 | colorMain | No | {String} '' | The main theme color of the HTML5 video player, you can use any CSS value, example; #ff0080. |
 | colorAccent | No | {String} '' | The accent theme color of the HTML5 video player, you can use any CSS value, example; rgba(255, 255, 0, 0.5). |
