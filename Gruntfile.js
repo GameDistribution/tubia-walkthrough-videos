@@ -34,11 +34,35 @@ module.exports = function (grunt) {
         },
 
         /**
+         * Copies certain files over from the src folder to the build folder.
+         */
+        copy: {
+            dist: {
+                expand: true,
+                flatten: true,
+                cwd: './',
+                src: ['src/index.html'],
+                dest: './dist',
+            },
+            examples: {
+                expand: true,
+                flatten: false,
+                cwd: './',
+                src: [
+                    'examples/iframe.html',
+                    'examples/legacy.html',
+                    'examples/publisher.html',
+                ],
+                dest: './dist',
+            },
+        },
+
+        /**
          * Cleans our build folder.
          */
         clean: {
-            lib: {
-                src: ['./libs/gd/'],
+            dist: {
+                src: ['./dist'],
             },
         },
 
@@ -51,7 +75,7 @@ module.exports = function (grunt) {
             },
             default: {
                 files: {
-                    'libs/gd/sprite.svg': ['src/images/*.svg'],
+                    'dist/libs/gd/sprite.svg': ['src/images/*.svg'],
                 },
             },
         },
@@ -84,10 +108,10 @@ module.exports = function (grunt) {
             },
             files: {
                 src: [
-                    'libs/gd/gd.js',
-                    'libs/gd/gd.min.js',
-                    'libs/gd/main.min.css',
-                    'libs/gd/main.min.js',
+                    'dist/libs/gd/gd.js',
+                    'dist/libs/gd/gd.min.js',
+                    'dist/libs/gd/main.min.css',
+                    'dist/libs/gd/main.min.js',
                 ],
             },
         },
@@ -102,7 +126,7 @@ module.exports = function (grunt) {
             },
             build: {
                 files: {
-                    'libs/gd/main.css': 'src/styles/plyr.scss',
+                    'dist/libs/gd/main.css': 'src/styles/plyr.scss',
                 },
             },
         },
@@ -124,8 +148,8 @@ module.exports = function (grunt) {
                 ],
             },
             build: {
-                src: 'libs/gd/main.css',
-                dest: 'libs/gd/main.min.css',
+                src: 'dist/libs/gd/main.css',
+                dest: 'dist/libs/gd/main.min.css',
             },
         },
 
@@ -153,11 +177,11 @@ module.exports = function (grunt) {
             },
             build: {
                 src: 'src/scripts/**/*.js',
-                dest: 'libs/gd/main.js',
+                dest: 'dist/libs/gd/main.js',
             },
             entry: {
                 src: 'src/entry/entry.js',
-                dest: 'libs/gd/entry.js',
+                dest: 'dist/libs/gd/entry.js',
             },
         },
 
@@ -171,9 +195,9 @@ module.exports = function (grunt) {
             build: {
                 src: [
                     'src/libraries/md5.js',
-                    'libs/gd/main.js',
+                    'dist/libs/gd/main.js',
                 ],
-                dest: 'libs/gd/main.js',
+                dest: 'dist/libs/gd/main.js',
             },
         },
 
@@ -201,16 +225,16 @@ module.exports = function (grunt) {
                 warnings: false,
             },
             build: {
-                src: 'libs/gd/main.js',
-                dest: 'libs/gd/main.min.js',
+                src: 'dist/libs/gd/main.js',
+                dest: 'dist/libs/gd/main.min.js',
             },
             legacy: {
-                src: 'libs/gd/entry.js',
-                dest: 'libs/gd/gd.js',
+                src: 'dist/libs/gd/entry.js',
+                dest: 'dist/libs/gd/gd.js',
             },
             entry: {
-                src: 'libs/gd/entry.js',
-                dest: 'libs/gd/gd.min.js',
+                src: 'dist/libs/gd/entry.js',
+                dest: 'dist/libs/gd/gd.min.js',
             },
         },
 
@@ -245,6 +269,16 @@ module.exports = function (grunt) {
                     'duration',
                 ],
             },
+            html: {
+                files: [
+                    'index.html',
+                    'src/index.html',
+                    'examples/iframe.html',
+                    'examples/legacy.html',
+                    'examples/publisher.html',
+                ],
+                tasks: ['copy'],
+            },
             grunt: {
                 files: ['gruntfile.js'],
             },
@@ -260,7 +294,7 @@ module.exports = function (grunt) {
                 src: ['./src/'],
             },
             options: {
-                server: './',
+                server: './dist',
                 watchTask: true,
                 port: 8081,
             },
@@ -269,6 +303,7 @@ module.exports = function (grunt) {
 
     // General tasks.
     grunt.loadNpmTasks('grunt-eslint');
+    grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-google-cloud');
     grunt.loadNpmTasks('grunt-browser-sync');
@@ -316,6 +351,7 @@ module.exports = function (grunt) {
         'updates while developing.',
         function () {
             const tasksArray = [
+                'copy',
                 'sass',
                 'postcss',
                 'eslint',
@@ -336,6 +372,7 @@ module.exports = function (grunt) {
         function () {
             const tasksArray = [
                 'clean',
+                'copy',
                 'sass',
                 'postcss',
                 'eslint',
@@ -391,7 +428,7 @@ module.exports = function (grunt) {
                         },
                     },
                     dist: {
-                        cwd: './libs/',
+                        cwd: './dist/',
                         src: ['**/*'],
                         dest: '',
                     },
@@ -402,7 +439,7 @@ module.exports = function (grunt) {
             console.log('Bucket: ' + bucket);
 
             if (folderIn === undefined && folderOut === undefined) {
-                console.log('Deploying: ./libs/ to gs://' + bucket + '/');
+                console.log('Deploying: ./dist/ to gs://' + bucket + '/');
             } else {
                 if (folderIn !== undefined) {
                     if (folderOut === undefined) {
