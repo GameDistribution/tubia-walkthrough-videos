@@ -41,8 +41,8 @@ class Tubia {
             href: document.location.href,
         }];
 
-        const domain = settingsArray[0].url.toLowerCase().replace(/^(?:https?:\/\/)?/i, '').split('/')[0];
-        let url = domain === '/index.html?';
+        // const domain = settingsArray[0].url.toLowerCase().replace(/^(?:https?:\/\/)?/i, '').split('/')[0];
+        let url = './index.html?';
 
         settingsArray.forEach(setting => {
             url += Object.keys(setting)

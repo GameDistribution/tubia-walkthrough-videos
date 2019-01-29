@@ -35,7 +35,17 @@
                 console.info('Tubia is ready: ', player);
             },
         };
-        !function(e,t,a){var n,r=e.getElementsByTagName(t)[0];e.getElementById("tubia-playerjs")||((n=e.createElement(t)).async=!0,n.src="./libs/gd/gd.min.js",r.parentNode.insertBefore(n,r))}(document,"script");
+        !function(e,t,n){var a,r=e.getElementsByTagName(t)[0];e.getElementById(n)||((a=e.createElement(t)).async=!0,a.id=n,a.src="./libs/gd/gd.min.js",r.parentNode.insertBefore(a,r))}(document,"script","tubia-playerjs");
+
+        // (function (d, s, id) {
+        //     var js, fjs = d.getElementsByTagName(s)[0];
+        //     if (d.getElementById(id)) return;
+        //     js = d.createElement(s);
+        //     js.async = true;
+        //     js.id = id;
+        //     js.src = './libs/gd/gd.min.js';
+        //     fjs.parentNode.insertBefore(js, fjs);
+        // }(document, 'script', 'tubia-playerjs'));
 
         // (function (d, s, id, async, l) {
         //     var js, fjs = d.getElementsByTagName(s)[0];

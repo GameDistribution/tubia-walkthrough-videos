@@ -54,7 +54,7 @@ Add the following script to your document. This solution simply loads the Tubia 
             console.info('Could not find the video: ', data);
         },
     };
-    !function(e,t,a){var n,r=e.getElementsByTagName(t)[0];e.getElementById("tubia-playerjs")||((n=e.createElement(t)).async=!0,n.src="https://player.tubia.com/libs/gd/gd.min.js",r.parentNode.insertBefore(n,r))}(document,"script");
+    !function(e,t,n){var a,r=e.getElementsByTagName(t)[0];e.getElementById(n)||((a=e.createElement(t)).async=!0,a.id=n,a.src="https://player.tubia.com/libs/gd/gd.min.js",r.parentNode.insertBefore(a,r))}(document,"script","tubia-playerjs");
 </script>
 ```
 
