@@ -41,7 +41,7 @@ module.exports = function (grunt) {
                 expand: true,
                 flatten: true,
                 cwd: './',
-                src: ['src/index.html'],
+                src: ['index.html'],
                 dest: './dist',
             },
             examples: {
@@ -51,7 +51,7 @@ module.exports = function (grunt) {
                 src: [
                     'examples/iframe.html',
                     'examples/legacy.html',
-                    'examples/publisher.html',
+                    'examples/index.html',
                 ],
                 dest: './dist',
             },
@@ -272,10 +272,9 @@ module.exports = function (grunt) {
             html: {
                 files: [
                     'index.html',
-                    'src/index.html',
                     'examples/iframe.html',
                     'examples/legacy.html',
-                    'examples/publisher.html',
+                    'examples/index.html',
                 ],
                 tasks: ['copy'],
             },
