@@ -36,7 +36,7 @@ class Player {
         const publisherIdLegacy = params.pubid || params.publisherid;
         const publisherId = typeof publisherIdLegacy !== 'undefined' && publisherIdLegacy !== '' ? publisherIdLegacy : 'dc63a91fa184423482808bed4d782320';
         const gameId = typeof params.gameid !== 'undefined' && params.gameid !== '' ? params.gameid : '0';
-        const title = typeof params.title !== 'undefined' && params.title !== '' ? params.title : '';
+        const title = typeof params.title !== 'undefined' && params.title !== '' ? params.title : 'Jewel Burst';
         const colorMain = typeof params.colormain !== 'undefined' && params.colormain !== '' ? params.colormain : '';
         const colorAccent = typeof params.coloraccent !== 'undefined' && params.coloraccent !== '' ? params.coloraccent : '';
         const gdprTracking = params.gdprtracking || null;
@@ -50,14 +50,11 @@ class Player {
         const keys = utils.parseJson(params.keys);
 
         // Set the URL's based on given (legacy) parameters.
-        /* eslint-disable */
-        const pageUrl = params.pageurl || params.url || (window.location !== window.parent.location)
-            ? (document.referrer && document.referrer !== '')
-                ? document.referrer
-                : document.location.href
-            : document.location.href;
-        /* eslint-enable */
-        const url = pageUrl ? pageUrl.split('?')[0] : document.location.origin + document.location.pathname;
+        // Receiving a proper pageurl parameter is mandatory. We either get it directly from the iframe URL,
+        // or we get it from /src/entry/tubia.js.
+        const pageUrl = params.pageurl || params.url;
+        // Remove any added query parameters. The default is some legacy thing used by our tubia admin.
+        const url = pageUrl ? pageUrl.split('?')[0] : `http://player.tubia.com/libs/gd/?gameid=${gameId}`;
         const href = pageUrl || document.location.href;
         const domain = url.toLowerCase().replace(/^(?:https?:\/\/)?/i, '').split('/')[0];
 
@@ -104,7 +101,18 @@ class Player {
         this.transitionSpeed = 2000;
         this.startPlyrHandler = this.startPlyr.bind(this);
         this.player = null;
-        this.origin = url;
+
+        // Set the proper origin URL for postMessage requests.
+        this.origin = document.location.origin;
+        if (window.location !== window.parent.location
+            && document.referrer && document.referrer !== '') {
+            // Get the actual origin from the referrer URL.
+            const parts = document.referrer.split('://')[1].split('/');
+            const protocol = document.referrer.split('://')[0];
+            const host = parts[0];
+            // const pathName = parts.slice(1).join('/');
+            this.origin = `${protocol}://${host}`;
+        }
 
         this.container = document.getElementById('tubia');
         this.transitionElement = this.container.querySelector('.tubia__transition');

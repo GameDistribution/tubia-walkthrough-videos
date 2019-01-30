@@ -49,7 +49,6 @@ module.exports = function (grunt) {
                     expand: true,
                     flatten: true,
                     src: [
-                        'index.html',
                         'examples/iframe.html',
                         'examples/legacy.html',
                         'examples/publisher.html',
@@ -63,13 +62,12 @@ module.exports = function (grunt) {
          * Copies certain files over from the src folder to the build folder.
          */
         copy: {
-            // Copy index file to the libs/gd path for legacy usages.
-            legacy: {
+            dist: {
                 expand: true,
                 flatten: true,
                 cwd: './',
-                src: ['./dist/index.html'],
-                dest: './dist/libs/gd',
+                src: ['./index.html'],
+                dest: './dist',
             },
         },
 
@@ -389,7 +387,7 @@ module.exports = function (grunt) {
             const tasksArray = [
                 'clean',
                 'replace',
-                'copy:legacy',
+                'copy',
                 'sass',
                 'postcss',
                 'eslint',
