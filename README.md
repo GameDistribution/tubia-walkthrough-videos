@@ -1,5 +1,5 @@
 [![npm](https://img.shields.io/npm/v/npm.svg)](https://nodejs.org/)
-[![GitHub version](https://img.shields.io/badge/version-1.2.1-green.svg)](https://github.com/GameDistribution/tubia-walkthrough-videos/)
+[![GitHub version](https://img.shields.io/badge/version-1.2.2-green.svg)](https://github.com/GameDistribution/tubia-walkthrough-videos/)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/GameDistribution/tubia-walkthrough-videos/blob/master/LICENSE)
 
 

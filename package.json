@@ -1,6 +1,6 @@
 {
     "name": "@gamedistribution.com/tubia",
-    "version": "1.2.1",
+    "version": "1.2.2",
     "author": "Tubia.com",
     "description": "Tubia.com HTML5 video player",
     "url": "https://tubia.com",
@@ -44,6 +44,7 @@
         "grunt-eslint": "^21.0.0",
         "grunt-google-cloud": "^1.0.7",
         "grunt-postcss": "^0.9.0",
+        "grunt-replace": "^1.0.1",
         "grunt-sass": "^3.0.2",
         "grunt-svgstore": "^2.0.0",
         "node-sass": "^4.11.0"

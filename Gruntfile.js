@@ -34,26 +34,41 @@ module.exports = function (grunt) {
         },
 
         /**
+         * Replace our relative paths to absolute paths, just to be sure.
+         */
+        replace: {
+            dist: {
+                options: {
+                    usePrefix: false,
+                    patterns: [{
+                        match: './',
+                        replacement: 'https://player.tubia.com/',
+                    }],
+                },
+                files: [{
+                    expand: true,
+                    flatten: true,
+                    src: [
+                        'index.html',
+                        'examples/iframe.html',
+                        'examples/legacy.html',
+                        'examples/publisher.html',
+                    ],
+                    dest: './dist',
+                }],
+            },
+        },
+
+        /**
          * Copies certain files over from the src folder to the build folder.
          */
         copy: {
-            dist: {
-                expand: true,
-                flatten: true,
-                cwd: './',
-                src: [
-                    'index.html',
-                    'examples/iframe.html',
-                    'examples/legacy.html',
-                    'examples/publisher.html',
-                ],
-                dest: './dist',
-            },
+            // Copy index file to the libs/gd path for legacy usages.
             legacy: {
                 expand: true,
                 flatten: true,
                 cwd: './',
-                src: ['index.html'],
+                src: ['./dist/index.html'],
                 dest: './dist/libs/gd',
             },
         },
@@ -309,6 +324,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-browser-sync');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-browserify');
+    grunt.loadNpmTasks('grunt-replace');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-banner');
@@ -351,7 +367,7 @@ module.exports = function (grunt) {
         'updates while developing.',
         function () {
             const tasksArray = [
-                'copy',
+                'replace',
                 'sass',
                 'postcss',
                 'eslint',
@@ -372,7 +388,8 @@ module.exports = function (grunt) {
         function () {
             const tasksArray = [
                 'clean',
-                'copy',
+                'replace',
+                'copy:legacy',
                 'sass',
                 'postcss',
                 'eslint',
