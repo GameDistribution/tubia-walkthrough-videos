@@ -36,7 +36,7 @@ class Player {
         const publisherIdLegacy = params.pubid || params.publisherid;
         const publisherId = typeof publisherIdLegacy !== 'undefined' && publisherIdLegacy !== '' ? publisherIdLegacy : 'dc63a91fa184423482808bed4d782320';
         const gameId = typeof params.gameid !== 'undefined' && params.gameid !== '' ? params.gameid : '0';
-        const title = typeof params.title !== 'undefined' && params.title !== '' ? params.title : 'Jewel Burst';
+        const title = typeof params.title !== 'undefined' && params.title !== '' ? params.title : '';
         const colorMain = typeof params.colormain !== 'undefined' && params.colormain !== '' ? params.colormain : '';
         const colorAccent = typeof params.coloraccent !== 'undefined' && params.coloraccent !== '' ? params.coloraccent : '';
         const gdprTracking = params.gdprtracking || null;
@@ -50,7 +50,13 @@ class Player {
         const keys = utils.parseJson(params.keys);
 
         // Set the URL's based on given (legacy) parameters.
-        const pageUrl = params.pageurl || params.url;
+        /* eslint-disable */
+        const pageUrl = params.pageurl || params.url || (window.location !== window.parent.location)
+            ? (document.referrer && document.referrer !== '')
+                ? document.referrer
+                : document.location.href
+            : document.location.href;
+        /* eslint-enable */
         const url = pageUrl ? pageUrl.split('?')[0] : document.location.origin + document.location.pathname;
         const href = pageUrl || document.location.href;
         const domain = url.toLowerCase().replace(/^(?:https?:\/\/)?/i, '').split('/')[0];

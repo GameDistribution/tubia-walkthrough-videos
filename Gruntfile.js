@@ -49,6 +49,13 @@ module.exports = function (grunt) {
                 ],
                 dest: './dist',
             },
+            legacy: {
+                expand: true,
+                flatten: true,
+                cwd: './',
+                src: ['index.html'],
+                dest: './dist/libs/gd',
+            },
         },
 
         /**
