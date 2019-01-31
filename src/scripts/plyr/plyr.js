@@ -323,18 +323,23 @@ class Plyr {
     get isHTML5() {
         return Boolean(this.provider === providers.html5);
     }
+
     get isEmbed() {
         return Boolean(this.isYouTube || this.isVimeo);
     }
+
     get isYouTube() {
         return Boolean(this.provider === providers.youtube);
     }
+
     get isVimeo() {
         return Boolean(this.provider === providers.vimeo);
     }
+
     get isVideo() {
         return Boolean(this.type === types.video);
     }
+
     get isAudio() {
         return Boolean(this.type === types.audio);
     }

@@ -5,7 +5,7 @@ const Tubia = window.Tubia || {};
 // Stick on the modules that need to be exported.
 // You only need to require the top-level modules, browserify
 // will walk the dependency graph and load everything correctly.
-Tubia.Player = require('./main');
+Tubia.Player = require('./tubia');
 
 // Replace/Create the global namespace.
 window.Tubia = Tubia;
@@ -31,4 +31,3 @@ if (Object.keys(settings).length !== 0) {
     new Tubia.Player.default(settings);
 }
 /* eslint-enable */
-

@@ -2,9 +2,7 @@
 /node_modules
 .idea/
 .sass-cache/
-/libs
-/googleads_ima_html5_samples
-TUBIA_videoplayer.jpg
+/dist/*
 
 # Files
 *.zip

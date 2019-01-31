@@ -74,21 +74,6 @@ const utils = {
         },
     },
 
-    extendDefaults(source, properties) {
-        /* eslint-disable */
-        let property;
-        for (property in properties) {
-            if (properties.hasOwnProperty(property)) {
-                if (properties[property] !== null &&
-                    typeof properties[property] !== 'undefined') {
-                    source[property] = properties[property];
-                }
-            }
-        }
-        return source;
-        /* eslint-enable */
-    },
-
     // Unfortunately, due to mixed support, UA sniffing is required
     getBrowser() {
         return {
@@ -917,6 +902,16 @@ const utils = {
         const parser = document.createElement('a');
         parser.href = url;
         return parser;
+    },
+
+    parseJson(data) {
+        if (!data) return null;
+
+        try {
+            return JSON.parse(data);
+        } catch (e) {
+            return data;
+        }
     },
 
     // Get URL query parameters

@@ -21,6 +21,7 @@ module.exports = {
         'no-unused-vars': 1,
         'constructor-super': 1,
         'valid-typeof': 1,
+        'no-console': [1, {allow: ['warn', 'error', 'info', 'table']}],
         'indent': [2, 4, {'SwitchCase': 1}],
         'quotes': [2, 'single', 'avoid-escape'],
         'semi': [2, 'always'],
