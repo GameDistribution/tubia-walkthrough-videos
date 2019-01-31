@@ -69,8 +69,6 @@ class Tubia {
         frame.setAttribute('allowfullscreen', 'true');
         frame.style.top = '0';
         frame.style.left = '0';
-        frame.style.width = this.options.width || '100%';
-        frame.style.height = this.options.height || '100%';
         frame.width = this.options.width || '100%';
         frame.height = this.options.height || '100%';
 
