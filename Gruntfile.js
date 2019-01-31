@@ -34,6 +34,24 @@ module.exports = function (grunt) {
         },
 
         /**
+         * Copies certain files over from the src folder to the build folder.
+         */
+        copy: {
+            dist: {
+                expand: true,
+                flatten: true,
+                cwd: './',
+                src: [
+                    './index.html',
+                    'examples/iframe.html',
+                    'examples/legacy.html',
+                    'examples/publisher.html',
+                ],
+                dest: './dist',
+            },
+        },
+
+        /**
          * Replace our relative paths to absolute paths, just to be sure.
          */
         replace: {
@@ -55,19 +73,6 @@ module.exports = function (grunt) {
                     ],
                     dest: './dist',
                 }],
-            },
-        },
-
-        /**
-         * Copies certain files over from the src folder to the build folder.
-         */
-        copy: {
-            dist: {
-                expand: true,
-                flatten: true,
-                cwd: './',
-                src: ['./index.html'],
-                dest: './dist',
             },
         },
 
@@ -365,7 +370,7 @@ module.exports = function (grunt) {
         'updates while developing.',
         function () {
             const tasksArray = [
-                'replace',
+                'copy',
                 'sass',
                 'postcss',
                 'eslint',
@@ -386,8 +391,8 @@ module.exports = function (grunt) {
         function () {
             const tasksArray = [
                 'clean',
-                'replace',
                 'copy',
+                'replace',
                 'sass',
                 'postcss',
                 'eslint',
