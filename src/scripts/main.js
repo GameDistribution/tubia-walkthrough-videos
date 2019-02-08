@@ -448,7 +448,7 @@ class Player {
                 }
 
                 // Show the slot.
-                slotElement.style.display = 'block';
+                // slotElement.style.display = 'block';
 
                 // Set header bidding name space.
                 window.idhbtubia = window.idhbtubia || {};
