@@ -1,37 +1,36 @@
 import utils from './utils';
-import defaults from './defaults';
 
 class CueMark {
     constructor(player) {
 
         
-        var self = this;
+        const self = this;
 
         self.player = player;
         self.markWrapper = utils.createElement('div', {
-            class: 'progress--mark-wrapper'
-        })
+            class: 'progress--mark-wrapper',
+        });
         self.cue = 0;
 
         self.wrapperClickAdded = false;
 
-        let videoContainer = document.querySelector(self.player.config.selectors.progress);
+        const videoContainer = document.querySelector(self.player.config.selectors.progress);
 
-        let pin = utils.createElement('div', {
-            class: 'pin'
-        })
+        const pin = utils.createElement('div', {
+            class: 'pin',
+        });
 
-        let text = utils.createElement('div', {
-            class: 'text'
-        })
+        const text = utils.createElement('div', {
+            class: 'text',
+        });
         text.innerText = '0';
         self.markWrapper.text = text;
 
         pin.appendChild(text);
 
-        let pulse = utils.createElement('div', {
-            class: 'pulse'
-        })
+        const pulse = utils.createElement('div', {
+            class: 'pulse',
+        });
 
         self.markWrapper.appendChild(pin);
         self.markWrapper.appendChild(pulse);
@@ -39,17 +38,17 @@ class CueMark {
         self.markWrapper.addEventListener('mouseover', () => {
             document.querySelector('.plyr__tooltip').style.opacity = 0;
             self.markWrapper.setAttribute('class', 'progress--mark-wrapper active');
-        })
+        });
 
         self.markWrapper.addEventListener('mouseout', () => {
             document.querySelector('.plyr__tooltip').style.opacity = 1;
             self.markWrapper.setAttribute('class', 'progress--mark-wrapper');
-        })
+        });
 
 
         self.markWrapper.addEventListener('click', {
             handleEvent: self.go,
-            self: this
+            self: this,
         });
 
 
@@ -64,12 +63,12 @@ class CueMark {
         cue.addEventListener('mouseover', {
             handleEvent: this.show,
             wrapper: this.markWrapper,
-            self: this
+            self: this,
         });
         cue.addEventListener('mouseout', {
             handleEvent: this.hide,
             wrapper: this.markWrapper,
-            self: this
+            self: this,
         });
 
         // cue.addEventListener('click',{
@@ -79,14 +78,13 @@ class CueMark {
     }
 
     go(event) {
-        console.log('this.player',event)
-        console.log('this.player',this)
-        console.log('this.player', this.self.cue);
-        this.self.player.jumpTo(this.self.cue)
+        // eslint-disable-next-line no-console
+        console.log('this.player',event);
+        this.self.player.jumpTo(this.self.cue);
     }
 
     show(event) {
-        var left = `${event.target.offsetLeft + event.target.offsetWidth}px`;
+        const left = `${event.target.offsetLeft + event.target.offsetWidth}px`;
 
 
         this.wrapper.setAttribute('class', 'progress--mark-wrapper active');
@@ -96,9 +94,10 @@ class CueMark {
         // var afterSlidingTagRule = utils.getRuleWithSelector('.progress--mark-wrapper .pin:after');
         // console.log('afterSlidingTagRule',afterSlidingTagRule)
 
-        this.wrapper.text.innerText = event.target.dataset.value
+        this.wrapper.text.innerText = event.target.dataset.value;
 
-        var cuePoint = parseInt(event.target.dataset.cue);
+        // eslint-disable-next-line radix
+        const cuePoint = parseInt(event.target.dataset.cue);
         this.self.cue = cuePoint;
         document.querySelector('.plyr__tooltip').style.opacity = 0;
 

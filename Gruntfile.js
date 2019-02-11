@@ -110,22 +110,13 @@ module.exports = function (grunt) {
          */
         sass: {
             options: {
-                sourcemap: true,
-                style: 'nested', // no need for config.rb
+                sourceMap: true
             },
-            build: {
-                src: 'src/styles/plyr.scss',
-                dest: 'libs/.tmp/sass.css',
-            },
-
-            // options: {
-            //     sourceMap: true
-            // },
-            // dist: {
-            //     files: {
-            //         'libs/.tmp/sass.css': 'src/styles/plyr.scss'
-            //     }
-            // }
+            dist: {
+                files: {
+                    'libs/.tmp/sass.css': 'src/styles/plyr.scss'
+                }
+            }
         },
 
         /**
@@ -235,7 +226,7 @@ module.exports = function (grunt) {
             scripts: {
                 files: ['src/scripts/**/*.js'],
                 tasks: [
-                    // 'exec:eslint',
+                    'exec:eslint',
                     'browserify',
                     'concat',
                     'uglify',
@@ -334,7 +325,7 @@ module.exports = function (grunt) {
                 'copy',
                 'sass',
                 'postcss',
-                // 'exec:eslint',
+                'exec:eslint',
                 'browserify',
                 'concat',
                 'sourcemaps',
@@ -353,7 +344,7 @@ module.exports = function (grunt) {
                 'clean',
                 'sass',
                 'postcss',
-                // 'exec:eslint',
+                'exec:eslint',
                 'browserify',
                 'concat',
                 'uglify',

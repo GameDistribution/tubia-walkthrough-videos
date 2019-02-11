@@ -194,7 +194,7 @@ class Fullscreen {
             toggleFallback.call(this, false);
         } else if (!this.prefix) {
             document.webkitCancelFullScreen();
-            //document.cancelFullScreen();
+            // document.cancelFullScreen();
         } else if (!utils.is.empty(this.prefix)) {
             const action = this.prefix === 'moz' ? 'Cancel' : 'Exit';
             document[`${this.prefix}${action}${this.name}`]();

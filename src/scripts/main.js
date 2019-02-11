@@ -1,13 +1,12 @@
-import "es6-promise/auto";
-import "whatwg-fetch";
+import 'es6-promise/auto';
+import 'whatwg-fetch';
 // Todo: range touch is causing the following error:
 // Todo: Uncaught DOMException: Failed to execute 'insertRule' on 'CSSStyleSheet': Cannot access StyleSheet to insertRule
 // import 'rangetouch';
 
-import PackageJSON from "../../package.json";
-import Plyr from "./plyr/plyr";
-import utils from "./plyr/utils";
-import HowToPlay from "./plyr/howtoplay"
+import PackageJSON from '../../package.json';
+import Plyr from './plyr/plyr';
+import utils from './plyr/utils';
 
 /**
  * Tubia
@@ -25,7 +24,7 @@ class Tubia {
             (Object.keys(options).length === 0 &&
                 options.constructor === Object)
         ) {
-            return new Error("No settings have been given to Tubia...");
+            return new Error('No settings have been given to Tubia...');
         }
 
         // Set a version banner within the developer console.
@@ -50,18 +49,18 @@ class Tubia {
         const defaults = {
             debug: false,
             testing: false,
-            container: "player",
-            gameId: "0", // Todo: api.tubia.com expects something...
-            publisherId: "",
-            title: "",
-            category: "",
-            langCode: "",
-            colorMain: "",
-            colorAccent: "",
+            container: 'player',
+            gameId: '0', // Todo: api.tubia.com expects something...
+            publisherId: '',
+            title: '',
+            category: '',
+            langCode: '',
+            colorMain: '',
+            colorAccent: '',
             url: document.location.origin + document.location.pathname ||
-                "https://gamedistribution.com/",
-            href: document.location.href || "https://gamedistribution.com/",
-            domain: document.location.host || "gamedistribution.com",
+                'https://gamedistribution.com/',
+            href: document.location.href || 'https://gamedistribution.com/',
+            domain: document.location.host || 'gamedistribution.com',
             gdprTracking: null,
             gdprTargeting: null,
             keys: null, // Tunnl tracking keys.
@@ -70,7 +69,7 @@ class Tubia {
             onFound() {},
             onNotFound() {},
             onError() {},
-            onReady() {}
+            onReady() {},
         };
 
         if (options) {
@@ -80,22 +79,25 @@ class Tubia {
         }
 
         // Test domains.
-        const testDomains = ["localhost:8081", "player.tubia.com"];
+        const testDomains = [
+            'localhost:8081',
+            'player.tubia.com',
+        ];
         this.options.testing =
             this.options.testing ||
             testDomains.indexOf(
                 this.options.domain
-                .replace(/^(?:https?:\/\/)?(?:\/\/)?(?:www\.)?/i, "")
-                .split("/")[0]
+                    .replace(/^(?:https?:\/\/)?(?:\/\/)?(?:www\.)?/i, '')
+                    .split('/')[0]
             ) > -1;
         this.options.debug = !this.options.debug ?
             this.options.testing :
             this.options.debug;
 
-        this.videoId = "";
+        this.videoId = '';
         this.innerContainer = null;
         this.adTag = null;
-        this.posterUrl = "";
+        this.posterUrl = '';
         this.posterPosterElement = null;
         this.transitionElement = null;
         this.playButton = null;
@@ -107,7 +109,7 @@ class Tubia {
         this.player = null;
         this.publisherId = this.options.publisherId
             .toString()
-            .replace(/-/g, "");
+            .replace(/-/g, '');
         this.nextCuePoint = null;
 
         // Call Google Analytics and Death Star.
@@ -116,12 +118,12 @@ class Tubia {
         // Make sure the DOM is ready!
         // The Tubia instance sometimes gets called from the <head> by clients.
         if (
-            document.readyState === "interactive" ||
-            document.readyState === "complete"
+            document.readyState === 'interactive' ||
+            document.readyState === 'complete'
         ) {
             this.start();
         } else {
-            document.addEventListener("DOMContentLoaded", () => {
+            document.addEventListener('DOMContentLoaded', () => {
                 this.start();
             });
         }
@@ -132,24 +134,24 @@ class Tubia {
      * Initialise the Tubia application. Fetch the data.
      */
     start() {
-        //first imp
+        // first imp
         // Invoke callback.
         this.options.onStart();
 
         // Search for a matching video within our Tubia database and return the id.
         // Todo: We can't get the poster image without doing these requests for data. Kind of sucks.
         this.videoSearchPromise = new Promise((resolve, reject) => {
-            const gameId = this.options.gameId.toString().replace(/-/g, "");
+            const gameId = this.options.gameId.toString().replace(/-/g, '');
             const title = encodeURIComponent(this.options.title);
-            //const pageId = window.calcMD5(this.options.url);
-            const pageId = "5f915b29ae2a8d678ea1cbf812abedae";
+            // const pageId = window.calcMD5(this.options.url);
+            const pageId = '5f915b29ae2a8d678ea1cbf812abedae';
             const videoFindUrl = `https://api.tubia.com/api/player/findv3/?pageId=${pageId}&href=${encodeURIComponent(
                 this.options.href
             )}&gameId=${gameId}&title=${title}&domain=${encodeURIComponent(
                 this.options.domain
             )}`;
             const videoSearchRequest = new Request(videoFindUrl, {
-                method: "GET"
+                method: 'GET',
             });
             fetch(videoSearchRequest)
                 .then(response => response.text())
@@ -157,10 +159,10 @@ class Tubia {
                 .then(data => {
                     // Set the videoId.
                     // id.gameId is actually the videoId...
-                    if (data && data.gameId && data.gameId !== "") {
-                        this.videoId = data.gameId.toString().replace(/-/g, "");
+                    if (data && data.gameId && data.gameId !== '') {
+                        this.videoId = data.gameId.toString().replace(/-/g, '');
                     } else {
-                        this.videoId = "0";
+                        this.videoId = '0';
                     }
 
                     resolve();
@@ -173,18 +175,18 @@ class Tubia {
             this.videoSearchPromise
                 .then(() => {
                     // Yes argument gameid is expecting the videoId...
-                    var videoDataUrl = `https://api.tubia.com/api/player/publish/?gameid=${
+                    const videoDataUrl = `https://api.tubia.com/api/player/publish/?gameid=${
                         this.videoId
                     }&publisherid=${
                         this.publisherId
                     }&domain=${encodeURIComponent(this.options.domain)}`;
 
 
-                    //delete later and change var to const
+                    // delete later and change var to const
                    
 
                     const videoDataRequest = new Request(videoDataUrl, {
-                        method: "GET"
+                        method: 'GET',
                     });
 
 
@@ -210,7 +212,7 @@ class Tubia {
                         .then(text => (text.length ? JSON.parse(text) : {}))
                         .then(data => {
                             if (!data) {
-                                throw new Error("No video has been found!");
+                                throw new Error('No video has been found!');
                             }
 
                             // Invoke callback to end-user containing our video data.
@@ -241,7 +243,7 @@ class Tubia {
                                 }`;
                                 const relatedVideosRequest = new Request(
                                     relatedVideosUrl, {
-                                        method: "GET"
+                                        method: 'GET',
                                     }
                                 );
                                 fetch(relatedVideosRequest)
@@ -250,7 +252,7 @@ class Tubia {
                                         text.length ? JSON.parse(text) : {}
                                     )
                                     .then(related => {
-                                        data.playlistType = "related";
+                                        data.playlistType = 'related';
                                         data.cuepoints = related;
                                         resolve(data);
                                     })
@@ -278,7 +280,7 @@ class Tubia {
 
         this.videoDataPromise
             .then(() => this.loadExternals())
-            .catch(error => this.notFound("start videoDataPromise", error));
+            .catch(error => this.notFound('start videoDataPromise', error));
     }
 
     /**
@@ -304,7 +306,7 @@ class Tubia {
             // Load our styles and fonts.
             utils
                 .loadStyle(
-                    "https://fonts.googleapis.com/css?family=Khand:400,700"
+                    'https://fonts.googleapis.com/css?family=Khand:400,700'
                 )
                 .catch(() => {
                     /* eslint-disable */
@@ -322,20 +324,20 @@ class Tubia {
 
             utils
                 .loadStyle(
-                    this.options.domain === "localhost:8081" ?
-                    "./gd.css" :
-                    "https://player.tubia.com/libs/gd/gd.css"
+                    this.options.domain === 'localhost:8081' ?
+                        './gd.css' :
+                        'https://player.tubia.com/libs/gd/gd.css'
                 )
                 .then(() => {
                     // Create an inner container; within we load our player and do other stuff.
                     // We make sure to destroy any inner content if there are already things inside.
                     if (container.firstChild) {
-                        container.innerHTML = "";
+                        container.innerHTML = '';
                     }
 
                     // Now create the inner container.
-                    this.innerContainer = document.createElement("div");
-                    this.innerContainer.className = "tubia";
+                    this.innerContainer = document.createElement('div');
+                    this.innerContainer.className = 'tubia';
                     container.appendChild(this.innerContainer);
 
                     // And add theme styles.
@@ -349,17 +351,17 @@ class Tubia {
                     // Otherwise its just a regular error object.
                     if (error.target) {
                         this.onError(
-                            "init loadStyle",
-                            "Something went wrong when loading the Tubia stylesheet."
+                            'init loadStyle',
+                            'Something went wrong when loading the Tubia stylesheet.'
                         );
                     } else {
-                        this.onError("init loadStyle", error);
+                        this.onError('init loadStyle', error);
                     }
                 });
         } else {
             this.onError(
-                "init container",
-                "There is no container element for Tubia set."
+                'init container',
+                'There is no container element for Tubia set.'
             );
         }
     }
@@ -391,22 +393,22 @@ class Tubia {
             <div id="tubia__display-ad" class="tubia__display-ad"></div>
         `;
 
-        this.innerContainer.insertAdjacentHTML("beforeend", html);
+        this.innerContainer.insertAdjacentHTML('beforeend', html);
         this.transitionElement = this.innerContainer.querySelector(
-            ".tubia__transition"
+            '.tubia__transition'
         );
         this.playButton = this.innerContainer.querySelector(
-            ".tubia__play-button"
+            '.tubia__play-button'
         );
         this.hexagonLoader = this.innerContainer.querySelector(
-            ".tubia__hexagon-loader"
+            '.tubia__hexagon-loader'
         );
 
         // Show the container.
-        this.innerContainer.classList.toggle("tubia__active");
+        this.innerContainer.classList.toggle('tubia__active');
 
         // Show a spinner loader, as this could take some time.
-        this.hexagonLoader.classList.toggle("tubia__active");
+        this.hexagonLoader.classList.toggle('tubia__active');
 
         // We start with showing a poster image with a play button.
         // By not loading the actual player we save some requests and overall page load.
@@ -414,23 +416,23 @@ class Tubia {
         this.videoDataPromise.then(json => {
             const poster =
                 json.pictures && json.pictures.length > 0 ?
-                json.pictures[json.pictures.length - 1].link :
-                "";
-            this.posterUrl = poster.replace(/^http:\/\//i, "https://");
+                    json.pictures[json.pictures.length - 1].link :
+                    '';
+            this.posterUrl = poster.replace(/^http:\/\//i, 'https://');
 
             // Check if the poster image exists.
-            this.posterPosterElement = document.createElement("div");
-            this.posterPosterElement.classList.add("tubia__poster");
+            this.posterPosterElement = document.createElement('div');
+            this.posterPosterElement.classList.add('tubia__poster');
             const checkImage = path =>
                 new Promise(resolve => {
                     const img = new Image();
                     img.onload = () => resolve({
                         path,
-                        status: "ok"
+                        status: 'ok',
                     });
                     img.onerror = () => resolve({
                         path,
-                        status: "error"
+                        status: 'error',
                     });
                     img.src = path;
 
@@ -438,33 +440,33 @@ class Tubia {
                     setTimeout(() => {
                         resolve({
                             path,
-                            status: "error"
+                            status: 'error',
                         });
                     }, 2000);
                 });
             const loadImg = (...paths) => Promise.all(paths.map(checkImage));
             loadImg(this.posterUrl).then(response => {
-                if (response[0].status === "ok") {
+                if (response[0].status === 'ok') {
                     this.posterPosterElement.style.backgroundImage = `url(${
                         response[0].path
                     })`;
                 } else {
-                    this.posterPosterElement.style.display = "none";
+                    this.posterPosterElement.style.display = 'none';
                 }
 
                 // Start transition towards showing the poster image.
-                this.transitionElement.classList.toggle("tubia__active");
+                this.transitionElement.classList.toggle('tubia__active');
 
                 setTimeout(() => {
                     // Hide our spinner loader.
-                    this.hexagonLoader.classList.toggle("tubia__active");
+                    this.hexagonLoader.classList.toggle('tubia__active');
                     // Add our poster image.
                     this.innerContainer.appendChild(this.posterPosterElement);
 
                     // Create the play button.
-                    this.playButton.classList.toggle("tubia__active");
+                    this.playButton.classList.toggle('tubia__active');
                     this.playButton.addEventListener(
-                        "click",
+                        'click',
                         this.startPlyrHandler,
                         false
                     );
@@ -472,7 +474,7 @@ class Tubia {
 
                 setTimeout(() => {
                     // Hide transition.
-                    this.transitionElement.classList.toggle("tubia__active");
+                    this.transitionElement.classList.toggle('tubia__active');
                 }, this.transitionSpeed);
 
                 // setup how to play
@@ -481,20 +483,20 @@ class Tubia {
 
             // Create a display advertisement which will reside on top of the poster image.
             // load the DFP Script.
-            const slotId = "tubia__display-ad";
+            const slotId = 'tubia__display-ad';
             const slotElement = document.getElementById(slotId);
             if (
                 slotElement &&
-                (this.options.domain === "spele.nl" ||
-                    this.options.domain === "www.funnygames.nl" ||
-                    this.options.domain === "www.bgames.com" ||
-                    this.options.domain === "www.plinga.com")
+                (this.options.domain === 'spele.nl' ||
+                    this.options.domain === 'www.funnygames.nl' ||
+                    this.options.domain === 'www.bgames.com' ||
+                    this.options.domain === 'www.plinga.com')
             ) {
                 const slotWidth = slotElement.offsetWidth;
 
                 // Load DFP script.
                 utils.loadScript(
-                    "https://www.googletagservices.com/tag/js/gpt.js"
+                    'https://www.googletagservices.com/tag/js/gpt.js'
                 );
 
                 // Set namespaces for DFP.
@@ -576,7 +578,7 @@ class Tubia {
 
         // Todo: I think Plyr has some error handling div?
         if (this.innerContainer) {
-            this.innerContainer.classList.add("tubia__error");
+            this.innerContainer.classList.add('tubia__error');
         }
 
         /* eslint-disable */
@@ -620,19 +622,19 @@ class Tubia {
 
         // Remove our click listener to avoid double clicks.
         this.playButton.removeEventListener(
-            "click",
+            'click',
             this.startPlyrHandler,
             false
         );
 
         // Hide the play button.
-        this.playButton.classList.toggle("tubia__active");
+        this.playButton.classList.toggle('tubia__active');
 
         setTimeout(() => {
             // Show our spinner loader.
-            this.hexagonLoader.classList.toggle("tubia__active");
+            this.hexagonLoader.classList.toggle('tubia__active');
             // Hide the poster image.
-            this.posterPosterElement.style.display = "none";
+            this.posterPosterElement.style.display = 'none';
             // Remove the button.
             this.playButton.parentNode.removeChild(this.playButton);
             // Load our player.
@@ -640,10 +642,10 @@ class Tubia {
         }, 200); // Wait for the play button to hide.
 
         // Destroy our display ad if it exists.
-        const displayAd = document.getElementById("tubia__display-ad");
+        const displayAd = document.getElementById('tubia__display-ad');
         if (displayAd) {
             if (window.googletag)
-                window.googletag.destroySlots("tubia__display-ad");
+                window.googletag.destroySlots('tubia__display-ad');
             displayAd.parentNode.removeChild(displayAd);
         }
     }
@@ -653,38 +655,39 @@ class Tubia {
      * Load the Plyr library.
      */
     loadPlyr() {
+        const nextCueTime = '';
         this.videoDataPromise
             .then(json => {
                 if (!json) {
                     this.onError(
-                        "loadPlyr json",
-                        "No video data has been found!"
+                        'loadPlyr json',
+                        'No video data has been found!'
                     );
                     return;
                 }
 
                 // Create the HTML5 video element.
-                const videoElement = document.createElement("video");
-                videoElement.setAttribute("controls", "true");
-                videoElement.setAttribute("crossorigin", "true");
-                videoElement.setAttribute("playsinline", "true");
+                const videoElement = document.createElement('video');
+                videoElement.setAttribute('controls', 'true');
+                videoElement.setAttribute('crossorigin', 'true');
+                videoElement.setAttribute('playsinline', 'true');
                 videoElement.poster = this.posterUrl;
-                videoElement.id = "plyr__tubia";
+                videoElement.id = 'plyr__tubia';
 
                 // Todo: If files (transcoded videos) doesn't exist we must load the raw video file.
                 // Todo: However, currently the raw files are in the wrong google project and not served from a CDN, so expensive!
-                const videoSource = document.createElement("source");
+                const videoSource = document.createElement('source');
                 const source =
                     json.files && json.files.length > 0 ?
-                    json.files[json.files.length - 1].linkSecure :
-                    `https://storage.googleapis.com/vooxe_eu/vids/default/${
-                              json.detail[0].mediaURL
-                          }`;
-                const sourceUrl = source.replace(/^http:\/\//i, "https://");
+                        json.files[json.files.length - 1].linkSecure :
+                        `https://storage.googleapis.com/vooxe_eu/vids/default/${
+                            json.detail[0].mediaURL
+                        }`;
+                const sourceUrl = source.replace(/^http:\/\//i, 'https://');
                 const sourceType =
                     json.files && json.files.length > 0 ?
-                    json.files[json.files.length - 1].type :
-                    "video/mp4";
+                        json.files[json.files.length - 1].type :
+                        'video/mp4';
                 videoSource.src = sourceUrl;
                 videoSource.type = sourceType;
 
@@ -694,31 +697,31 @@ class Tubia {
 
                 // Create the video player.
                 const controls = [
-                    "logo",
-                    "play-large",
-                    "title",
-                    "progress",
-                    "current-time",
-                    "duration",
-                    "play",
-                    "mute",
-                    "fullscreen",
-                    "fast-forward"
+                    'logo',
+                    'play-large',
+                    'title',
+                    'progress',
+                    'current-time',
+                    'duration',
+                    'play',
+                    'mute',
+                    'fullscreen',
+                    'fast-forward',
                 ];
 
 
                 // Setup the playlist.
                 const playlist = {
                     active: false,
-                    type: json.playlistType ? json.playlistType : "cue",
-                    data: json.cuepoints
+                    type: json.playlistType ? json.playlistType : 'cue',
+                    data: json.cuepoints,
                 };
 
                 // Setup the morevideos.
                 const morevideos = {
                     active: true,
-                    type: json.playlistType ? json.playlistType : "cue",
-                    data: json.relatedVideos
+                    type: json.playlistType ? json.playlistType : 'cue',
+                    data: json.relatedVideos,
                 };
 
                 // We don't want certain options when our view is too small.
@@ -726,30 +729,30 @@ class Tubia {
                     this.innerContainer.offsetWidth >= 400 &&
                     !/Mobi/.test(navigator.userAgent)
                 ) {
-                    controls.push("volume");
-                    controls.push("settings");
-                    controls.push("captions");
-                    controls.push("pip");
+                    controls.push('volume');
+                    controls.push('settings');
+                    controls.push('captions');
+                    controls.push('pip');
                 }
 
                 // Check if we want a playlist.
                 if (json.cuepoints && json.cuepoints.length > 0) {
-                    controls.push("playlist");
-                    controls.push("morevideos");
+                    controls.push('playlist');
+                    controls.push('morevideos');
                 }
 
                 // Create the Plyr instance.
-                this.player = new Plyr("#plyr__tubia", {
-                    volume: 0.1, //set volume
+                this.player = new Plyr('#plyr__tubia', {
+                    volume: 0.1, // set volume
                     muted: false,
                     autoplay: true,
                     debug: this.options.debug,
-                    iconUrl: this.options.domain === "localhost:8081" ?
-                        "./sprite.svg" :
-                        "https://player.tubia.com/libs/gd/sprite.svg",
+                    iconUrl: this.options.domain === 'localhost:8081' ?
+                        './sprite.svg' :
+                        'https://player.tubia.com/libs/gd/sprite.svg',
                     title: json.detail && json.detail.length > 0 ?
                         json.detail[0].title :
-                        "",
+                        '',
                     logo: json.logoEnabled ? json.logoEnabled : false,
                     showPosterOnEnd: true,
                     hideControls: !/Android/.test(navigator.userAgent), // Hide on Android devices.
@@ -768,55 +771,55 @@ class Tubia {
                         gdprTargeting: this.options.gdprTargeting,
                         tag: json.adsEnabled && !json.addFreeActive ?
                             this.adTag :
-                            "",
+                            '',
                         keys: this.options.keys ?
                             JSON.stringify(this.options.keys) :
                             null,
-                        domain: this.options.domain
+                        domain: this.options.domain,
                     },
                     keyboard: {
-                        global: true
+                        global: true,
                     },
                     tooltips: {
                         seek: true,
-                        controls: false
+                        controls: false,
                     },
                     captions: {
-                        active: true
+                        active: true,
                     },
                     fullscreen: {
                         enabled: json.fullScreenEnabled ?
                             json.fullScreenEnabled :
-                            true
+                            true,
                     },
                     duration: null,
                     seekTime: nextCueTime,
                     playlist,
                     morevideos,
-                    controls
+                    controls,
                 });
 
-                let nextCueTime = "";
+                
                 // Set some listeners.
-                this.player.on("ready", () => {
+                this.player.on('ready', () => {
                     // Start transition towards showing the player.
-                    this.transitionElement.classList.toggle("tubia__active");
+                    this.transitionElement.classList.toggle('tubia__active');
 
                     setTimeout(() => {
                         // Hide our spinner loader.
-                        this.hexagonLoader.classList.toggle("tubia__active");
+                        this.hexagonLoader.classList.toggle('tubia__active');
                     }, this.transitionSpeed / 2);
 
                     setTimeout(() => {
                         // Hide transition.
                         this.transitionElement.classList.toggle(
-                            "tubia__active"
+                            'tubia__active'
                         );
                         // Permanently hide the transition.
-                        this.transitionElement.style.display = "none";
+                        this.transitionElement.style.display = 'none';
                         // Show the player.
                         this.player.elements.container.classList.toggle(
-                            "tubia__active"
+                            'tubia__active'
                         );
                         // Return ready callback for our clients.
                         this.options.onReady(this.player);
@@ -831,12 +834,12 @@ class Tubia {
                         this.options.url
                     )}`;
                 });
-                this.player.on("error", error => {
-                    this.onError("loadPlyr player", error);
+                this.player.on('error', error => {
+                    this.onError('loadPlyr player', error);
                 });
             })
             .catch(error => {
-                this.onError("loadPlyr videoDataPromise", error);
+                this.onError('loadPlyr videoDataPromise', error);
             });
     }
 
@@ -914,7 +917,7 @@ class Tubia {
      * @param {Object} element
      */
     setTheme(element) {
-        if (this.options.colorMain !== "" && this.options.colorAccent !== "") {
+        if (this.options.colorMain !== '' && this.options.colorAccent !== '') {
             const css = `
                 .tubia .tubia__transition:after {
                     background-color: ${this.options.colorMain};
@@ -964,8 +967,8 @@ class Tubia {
             `;
 
             // Now create a new one.
-            const style = document.createElement("style");
-            style.type = "text/css";
+            const style = document.createElement('style');
+            style.type = 'text/css';
             if (style.styleSheet) {
                 style.styleSheet.cssText = css;
             } else {
@@ -992,18 +995,18 @@ class Tubia {
         }&gameId=${this.options.gameId}&category=${
             this.options.category
         }&langCode=${this.options.langCode}`;
-        const videoCounterUrl = "https://api.tubia.com/api/player/find/";
+        const videoCounterUrl = 'https://api.tubia.com/api/player/find/';
         const videoCounterRequest = new Request(videoCounterUrl, {
-            method: "POST",
+            method: 'POST',
             body: videoCounterData, // JSON.stringify(videoCounterData),
             headers: new Headers({
-                "Content-Type": "application/x-www-form-urlencoded" // application/json
-            })
+                'Content-Type': 'application/x-www-form-urlencoded', // application/json
+            }),
         });
         fetch(videoCounterRequest)
             .then(response => {
-                const contentType = response.headers.get("content-type");
-                if (!contentType || !contentType.includes("application/json")) {
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
                     throw new TypeError("Oops, we didn't get JSON!");
                 }
             })

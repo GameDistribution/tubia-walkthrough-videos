@@ -7,7 +7,7 @@
 
 import {
     providers,
-    types
+    types,
 } from './types';
 import defaults from './defaults';
 import support from './support';
@@ -330,18 +330,23 @@ class Plyr {
     get isHTML5() {
         return Boolean(this.provider === providers.html5);
     }
+
     get isEmbed() {
         return Boolean(this.isYouTube || this.isVimeo);
     }
+
     get isYouTube() {
         return Boolean(this.provider === providers.youtube);
     }
+
     get isVimeo() {
         return Boolean(this.provider === providers.vimeo);
     }
+
     get isVideo() {
         return Boolean(this.type === types.video);
     }
+
     get isAudio() {
         return Boolean(this.type === types.audio);
     }
@@ -484,7 +489,7 @@ class Plyr {
      */
     get buffered() {
         const {
-            buffered
+            buffered,
         } = this.media;
 
         // YouTube / Vimeo return a float between 0-1
@@ -544,7 +549,7 @@ class Plyr {
         // Use config if all else fails
         if (!utils.is.number(volume)) {
             ({
-                volume
+                volume,
             } = this.config);
         }
 

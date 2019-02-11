@@ -89,9 +89,7 @@ const defaults = {
     // Speed default and options to display
     speed: {
         selected: 1,
-        options: [
-            1
-        ],
+        options: [1],
     },
 
     // Keyboard shortcut settings
@@ -138,7 +136,7 @@ const defaults = {
         enabled: true,
         active: false,
         type:'cue',
-        data: []
+        data: [],
     },
 
     // Sharing settings
@@ -416,7 +414,7 @@ const defaults = {
         morevideos: {
             enabled: 'plyr--morevideos-enabled',
             active: 'plyr--morevideos-active',
-            button: 'plyr--morevideos-button'
+            button: 'plyr--morevideos-button',
         },
         share: {
             enabled: 'plyr--share-enabled',
