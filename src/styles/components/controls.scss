@@ -25,7 +25,7 @@
         &:after {
             content: '';
             position: absolute;
-            bottom: 0;
+            bottom: -1px;
             width: 100%;
             height: $plyr-control-spacing * 4.5;
             opacity: 1;

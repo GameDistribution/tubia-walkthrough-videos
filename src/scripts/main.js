@@ -9,118 +9,123 @@ import Plyr from './plyr/plyr';
 import utils from './plyr/utils';
 
 /**
- * Tubia
+ * Player
  */
-class Tubia {
+class Player {
     /**
-     * Constructor of Tubia.
-     * @param {Object} options
+     * Constructor of Tubia Player.
      * @return {*}
      */
-    constructor(options) {
-        // If no options are given.
-        if (
-            !options ||
-            (Object.keys(options).length === 0 &&
-                options.constructor === Object)
-        ) {
-            return new Error('No settings have been given to Tubia...');
-        }
-
+    constructor() {
         // Set a version banner within the developer console.
         /* eslint-disable */
         const version = PackageJSON.version;
         const banner = console.log(
-            "%c %c %c Tubia Video Walkthrough | Version: " +
-            version +
-            " %c %c %c",
-            "background: #01567d",
-            "background: #00405c",
-            "color: #fff; background: #002333;",
-            "background: #00405c",
-            "background: #01567d",
-            "background: #006897"
-        );
+            '%c %c %c Tubia Video Walkthrough | Version: ' +
+            version + ' %c %c %c', 'background: #01567d',
+            'background: #00405c', 'color: #fff; background: #002333;',
+            'background: #00405c', 'background: #01567d',
+            'background: #006897');
         console.log.apply(console, banner);
         /* eslint-enable */
 
-        // Set some defaults. We replace them with real given
-        // values further down.
-        const defaults = {
-            debug: false,
-            testing: false,
-            container: 'player',
-            gameId: '0', // Todo: api.tubia.com expects something...
-            publisherId: '',
-            title: '',
-            category: '',
-            langCode: '',
-            colorMain: '',
-            colorAccent: '',
-            url: document.location.origin + document.location.pathname ||
-                'https://gamedistribution.com/',
-            href: document.location.href || 'https://gamedistribution.com/',
-            domain: document.location.host || 'gamedistribution.com',
-            gdprTracking: null,
-            gdprTargeting: null,
-            keys: null, // Tunnl tracking keys.
-            videoInterval: null, // // Todo: testing. Video midroll interval.
-            onStart() {},
-            onFound() {},
-            onNotFound() {},
-            onError() {},
-            onReady() {},
-        };
+        const params = utils.getUrlParams(document.location.href) || {};
 
-        if (options) {
-            this.options = utils.extendDefaults(defaults, options);
-        } else {
-            this.options = defaults;
-        }
+        // Get URL parameter values from i-frame URL.
+        // We also have to deal with legacy parameters.
+        const publisherIdLegacy = params.pubid || params.publisherid;
+        const publisherId = typeof publisherIdLegacy !== 'undefined' && publisherIdLegacy !== '' ? publisherIdLegacy : 'dc63a91fa184423482808bed4d782320';
+        const gameId = typeof params.gameid !== 'undefined' && params.gameid !== '' ? params.gameid : '0';
+        const title = typeof params.title !== 'undefined' && params.title !== '' ? params.title : 'Jewel Burst';
+        const colorMain = typeof params.colormain !== 'undefined' && params.colormain !== '' ? params.colormain : '';
+        const colorAccent = typeof params.coloraccent !== 'undefined' && params.coloraccent !== '' ? params.coloraccent : '';
+        const gdprTracking = params.gdprtracking || null;
+        const gdprTargeting = params.gdprtargeting || null;
+        const langCodeLegacy = params.lang || params.langcode;
+        const langCode = typeof langCodeLegacy !== 'undefined' && langCodeLegacy !== '' ? langCodeLegacy : 'en-us';
+        const debug = (typeof params.debug !== 'undefined' && params.debug !== '') && params.debug === 'true';
+        const testing = typeof params.testing !== 'undefined' || params.testing !== '' && params.debug === 'true';
+        const videoInterval = params.videointerval || null;
+        const category = utils.parseJson(params.category);
+        const keys = utils.parseJson(params.keys);
+
+        // Set the URL's based on given (legacy) parameters.
+        // Receiving a proper pageurl parameter is mandatory. We either get it directly from the iframe URL,
+        // or we get it from /src/entry/tubia.js.
+        const pageUrl = params.pageurl || params.url;
+        // Remove any added query parameters. The default is some legacy thing used by our tubia admin.
+        const url = pageUrl ? pageUrl.split('?')[0] : `http://player.tubia.com/libs/gd/?gameid=${gameId}`;
+        const href = pageUrl || document.location.href;
+        const domain = url.toLowerCase().replace(/^(?:https?:\/\/)?/i, '').split('/')[0];
+
+        // Populate the options object.
+        this.options = {
+            publisherId,
+            gameId,
+            title,
+            url,
+            href,
+            domain,
+            colorMain: colorMain.indexOf('#') >= 0 ? colorMain : `#${colorMain}`,
+            colorAccent: colorAccent.indexOf('#') >= 0 ? colorAccent : `#${colorAccent}`,
+            gdprTracking,
+            gdprTargeting,
+            langCode,
+            debug,
+            testing,
+            videoInterval, // Todo: testing. Video midroll interval.
+            category,
+            keys,
+        };
 
         // Test domains.
         const testDomains = [
             'localhost:8081',
             'player.tubia.com',
+            'test.spele.nl',
         ];
-        this.options.testing =
-            this.options.testing ||
-            testDomains.indexOf(
-                this.options.domain
-                    .replace(/^(?:https?:\/\/)?(?:\/\/)?(?:www\.)?/i, '')
-                    .split('/')[0]
-            ) > -1;
-        this.options.debug = !this.options.debug ?
-            this.options.testing :
-            this.options.debug;
+
+        // Update options.
+        this.options.publisherId = this.options.publisherId.toString().replace(/-/g, '');
+        this.options.testing = this.options.testing || testDomains.indexOf(this.options.domain.replace(/^(?:https?:\/\/)?(?:\/\/)?(?:www\.)?/i, '').split('/')[0]) > -1;
+        this.options.debug = !this.options.debug ? this.options.testing : this.options.debug;
+
+        console.info(this.options);
 
         this.videoId = '';
-        this.innerContainer = null;
         this.adTag = null;
+        this.adTagLegacy = null;
         this.posterUrl = '';
-        this.posterPosterElement = null;
-        this.transitionElement = null;
-        this.playButton = null;
-        this.hexagonLoader = null;
         this.videoSearchPromise = null;
         this.videoDataPromise = null;
         this.transitionSpeed = 2000;
         this.startPlyrHandler = this.startPlyr.bind(this);
         this.player = null;
-        this.publisherId = this.options.publisherId
-            .toString()
-            .replace(/-/g, '');
-        this.nextCuePoint = null;
+
+        // Set the proper origin URL for postMessage requests.
+        this.origin = document.location.origin;
+        if (window.location !== window.parent.location
+            && document.referrer && document.referrer !== '') {
+            // Get the actual origin from the referrer URL.
+            const parts = document.referrer.split('://')[1].split('/');
+            const protocol = document.referrer.split('://')[0];
+            const host = parts[0];
+            // const pathName = parts.slice(1).join('/');
+            this.origin = `${protocol}://${host}`;
+        }
+
+        this.container = document.getElementById('tubia');
+        this.transitionElement = this.container.querySelector('.tubia__transition');
+        this.playButton = null;
+        this.hexagonLoader = null;
+        this.posterPosterElement = null;
 
         // Call Google Analytics and Death Star.
         this.analytics();
 
         // Make sure the DOM is ready!
         // The Tubia instance sometimes gets called from the <head> by clients.
-        if (
-            document.readyState === 'interactive' ||
-            document.readyState === 'complete'
-        ) {
+        if (document.readyState === 'interactive' || document.readyState === 'complete') {
             this.start();
         } else {
             document.addEventListener('DOMContentLoaded', () => {
@@ -134,28 +139,26 @@ class Tubia {
      * Initialise the Tubia application. Fetch the data.
      */
     start() {
-        // first imp
-        // Invoke callback.
-        this.options.onStart();
+        // Send event to our publisher.
+        try {
+            parent.postMessage({name: 'onStart'}, this.origin);
+        } catch (postMessageError) {
+            console.error(postMessageError);
+        }
 
         // Search for a matching video within our Tubia database and return the id.
         // Todo: We can't get the poster image without doing these requests for data. Kind of sucks.
         this.videoSearchPromise = new Promise((resolve, reject) => {
             const gameId = this.options.gameId.toString().replace(/-/g, '');
             const title = encodeURIComponent(this.options.title);
-            // const pageId = window.calcMD5(this.options.url);
-            const pageId = '5f915b29ae2a8d678ea1cbf812abedae';
-            const videoFindUrl = `https://api.tubia.com/api/player/findv3/?pageId=${pageId}&href=${encodeURIComponent(
-                this.options.href
-            )}&gameId=${gameId}&title=${title}&domain=${encodeURIComponent(
-                this.options.domain
-            )}`;
+            const pageId = window.calcMD5(this.options.url);
+            const videoFindUrl = `https://api.tubia.com/api/player/findv3/?pageId=${pageId}&href=${encodeURIComponent(this.options.href)}&gameId=${gameId}&title=${title}&domain=${encodeURIComponent(this.options.domain)}`;
             const videoSearchRequest = new Request(videoFindUrl, {
                 method: 'GET',
             });
             fetch(videoSearchRequest)
-                .then(response => response.text())
-                .then(text => (text.length ? JSON.parse(text) : {}))
+                .then((response) => response.text())
+                .then((text) => text.length ? JSON.parse(text) : {})
                 .then(data => {
                     // Set the videoId.
                     // id.gameId is actually the videoId...
@@ -165,6 +168,11 @@ class Tubia {
                         this.videoId = '0';
                     }
 
+                    // Set the category.
+                    if (data && data.category && data.category !== '' && this.options.category === '') {
+                        this.options.category = data.category;
+                    }
+
                     resolve();
                 })
                 .catch(error => reject(error));
@@ -172,198 +180,88 @@ class Tubia {
 
         // Get the video data using the id returned from the videoSearchPromise.
         this.videoDataPromise = new Promise((resolve, reject) => {
-            this.videoSearchPromise
-                .then(() => {
-                    // Yes argument gameid is expecting the videoId...
-                    const videoDataUrl = `https://api.tubia.com/api/player/publish/?gameid=${
-                        this.videoId
-                    }&publisherid=${
-                        this.publisherId
-                    }&domain=${encodeURIComponent(this.options.domain)}`;
+            this.videoSearchPromise.then(() => {
+                // Yes argument gameid is expecting the videoId...
+                const videoDataUrl = `https://api.tubia.com/api/player/publish/?gameid=${this.videoId}&publisherid=${this.options.publisherId}&domain=${encodeURIComponent(this.options.domain)}`;
+                const videoDataRequest = new Request(videoDataUrl, {method: 'GET'});
 
+                // Record Tubia "Video Loaded" event in Tunnl.
+                (new Image()).src = `https://ana.tunnl.com/event?tub_id=${this.videoId}&eventtype=0&page_url=${encodeURIComponent(this.options.url)}`;
 
-                    // delete later and change var to const
-                   
+                // Set the ad tag using the given id.
+                this.adTag = `https://pub.tunnl.com/opphb?page_url=${encodeURIComponent(this.options.url)}&tub_id=${this.videoId}&correlator=${Date.now()}`;
 
-                    const videoDataRequest = new Request(videoDataUrl, {
-                        method: 'GET',
-                    });
+                // We also have a legacy ad tag, which returns VAST XML, instead of Tunnl JSON.
+                this.adTagLegacy = `https://pub.tunnl.com/opp?page_url=${encodeURIComponent(this.options.url)}&tub_id=${this.videoId}&correlator=${Date.now()}`;
 
+                fetch(videoDataRequest)
+                    .then((response) => response.text())
+                    .then((text) => text.length ? JSON.parse(text) : {})
+                    .then(data => {
+                        if (!data) {
+                            throw new Error('No video has been found!');
+                        }
 
-
-                    // Record Tubia "Video Loaded" event in Tunnl.
-                    new Image().src = `https://ana.tunnl.com/event?tub_id=${
-                        this.videoId
-                    }&eventtype=0&page_url=${encodeURIComponent(
-                        this.options.url
-                    )}`;
-
-                    // Set the ad tag using the given id.
-                    this.adTag = `https://pub.tunnl.com/opp?page_url=${encodeURIComponent(
-                        this.options.url
-                    )}&player_width=640&player_height=480&tub_id=${
-                        this.videoId
-                    }&correlator=${Date.now()}`;
-                    // this.adTag = `https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpremidpostpod&cmsid=496&vid=short_onecue&correlator=${Date.now()}`;
-                    // this.adTag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/ad_rule_samples&ciu_szs=300x250&ad_rule=1&impl=s&gdfp_req=1&env=vp&output=vmap&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ar%3Dpreonly&cmsid=496&vid=short_onecue&correlator=';
-
-                    fetch(videoDataRequest)
-                        .then(response => response.text())
-                        .then(text => (text.length ? JSON.parse(text) : {}))
-                        .then(data => {
-                            if (!data) {
-                                throw new Error('No video has been found!');
+                        // Invoke callback to end-user containing our video data.
+                        try {
+                            if (parent === top) {
+                                parent.postMessage({name: 'onFound', payload: data}, this.origin);
                             }
+                        } catch (postMessageError) {
+                            console.error(postMessageError);
+                        }
 
-                            // Invoke callback to end-user containing our video data.
-                            this.options.onFound(data);
+                        // Increment the matchmaking counter so we can get a priority list for our editor.
+                        // We know if the video is missing when the backFillVideoId and videoId match.
+                        // Yes its the most dumbass thing ever.
+                        if (data.backFillVideoId === this.videoId) {
+                            this.reportToMatchmaking();
+                        }
 
-                            // Increment the matchmaking counter so we can get a priority list for our editor.
-                            // We know if the video is missing when the backFillVideoId and videoId match.
-                            // Yes its the most dumbass thing ever.
-                            if (data.backFillVideoId === this.videoId) {
-                                this.reportToMatchmaking();
-                            }
-
-                            // Now check if we need to do an additional request in case
-                            // we do not have data to populate our "level select" feature.
-                            // If so then we fetch related games.
-                            if (data.cuepoints && data.cuepoints.length > 0) {
-                                resolve(data);
-                            } else {
-                                // Todo: Title property within related games JSON is always empty!!
-                                const relatedVideosUrl = `https://api.tubia.com/api/RelatedVideo/?gameMd5=${
-                                    this.options.gameId
-                                }&publisherId=${
-                                    this.publisherId
-                                }&domain=${encodeURIComponent(
-                                    this.options.domain
-                                )}&skip=0&take=10&orderBy=visit&sortDirection=desc&langCode=${
-                                    this.options.langCode
-                                }`;
-                                const relatedVideosRequest = new Request(
-                                    relatedVideosUrl, {
-                                        method: 'GET',
+                        // Now check if we need to do an additional request in case
+                        // we do not have data to populate our "level select" feature.
+                        // If so then we fetch related games.
+                        if (data.cuepoints && data.cuepoints.length > 0) {
+                            resolve(data);
+                        } else {
+                            // Todo: Title property within related games JSON is always empty!!
+                            const relatedVideosUrl = `https://api.tubia.com/api/RelatedVideo/?gameMd5=${this.options.gameId}&publisherId=${this.options.publisherId}&domain=${encodeURIComponent(this.options.domain)}&skip=0&take=10&orderBy=visit&sortDirection=desc&langCode=${this.options.langCode}`;
+                            const relatedVideosRequest = new Request(relatedVideosUrl, {
+                                method: 'GET',
+                            });
+                            fetch(relatedVideosRequest)
+                                .then((response) => response.text())
+                                .then((text) => text.length ? JSON.parse(text) : {})
+                                .then((related) => {
+                                    data.playlistType = 'related';
+                                    data.cuepoints = related;
+                                    resolve(data);
+                                }).catch((error) => {
+                                    /* eslint-disable */
+                                    if (typeof window['ga'] !== 'undefined') {
+                                        window['ga']('tubia.send', {
+                                            hitType: 'event',
+                                            eventCategory: 'ERROR',
+                                            eventAction: this.options.domain,
+                                            eventLabel: `start relatedVideosRequest | ${error}`,
+                                        });
                                     }
-                                );
-                                fetch(relatedVideosRequest)
-                                    .then(response => response.text())
-                                    .then(text =>
-                                        text.length ? JSON.parse(text) : {}
-                                    )
-                                    .then(related => {
-                                        data.playlistType = 'related';
-                                        data.cuepoints = related;
-                                        resolve(data);
-                                    })
-                                    .catch(error => {
-                                        /* eslint-disable */
-                                        if (
-                                            typeof window["ga"] !== "undefined"
-                                        ) {
-                                            window["ga"]("tubia.send", {
-                                                hitType: "event",
-                                                eventCategory: "ERROR",
-                                                eventAction: this.options
-                                                    .domain,
-                                                eventLabel: `start relatedVideosRequest | ${error}`
-                                            });
-                                        }
-                                        /* eslint-enable */
-                                    });
-                            }
-                        })
-                        .catch(error => reject(error));
-                })
-                .catch(error => reject(error));
+                                    /* eslint-enable */
+                                });
+                        }
+                    }).catch(error => reject(error));
+            }).catch(error => reject(error));
         });
 
         this.videoDataPromise
-            .then(() => this.loadExternals())
+            .then(() => {
+                // And add theme styles.
+                this.setTheme();
+
+                // Create the markup now that we have the stylesheets and main container ready.
+                this.createMarkup();
+            })
             .catch(error => this.notFound('start videoDataPromise', error));
-    }
-
-    /**
-     * loadExternals
-     * Load stysheets and fonts and any other external files
-     */
-    loadExternals() {
-        // Todo: Temporary tracking of wrong domains at publishers.
-        /* eslint-disable */
-        // if (typeof window['ga'] !== 'undefined' &&
-        //     document.currentScript) {
-        //     window['ga']('tubia.send', {
-        //         hitType: 'event',
-        //         eventCategory: 'LEGACY_URL_TRACKING',
-        //         eventAction: document.currentScript.src,
-        //         eventLabel: this.options.domain,
-        //     });
-        // }
-        /* eslint-enable */
-
-        const container = document.getElementById(this.options.container);
-        if (container) {
-            // Load our styles and fonts.
-            utils
-                .loadStyle(
-                    'https://fonts.googleapis.com/css?family=Khand:400,700'
-                )
-                .catch(() => {
-                    /* eslint-disable */
-                    if (typeof window["ga"] !== "undefined") {
-                        window["ga"]("tubia.send", {
-                            hitType: "event",
-                            eventCategory: "ERROR",
-                            eventAction: this.options.domain,
-                            eventLabel: "Something went wrong loading Google fonts."
-                        });
-                    }
-                    /* eslint-enable */
-                });
-
-
-            utils
-                .loadStyle(
-                    this.options.domain === 'localhost:8081' ?
-                        './gd.css' :
-                        'https://player.tubia.com/libs/gd/gd.css'
-                )
-                .then(() => {
-                    // Create an inner container; within we load our player and do other stuff.
-                    // We make sure to destroy any inner content if there are already things inside.
-                    if (container.firstChild) {
-                        container.innerHTML = '';
-                    }
-
-                    // Now create the inner container.
-                    this.innerContainer = document.createElement('div');
-                    this.innerContainer.className = 'tubia';
-                    container.appendChild(this.innerContainer);
-
-                    // And add theme styles.
-                    this.setTheme(container);
-
-                    // Create the markup now that we have the stylesheets and main container ready.
-                    this.createMarkup();
-                })
-                .catch(error => {
-                    // If something went wrong with loading the stylesheet we get an Event.
-                    // Otherwise its just a regular error object.
-                    if (error.target) {
-                        this.onError(
-                            'init loadStyle',
-                            'Something went wrong when loading the Tubia stylesheet.'
-                        );
-                    } else {
-                        this.onError('init loadStyle', error);
-                    }
-                });
-        } else {
-            this.onError(
-                'init container',
-                'There is no container element for Tubia set.'
-            );
-        }
     }
 
     /**
@@ -390,22 +288,16 @@ class Tubia {
                     <path class="tubia__hexagon-line-animation" d="M-1665.43,90.94V35.83a15.09,15.09,0,0,1,6.78-12.59l48.22-31.83a15.09,15.09,0,0,1,16-.38L-1547,19.13a15.09,15.09,0,0,1,7.39,13V90.94a15.09,15.09,0,0,1-7.21,12.87l-47.8,29.24a15.09,15.09,0,0,1-15.75,0l-47.8-29.24A15.09,15.09,0,0,1-1665.43,90.94Z" transform="translate(1667.43 13.09)"/>
                 </svg>
             </div>
-            <div id="tubia__display-ad" class="tubia__display-ad"></div>
+            <div id="tubia__display-ad" class="tubia__display-ad"><iframe></iframe></div>
         `;
 
-        this.innerContainer.insertAdjacentHTML('beforeend', html);
-        this.transitionElement = this.innerContainer.querySelector(
-            '.tubia__transition'
-        );
-        this.playButton = this.innerContainer.querySelector(
-            '.tubia__play-button'
-        );
-        this.hexagonLoader = this.innerContainer.querySelector(
-            '.tubia__hexagon-loader'
-        );
+        this.container.insertAdjacentHTML('beforeend', html);
+        this.transitionElement = this.container.querySelector('.tubia__transition');
+        this.playButton = this.container.querySelector('.tubia__play-button');
+        this.hexagonLoader = this.container.querySelector('.tubia__hexagon-loader');
 
         // Show the container.
-        this.innerContainer.classList.toggle('tubia__active');
+        this.container.classList.toggle('tubia__active');
 
         // Show a spinner loader, as this could take some time.
         this.hexagonLoader.classList.toggle('tubia__active');
@@ -413,11 +305,8 @@ class Tubia {
         // We start with showing a poster image with a play button.
         // By not loading the actual player we save some requests and overall page load.
         // A user can click the play button to start loading the video player.
-        this.videoDataPromise.then(json => {
-            const poster =
-                json.pictures && json.pictures.length > 0 ?
-                    json.pictures[json.pictures.length - 1].link :
-                    '';
+        this.videoDataPromise.then((json) => {
+            const poster = (json.pictures && json.pictures.length > 0) ? json.pictures[json.pictures.length - 1].link : '';
             this.posterUrl = poster.replace(/^http:\/\//i, 'https://');
 
             // Check if the poster image exists.
@@ -426,116 +315,164 @@ class Tubia {
             const checkImage = path =>
                 new Promise(resolve => {
                     const img = new Image();
-                    img.onload = () => resolve({
-                        path,
-                        status: 'ok',
-                    });
-                    img.onerror = () => resolve({
-                        path,
-                        status: 'error',
-                    });
+                    img.onload = () => resolve({path, status: 'ok'});
+                    img.onerror = () => resolve({path, status: 'error'});
                     img.src = path;
 
                     // Always resolve.
                     setTimeout(() => {
-                        resolve({
-                            path,
-                            status: 'error',
-                        });
+                        resolve({path, status: 'error'});
                     }, 2000);
                 });
             const loadImg = (...paths) => Promise.all(paths.map(checkImage));
-            loadImg(this.posterUrl).then(response => {
+            loadImg(this.posterUrl).then((response) => {
                 if (response[0].status === 'ok') {
-                    this.posterPosterElement.style.backgroundImage = `url(${
-                        response[0].path
-                    })`;
+                    this.posterPosterElement.style.backgroundImage = `url(${response[0].path})`;
                 } else {
                     this.posterPosterElement.style.display = 'none';
                 }
 
-                // Start transition towards showing the poster image.
-                this.transitionElement.classList.toggle('tubia__active');
+                // Hide our spinner loader.
+                this.hexagonLoader.classList.toggle('tubia__active');
 
-                setTimeout(() => {
-                    // Hide our spinner loader.
-                    this.hexagonLoader.classList.toggle('tubia__active');
-                    // Add our poster image.
-                    this.innerContainer.appendChild(this.posterPosterElement);
+                // Add our poster image.
+                this.container.appendChild(this.posterPosterElement);
 
-                    // Create the play button.
-                    this.playButton.classList.toggle('tubia__active');
-                    this.playButton.addEventListener(
-                        'click',
-                        this.startPlyrHandler,
-                        false
-                    );
-                }, this.transitionSpeed / 2);
-
-                setTimeout(() => {
-                    // Hide transition.
-                    this.transitionElement.classList.toggle('tubia__active');
-                }, this.transitionSpeed);
-
-                // setup how to play
-                // this.howToPlay = new HowToPlay(this);
+                // Create the play button.
+                this.playButton.classList.toggle('tubia__active');
+                this.playButton.addEventListener('click', this.startPlyrHandler, false);
             });
 
             // Create a display advertisement which will reside on top of the poster image.
             // load the DFP Script.
             const slotId = 'tubia__display-ad';
             const slotElement = document.getElementById(slotId);
-            if (
-                slotElement &&
-                (this.options.domain === 'spele.nl' ||
-                    this.options.domain === 'www.funnygames.nl' ||
-                    this.options.domain === 'www.bgames.com' ||
-                    this.options.domain === 'www.plinga.com')
-            ) {
-                const slotWidth = slotElement.offsetWidth;
+            const isIE11 = !!window.MSInputMethodContext && !!document.documentMode;
+            const displayTestDomains = [
+                'hellokids.com',
+                'fr.hellokids.com',
+                'es.hellokids.com',
+                'de.hellokids.com',
+                'pt.hellokids.com',
+                'bgames.com',
+                'keygames.com',
+                'spele.nl',
+                'spele.be',
+                'oyungemisi.com',
+                'spielspiele.de',
+                'spiels.at',
+                'misjuegos.com',
+                'waznygry.pl',
+                'clavejuegos.com',
+                'jouerjouer.com',
+                'spiels.ch',
+                'cadajuego.es',
+                'nyckelspel.se',
+                'starbie.co.uk',
+                'hryhry.net',
+                'jogojogar.com',
+                'minigioco.it',
+                '1001igry.ru',
+                'pelaaleikkia.com',
+                'cadajogo.com.br',
+                'cadajogo.com',
+                'funny-games.co.uk',
+                'funnygames.gr',
+                'funnygames.nl',
+                'funnygames.pl',
+                'funnygames.be',
+                'funnygames.ro',
+                'funnygames.com.tr',
+                'funnygames.us',
+                'funnygames.com.br',
+                'funnygames.lt',
+                'funnygames.se',
+                'funnygames.hu',
+                'funnygames.it',
+                'funnygames.fr',
+                'funnygames.in',
+                'funnygames.ch',
+                'funnygames.biz',
+                'funnygames.es',
+                'funnygames.at',
+                'funnygames.com.co',
+                'funnygames.fi',
+                'funnygames.jp',
+                'funnygames.eu',
+                'funnygames.ru',
+                'funnygames.org',
+                'funnygames.dk',
+                'funnygames.vn',
+                'funnygames.com.mx',
+                'funnygames.pt',
+                'funnygames.cn',
+                'funnygames.no',
+                'funnygames.asia',
+                'funnygames.pk',
+                'funnygames.co.id',
+                'funnygames.ph',
+                'funnygames.com.ng',
+                'funnygames.ie',
+                'funnygames.kr',
+                'funnygames.cz',
+                'funnygames.ir',
+                'spelletjesoverzicht.nl',
+                'games.co.za',
+                'youdagames.com',
+                'vex3.games',
+                'fbrq.io',
+                'gamesmiracle.com',
+                'mahjong.nl',
+                'barbiegame.com.ua',
+                'frivjogosonline.com.br',
+                '365escape.com',
+                'kizi.com',
+                'yepi.com',
+            ];
+            if (slotElement
+                && !isIE11
+                && displayTestDomains.indexOf(this.options.domain.replace(/^(?:https?:\/\/)?(?:\/\/)?(?:www\.)?/i, '').split('/')[0]) > -1) {
+                // Set adslot dimensions.
+                if (this.container.offsetWidth >= 970) {
+                    slotElement.style.width = '970px';
+                    slotElement.style.height = '90px';
+                } else if (this.container.offsetWidth >= 728) {
+                    slotElement.style.width = '728px';
+                    slotElement.style.height = '90px';
+                } else if (this.container.offsetWidth >= 468) {
+                    slotElement.style.width = '468px';
+                    slotElement.style.height = '60px';
+                } else {
+                    slotElement.style.width = '100%';
+                    slotElement.style.height = '60px';
+                }
 
-                // Load DFP script.
-                utils.loadScript(
-                    'https://www.googletagservices.com/tag/js/gpt.js'
-                );
+                // Show the slot.
+                // slotElement.style.display = 'block';
 
-                // Set namespaces for DFP.
-                window.googletag = window.googletag || {};
-                window.googletag.cmd = window.googletag.cmd || [];
+                // Set header bidding name space.
+                window.idhbtubia = window.idhbtubia || {};
+                window.idhbtubia.que = window.idhbtubia.que || [];
 
-                // Create the ad slot.
-                window.googletag.cmd.push(() => {
-                    /* eslint-disable */
-                    let mapping = null;
-                    if (slotWidth >= 970) {
-                        mapping = window.googletag
-                            .sizeMapping()
-                            .addSize([970, 90], [
-                                [970, 90],
-                                [728, 90]
-                            ])
-                            .addSize([728, 90], [728, 90])
-                            .build();
-                    } else if (slotWidth >= 728) {
-                        mapping = window.googletag
-                            .sizeMapping()
-                            .addSize([728, 90], [728, 90])
-                            .build();
-                    }
+                // Show some header bidding logging.
+                if (this.options.debug) {
+                    window.idhbtubia.getConfig();
+                    window.idhbtubia.debug(true);
+                }
 
-                    // window.googletag.defineSlot('1015413/TNL_NS-18062500055/TNL_T-18082776963_1', [728, 90], slotId)
-                    window.googletag
-                        .defineSlot(
-                            "/21731147099/Tubia_prestart_leaderboard",
-                            [728, 90],
-                            slotId
-                        )
-                        .defineSizeMapping(mapping)
-                        .setCollapseEmptyDiv(true, true)
-                        .addService(window.googletag.pubads());
-                    /* eslint-enable */
-                    window.googletag.enableServices();
-                    window.googletag.display(slotId);
+                // Load the ad.
+                window.idhbtubia.que.push(() => {
+                    window.idhbtubia.setAdserverTargeting({
+                        tnl_ad_pos: 'tubia_leaderboard',
+                    });
+                    window.idhbtubia.requestAds({
+                        slotIds: [slotId],
+                        callback: (response) => {
+                            if (this.options.debug) {
+                                console.info('window.idhbtubia.requestAds callback returned:', response);
+                            }
+                        },
+                    });
                 });
             }
         });
@@ -548,18 +485,22 @@ class Tubia {
      * @param {String} message
      */
     notFound(origin, message) {
-        this.options.onNotFound(message);
+        try {
+            parent.postMessage({name: 'onNotFound', payload: 'No video has been found!'}, this.origin);
+        } catch (postMessageError) {
+            console.error(postMessageError);
+        }
 
         // Report missing video.
         this.reportToMatchmaking();
 
         /* eslint-disable */
-        if (typeof window["ga"] !== "undefined") {
-            window["ga"]("tubia.send", {
-                hitType: "event",
-                eventCategory: "VIDEO_NOT_FOUND",
+        if (typeof window['ga'] !== 'undefined') {
+            window['ga']('tubia.send', {
+                hitType: 'event',
+                eventCategory: 'VIDEO_NOT_FOUND',
                 eventAction: this.options.url,
-                eventLabel: `${origin} | ${message}`
+                eventLabel: `${origin} | ${message}`,
             });
         }
         /* eslint-enable */
@@ -574,20 +515,24 @@ class Tubia {
      * @param {String} error
      */
     onError(origin, error) {
-        this.options.onError(error);
+        try {
+            parent.postMessage({name: 'onError', payload: error}, this.origin);
+        } catch (postMessageError) {
+            console.error(postMessageError);
+        }
 
         // Todo: I think Plyr has some error handling div?
-        if (this.innerContainer) {
-            this.innerContainer.classList.add('tubia__error');
+        if (this.container) {
+            this.container.classList.add('tubia__error');
         }
 
         /* eslint-disable */
-        if (typeof window["ga"] !== "undefined") {
-            window["ga"]("tubia.send", {
-                hitType: "event",
-                eventCategory: "ERROR",
+        if (typeof window['ga'] !== 'undefined') {
+            window['ga']('tubia.send', {
+                hitType: 'event',
+                eventCategory: 'ERROR',
                 eventAction: this.options.domain,
-                eventLabel: `${origin} | ${error}`
+                eventLabel: `${origin} | ${error}`,
             });
         }
         /* eslint-enable */
@@ -603,9 +548,7 @@ class Tubia {
      */
     userErrorReporting(userErrorMessage) {
         // Send error report to Tubia.
-        new Image().src = `https://api.tubia.com/api/playernotification?reasonid=${userErrorMessage}&url=${encodeURIComponent(
-            this.options.url
-        )}&videoid=${this.videoId}`;
+        (new Image()).src = `https://api.tubia.com/api/playernotification?reasonid=${userErrorMessage}&url=${encodeURIComponent(this.options.url)}&videoid=${this.videoId}`;
     }
 
     /**
@@ -613,19 +556,8 @@ class Tubia {
      * Method for animating into loading the Plyr player.
      */
     startPlyr() {
-        if (!this.playButton) {
-            return;
-        }
-
-
-
-
         // Remove our click listener to avoid double clicks.
-        this.playButton.removeEventListener(
-            'click',
-            this.startPlyrHandler,
-            false
-        );
+        this.playButton.removeEventListener('click', this.startPlyrHandler, false);
 
         // Hide the play button.
         this.playButton.classList.toggle('tubia__active');
@@ -644,8 +576,9 @@ class Tubia {
         // Destroy our display ad if it exists.
         const displayAd = document.getElementById('tubia__display-ad');
         if (displayAd) {
-            if (window.googletag)
+            if (window.googletag) {
                 window.googletag.destroySlots('tubia__display-ad');
+            }
             displayAd.parentNode.removeChild(displayAd);
         }
     }
@@ -655,192 +588,140 @@ class Tubia {
      * Load the Plyr library.
      */
     loadPlyr() {
-        const nextCueTime = '';
-        this.videoDataPromise
-            .then(json => {
-                if (!json) {
-                    this.onError(
-                        'loadPlyr json',
-                        'No video data has been found!'
-                    );
-                    return;
-                }
+        this.videoDataPromise.then((json) => {
+            if (!json) {
+                this.onError('loadPlyr json', 'No video data has been found!');
+                return;
+            }
 
-                // Create the HTML5 video element.
-                const videoElement = document.createElement('video');
-                videoElement.setAttribute('controls', 'true');
-                videoElement.setAttribute('crossorigin', 'true');
-                videoElement.setAttribute('playsinline', 'true');
-                videoElement.poster = this.posterUrl;
-                videoElement.id = 'plyr__tubia';
+            // Create the HTML5 video element.
+            const videoElement = document.createElement('video');
+            videoElement.setAttribute('controls', 'true');
+            videoElement.setAttribute('crossorigin', 'true');
+            videoElement.setAttribute('playsinline', 'true');
+            videoElement.poster = this.posterUrl;
+            videoElement.id = 'plyr__tubia';
 
-                // Todo: If files (transcoded videos) doesn't exist we must load the raw video file.
-                // Todo: However, currently the raw files are in the wrong google project and not served from a CDN, so expensive!
-                const videoSource = document.createElement('source');
-                const source =
-                    json.files && json.files.length > 0 ?
-                        json.files[json.files.length - 1].linkSecure :
-                        `https://storage.googleapis.com/vooxe_eu/vids/default/${
-                            json.detail[0].mediaURL
-                        }`;
-                const sourceUrl = source.replace(/^http:\/\//i, 'https://');
-                const sourceType =
-                    json.files && json.files.length > 0 ?
-                        json.files[json.files.length - 1].type :
-                        'video/mp4';
-                videoSource.src = sourceUrl;
-                videoSource.type = sourceType;
+            // Todo: If files (transcoded videos) doesn't exist we must load the raw video file.
+            // Todo: However, currently the raw files are in the wrong google project and not served from a CDN, so expensive!
+            const videoSource = document.createElement('source');
+            const source = (json.files && json.files.length > 0) ? json.files[json.files.length - 1].linkSecure : `https://storage.googleapis.com/vooxe_eu/vids/default/${json.detail[0].mediaURL}`;
+            const sourceUrl = source.replace(/^http:\/\//i, 'https://');
+            const sourceType = (json.files && json.files.length > 0) ? json.files[json.files.length - 1].type : 'video/mp4';
+            videoSource.src = sourceUrl;
+            videoSource.type = sourceType;
 
-                videoElement.appendChild(videoSource);
+            videoElement.appendChild(videoSource);
+            this.container.appendChild(videoElement);
 
-                this.innerContainer.appendChild(videoElement);
+            // Create the video player.
+            const controls = [
+                'logo',
+                'play-large',
+                'title',
+                'progress',
+                'current-time',
+                'duration',
+                'play',
+                'mute',
+                'fullscreen',
+            ];
 
-                // Create the video player.
-                const controls = [
-                    'logo',
-                    'play-large',
-                    'title',
-                    'progress',
-                    'current-time',
-                    'duration',
-                    'play',
-                    'mute',
-                    'fullscreen',
-                    'fast-forward',
-                ];
+            // Setup the playlist.
+            const playlist = {
+                active: false,
+                type: (json.playlistType) ? json.playlistType : 'cue',
+                data: json.cuepoints,
+            };
 
+            // We don't want certain options when our view is too small.
+            if ((this.container.offsetWidth >= 400)
+                && (!/Mobi/.test(navigator.userAgent))) {
+                controls.push('volume');
+                controls.push('settings');
+                // controls.push('captions');
+                controls.push('pip');
+            }
 
-                // Setup the playlist.
-                const playlist = {
+            // Check if we want a playlist.
+            if (json.cuepoints && json.cuepoints.length > 0) {
+                controls.push('playlist');
+            }
+
+            // Create the Plyr instance.
+            this.player = new Plyr('#plyr__tubia', {
+                debug: this.options.debug,
+                iconUrl: './libs/gd/sprite.svg',
+                title: (json.detail && json.detail.length > 0) ? json.detail[0].title : '',
+                logo: (json.logoEnabled) ? json.logoEnabled : false,
+                showPosterOnEnd: true,
+                hideControls: (!/Android/.test(navigator.userAgent)), // Hide on Android devices.
+                ads: {
+                    enabled: (json.adsEnabled) ? json.adsEnabled : true,
+                    headerBidding: true,
+                    prerollEnabled: (json.preRollEnabled) ? json.preRollEnabled : true,
+                    midrollEnabled: (json.subBannerEnabled) ? json.subBannerEnabled : true,
+                    // Todo: Test with 1 minute something video midroll interval.
+                    // videoInterval: 60, // (json.preRollSecond) ? json.preRollSecond : 300,
+                    // overlayInterval: (json.subBannerSecond) ? json.subBannerSecond : 15,
+                    gdprTargeting: this.options.gdprTargeting,
+                    tag: (json.adsEnabled && !json.addFreeActive) || this.options.debug ? this.adTag : '',
+                    tagLegacy: (json.adsEnabled && !json.addFreeActive) || this.options.debug ? this.adTagLegacy : '',
+                    keys: this.options.keys ? JSON.stringify(this.options.keys) : null,
+                    domain: this.options.domain,
+                    category: this.options.category,
+                },
+                keyboard: {
+                    global: true,
+                },
+                tooltips: {
+                    seek: true,
+                    controls: false,
+                },
+                captions: {
                     active: false,
-                    type: json.playlistType ? json.playlistType : 'cue',
-                    data: json.cuepoints,
-                };
-
-                // Setup the morevideos.
-                const morevideos = {
-                    active: true,
-                    type: json.playlistType ? json.playlistType : 'cue',
-                    data: json.relatedVideos,
-                };
-
-                // We don't want certain options when our view is too small.
-                if (
-                    this.innerContainer.offsetWidth >= 400 &&
-                    !/Mobi/.test(navigator.userAgent)
-                ) {
-                    controls.push('volume');
-                    controls.push('settings');
-                    controls.push('captions');
-                    controls.push('pip');
-                }
-
-                // Check if we want a playlist.
-                if (json.cuepoints && json.cuepoints.length > 0) {
-                    controls.push('playlist');
-                    controls.push('morevideos');
-                }
-
-                // Create the Plyr instance.
-                this.player = new Plyr('#plyr__tubia', {
-                    volume: 0.1, // set volume
-                    muted: false,
-                    autoplay: true,
-                    debug: this.options.debug,
-                    iconUrl: this.options.domain === 'localhost:8081' ?
-                        './sprite.svg' :
-                        'https://player.tubia.com/libs/gd/sprite.svg',
-                    title: json.detail && json.detail.length > 0 ?
-                        json.detail[0].title :
-                        '',
-                    logo: json.logoEnabled ? json.logoEnabled : false,
-                    showPosterOnEnd: true,
-                    hideControls: !/Android/.test(navigator.userAgent), // Hide on Android devices.
-                    ads: {
-                        enabled: json.adsEnabled ? json.adsEnabled : true,
-                        headerBidding: true,
-                        prerollEnabled: json.preRollEnabled ?
-                            json.preRollEnabled :
-                            true,
-                        midrollEnabled: json.subBannerEnabled ?
-                            json.subBannerEnabled :
-                            true,
-                        // Todo: Test with 1 minute something video midroll interval.
-                        // videoInterval: 60, // (json.preRollSecond) ? json.preRollSecond : 300,
-                        // overlayInterval: (json.subBannerSecond) ? json.subBannerSecond : 15,
-                        gdprTargeting: this.options.gdprTargeting,
-                        tag: json.adsEnabled && !json.addFreeActive ?
-                            this.adTag :
-                            '',
-                        keys: this.options.keys ?
-                            JSON.stringify(this.options.keys) :
-                            null,
-                        domain: this.options.domain,
-                    },
-                    keyboard: {
-                        global: true,
-                    },
-                    tooltips: {
-                        seek: true,
-                        controls: false,
-                    },
-                    captions: {
-                        active: true,
-                    },
-                    fullscreen: {
-                        enabled: json.fullScreenEnabled ?
-                            json.fullScreenEnabled :
-                            true,
-                    },
-                    duration: null,
-                    seekTime: nextCueTime,
-                    playlist,
-                    morevideos,
-                    controls,
-                });
-
-                
-                // Set some listeners.
-                this.player.on('ready', () => {
-                    // Start transition towards showing the player.
-                    this.transitionElement.classList.toggle('tubia__active');
-
-                    setTimeout(() => {
-                        // Hide our spinner loader.
-                        this.hexagonLoader.classList.toggle('tubia__active');
-                    }, this.transitionSpeed / 2);
-
-                    setTimeout(() => {
-                        // Hide transition.
-                        this.transitionElement.classList.toggle(
-                            'tubia__active'
-                        );
-                        // Permanently hide the transition.
-                        this.transitionElement.style.display = 'none';
-                        // Show the player.
-                        this.player.elements.container.classList.toggle(
-                            'tubia__active'
-                        );
-                        // Return ready callback for our clients.
-                        this.options.onReady(this.player);
-                        // Start playing.
-                        // this.player.play();
-                    }, this.transitionSpeed / 1.5);
-
-                    // Record Tubia "Video Play" event in Tunnl.
-                    new Image().src = `https://ana.tunnl.com/event?tub_id=${
-                        this.videoId
-                    }&eventtype=1&page_url=${encodeURIComponent(
-                        this.options.url
-                    )}`;
-                });
-                this.player.on('error', error => {
-                    this.onError('loadPlyr player', error);
-                });
-            })
-            .catch(error => {
-                this.onError('loadPlyr videoDataPromise', error);
+                },
+                fullscreen: {
+                    enabled: (json.fullScreenEnabled) ? json.fullScreenEnabled : true,
+                },
+                playlist,
+                controls,
             });
+
+            // Set some listeners.
+            this.player.on('ready', () => {
+                // Start transition towards showing the player.
+                this.transitionElement.classList.toggle('tubia__active');
+
+                setTimeout(() => {
+                    // Hide our spinner loader.
+                    this.hexagonLoader.classList.toggle('tubia__active');
+                }, this.transitionSpeed / 2);
+
+                setTimeout(() => {
+                    // Hide transition.
+                    this.transitionElement.classList.toggle('tubia__active');
+                    // Permanently hide the transition.
+                    this.transitionElement.style.display = 'none';
+                    // Show the player.
+                    this.player.elements.container.classList.toggle('tubia__active');
+                    // Return ready callback for our clients.
+                    try {
+                        parent.postMessage({name: 'onReady'}, this.origin);
+                    } catch (postMessageError) {
+                        console.error(postMessageError);
+                    }
+                }, this.transitionSpeed / 1.5);
+
+                // Record Tubia "Video Play" event in Tunnl.
+                (new Image()).src = `https://ana.tunnl.com/event?tub_id=${this.videoId}&eventtype=1&page_url=${encodeURIComponent(this.options.url)}`;
+            });
+            this.player.on('error', (error) => {
+                this.onError('loadPlyr player', error);
+            });
+        }).catch(error => {
+            this.onError('loadPlyr videoDataPromise', error);
+        });
     }
 
     /**
@@ -851,73 +732,40 @@ class Tubia {
         /* eslint-disable */
         // Load Google Analytics so we can push out a Google event for
         // each of our events.
-        if (typeof window["ga"] === "undefined") {
+        if (typeof window['ga'] === 'undefined') {
             (function (i, s, o, g, r, a, m) {
-                i["GoogleAnalyticsObject"] = r;
-                (i[r] =
-                    i[r] ||
-                    function () {
-                        (i[r].q = i[r].q || []).push(arguments);
-                    }),
-                (i[r].l = 1 * new Date());
-                (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+                i['GoogleAnalyticsObject'] = r;
+                i[r] = i[r] || function () {
+                    (i[r].q = i[r].q || []).push(arguments);
+                }, i[r].l = 1 * new Date();
+                a = s.createElement(o),
+                    m = s.getElementsByTagName(o)[0];
                 a.async = true;
                 a.src = g;
                 m.parentNode.insertBefore(a, m);
-            })(
-                window,
-                document,
-                "script",
-                "https://www.google-analytics.com/analytics.js",
-                "ga"
-            );
+            })(window, document, 'script',
+                'https://www.google-analytics.com/analytics.js', 'ga');
         }
-        if (typeof window["ga"] !== "undefined") {
-            window["ga"](
-                "create",
-                "UA-102831738-1", {
-                    name: "tubia",
-                    cookieExpires: 90 * 86400
-                },
-                "auto"
-            );
-            window["ga"]("tubia.send", "pageview");
+        if (typeof window['ga'] !== 'undefined') {
+            window['ga']('create', 'UA-102831738-1', {
+                'name': 'tubia',
+                'cookieExpires': 90 * 86400,
+            }, 'auto');
+            window['ga']('tubia.send', 'pageview');
 
             // Anonymize IP.
-            if (!this.options.gdprTracking) {
-                window["ga"]("set", "anonymizeIp", true);
+            if(!this.options.gdprTracking) {
+                window['ga']('tubia.set', 'anonymizeIp', true);
             }
-
-            // GameDistribution DMPKit Tag Manager
-            if (this.options.gdprTracking) {
-                (function (w, d, s, l, h, m) {
-                    w[l] = w[l] || [];
-                    const f = d.getElementsByTagName(s)[0],
-                        j = d.createElement(s),
-                        dl = l != "dmpkitdl" ? "&l=" + l : "";
-                    j.async = true;
-                    j.src = "//" + m + "/tm.js?id=" + h + dl;
-                    f.parentNode.insertBefore(j, f);
-                })(
-                    window,
-                    document,
-                    "script",
-                    "dmpkitdl",
-                    "ddc15dec-6bf1-4844-a362-c601005250e1",
-                    "static-dmp.mediaglacier.com"
-                );
-            }
-            /* eslint-enable */
         }
     }
 
     /**
      * setTheme
      * Set some theme styling, which overwrites colors of our loaded CSS.
-     * @param {Object} element
      */
-    setTheme(element) {
-        if (this.options.colorMain !== '' && this.options.colorAccent !== '') {
+    setTheme() {
+        if(this.options.colorMain !== '' && this.options.colorAccent !== '') {
             const css = `
                 .tubia .tubia__transition:after {
                     background-color: ${this.options.colorMain};
@@ -974,7 +822,7 @@ class Tubia {
             } else {
                 style.appendChild(document.createTextNode(css));
             }
-            element.appendChild(style);
+            this.container.appendChild(style);
         }
     }
 
@@ -988,13 +836,7 @@ class Tubia {
         // Todo: Keep this logic within the backend.
         // Todo: Triodor has not yet deployed the preflight request update, so no JSON!
         // Todo: This should be a GET request.
-        const videoCounterData = `publisherId=${
-            this.publisherId
-        }&url=${encodeURIComponent(this.options.url)}&title=${
-            this.options.title
-        }&gameId=${this.options.gameId}&category=${
-            this.options.category
-        }&langCode=${this.options.langCode}`;
+        const videoCounterData = `publisherId=${this.options.publisherId}&url=${encodeURIComponent(this.options.url)}&title=${this.options.title}&gameId=${this.options.gameId}&category=${this.options.category}&langCode=${this.options.langCode}`;
         const videoCounterUrl = 'https://api.tubia.com/api/player/find/';
         const videoCounterRequest = new Request(videoCounterUrl, {
             method: 'POST',
@@ -1003,26 +845,26 @@ class Tubia {
                 'Content-Type': 'application/x-www-form-urlencoded', // application/json
             }),
         });
-        fetch(videoCounterRequest)
-            .then(response => {
-                const contentType = response.headers.get('content-type');
-                if (!contentType || !contentType.includes('application/json')) {
-                    throw new TypeError("Oops, we didn't get JSON!");
-                }
-            })
-            .catch(error => {
-                /* eslint-disable */
-                if (typeof window["ga"] !== "undefined") {
-                    window["ga"]("tubia.send", {
-                        hitType: "event",
-                        eventCategory: "ERROR",
-                        eventAction: this.options.domain,
-                        eventLabel: `${error} | videoCounterRequest`
-                    });
-                }
-                /* eslint-enable */
-            });
+        fetch(videoCounterRequest).then((response) => {
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                throw new TypeError('Oops, we didn\'t get JSON!');
+            }
+        }).catch((error) => {
+            /* eslint-disable */
+            if (typeof window['ga'] !== 'undefined') {
+                window['ga']('tubia.send', {
+                    hitType: 'event',
+                    eventCategory: 'ERROR',
+                    eventAction: this.options.domain,
+                    eventLabel: `${error} | videoCounterRequest`,
+                });
+            }
+            /* eslint-enable */
+        });
     }
 }
 
-export default Tubia;
+export default Player;
+
+window.Player = new Player();

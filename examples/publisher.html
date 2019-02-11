@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>Publisher Web Page</title>
+    <meta name="description" content="Tubia walkthrough video's">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type="text/css">
+        body {
+            background: #333;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+    <script type="application/javascript">
+        window["TUBIA_OPTIONS"] = {
+            "container": 'container-id',
+            "publisherId": 'dc63a91fa184423482808bed4d782321',
+            "title": 'Jewel Burst',
+            "colorMain": '9000ff',
+            "colorAccent": '00ff80',
+            "onStart": function () {
+                console.log('Tubia started');
+            },
+            "onFound": function (data) {
+                console.info('Found the video: ', data);
+            },
+            "onNotFound": function(data) {
+                console.info('Could not find the video: ', data);
+            },
+            "onError": function (error) {
+                console.log(error);
+            },
+            "onReady": function (player) {
+                console.info('Tubia is ready: ', player);
+            },
+        };
+        !function(e,t,n){var a,r=e.getElementsByTagName(t)[0];e.getElementById(n)||((a=e.createElement(t)).async=!0,a.id=n,a.src="./libs/gd/gd.min.js",r.parentNode.insertBefore(a,r))}(document,"script","tubia-playerjs");
+
+        // (function (d, s, id) {
+        //     var js, fjs = d.getElementsByTagName(s)[0];
+        //     if (d.getElementById(id)) return;
+        //     js = d.createElement(s);
+        //     js.async = true;
+        //     js.id = id;
+        //     js.src = './libs/gd/gd.min.js';
+        //     fjs.parentNode.insertBefore(js, fjs);
+        // }(document, 'script', 'tubia-playerjs'));
+
+        // (function (d, s, id, async, l) {
+        //     var js, fjs = d.getElementsByTagName(s)[0];
+        //     if (d.getElementById(id)) return;
+        //     js = d.createElement(s);
+        //     js.async = async;
+        //     js.id = id;
+        //     js.onload = l;
+        //     js.src = '/libs/gd/gd.min.js';
+        //     fjs.parentNode.insertBefore(js, fjs);
+        // }(document, 'script', 'tubia-playerjs', true, function () {
+        //     new Tubia.Player.default({
+        //         container: 'container-id',
+        //         publisherId: 'dc63a91fa184423482808bed4d782321',
+        //         title: 'Jewel Burst',
+        //         colorMain: 'ff0080',
+        //         colorAccent: '00ff80',
+        //         keys: {key: 1},
+        //         onStart: function () {
+        //             console.log('Tubia started');
+        //         },
+        //         onFound: function (data) {
+        //             console.info('Found the video: ', data);
+        //         },
+        //         onNotFound: function (data) {
+        //             console.info('Could not find the video: ', data);
+        //         },
+        //         onError: function (error) {
+        //             console.log(error);
+        //         },
+        //         onReady: function () {
+        //             console.info('Tubia is ready');
+        //         },
+        //     });
+        // }));
+    </script>
+</head>
+
+<body>
+
+<div id="container-id"></div>
+
+</body>
+
+</html>

@@ -1,3 +1,5 @@
+const sass = require('node-sass');
+
 /**
  * atob
  * @param {String} str
@@ -22,29 +24,55 @@ module.exports = function (grunt) {
         pkg: grunt.file.readJSON('package.json'),
 
         /**
-         * Use cmd to eslint.
+         * ESlint.
          */
-        exec: {
-            eslint: {
-                cmd: './node_modules/.bin/eslint --ext .js, src',
+        eslint: {
+            options: {
+                configFile: '.eslintrc.js',
             },
+            target: ['src'],
         },
 
         /**
          * Copies certain files over from the src folder to the build folder.
          */
         copy: {
-            lib: {
+            dist: {
                 expand: true,
                 flatten: true,
                 cwd: './',
                 src: [
-                    'src/index.html',
-                    'src/index_legacy.html',
-                    'src/development.html',
-                    'src/index_test.html',
+                    './index.html',
+                    'examples/iframe.html',
+                    'examples/legacy.html',
+                    'examples/publisher.html',
                 ],
-                dest: './libs/gd/',
+                dest: './dist',
+            },
+        },
+
+        /**
+         * Replace our relative paths to absolute paths, just to be sure.
+         */
+        replace: {
+            dist: {
+                options: {
+                    usePrefix: false,
+                    patterns: [{
+                        match: './',
+                        replacement: 'https://player.tubia.com/',
+                    }],
+                },
+                files: [{
+                    expand: true,
+                    flatten: true,
+                    src: [
+                        'examples/iframe.html',
+                        'examples/legacy.html',
+                        'examples/publisher.html',
+                    ],
+                    dest: './dist',
+                }],
             },
         },
 
@@ -52,8 +80,8 @@ module.exports = function (grunt) {
          * Cleans our build folder.
          */
         clean: {
-            lib: {
-                src: ['./libs/gd/'],
+            dist: {
+                src: ['./dist'],
             },
         },
 
@@ -66,7 +94,7 @@ module.exports = function (grunt) {
             },
             default: {
                 files: {
-                    'libs/gd/sprite.svg': ['src/images/*.svg'],
+                    'dist/libs/gd/sprite.svg': ['src/images/*.svg'],
                 },
             },
         },
@@ -99,8 +127,10 @@ module.exports = function (grunt) {
             },
             files: {
                 src: [
-                    'libs/gd/gd.js',
-                    'libs/gd/gd.css',
+                    'dist/libs/gd/gd.js',
+                    'dist/libs/gd/gd.min.js',
+                    'dist/libs/gd/main.min.css',
+                    'dist/libs/gd/main.min.js',
                 ],
             },
         },
@@ -110,13 +140,14 @@ module.exports = function (grunt) {
          */
         sass: {
             options: {
-                sourceMap: true
+                implementation: sass,
+                sourcemap: false,
             },
-            dist: {
+            build: {
                 files: {
-                    'libs/.tmp/sass.css': 'src/styles/plyr.scss'
-                }
-            }
+                    'dist/libs/gd/main.css': 'src/styles/plyr.scss',
+                },
+            },
         },
 
         /**
@@ -136,8 +167,8 @@ module.exports = function (grunt) {
                 ],
             },
             build: {
-                src: 'libs/.tmp/sass.css',
-                dest: 'libs/gd/gd.css',
+                src: 'dist/libs/gd/main.css',
+                dest: 'dist/libs/gd/main.min.css',
             },
         },
 
@@ -152,21 +183,24 @@ module.exports = function (grunt) {
                     'babelify',
                     {
                         presets: [[
-                            'env',
+                            '@babel/preset-env',
                             {
                                 targets: {
                                     browsers: ['> 1%'],
                                 },
                                 debug: false,
-                                useBuiltIns: true,
                             },
                         ]],
                     },
                 ]],
             },
-            lib: {
+            build: {
                 src: 'src/scripts/**/*.js',
-                dest: 'libs/.tmp/babel.js',
+                dest: 'dist/libs/gd/main.js',
+            },
+            entry: {
+                src: 'src/entry/entry.js',
+                dest: 'dist/libs/gd/entry.js',
             },
         },
 
@@ -177,12 +211,12 @@ module.exports = function (grunt) {
             options: {
                 separator: ';',
             },
-            lib: {
+            build: {
                 src: [
                     'src/libraries/md5.js',
-                    'libs/.tmp/babel.js',
+                    'dist/libs/gd/main.js',
                 ],
-                dest: 'libs/.tmp/concat.js',
+                dest: 'dist/libs/gd/main.js',
             },
         },
 
@@ -209,9 +243,17 @@ module.exports = function (grunt) {
                 beautify: false,
                 warnings: false,
             },
-            lib: {
-                src: 'libs/.tmp/concat.js',
-                dest: 'libs/gd/gd.js',
+            build: {
+                src: 'dist/libs/gd/main.js',
+                dest: 'dist/libs/gd/main.min.js',
+            },
+            legacy: {
+                src: 'dist/libs/gd/entry.js',
+                dest: 'dist/libs/gd/gd.js',
+            },
+            entry: {
+                src: 'dist/libs/gd/entry.js',
+                dest: 'dist/libs/gd/gd.min.js',
             },
         },
 
@@ -224,12 +266,16 @@ module.exports = function (grunt) {
                 debounceDelay: 250,
             },
             scripts: {
-                files: ['src/scripts/**/*.js'],
+                files: [
+                    'src/scripts/**/*.js',
+                    'src/entry/**/*.js',
+                ],
                 tasks: [
-                    'exec:eslint',
+                    'eslint',
                     'browserify',
                     'concat',
                     'uglify',
+                    'usebanner',
                     'duration',
                 ],
             },
@@ -238,15 +284,16 @@ module.exports = function (grunt) {
                 tasks: [
                     'sass',
                     'postcss',
+                    'usebanner',
                     'duration',
                 ],
             },
             html: {
                 files: [
-                    'src/index.html',
-                    'src/index_legacy.html',
-                    'src/development.html',
-                    'src/index_test.html',
+                    'index.html',
+                    'examples/iframe.html',
+                    'examples/legacy.html',
+                    'examples/publisher.html',
                 ],
                 tasks: ['copy'],
             },
@@ -262,10 +309,10 @@ module.exports = function (grunt) {
          */
         browserSync: {
             bsFiles: {
-                src: ['libs/gd/'],
+                src: ['./src/'],
             },
             options: {
-                server: './libs/gd',
+                server: './dist',
                 watchTask: true,
                 port: 8081,
             },
@@ -273,18 +320,19 @@ module.exports = function (grunt) {
     });
 
     // General tasks.
-    grunt.loadNpmTasks('grunt-exec');
+    grunt.loadNpmTasks('grunt-eslint');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-google-cloud');
     grunt.loadNpmTasks('grunt-browser-sync');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-browserify');
+    grunt.loadNpmTasks('grunt-replace');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-banner');
     grunt.loadNpmTasks('grunt-svgstore');
-    grunt.loadNpmTasks('grunt-contrib-sass');
+    grunt.loadNpmTasks('grunt-sass');
     grunt.loadNpmTasks('grunt-postcss');
 
     // Register all tasks.
@@ -325,7 +373,7 @@ module.exports = function (grunt) {
                 'copy',
                 'sass',
                 'postcss',
-                'exec:eslint',
+                'eslint',
                 'browserify',
                 'concat',
                 'sourcemaps',
@@ -334,7 +382,8 @@ module.exports = function (grunt) {
                 'svgstore',
                 'duration',
                 'browserSync',
-                'watch'];
+                'watch',
+            ];
             grunt.task.run(tasksArray);
         });
     grunt.registerTask('build',
@@ -342,15 +391,16 @@ module.exports = function (grunt) {
         function () {
             const tasksArray = [
                 'clean',
+                'copy',
+                'replace',
                 'sass',
                 'postcss',
-                'exec:eslint',
+                'eslint',
                 'browserify',
                 'concat',
                 'uglify',
                 'usebanner',
                 'svgstore',
-                'copy',
                 'duration',
             ];
             grunt.task.run(tasksArray);
@@ -390,15 +440,15 @@ module.exports = function (grunt) {
                 gcs: {
                     options: {
                         credentials: key,
-                        project: project,
-                        bucket: bucket,
+                        project,
+                        bucket,
                         gzip: true,
                         metadata: {
                             'surrogate-key': 'gcs',
                         },
                     },
                     dist: {
-                        cwd: './libs/',
+                        cwd: './dist/',
                         src: ['**/*'],
                         dest: '',
                     },
@@ -409,7 +459,7 @@ module.exports = function (grunt) {
             console.log('Bucket: ' + bucket);
 
             if (folderIn === undefined && folderOut === undefined) {
-                console.log('Deploying: ./libs/ to gs://' + bucket + '/');
+                console.log('Deploying: ./dist/ to gs://' + bucket + '/');
             } else {
                 if (folderIn !== undefined) {
                     if (folderOut === undefined) {

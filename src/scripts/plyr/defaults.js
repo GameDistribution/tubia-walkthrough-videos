@@ -447,8 +447,10 @@ const defaults = {
         overlayInterval: 15,
         gdprTargeting: null,
         tag: '',
+        tagLegacy: '',
         keys: null,
         domain: 'gamedistribution.com',
+        category: '',
     },
 };
 

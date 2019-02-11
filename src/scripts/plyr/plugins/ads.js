@@ -18,12 +18,14 @@ class Ads {
         this.player = player;
 
         this.tag = player.config.ads.tag;
+        this.tagLegacy = player.config.ads.tagLegacy;
         this.debug = player.config.debug;
         this.enabled = player.isHTML5 && player.isVideo && utils.is.string(this.tag) && this.tag.length;
         this.gdprTargeting = player.config.ads.gdprTargeting;
         this.headerBidding = player.config.ads.headerBidding;
         this.keys = player.config.ads.keys;
         this.domain = player.config.ads.domain;
+        this.category = player.config.ads.category || '';
 
         this.prerollEnabled = player.config.ads.prerollEnabled;
         this.midrollEnabled = player.config.ads.midrollEnabled;
@@ -63,85 +65,25 @@ class Ads {
 
         // Load Google IMA HTML5 SDK.
         if (this.enabled) {
-            this.load().then(() => {
-                this.ready();
-                this.setupIMA();
-            }).catch(error => this.trigger('error', error));
-        }
-    }
-
-    /**
-     * Load the IMA SDK
-     */
-    load() {
-        const IMA = new Promise((resolve, reject) => {
             if (!utils.is.object(window.google) || !utils.is.object(window.google.ima)) {
                 window.google = window.google || {};
                 window.google.ima = window.google.ima || {};
-
-                const src = (this.debug)
-                    ? '//imasdk.googleapis.com/js/sdkloader/ima3_debug.js'
-                    // ? '//imasdk.googleapis.com/js/sdkloader/ima3.js'
-                    : '//imasdk.googleapis.com/js/sdkloader/ima3.js';
-                const script = document.getElementsByTagName('script')[0];
-                const ima = document.createElement('script');
-                ima.type = 'text/javascript';
-                ima.async = true;
-                ima.src = src;
-                ima.onload = () => {
-                    resolve();
-                };
-                ima.onerror = (error) => {
-                    reject(error);
-                };
-                script.parentNode.insertBefore(ima, script);
-            } else {
-                resolve();
             }
-        });
 
-        const prebidJS = new Promise((resolve, reject) => {
-            // The display ad defined within main.js also uses the same hb namespace
-            // and also loads the same script. If this happens, just resolve.
             if (!utils.is.object(window.idhbtubia) || !utils.is.array(window.idhbtubia.que)) {
                 window.idhbtubia = window.idhbtubia || {};
                 window.idhbtubia.que = window.idhbtubia.que || [];
 
-                const src = (this.debug)
-                    ? 'https://test-hb.improvedigital.com/pbw/tubia.min.js'
-                    // ? 'https://hb.improvedigital.com/pbw/tubia.min.js'
-                    : 'https://hb.improvedigital.com/pbw/tubia.min.js';
-                const script = document.getElementsByTagName('script')[0];
-                const hb = document.createElement('script');
-                hb.type = 'text/javascript';
-                hb.id = 'idhbtubia';
-                hb.async = true;
-                hb.src = src;
-                hb.onload = () => {
-                    try {
-                        // Show some header bidding logging.
-                        if (this.debug) {
-                            window.idhbtubia.getConfig();
-                            window.idhbtubia.debug(true);
-                        }
-                        resolve();
-                    } catch (e) {
-                        reject(e);
-                    }
-                };
-                hb.onerror = (error) => {
-                    reject(error);
-                };
-                script.parentNode.insertBefore(hb, script);
-            } else {
-                resolve();
+                // Show some header bidding logging.
+                if (this.debug) {
+                    window.idhbtubia.getConfig();
+                    window.idhbtubia.debug(true);
+                }
             }
-        });
 
-        return Promise.all([
-            IMA,
-            prebidJS,
-        ]);
+            this.ready();
+            this.setupIMA();
+        }
     }
 
     /**
@@ -383,7 +325,10 @@ class Ads {
                         this.player.debug.log(unit, 'info');
 
                         // Add test parameter for Tunnl.
-                        Object.assign(data, {tnl_system: '1'});
+                        Object.assign(data, {
+                            tnl_system: '1',
+                            tnl_tubia_category: this.category.toLowerCase(),
+                        });
 
                         // Send event for Tunnl debugging.
                         /* eslint-disable */
@@ -431,6 +376,8 @@ class Ads {
             // GDPR personalised advertisement ruling.
             this.tag = (this.gdprTargeting !== null) ?
                 utils.updateQueryStringParameter(this.tag, 'npa', (this.gdprTargeting) ? '1' : '0') : this.tag;
+            this.tagLegacy = (this.gdprTargeting !== null) ?
+                utils.updateQueryStringParameter(this.tagLegacy, 'npa', (this.gdprTargeting) ? '1' : '0') : this.tagLegacy;
             this.player.debug.log(`ADVERTISEMENT: gdpr: npa=${(this.gdprTargeting) ? '1' : '0'}`);
 
             // Set custom tracking keys for Tunnl.
@@ -439,6 +386,7 @@ class Ads {
                     const keys = Object.entries(JSON.parse(this.keys));
                     keys.forEach(key => {
                         this.tag = utils.updateQueryStringParameter(this.tag, key[0], key[1]);
+                        this.tagLegacy = utils.updateQueryStringParameter(this.tagLegacy, key[0], key[1]);
                     });
                 }
             } catch(error) {
@@ -456,27 +404,27 @@ class Ads {
             this.adCount += 1;
             const positionCount = this.adCount - 1;
             this.tag = utils.updateQueryStringParameter(this.tag, 'ad_count', this.adCount);
+            this.tagLegacy = utils.updateQueryStringParameter(this.tagLegacy, 'ad_count', this.adCount);
             this.tag = utils.updateQueryStringParameter(this.tag, 'ad_request_count', '1');
+            this.tagLegacy = utils.updateQueryStringParameter(this.tagLegacy, 'ad_request_count', '1');
             this.player.debug.log(`ADVERTISEMENT: ad_count: ${this.adCount}`);
             this.player.debug.log('ADVERTISEMENT: ad_request_count: 1');
             if (this.adPosition === 0) {
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_position', 'postroll');
-                this.tag = utils.updateQueryStringParameter(this.tag, 'hb', 'on');
                 this.player.debug.log('ADVERTISEMENT: ad_position: postroll');
                 this.player.debug.log('ADVERTISEMENT: hb: on');
             } else if (this.adPosition === 1) {
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_position', 'preroll');
-                this.tag = utils.updateQueryStringParameter(this.tag, 'hb', 'on');
                 this.player.debug.log('ADVERTISEMENT: ad_position: preroll');
                 this.player.debug.log('ADVERTISEMENT: hb: on');
             } else if (this.adPosition === 2) {
                 // For testing:
                 // this.tag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=480x70&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dnonlinear&correlator=';
-                this.tag = utils.updateQueryStringParameter(this.tag, 'ad_position', 'subbanner');
-                this.tag = utils.updateQueryStringParameter(this.tag, 'ad_midroll_count', positionCount.toString());
-                this.tag = utils.updateQueryStringParameter(this.tag, 'ad_type', 'image');
-                this.tag = utils.updateQueryStringParameter(this.tag, 'ad_skippable', '0');
-                this.tag = utils.updateQueryStringParameter(this.tag, 'hb', 'off');
+                this.tagLegacy = utils.updateQueryStringParameter(this.tagLegacy, 'ad_position', 'subbanner');
+                this.tagLegacy = utils.updateQueryStringParameter(this.tagLegacy, 'ad_midroll_count', positionCount.toString());
+                this.tagLegacy = utils.updateQueryStringParameter(this.tagLegacy, 'ad_type', 'image');
+                this.tagLegacy = utils.updateQueryStringParameter(this.tagLegacy, 'ad_skippable', '0');
+                this.tagLegacy = utils.updateQueryStringParameter(this.tagLegacy, 'hb', 'off');
                 this.player.debug.log('ADVERTISEMENT: ad_position: subbanner');
                 this.player.debug.log(`ADVERTISEMENT: ad_midroll_count: ${positionCount}`);
                 this.player.debug.log('ADVERTISEMENT: ad_type: image');
@@ -489,7 +437,6 @@ class Ads {
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_midroll_count', positionCount.toString());
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_type', '');
                 this.tag = utils.updateQueryStringParameter(this.tag, 'ad_skippable', '');
-                this.tag = utils.updateQueryStringParameter(this.tag, 'hb', 'on');
                 this.player.debug.log('ADVERTISEMENT: ad_position: midroll');
                 this.player.debug.log(`ADVERTISEMENT: ad_midroll_count: ${positionCount}`);
                 this.player.debug.log('ADVERTISEMENT: ad_type: ');
@@ -499,11 +446,8 @@ class Ads {
 
             // If we want to run an old school non-linear ad.
             if (this.adPosition === 2) {
-                resolve(this.tag);
+                resolve(this.tagLegacy);
             } else {
-                // Enable header bidding.
-                this.tag = utils.updateQueryStringParameter(this.tag, 'hb', 'on');
-
                 // Appearantly we're ready for header bidding, fetch the reporting keys.
                 // We pass on these keys to the Prebid wrapper, which returns us an
                 // updated VAST XML tag.
@@ -537,6 +481,7 @@ class Ads {
                             'tnl_gdpr': '0',
                             'tnl_gdpr_consent': '1',
                             'consent_string': 'BOWJjG9OWJjG9CLAAAENBx-AAAAiDAAA',
+                            'tnl_tubia_category': this.category.toLowerCase(),
                         };
 
                         // Send event for Tunnl debugging.

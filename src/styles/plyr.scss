@@ -1,13 +1,9 @@
+@charset "UTF-8";
 // ==========================================================================
 // Plyr styles
 // https://github.com/sampotts/plyr
 // TODO: Review use of BEM classnames
 // ==========================================================================
-
-
-
-@charset 'UTF-8';
-
 
 @import 'settings/breakpoints';
 @import 'settings/colors';
@@ -27,7 +23,7 @@
 @import 'lib/functions';
 @import 'lib/mixins';
 
-@import 'reset';
+// @import 'reset';
 @import 'main';
 @import 'base';
 
