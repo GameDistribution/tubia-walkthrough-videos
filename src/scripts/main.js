@@ -101,6 +101,7 @@ class Player {
         this.transitionSpeed = 2000;
         this.startPlyrHandler = this.startPlyr.bind(this);
         this.player = null;
+        this.nextCuePoint = null;
 
         // Set the proper origin URL for postMessage requests.
         this.origin = document.location.origin;
@@ -141,7 +142,7 @@ class Player {
     start() {
         // Send event to our publisher.
         try {
-            parent.postMessage({name: 'onStart'}, this.origin);
+            parent.postMessage({ name: 'onStart' }, this.origin);
         } catch (postMessageError) {
             console.error(postMessageError);
         }
@@ -182,8 +183,9 @@ class Player {
         this.videoDataPromise = new Promise((resolve, reject) => {
             this.videoSearchPromise.then(() => {
                 // Yes argument gameid is expecting the videoId...
-                const videoDataUrl = `https://api.tubia.com/api/player/publish/?gameid=${this.videoId}&publisherid=${this.options.publisherId}&domain=${encodeURIComponent(this.options.domain)}`;
-                const videoDataRequest = new Request(videoDataUrl, {method: 'GET'});
+                let videoDataUrl = `https://api.tubia.com/api/player/publish/?gameid=${this.videoId}&publisherid=${this.options.publisherId}&domain=${encodeURIComponent(this.options.domain)}`;
+                videoDataUrl = 'https://api.tubia.com/api/player/publish/?gameid=ff250481c0c34f63979c690b11cb0206&publisherid=88e25571535d4aeb8842e9e2c6150513&domain=kizi.com';
+                const videoDataRequest = new Request(videoDataUrl, { method: 'GET' });
 
                 // Record Tubia "Video Loaded" event in Tunnl.
                 (new Image()).src = `https://ana.tunnl.com/event?tub_id=${this.videoId}&eventtype=0&page_url=${encodeURIComponent(this.options.url)}`;
@@ -205,7 +207,7 @@ class Player {
                         // Invoke callback to end-user containing our video data.
                         try {
                             if (parent === top) {
-                                parent.postMessage({name: 'onFound', payload: data}, this.origin);
+                                parent.postMessage({ name: 'onFound', payload: data }, this.origin);
                             }
                         } catch (postMessageError) {
                             console.error(postMessageError);
@@ -315,13 +317,13 @@ class Player {
             const checkImage = path =>
                 new Promise(resolve => {
                     const img = new Image();
-                    img.onload = () => resolve({path, status: 'ok'});
-                    img.onerror = () => resolve({path, status: 'error'});
+                    img.onload = () => resolve({ path, status: 'ok' });
+                    img.onerror = () => resolve({ path, status: 'error' });
                     img.src = path;
 
                     // Always resolve.
                     setTimeout(() => {
-                        resolve({path, status: 'error'});
+                        resolve({ path, status: 'error' });
                     }, 2000);
                 });
             const loadImg = (...paths) => Promise.all(paths.map(checkImage));
@@ -486,7 +488,7 @@ class Player {
      */
     notFound(origin, message) {
         try {
-            parent.postMessage({name: 'onNotFound', payload: 'No video has been found!'}, this.origin);
+            parent.postMessage({ name: 'onNotFound', payload: 'No video has been found!' }, this.origin);
         } catch (postMessageError) {
             console.error(postMessageError);
         }
@@ -516,7 +518,7 @@ class Player {
      */
     onError(origin, error) {
         try {
-            parent.postMessage({name: 'onError', payload: error}, this.origin);
+            parent.postMessage({ name: 'onError', payload: error }, this.origin);
         } catch (postMessageError) {
             console.error(postMessageError);
         }
@@ -588,6 +590,7 @@ class Player {
      * Load the Plyr library.
      */
     loadPlyr() {
+        const nextCueTime = '';
         this.videoDataPromise.then((json) => {
             if (!json) {
                 this.onError('loadPlyr json', 'No video data has been found!');
@@ -634,6 +637,13 @@ class Player {
                 data: json.cuepoints,
             };
 
+            // Setup the morevideos.
+            const morevideos = {
+                active: true,
+                type: json.playlistType ? json.playlistType : 'cue',
+                data: json.relatedVideos,
+            };
+
             // We don't want certain options when our view is too small.
             if ((this.container.offsetWidth >= 400)
                 && (!/Mobi/.test(navigator.userAgent))) {
@@ -646,6 +656,7 @@ class Player {
             // Check if we want a playlist.
             if (json.cuepoints && json.cuepoints.length > 0) {
                 controls.push('playlist');
+                controls.push('morevideos');
             }
 
             // Create the Plyr instance.
@@ -684,7 +695,10 @@ class Player {
                 fullscreen: {
                     enabled: (json.fullScreenEnabled) ? json.fullScreenEnabled : true,
                 },
+                duration: null,
+                seekTime: nextCueTime,
                 playlist,
+                morevideos,
                 controls,
             });
 
@@ -707,7 +721,7 @@ class Player {
                     this.player.elements.container.classList.toggle('tubia__active');
                     // Return ready callback for our clients.
                     try {
-                        parent.postMessage({name: 'onReady'}, this.origin);
+                        parent.postMessage({ name: 'onReady' }, this.origin);
                     } catch (postMessageError) {
                         console.error(postMessageError);
                     }
@@ -754,7 +768,7 @@ class Player {
             window['ga']('tubia.send', 'pageview');
 
             // Anonymize IP.
-            if(!this.options.gdprTracking) {
+            if (!this.options.gdprTracking) {
                 window['ga']('tubia.set', 'anonymizeIp', true);
             }
         }
@@ -765,7 +779,7 @@ class Player {
      * Set some theme styling, which overwrites colors of our loaded CSS.
      */
     setTheme() {
-        if(this.options.colorMain !== '' && this.options.colorAccent !== '') {
+        if (this.options.colorMain !== '' && this.options.colorAccent !== '') {
             const css = `
                 .tubia .tubia__transition:after {
                     background-color: ${this.options.colorMain};

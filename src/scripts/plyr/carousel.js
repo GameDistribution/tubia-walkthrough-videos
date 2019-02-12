@@ -33,20 +33,25 @@ class Carousel {
         const glideSlides = document.querySelectorAll('.glide__slide');
         glideSlides.forEach((s) => {
             const id = parseInt(s.dataset.id, 10);
-            const datas = Carousel.getSlideData(id);
+            const datas = this.getSlideData(id);
             const img = s.firstElementChild;
+
             img.addEventListener('click', (evt) => {
-                self.playMoreVide(evt, datas);
+                this.playMoreVide(evt, datas);
             });
         });
     }
 
-    static getSlideData(id) {
+    // eslint-disable-next-line class-methods-use-this
+    getSlideData(id) {
         const { filter } = Array.prototype;
         const result = document.querySelectorAll('.glide__slide');
 
-        const filtered = filter.call(result, (node) => node.dataset.id === id && node.data_json);
-        return filtered;
+        // eslint-disable-next-line arrow-body-style
+        const filtered = filter.call(result, (node) => {
+            return parseInt(node.dataset.id, 10) === id && node.data_json;
+        });
+        return filtered[0].data_json;
     }
 
     setup(p) {
@@ -124,7 +129,6 @@ class Carousel {
 
     playMoreVide(evt, data) {
         if (!data) return;
-
         const video = data.videos[0];
         const picture = data.pictures[0];
         const vidEl = document.querySelector('video');

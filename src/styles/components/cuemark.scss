@@ -3,7 +3,7 @@
     z-index: 9999;
     bottom: 25px;
     opacity: 0;
-    transition: opacity 2s ease-in-out;
+    transition: opacity .3s ease-in-out;
     cursor: pointer;
 
     &.active {
@@ -15,8 +15,6 @@
         //     opacity: 0 !important;
         // }
     }
-
-
 
     .pin {
         width: 30px;
