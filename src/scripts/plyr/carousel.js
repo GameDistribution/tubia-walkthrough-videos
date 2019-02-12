@@ -5,7 +5,6 @@ import Glide from './glide.esm';
 // eslint-disable-next-line no-unused-vars
 class Carousel {
     constructor(data) {
-
         const self = this;
         if (data.length === 0 || data === undefined) return;
         self.data = data;
@@ -29,7 +28,6 @@ class Carousel {
             },
         });
         tubiaSlider.mount();
-
         const glideSlides = document.querySelectorAll('.glide__slide');
         glideSlides.forEach((s) => {
             const id = parseInt(s.dataset.id, 10);
@@ -55,7 +53,6 @@ class Carousel {
     }
 
     setup(p) {
-
         const { data } = p.config.morevideos;
         const moreVideosWrapper = document.querySelector(defaults.selectors.morevideos);
         this.class = {
