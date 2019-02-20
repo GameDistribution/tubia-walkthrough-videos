@@ -322,6 +322,19 @@ class Ads {
                         delete data.nsid;
                         delete data.tid;
 
+                        // Set the consent string and pass it to the header bidding wrapper.
+                        // The default always allows personalised ads.
+                        // The consent string given by Tunnl is set within their system, by domain.
+                        // So if you want to disable personalised ads for a complete domain by default,
+                        // then generate a "fake" string and add it to Tunnl for that domain.
+                        // An exception to this is whenever a proper IAB CMP solution is found, which
+                        // means there is an "euconsent" cookie with a consent string. The header bidding
+                        // wrapper will then ignore any consent string given by the SDK or Tunnl, and will
+                        // use this user generated consent string instead.
+                        const consentString = data.consent_string
+                            ? data.consent_string
+                            : 'BOWJjG9OWJjG9CLAAAENBx-AAAAiDAAA';
+
                         this.player.debug.log(unit, 'info');
 
                         // Add test parameter for Tunnl.
@@ -348,6 +361,10 @@ class Ads {
                         window.idhbtubia.que.push(() => {
                             window.idhbtubia.setAdserverTargeting(data);
                             window.idhbtubia.setDfpAdUnitCode(unit);
+
+                            // Pass on the IAB CMP euconsent string. Most SSP's are part of the IAB group.
+                            // So they will interpret and apply proper consent rules based on this string.
+                            window.idhbtubia.setDefaultGdprConsentString(consentString);
                             window.idhbtubia.requestAds({
                                 slotIds: [this.slotId],
                                 callback: vastUrl => {

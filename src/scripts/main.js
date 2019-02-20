@@ -344,94 +344,39 @@ class Player {
             });
 
             // Create a display advertisement which will reside on top of the poster image.
-            // load the DFP Script.
             const slotId = 'tubia__display-ad';
             const slotElement = document.getElementById(slotId);
             const isIE11 = !!window.MSInputMethodContext && !!document.documentMode;
-            const displayTestDomains = [
-                'hellokids.com',
-                'fr.hellokids.com',
-                'es.hellokids.com',
-                'de.hellokids.com',
-                'pt.hellokids.com',
-                'bgames.com',
-                'keygames.com',
-                'spele.nl',
-                'spele.be',
-                'oyungemisi.com',
-                'spielspiele.de',
-                'spiels.at',
-                'misjuegos.com',
-                'waznygry.pl',
-                'clavejuegos.com',
-                'jouerjouer.com',
-                'spiels.ch',
-                'cadajuego.es',
-                'nyckelspel.se',
-                'starbie.co.uk',
-                'hryhry.net',
-                'jogojogar.com',
-                'minigioco.it',
-                '1001igry.ru',
-                'pelaaleikkia.com',
-                'cadajogo.com.br',
-                'cadajogo.com',
-                'funny-games.co.uk',
-                'funnygames.gr',
-                'funnygames.nl',
-                'funnygames.pl',
-                'funnygames.be',
-                'funnygames.ro',
-                'funnygames.com.tr',
-                'funnygames.us',
-                'funnygames.com.br',
-                'funnygames.lt',
-                'funnygames.se',
-                'funnygames.hu',
-                'funnygames.it',
-                'funnygames.fr',
-                'funnygames.in',
-                'funnygames.ch',
-                'funnygames.biz',
-                'funnygames.es',
-                'funnygames.at',
-                'funnygames.com.co',
-                'funnygames.fi',
-                'funnygames.jp',
-                'funnygames.eu',
-                'funnygames.ru',
-                'funnygames.org',
-                'funnygames.dk',
-                'funnygames.vn',
-                'funnygames.com.mx',
-                'funnygames.pt',
-                'funnygames.cn',
-                'funnygames.no',
-                'funnygames.asia',
-                'funnygames.pk',
-                'funnygames.co.id',
-                'funnygames.ph',
-                'funnygames.com.ng',
-                'funnygames.ie',
-                'funnygames.kr',
-                'funnygames.cz',
-                'funnygames.ir',
-                'spelletjesoverzicht.nl',
-                'games.co.za',
-                'youdagames.com',
-                'vex3.games',
-                'fbrq.io',
-                'gamesmiracle.com',
-                'mahjong.nl',
-                'barbiegame.com.ua',
-                'frivjogosonline.com.br',
-                '365escape.com',
-                'kizi.com',
-                'yepi.com',
+            const displayIgnoreDomains = [
+                '1001spiele.de',
+                '1001hry.cz',
+                'isladejuegos.es',
+                'grajteraz.pl',
+                '1001jogos.pt',
+                'igrixl.ru',
+                'elkspel.nl',
+                'jatekokxl.hu',
+                'spillespill.no',
+                'spelo.se',
+                '1001pelit.com',
+                '1001jeux.fr',
+                'giochixl.it',
+                'paixnidiaxl.gr',
+                'jetztspielen.ws',
+                '1001giochi.it',
+                'gamesxl.com',
+                'gierkionline.pl',
+                'juegosjuegos.ws',
+                'spilxl.dk',
+                '1001spiele.at',
+                '1001games.fr',
+                'speltuin.nl',
+                '1001games.co.uk',
+                'wuki.com',
             ];
             if (slotElement
                 && !isIE11
-                && displayTestDomains.indexOf(this.options.domain.replace(/^(?:https?:\/\/)?(?:\/\/)?(?:www\.)?/i, '').split('/')[0]) > -1) {
+                && displayIgnoreDomains.indexOf(this.options.domain.replace(/^(?:https?:\/\/)?(?:\/\/)?(?:www\.)?/i, '').split('/')[0]) === -1) {
                 // Set adslot dimensions.
                 if (this.container.offsetWidth >= 970) {
                     slotElement.style.width = '970px';
@@ -442,13 +387,13 @@ class Player {
                 } else if (this.container.offsetWidth >= 468) {
                     slotElement.style.width = '468px';
                     slotElement.style.height = '60px';
+                } else if (this.container.offsetWidth >= 234) {
+                    slotElement.style.width = '234px';
+                    slotElement.style.height = '60px';
                 } else {
                     slotElement.style.width = '100%';
                     slotElement.style.height = '90px';
                 }
-
-                // Show the slot.
-                // slotElement.style.display = 'block';
 
                 // Set header bidding name space.
                 window.idhbtubia = window.idhbtubia || {};
@@ -465,6 +410,10 @@ class Player {
                     window.idhbtubia.setAdserverTargeting({
                         tnl_ad_pos: 'tubia_leaderboard',
                     });
+
+                    // Pass on the IAB CMP euconsent string. Most SSP's are part of the IAB group.
+                    // So they will interpret and apply proper consent rules based on this string.
+                    window.idhbtubia.setDefaultGdprConsentString('BOWJjG9OWJjG9CLAAAENBx-AAAAiDAAA');
                     window.idhbtubia.requestAds({
                         slotIds: [slotId],
                         callback: (response) => {
@@ -576,9 +525,6 @@ class Player {
         // Destroy our display ad if it exists.
         const displayAd = document.getElementById('tubia__display-ad');
         if (displayAd) {
-            if (window.googletag) {
-                window.googletag.destroySlots('tubia__display-ad');
-            }
             displayAd.parentNode.removeChild(displayAd);
         }
     }
