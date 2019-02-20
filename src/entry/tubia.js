@@ -68,9 +68,19 @@ class Tubia {
         frame.setAttribute('scrolling', 'no');
         frame.setAttribute('allowfullscreen', 'true');
         frame.style.top = '0';
+        frame.style.right = '0';
+        frame.style.bottom = '0';
         frame.style.left = '0';
         frame.width = this.options.width || '100%';
         frame.height = this.options.height || '100%';
+
+        // Fix iOS problems.
+        frame.style.height = this.options.width || '0';
+        frame.style.width = this.options.height || '0';
+        frame.style.minWidth = '100%';
+        frame.style.minHeight = '100%';
+        frame.style.maxWidth = '100%';
+        frame.style.maxHeight = '100%';
 
         const container = document.getElementById(this.options.container);
         if (container) {

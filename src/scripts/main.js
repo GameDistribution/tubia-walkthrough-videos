@@ -444,7 +444,7 @@ class Player {
                     slotElement.style.height = '60px';
                 } else {
                     slotElement.style.width = '100%';
-                    slotElement.style.height = '60px';
+                    slotElement.style.height = '90px';
                 }
 
                 // Show the slot.
