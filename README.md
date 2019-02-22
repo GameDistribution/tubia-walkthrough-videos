@@ -1,5 +1,5 @@
 [![npm](https://img.shields.io/npm/v/npm.svg)](https://nodejs.org/)
-[![GitHub version](https://img.shields.io/badge/version-1.2.4-green.svg)](https://github.com/GameDistribution/tubia-walkthrough-videos/)
+[![GitHub version](https://img.shields.io/badge/version-1.2.5-green.svg)](https://github.com/GameDistribution/tubia-walkthrough-videos/)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/GameDistribution/tubia-walkthrough-videos/blob/master/LICENSE)
 
 
@@ -72,8 +72,8 @@ You can use the following properties:
 | title | Yes | {String} '' | The name of your game. This values is used within the video player, but we also use this data to match a video with your title. Make sure its value is URL encoded. |
 | colorMain | No | {String} '' | The main theme color of the HTML5 video player, you can use any CSS hex value without the hash, example; ff0080. |
 | colorAccent | No | {String} '' | The accent theme color of the HTML5 video player, you can use any CSS hex value without the hash, example; ff0080. |
-| gdprTracking | Mandatory for European end-users | {Boolean} null | Enable client tracking solutions. |
-| gdprTargeting | Mandatory for European end-users | {Boolean} null | Enable client advertisement targeting solutions. |
+| gdprTracking | Mandatory for European end-users | {Boolean} true | Allow client tracking solutions. |
+| gdprTargeting | Mandatory for European end-users | {Boolean} true | Allow client advertisement targeting solutions. |
 | langCode | No | 'en-us' | Currently only used for localising phrases within advertisements. |
 | debug | No | {Boolean} false | Enable debugging. Please keep it to false when publishing. |
 

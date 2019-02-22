@@ -125,7 +125,7 @@ const utils = {
     },
 
     // Load an external script
-    loadScript(url) {
+    loadScript(url, id) {
         return new Promise((resolve, reject) => {
             const current = document.querySelector(`script[src="${url}"]`);
 
@@ -169,6 +169,11 @@ const utils = {
 
             // Set the URL after binding callback
             element.src = url;
+
+            // Set the script id. Needed by some libraries. Especially tracking ones.
+            if (id) {
+                element.id = id;
+            }
 
             // Inject
             const first = document.getElementsByTagName('script')[0];

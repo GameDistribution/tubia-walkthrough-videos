@@ -362,6 +362,13 @@ class Ads {
                             window.idhbtubia.setAdserverTargeting(data);
                             window.idhbtubia.setDfpAdUnitCode(unit);
 
+                            // This is to add a flag, which if set to false;
+                            // non-personalized ads get requested from DFP and a no-consent
+                            // string - BOa7h6KOa7h6KCLABBENCDAAAAAjyAAA - is sent to all SSPs.
+                            // If set to true, then the wrapper will continue as if no consent was given.
+                            // This is only for Google, as google is not part of the IAB group.
+                            window.idhbtubia.allowPersonalizedAds(this.gdprTargeting);
+
                             // Pass on the IAB CMP euconsent string. Most SSP's are part of the IAB group.
                             // So they will interpret and apply proper consent rules based on this string.
                             window.idhbtubia.setDefaultGdprConsentString(consentString);
@@ -391,11 +398,9 @@ class Ads {
     reportingKeys() {
         return new Promise((resolve) => {
             // GDPR personalised advertisement ruling.
-            this.tag = (this.gdprTargeting !== null) ?
-                utils.updateQueryStringParameter(this.tag, 'npa', (this.gdprTargeting) ? '1' : '0') : this.tag;
-            this.tagLegacy = (this.gdprTargeting !== null) ?
-                utils.updateQueryStringParameter(this.tagLegacy, 'npa', (this.gdprTargeting) ? '1' : '0') : this.tagLegacy;
-            this.player.debug.log(`ADVERTISEMENT: gdpr: npa=${(this.gdprTargeting) ? '1' : '0'}`);
+            this.tag = utils.updateQueryStringParameter(this.tag, 'npa', this.gdprTargeting ? '0' : '1');
+            this.tagLegacy = utils.updateQueryStringParameter(this.tagLegacy, 'npa', this.gdprTargeting ? '0' : '0');
+            this.player.debug.log(`ADVERTISEMENT: gdpr: npa=${this.gdprTargeting ? '0' : '1'}`);
 
             // Set custom tracking keys for Tunnl.
             try {

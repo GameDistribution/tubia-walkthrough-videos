@@ -39,8 +39,8 @@ class Player {
         const title = typeof params.title !== 'undefined' && params.title !== '' ? params.title : 'Jewel Burst';
         const colorMain = typeof params.colormain !== 'undefined' && params.colormain !== '' ? params.colormain : '';
         const colorAccent = typeof params.coloraccent !== 'undefined' && params.coloraccent !== '' ? params.coloraccent : '';
-        const gdprTracking = params.gdprtracking || null;
-        const gdprTargeting = params.gdprtargeting || null;
+        const gdprTracking = typeof params.gdprtracking !== 'undefined' ? utils.parseJson(params.gdprtracking) : true;
+        const gdprTargeting = typeof params.gdprtargeting !== 'undefined' ? utils.parseJson(params.gdprtargeting) : true;
         const langCodeLegacy = params.lang || params.langcode;
         const langCode = typeof langCodeLegacy !== 'undefined' && langCodeLegacy !== '' ? langCodeLegacy : 'en-us';
         const debug = (typeof params.debug !== 'undefined' && params.debug !== '') && params.debug === 'true';
@@ -171,6 +171,18 @@ class Player {
                     // Set the category.
                     if (data && data.category && data.category !== '' && this.options.category === '') {
                         this.options.category = data.category;
+
+                        // Lotame tracking.
+                        // It is critical to wait for the load event. Yes hilarious.
+                        window.addEventListener('load', () => {
+                            try {
+                                /* eslint-disable */
+                                window['_cc13997'].bcpw('int', `category : ${data.category.toLowerCase()}`);
+                                /* eslint-enable */
+                            } catch (error) {
+                                // No need to throw an error or log. It's just Lotame.
+                            }
+                        });
                     }
 
                     resolve();
@@ -675,34 +687,45 @@ class Player {
      * Load Google Analytics and OrangeGames analytics.
      */
     analytics() {
-        /* eslint-disable */
-        // Load Google Analytics so we can push out a Google event for
-        // each of our events.
-        if (typeof window['ga'] === 'undefined') {
-            (function (i, s, o, g, r, a, m) {
-                i['GoogleAnalyticsObject'] = r;
-                i[r] = i[r] || function () {
-                    (i[r].q = i[r].q || []).push(arguments);
-                }, i[r].l = 1 * new Date();
-                a = s.createElement(o),
-                    m = s.getElementsByTagName(o)[0];
-                a.async = true;
-                a.src = g;
-                m.parentNode.insertBefore(a, m);
-            })(window, document, 'script',
-                'https://www.google-analytics.com/analytics.js', 'ga');
-        }
-        if (typeof window['ga'] !== 'undefined') {
-            window['ga']('create', 'UA-102831738-1', {
-                'name': 'tubia',
-                'cookieExpires': 90 * 86400,
-            }, 'auto');
-            window['ga']('tubia.send', 'pageview');
+        utils.loadScript('https://www.google-analytics.com/analytics.js', 'tubia_google_analytics')
+            .then(() => {
+                /* eslint-disable */
+                window['ga']('create', 'UA-102601800-1', {
+                    'name': 'tubia',
+                    'cookieExpires': 90 * 86400,
+                }, 'auto');
+                window['ga']('tubia.send', 'pageview');
 
-            // Anonymize IP.
-            if(!this.options.gdprTracking) {
-                window['ga']('tubia.set', 'anonymizeIp', true);
-            }
+                // Anonymize IP for GDPR purposes.
+                if (this.options.gdprTracking) {
+                    window['ga']('tubia.set', 'anonymizeIp', true);
+                }
+                /* eslint-enable */
+            })
+            .catch(error => {
+                throw new Error(error);
+            });
+        if (this.options.gdprTracking) {
+            utils.loadScript('https://tags.crwdcntrl.net/c/13997/cc.js?ns=_cc13997', 'LOTCC_13997')
+                .then(() => {
+                    /* eslint-disable */
+                    if (typeof window['_cc13997'] === 'object'
+                        && typeof window['_cc13997'].bcpf === 'function'
+                        && typeof window['_cc13997'].add === 'function') {
+                        window['_cc13997'].add('med', 'video');
+
+                        // Must wait for the load event, before running Lotame.
+                        if (document.readyState === 'complete') {
+                            window['_cc13997'].bcpf();
+                        } else {
+                            window['_cc13997'].bcp();
+                        }
+                    }
+                    /* eslint-enable */
+                })
+                .catch(error => {
+                    throw new Error(error);
+                });
         }
     }
 
