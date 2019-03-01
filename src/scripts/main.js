@@ -690,7 +690,7 @@ class Player {
         utils.loadScript('https://www.google-analytics.com/analytics.js', 'tubia_google_analytics')
             .then(() => {
                 /* eslint-disable */
-                window['ga']('create', 'UA-102601800-1', {
+                window['ga']('create', 'UA-102831738-1', {
                     'name': 'tubia',
                     'cookieExpires': 90 * 86400,
                 }, 'auto');
