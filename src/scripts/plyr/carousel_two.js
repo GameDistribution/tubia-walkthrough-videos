@@ -123,7 +123,7 @@ class CarouselTwo {
 
         if (type === 2) {
             const { magic } = data.video;
-            data.picture.link = magic.videoThumb || 'http://diveprice.com/wp-content/uploads/2016/06/no.image_.570x380-300x150.png';
+            data.picture.link = magic.videoThumb;
             data.video.gifUrl = magic.gifUrl;
         }
 
@@ -153,7 +153,7 @@ class CarouselTwo {
         if (type === 2) {
             const { magic } = data.video;
 
-            data.picture.link = magic.videoThumb || 'http://cdn.tubia.com/media/picture/d34ab169b70c9dcd35e62896010cd9ff_1920_1440.jpg';
+            data.picture.link = magic.videoThumb;
             data.video.gifUrl = magic.gifUrl;
             data.video.title = magic.title;
             data.video.linkSecure = magic.link.replace('http', 'https');
