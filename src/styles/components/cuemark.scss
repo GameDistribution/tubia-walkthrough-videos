@@ -25,7 +25,7 @@
         transform: rotate(-45deg);
         left: 50%;
         top: 50%;
-        margin: -20px 0 0 -20px;
+        margin: -20px 0 0 -16px;
         animation-name: bounce;
         animation-fill-mode: both;
         animation-duration: 1s;
@@ -34,6 +34,7 @@
             content: '3';
             width: 24px;
             height: 24px;
+            padding:3px;
             margin: 3px 0px 0px 3px;
             background: #2F2F2F;
             position: absolute;
@@ -72,7 +73,7 @@
         position: absolute;
         left: 50%;
         top: 50%;
-        margin: 11px 0 0 -13px;
+        margin: 11px 0 0 -9px;
         transform: rotateX(55deg);
         z-index: -2;
         

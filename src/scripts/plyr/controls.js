@@ -230,11 +230,11 @@ const controls = {
                 attributes.class += ` ${
                     this.config.classNames.morevideos.button
                 }`;
+                if(!this.config.hideControls)  {
+                    attributes.class += ' hide';
+                }
                 toggle = true;
                 label = 'morevideosOpen';
-                // labelPressed = "morevideosClose";
-                // icon = "morevideos";
-                // iconPressed = "close";
                 break;
             default:
                 label = type;
@@ -453,7 +453,7 @@ const controls = {
         const svg = ` 
                 <?xml version="1.0" encoding="utf-8"?>
                 <svg preserveAspectRatio="xMinYMin meet" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-                     viewBox="0 0 50 74" style="enable-background:new 0 0 50 74;" xml:space="preserve">
+                     viewBox="0 0 60 74" style="enable-background:new 0 0 60 74;" xml:space="preserve">
               
                 <g>
                     <path class="st0" d="M33.9,63.7c-0.9,0-1.8-0.2-2.6-0.7L13.2,52.3c-1.6-0.9-2.5-2.6-2.5-4.4V26.2c0-1.8,1-3.5,2.5-4.4l18.1-10.7

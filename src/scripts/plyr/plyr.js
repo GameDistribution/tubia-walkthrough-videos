@@ -102,7 +102,7 @@ class Plyr {
 
         // morevideos
         this.morevideos = {
-            active: null,
+            active: true,
         };
 
         // Share
@@ -563,7 +563,7 @@ class Plyr {
         }
 
         // Update config
-        this.config.volume = volume;
+        this.config.volume = volume; 
 
         // Set the player volume
         this.media.volume = volume;
@@ -886,7 +886,7 @@ class Plyr {
 
         // Toggle state
         utils.toggleState(this.elements.buttons.captions, this.captions.active);
-
+         
         // Add class hook
         utils.toggleClass(this.elements.container, this.config.classNames.captions.active, this.captions.active);
 
@@ -976,14 +976,10 @@ class Plyr {
      * @param {boolean} input - Whether to enable morevideos
      */
     toggleMoreVideos(input) {
-
-
-
         // If there's no full support, or there's no caption toggle
         if (!this.supported.ui || !utils.is.element(this.elements.buttons.morevideos)) {
             return;
         }
-
         // If the method is called without parameter, toggle based on current value
         const show = utils.is.boolean(input) ? input : this.elements.container.className.indexOf(this.config.classNames.morevideos.active) === -1;
 
@@ -995,13 +991,12 @@ class Plyr {
         // Set global
         this.morevideos.active = show;
 
-
         // Toggle state
         utils.toggleState(this.elements.buttons.morevideos, this.morevideos.active);
 
         // Add class hook
         utils.toggleClass(this.elements.container, this.config.classNames.morevideos.active, this.morevideos.active);
-
+        
         // Trigger an event
         utils.dispatchEvent.call(this, this.media, this.morevideos.active ? 'morevideosenabled' : 'morevideosdisabled');
 
@@ -1197,7 +1192,7 @@ class Plyr {
 
                     if (this.config.controls.includes('settings') && !utils.is.empty(this.config.settings)) {
                         controls.toggleMenu.call(this, false);
-                        this.toggleMoreVideos(false);
+                        // this.toggleMoreVideos(false);
                         this.togglePlaylist(false);
                     }
                 }

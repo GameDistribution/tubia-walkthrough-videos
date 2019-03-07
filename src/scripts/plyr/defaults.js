@@ -13,7 +13,7 @@ const defaults = {
     debug: false,
 
     // Auto play (if supported)
-    autoplay: true,
+    autoplay: false,
 
     // Only allow one media playing at once (vimeo only)
     autopause: true,
@@ -134,7 +134,7 @@ const defaults = {
     // morevideos settings
     morevideos: {
         enabled: true,
-        active: false,
+        active: true,
         type:'cue',
         data: [],
     },

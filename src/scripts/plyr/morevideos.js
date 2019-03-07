@@ -3,7 +3,7 @@
 // ==========================================================================
 
 import utils from './utils';
-import Carousel from './carousel';
+import CarouselTwo from './carousel_two';
 
 const morevideos = {
 
@@ -37,9 +37,7 @@ const morevideos = {
 
             this.elements.controls.appendChild(this.elements.morevideos);
 
-            const caption = utils.createElement('div', { class: 'morevideos--caption' }, 'More Videos');
-
-            this.elements.morevideos.appendChild(caption);
+    
             // utils.insertAfter(this.elements.morevideos, this.elements.controls);
         }
 
@@ -51,7 +49,7 @@ const morevideos = {
             return;
         }
         // carousel enabled
-        this.carousel = new Carousel(this);
+        this.carousel = new CarouselTwo(this);
 
         // Enable UI
         morevideos.show.call(this);

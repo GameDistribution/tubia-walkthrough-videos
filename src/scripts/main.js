@@ -184,6 +184,9 @@ class Player {
             this.videoSearchPromise.then(() => {
                 // Yes argument gameid is expecting the videoId...
                 const videoDataUrl = `https://api.tubia.com/api/player/publish/?gameid=${this.videoId}&publisherid=${this.options.publisherId}&domain=${encodeURIComponent(this.options.domain)}`;
+
+                // videoDataUrl = 'http://104.196.166.83:8085/api/player/publish/?gameid=f9f096cf81034a0baca18ae34951092f&publisherid=dc63a91fa184423482808bed4d782320&domain=player.tubia.com';
+
                 const videoDataRequest = new Request(videoDataUrl, { method: 'GET' });
 
                 // Record Tubia "Video Loaded" event in Tunnl.

@@ -67,6 +67,9 @@ class Carousel {
             },
         };
 
+        const caption = utils.createElement('div', { class: 'morevideos--caption' }, 'More Videos');
+        moreVideosWrapper.appendChild(caption);
+
         const glideWrapper = utils.createElement('div', {
             class: this.class.glideCls,
         });

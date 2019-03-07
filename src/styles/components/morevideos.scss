@@ -6,6 +6,10 @@
         right: 25px;
         color: #fff;
 
+        &.hide{
+            display: none;
+        }
+
 
         &:before {
             content: "...";
@@ -18,7 +22,7 @@
         position: absolute;
         z-index: 1;
         bottom: 55px;
-        height: 150px;
+        // height: 195px;
         // max-height: 100%;
         width: 100%;
         overflow: hidden;
@@ -27,6 +31,21 @@
         transform: scaleY(0);
         // background-color: #000;
         background-color: rgba(225, 225, 225, 0.3);
+
+        .related--videos-mode-caption{
+            position: absolute;
+            // background: rgba(193, 0, 71,0.5);
+            background-image:repeating-linear-gradient(to right, transparent , red 50%,transparent);
+            text-shadow: 1px 2px 1px #000000;
+            top: 0px;
+            width: 100%;
+            position: absolute;
+            z-index: 9999;
+            font-weight: bold;
+            font-size: 20px;
+            color:#fff;
+
+        }
 
         .morevideos--caption {
             color: #000;
