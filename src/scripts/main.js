@@ -39,8 +39,8 @@ class Player {
         const title = typeof params.title !== 'undefined' && params.title !== '' ? params.title : 'Jewel Burst';
         const colorMain = typeof params.colormain !== 'undefined' && params.colormain !== '' ? params.colormain : '';
         const colorAccent = typeof params.coloraccent !== 'undefined' && params.coloraccent !== '' ? params.coloraccent : '';
-        const gdprTracking = params.gdprtracking || null;
-        const gdprTargeting = params.gdprtargeting || null;
+        const gdprTracking = typeof params.gdprtracking !== 'undefined' ? utils.parseJson(params.gdprtracking) : true;
+        const gdprTargeting = typeof params.gdprtargeting !== 'undefined' ? utils.parseJson(params.gdprtargeting) : true;
         const langCodeLegacy = params.lang || params.langcode;
         const langCode = typeof langCodeLegacy !== 'undefined' && langCodeLegacy !== '' ? langCodeLegacy : 'en-us';
         const debug = (typeof params.debug !== 'undefined' && params.debug !== '') && params.debug === 'true';
@@ -172,6 +172,18 @@ class Player {
                     // Set the category.
                     if (data && data.category && data.category !== '' && this.options.category === '') {
                         this.options.category = data.category;
+
+                        // Lotame tracking.
+                        // It is critical to wait for the load event. Yes hilarious.
+                        window.addEventListener('load', () => {
+                            try {
+                                /* eslint-disable */
+                                window['_cc13997'].bcpw('int', `category : ${data.category.toLowerCase()}`);
+                                /* eslint-enable */
+                            } catch (error) {
+                                // No need to throw an error or log. It's just Lotame.
+                            }
+                        });
                     }
 
                     resolve();
@@ -348,94 +360,39 @@ class Player {
             });
 
             // Create a display advertisement which will reside on top of the poster image.
-            // load the DFP Script.
             const slotId = 'tubia__display-ad';
             const slotElement = document.getElementById(slotId);
             const isIE11 = !!window.MSInputMethodContext && !!document.documentMode;
-            const displayTestDomains = [
-                'hellokids.com',
-                'fr.hellokids.com',
-                'es.hellokids.com',
-                'de.hellokids.com',
-                'pt.hellokids.com',
-                'bgames.com',
-                'keygames.com',
-                'spele.nl',
-                'spele.be',
-                'oyungemisi.com',
-                'spielspiele.de',
-                'spiels.at',
-                'misjuegos.com',
-                'waznygry.pl',
-                'clavejuegos.com',
-                'jouerjouer.com',
-                'spiels.ch',
-                'cadajuego.es',
-                'nyckelspel.se',
-                'starbie.co.uk',
-                'hryhry.net',
-                'jogojogar.com',
-                'minigioco.it',
-                '1001igry.ru',
-                'pelaaleikkia.com',
-                'cadajogo.com.br',
-                'cadajogo.com',
-                'funny-games.co.uk',
-                'funnygames.gr',
-                'funnygames.nl',
-                'funnygames.pl',
-                'funnygames.be',
-                'funnygames.ro',
-                'funnygames.com.tr',
-                'funnygames.us',
-                'funnygames.com.br',
-                'funnygames.lt',
-                'funnygames.se',
-                'funnygames.hu',
-                'funnygames.it',
-                'funnygames.fr',
-                'funnygames.in',
-                'funnygames.ch',
-                'funnygames.biz',
-                'funnygames.es',
-                'funnygames.at',
-                'funnygames.com.co',
-                'funnygames.fi',
-                'funnygames.jp',
-                'funnygames.eu',
-                'funnygames.ru',
-                'funnygames.org',
-                'funnygames.dk',
-                'funnygames.vn',
-                'funnygames.com.mx',
-                'funnygames.pt',
-                'funnygames.cn',
-                'funnygames.no',
-                'funnygames.asia',
-                'funnygames.pk',
-                'funnygames.co.id',
-                'funnygames.ph',
-                'funnygames.com.ng',
-                'funnygames.ie',
-                'funnygames.kr',
-                'funnygames.cz',
-                'funnygames.ir',
-                'spelletjesoverzicht.nl',
-                'games.co.za',
-                'youdagames.com',
-                'vex3.games',
-                'fbrq.io',
-                'gamesmiracle.com',
-                'mahjong.nl',
-                'barbiegame.com.ua',
-                'frivjogosonline.com.br',
-                '365escape.com',
-                'kizi.com',
-                'yepi.com',
+            const displayIgnoreDomains = [
+                '1001spiele.de',
+                '1001hry.cz',
+                'isladejuegos.es',
+                'grajteraz.pl',
+                '1001jogos.pt',
+                'igrixl.ru',
+                'elkspel.nl',
+                'jatekokxl.hu',
+                'spillespill.no',
+                'spelo.se',
+                '1001pelit.com',
+                '1001jeux.fr',
+                'giochixl.it',
+                'paixnidiaxl.gr',
+                'jetztspielen.ws',
+                '1001giochi.it',
+                'gamesxl.com',
+                'gierkionline.pl',
+                'juegosjuegos.ws',
+                'spilxl.dk',
+                '1001spiele.at',
+                '1001games.fr',
+                'speltuin.nl',
+                '1001games.co.uk',
+                'wuki.com',
             ];
             if (slotElement
                 && !isIE11
-                && displayTestDomains.indexOf(this.options.domain.replace(/^(?:https?:\/\/)?(?:\/\/)?(?:www\.)?/i, '').split('/')[0]) > -1) {
+                && displayIgnoreDomains.indexOf(this.options.domain.replace(/^(?:https?:\/\/)?(?:\/\/)?(?:www\.)?/i, '').split('/')[0]) === -1) {
                 // Set adslot dimensions.
                 if (this.container.offsetWidth >= 970) {
                     slotElement.style.width = '970px';
@@ -446,13 +403,13 @@ class Player {
                 } else if (this.container.offsetWidth >= 468) {
                     slotElement.style.width = '468px';
                     slotElement.style.height = '60px';
+                } else if (this.container.offsetWidth >= 234) {
+                    slotElement.style.width = '234px';
+                    slotElement.style.height = '60px';
                 } else {
                     slotElement.style.width = '100%';
-                    slotElement.style.height = '60px';
+                    slotElement.style.height = '90px';
                 }
-
-                // Show the slot.
-                // slotElement.style.display = 'block';
 
                 // Set header bidding name space.
                 window.idhbtubia = window.idhbtubia || {};
@@ -469,6 +426,10 @@ class Player {
                     window.idhbtubia.setAdserverTargeting({
                         tnl_ad_pos: 'tubia_leaderboard',
                     });
+
+                    // Pass on the IAB CMP euconsent string. Most SSP's are part of the IAB group.
+                    // So they will interpret and apply proper consent rules based on this string.
+                    window.idhbtubia.setDefaultGdprConsentString('BOWJjG9OWJjG9CLAAAENBx-AAAAiDAAA');
                     window.idhbtubia.requestAds({
                         slotIds: [slotId],
                         callback: (response) => {
@@ -580,9 +541,6 @@ class Player {
         // Destroy our display ad if it exists.
         const displayAd = document.getElementById('tubia__display-ad');
         if (displayAd) {
-            if (window.googletag) {
-                window.googletag.destroySlots('tubia__display-ad');
-            }
             displayAd.parentNode.removeChild(displayAd);
         }
     }
@@ -745,34 +703,45 @@ class Player {
      * Load Google Analytics and OrangeGames analytics.
      */
     analytics() {
-        /* eslint-disable */
-        // Load Google Analytics so we can push out a Google event for
-        // each of our events.
-        if (typeof window['ga'] === 'undefined') {
-            (function (i, s, o, g, r, a, m) {
-                i['GoogleAnalyticsObject'] = r;
-                i[r] = i[r] || function () {
-                    (i[r].q = i[r].q || []).push(arguments);
-                }, i[r].l = 1 * new Date();
-                a = s.createElement(o),
-                    m = s.getElementsByTagName(o)[0];
-                a.async = true;
-                a.src = g;
-                m.parentNode.insertBefore(a, m);
-            })(window, document, 'script',
-                'https://www.google-analytics.com/analytics.js', 'ga');
-        }
-        if (typeof window['ga'] !== 'undefined') {
-            window['ga']('create', 'UA-102831738-1', {
-                'name': 'tubia',
-                'cookieExpires': 90 * 86400,
-            }, 'auto');
-            window['ga']('tubia.send', 'pageview');
+        utils.loadScript('https://www.google-analytics.com/analytics.js', 'tubia_google_analytics')
+            .then(() => {
+                /* eslint-disable */
+                window['ga']('create', 'UA-102831738-1', {
+                    'name': 'tubia',
+                    'cookieExpires': 90 * 86400,
+                }, 'auto');
+                window['ga']('tubia.send', 'pageview');
 
-            // Anonymize IP.
-            if (!this.options.gdprTracking) {
-                window['ga']('tubia.set', 'anonymizeIp', true);
-            }
+                // Anonymize IP for GDPR purposes.
+                if (this.options.gdprTracking) {
+                    window['ga']('tubia.set', 'anonymizeIp', true);
+                }
+                /* eslint-enable */
+            })
+            .catch(error => {
+                throw new Error(error);
+            });
+        if (this.options.gdprTracking) {
+            utils.loadScript('https://tags.crwdcntrl.net/c/13997/cc.js?ns=_cc13997', 'LOTCC_13997')
+                .then(() => {
+                    /* eslint-disable */
+                    if (typeof window['_cc13997'] === 'object'
+                        && typeof window['_cc13997'].bcpf === 'function'
+                        && typeof window['_cc13997'].add === 'function') {
+                        window['_cc13997'].add('med', 'video');
+
+                        // Must wait for the load event, before running Lotame.
+                        if (document.readyState === 'complete') {
+                            window['_cc13997'].bcpf();
+                        } else {
+                            window['_cc13997'].bcp();
+                        }
+                    }
+                    /* eslint-enable */
+                })
+                .catch(error => {
+                    throw new Error(error);
+                });
         }
     }
 

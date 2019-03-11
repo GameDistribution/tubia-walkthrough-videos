@@ -68,6 +68,8 @@ class Tubia {
         frame.setAttribute('scrolling', 'no');
         frame.setAttribute('allowfullscreen', 'true');
         frame.style.top = '0';
+        frame.style.right = '0';
+        frame.style.bottom = '0';
         frame.style.left = '0';
         frame.width = this.options.width || '100%';
         frame.height = this.options.height || '100%';
@@ -75,6 +77,14 @@ class Tubia {
         const container = document.getElementById(this.options.container);
         if (container) {
             if (typeof this.options.height === 'undefined') {
+                // Fix iOS problems.
+                frame.style.height = '0';
+                frame.style.width = '0';
+                frame.style.minWidth = '100%';
+                frame.style.minHeight = '100%';
+                frame.style.maxWidth = '100%';
+                frame.style.maxHeight = '100%';
+
                 const ratio = document.createElement('div');
                 ratio.style.position = 'relative';
                 ratio.style.padding = '56.25% 0 0 0';
@@ -84,7 +94,6 @@ class Tubia {
             } else {
                 container.appendChild(frame);
             }
-
         } else {
             console.error('There is no container element for Tubia set.');
         }

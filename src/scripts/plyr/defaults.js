@@ -445,7 +445,7 @@ const defaults = {
         midrollEnabled: true,
         videoInterval: 60,
         overlayInterval: 15,
-        gdprTargeting: null,
+        gdprTargeting: true,
         tag: '',
         tagLegacy: '',
         keys: null,
