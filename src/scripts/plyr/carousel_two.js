@@ -5,7 +5,7 @@ import controls from './controls';
 class CarouselTwo {
     constructor(p) {
         this.player = p.listeners.player;
-        this.moreItems = p.config.morevideos.data;
+        this.moreItems = p.config.morevideos.data.filter((element) => element.videos.some((vid) => vid.videoType >=0 && vid.videoType<=2));
         if (this.moreItems.length === 0 || this.moreItems === undefined) return;
         this.setup();
     }
