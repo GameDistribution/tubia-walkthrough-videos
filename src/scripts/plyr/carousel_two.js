@@ -31,19 +31,19 @@ class CarouselTwo {
                 type: 0,
                 title: 'Insane mode',
                 data: filteredArray(0) || null,
-                section: utils.createElement('div'),
+                section: utils.createElement('div',{class:'mode'}),
             },
             best: {
                 type: 1,
                 title: 'Best mode',
                 data: filteredArray(1) || null,
-                section: utils.createElement('div'),
+                section: utils.createElement('div',{class:'mode'}),
             },
             magic: {
                 type: 2,
                 title: 'Watch the magic end!',
                 data: filteredArray(2) || null,
-                section: utils.createElement('div'),
+                section: utils.createElement('div',{class:'mode'}),
             },
         };
 
@@ -106,6 +106,8 @@ class CarouselTwo {
             this.attachedLoadedDataEvent = true;
         }
 
+        relatedVideosWrapper.appendChild(utils.createElement('div',{style:'clear:both'}));
+
         vidEl.addEventListener('pause', () => { this.videoPaused = true; });
         vidEl.addEventListener('play', () => { this.videoPaused = false; });
         moreVideosWrapper.appendChild(relatedVideosWrapper);
@@ -156,7 +158,7 @@ class CarouselTwo {
             data.picture.link = magic.videoThumb;
             data.video.gifUrl = magic.gifUrl;
             data.video.title = magic.title;
-            data.video.linkSecure = magic.link.replace('http', 'https');
+            data.video.linkSecure = magic.link.indexOf('https') >-1 ? magic.link : magic.link.replace('http', 'https');
         }
 
         const button = utils.createElement('button', { class: 'tubia__play-button' });
@@ -170,7 +172,7 @@ class CarouselTwo {
                             <path class="tubia__hexagon-line-animation" d="M-1665.43,90.94V35.83a15.09,15.09,0,0,1,6.78-12.59l48.22-31.83a15.09,15.09,0,0,1,16-.38L-1547,19.13a15.09,15.09,0,0,1,7.39,13V90.94a15.09,15.09,0,0,1-7.21,12.87l-47.8,29.24a15.09,15.09,0,0,1-15.75,0l-47.8-29.24A15.09,15.09,0,0,1-1665.43,90.94Z" transform="translate(1667.43 13.09)"/>
                         </svg>`;
         button.insertAdjacentHTML('beforeend', hexagon);
-        button.addEventListener('click', () => {
+        section.addEventListener('click', () => {
             this.currentData = data;
             CarouselTwo.playVideoEvent.call(this);
         });
