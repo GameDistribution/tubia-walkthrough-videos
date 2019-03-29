@@ -714,7 +714,7 @@ class Ads {
                     this.elements.container.style.backgroundColor = '#000000';
                     this.elements.container.firstChild.style.width = '100%';
                     this.elements.container.firstChild.style.height = '100%';
-                    this.elements.container.firstChild.style.backgound = '#000000'
+                    this.elements.container.firstChild.style.backgound = '#000000';
                 } else {
                     const advertisement = ad[Object.keys(ad)[0]];
                     if (advertisement) {
