@@ -711,8 +711,10 @@ class Ads {
                     utils.toggleClass(this.elements.container, this.player.config.classNames.nonLinearAdvertisement, false);
                     this.elements.container.style.width = '100%';
                     this.elements.container.style.height = '100%';
+                    this.elements.container.style.backgroundColor = '#000000';
                     this.elements.container.firstChild.style.width = '100%';
                     this.elements.container.firstChild.style.height = '100%';
+                    this.elements.container.firstChild.style.backgroundColor = '#000000';
                 } else {
                     const advertisement = ad[Object.keys(ad)[0]];
                     if (advertisement) {
