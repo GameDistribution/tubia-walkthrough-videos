@@ -37,6 +37,7 @@
         &.plyr--non-linear {
             top: auto;
             transform: translateY(-$plyr-control-spacing * 6);
+            background-color: unset !important;
         }
 
         // The countdown label
