@@ -62,10 +62,6 @@ class CarouselTwo {
             closeButton.addEventListener('click', () => {
                 document.querySelector('.plyr__morevideos').classList += ' hide';
             });
-
-            document.querySelector('.plyr__morevideos').addEventListener('mouseleave', () => {
-                document.querySelector('.plyr__morevideos').classList.remove('hide');
-            });
         })();
 
         closeButton.setAttribute('data-plyr', 'moreVideosCloseButton');
