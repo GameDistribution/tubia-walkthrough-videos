@@ -1,6 +1,5 @@
 .plyr {
     .plyr--morevideos-button {
-
         position: absolute;
         top: 0px;
         right: 25px;
@@ -9,7 +8,6 @@
         &.hide{
             display: none;
         }
-
 
         &:before {
             content: "...";
@@ -47,11 +45,56 @@
 
         }
 
+        .related--videos-close-button{
+            position: absolute;
+            width: 26px;
+            height: 30px;
+            z-index: 9999999;
+            top: -1px;
+            right: 10px;
+            background-color: unset;
+            border: unset;
+            outline: none;
+            &:hover {
+              &::before, &::after {
+                background: #ECC546;
+                cursor: pointer;
+              }
+            }
+          
+            &::before, &::after {
+              content: '';
+              position: absolute;
+              height: 2px;
+              width: 100%;
+              top: 50%;
+              left: 0;
+              margin-top: -1px;
+              background: #7d0707;
+            }
+            &::before { 
+              transform: rotate(45deg);
+              border-radius: 100%;
+              height: 8px;
+              margin-top: -6px;
+            }
+            &::after {
+                transform: rotate(-45deg);
+                border-radius: 100%;
+                height: 8px;
+                margin-top: -6px;
+            }
+          }
+
         .morevideos--caption {
             color: #000;
             font-weight: bold;
             height: 20px;
             font-size: 20px;
+        }
+
+        &.hide{
+            opacity: 0;
         }
     }
 
@@ -65,17 +108,23 @@
 
     // When the morevideos is displayed
     &.plyr--morevideos-enabled.plyr--morevideos-active:not(.plyr--hide-controls) {
+
+        .plyr__morevideos:not(.hide) {
+            opacity: 1;
+        }
         .plyr__morevideos {
             transform: scaleY(1);
 
             // visibility: visible;
             &:before {
                 transform: scaleY(1);
+                opacity: 1;
                 transition: transform 0.2s cubic-bezier(.51, .92, .24, 1.15);
             }
 
             &:after {
                 transform: scaleY(1);
+                opacity: 1;
                 transition: transform 0.4s cubic-bezier(.51, .92, .24, 1.15);
                 transition-delay: 0.1s;
             }

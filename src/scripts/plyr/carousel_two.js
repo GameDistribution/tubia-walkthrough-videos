@@ -21,6 +21,7 @@ class CarouselTwo {
             relatedVideos: 'related--videos',
             modeTitle: 'related--videos-mode-title',
             interesting:'related--videos-mode-caption',
+            closeButton: 'related--videos-close-button',
         };
 
         const filteredArray = (type) => this.moreItems.filter((element) => element.videos.some((vid) => vid.videoType === type))
@@ -48,12 +49,29 @@ class CarouselTwo {
         };
 
         const moreVideosWrapper = document.querySelector(defaults.selectors.morevideos);
-      
+
         const caption = utils.createElement('div', {
             class: this.classes.interesting,
         },'Interesting Videos');
 
+        const closeButton = utils.createElement('button', {
+            class: this.classes.closeButton,
+        });
+
+        const closeButtonClickHandler = (() => {
+            closeButton.addEventListener('click', () => {
+                document.querySelector('.plyr__morevideos').classList += ' hide';
+            });
+
+            document.querySelector('.plyr__morevideos').addEventListener('mouseleave', () => {
+                document.querySelector('.plyr__morevideos').classList.remove('hide');
+            });
+        })();
+
+        closeButton.setAttribute('data-plyr', 'moreVideosCloseButton');
+
         moreVideosWrapper.appendChild(caption);
+        moreVideosWrapper.appendChild(closeButton);
 
         const relatedVideosWrapper = utils.createElement('div', {
             class: this.classes.relatedVideos,
