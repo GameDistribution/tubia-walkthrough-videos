@@ -444,7 +444,7 @@ const defaults = {
         prerollEnabled: true,
         midrollEnabled: true,
         videoInterval: 60,
-        overlayInterval: 15,
+        overlayInterval: 10,
         gdprTargeting: true,
         tag: '',
         tagLegacy: '',
