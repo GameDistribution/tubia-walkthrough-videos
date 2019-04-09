@@ -13,6 +13,10 @@
             transition-delay: 0.5s, 0.5s;
             fill: #fff;
         }
+
+        &.plyr__logo-top{
+            top: -4px;
+        }
     }
 
     &.plyr--video:not(.plyr--hide-controls) {

@@ -230,7 +230,8 @@ const controls = {
                 attributes.class += ` ${
                     this.config.classNames.morevideos.button
                 }`;
-                if(!this.config.hideControls)  {
+                // if you want it to show -> !this.config.hideControls
+                if(this.config.hideControls)  {
                     attributes.class += ' hide';
                 }
                 toggle = true;
@@ -448,7 +449,31 @@ const controls = {
         return container;
     },
 
-    // Create logo
+    leftTopCreateLogo() {
+        const svg = ` 
+                <svg preserveAspectRatio="xMinYMin meet" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 60 74" style="enable-background:new 0 0 60 74;" xml:space="preserve">
+                    
+                <g>
+                    <path class="st0" d="M33.9,63.7c-0.9,0-1.8-0.2-2.6-0.7L13.2,52.3c-1.6-0.9-2.5-2.6-2.5-4.4V26.2c0-1.8,1-3.5,2.5-4.4l18.1-10.7
+                        c1.6-1,3.6-1,5.3,0l18.1,10.7c1.6,0.9,2.5,2.6,2.5,4.4v21.6c0,1.8-1,3.5-2.5,4.4L36.5,63C35.7,63.5,34.8,63.7,33.9,63.7z
+                        M33.9,13.5c-0.4,0-0.7,0.1-1,0.3L14.8,24.5c-0.6,0.4-1,1-1,1.7v21.6c0,0.7,0.4,1.4,1,1.7l18.1,10.7c0.6,0.4,1.4,0.4,2.1,0L53,49.6
+                        c0.6-0.4,1-1,1-1.7V26.2c0-0.7-0.4-1.4-1-1.7L34.9,13.8C34.6,13.6,34.3,13.5,33.9,13.5z"></path>
+                    <path class="st0" d="M41.2,36.2l-11-7.7l0,0l0,0c-0.1-0.1-0.3-0.1-0.5-0.1c-0.2,0-0.3,0-0.5,0.1c-0.3,0.2-0.5,0.5-0.5,0.8v15.4
+                        c0,0.4,0.2,0.7,0.5,0.8l0.1,0.1h0c0.1,0,0.2,0.1,0.3,0.1c0.1,0,0.3,0,0.6-0.2l10.9-7.6c0.3-0.2,0.5-0.5,0.5-0.8
+                        S41.4,36.4,41.2,36.2z"></path>
+                </g>
+                </svg>
+            `;
+        const container = utils.createElement('a', {
+            href: 'https://tubia.com/',
+            target: '_blank',
+            class: 'plyr__logo plyr__logo-top',
+        });
+        container.insertAdjacentHTML('beforeend', svg);
+
+        return container;
+    },
+
     createLogo() {
         const svg = ` 
         <?xml version="1.0"?>
@@ -1783,7 +1808,7 @@ const controls = {
         // Show a logo
         if (this.config.controls.includes('logo')) {
             this.elements.container.appendChild(
-                controls.createLogo.call(this, 'logo')
+                controls.leftTopCreateLogo.call(this, 'logo')
             );
             containerRight.appendChild(controls.createLogo.call(this, 'logo'));
         }

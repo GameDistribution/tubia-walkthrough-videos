@@ -26,7 +26,7 @@
         overflow: hidden;
         // display: none;
         transform-origin: bottom;
-        transform: scaleY(0);
+        // transform: scaleY(0);
         // background-color: #000;
         background-color: rgba(225, 225, 225, 0.3);
 
@@ -95,6 +95,7 @@
         }
 
         &.hide{
+            pointer-events: none;
             opacity: 0;
         }
     }
@@ -187,7 +188,7 @@
     // When the playlist is hidden
     &.plyr--morevideos-enabled:not(.plyr--morevideos-active) {
         .plyr__morevideos {
-            transform: scaleY(0);
+            // transform: scaleY(0);
             transition: transform 0s linear;
             transition-delay: 0.2s;
 
@@ -201,7 +202,7 @@
                 }
 
                 &:before {
-                    transform: scaleY(0);
+                    // transform: scaleY(0);
                     transition: transform 0.2s cubic-bezier(.51, .92, .24, 1.15);
                     transition-delay: 0.2s;
                 }
