@@ -8,6 +8,7 @@ import controls from './controls';
 import i18n from './i18n';
 import playlist from './playlist';
 import morevideos from './morevideos';
+import share from './share';
 
 const ui = {
     addStyleHook() {
@@ -63,6 +64,9 @@ const ui = {
 
         // morevideos
         morevideos.setup.call(this);
+
+        // share
+        share.setup.call(this);
 
         // Captions
         captions.setup.call(this);

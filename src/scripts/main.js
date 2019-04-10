@@ -604,6 +604,11 @@ class Player {
                 data: json.relatedVideos,
             };
 
+            // Setup the share
+            const share = {
+                active: true,
+            };
+
             // We don't want certain options when our view is too small.
             if ((this.container.offsetWidth >= 400)
                 && (!/Mobi/.test(navigator.userAgent))) {
@@ -617,6 +622,7 @@ class Player {
             if (json.cuepoints && json.cuepoints.length > 0) {
                 controls.push('playlist');
                 controls.push('morevideos');
+                controls.push('share');
             }
 
             // Create the Plyr instance.
@@ -659,6 +665,7 @@ class Player {
                 seekTime: nextCueTime,
                 playlist,
                 morevideos,
+                share,
                 controls,
             });
 

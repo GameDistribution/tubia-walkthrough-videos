@@ -64,6 +64,7 @@ class Tubia {
 
         const frame = document.createElement('iframe');
         frame.src = url;
+        frame.setAttribute('id', 'tubiaFrame');
         frame.setAttribute('frameBorder', '0');
         frame.setAttribute('scrolling', 'no');
         frame.setAttribute('allowfullscreen', 'true');

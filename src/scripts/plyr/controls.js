@@ -10,6 +10,7 @@ import captions from './captions';
 import html5 from './html5';
 import playlist from './playlist';
 import morevideos from './morevideos';
+import share from './share';
 import Mark from './cuemark';
 
 // Sniff out the browser
@@ -209,6 +210,9 @@ const controls = {
                 break;
 
             case 'share':
+                attributes.class += ` ${
+                    this.config.classNames.share.button
+                }`;
                 toggle = true;
                 label = 'shareOpen';
                 labelPressed = 'shareClose';
@@ -1421,9 +1425,9 @@ const controls = {
         }
 
         // Share button
-        // if (this.config.controls.includes('share')) {
-        //     container.appendChild(controls.createButton.call(this, 'share'));
-        // }
+        if (this.config.controls.includes('share')) {
+            container.appendChild(controls.createButton.call(this, 'share'));
+        }
 
         // Restart button
         if (this.config.controls.includes('restart')) {

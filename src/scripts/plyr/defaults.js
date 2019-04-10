@@ -419,6 +419,7 @@ const defaults = {
         share: {
             enabled: 'plyr--share-enabled',
             active: 'plyr--share-active',
+            button: 'plyr--share-button',
         },
     },
     
