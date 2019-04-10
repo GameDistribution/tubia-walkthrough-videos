@@ -10,7 +10,6 @@ import captions from './captions';
 import html5 from './html5';
 import playlist from './playlist';
 import morevideos from './morevideos';
-import share from './share';
 import Mark from './cuemark';
 
 // Sniff out the browser
