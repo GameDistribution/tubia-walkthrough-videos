@@ -41,16 +41,31 @@ const share = {
             class: 'plyr--share-fullscreen',
         });
 
-        let shareLink;
-        const iframes = document.querySelectorAll('iframe');
-        const regex = /player.tubia/gm;
+        const linkParameters = {
+            publisherId: window.TUBIA_OPTIONS.publisherId,
+            title: window.TUBIA_OPTIONS.title,
+            gameId: window.TUBIA_OPTIONS.gameId,
+            colorMain: window.TUBIA_OPTIONS.colorMain,
+            colorAccent: window.TUBIA_OPTIONS.colorAccent,
+            langCode: window.TUBIA_OPTIONS.langCode,
+            keys: window.TUBIA_OPTIONS.keys,
+            url: window.location.href,
+            href: window.location.href,
+        };
 
-        for(let i = 0; i < iframes.length; i += 1){
-            if(regex.exec(iframes[i].src)){
-                shareLink = iframes[i].src;
-            }
-        }
+        
 
+        const shareLink = `https://player.tubia.com/index.html?
+                            &publisherid=${linkParameters.publisherId}
+                            &title=${linkParameters.title}
+                            &gameid=${linkParameters.gameId}
+                            &colormain=${linkParameters.colorMain}
+                            &coloraccent=${linkParameters.colorAccent}
+                            &langcode=${linkParameters.langCode}
+                            &keys=${linkParameters.keys}
+                            &url=${linkParameters.url}
+                            &href=${linkParameters.href}`;
+        
         const shareScreenContent = `
         <input type="text" class="plyr--share-fullscreen-input" value="${shareLink}"/>
         <div class="plyr--share-buttons-wrapper">
