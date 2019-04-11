@@ -5,6 +5,14 @@
         right: 10px;
     }
 
+    &.plyr--share-active .plyr__controls > .plyr__morevideos{
+        opacity: 0;
+    }
+
+    &.plyr--share-active .plyr__control--overlaid{
+        opacity: 0;
+    }
+
     &.plyr--share-active .plyr--share-fullscreen {
         position: absolute;
         top: 0;
@@ -80,13 +88,6 @@
                 background-color: #2795e9;
             }
 
-            .plyr--sharing-button--pinterest {
-                background-color: #bd081c;
-            }
-            .plyr--sharing-button--pinterest:hover {
-                background-color: #8c0615;
-            }
-
             .plyr--sharing-button--facebook {
                 background-color: #3b5998;
             }
@@ -94,68 +95,11 @@
                 background-color: #2d4373;
             }
 
-            .plyr--sharing-button--tumblr {
-                background-color: #35465C;
-            }
-            .plyr--sharing-button--tumblr:hover {
-                background-color: #222d3c;
-            }
-
-            .plyr--sharing-button--reddit {
-                background-color: #5f99cf;
-            }
-            .plyr--sharing-button--reddit:hover {
-                background-color: #3a80c1;
-            }
-
-            .plyr--sharing-button--google {
-                background-color: #dd4b39;
-            }
-            .plyr--sharing-button--google:hover {
-                background-color: #c23321;
-            }
-
-            .plyr--sharing-button--linkedin {
-                background-color: #0077b5;
-            }
-            .plyr--sharing-button--linkedin:hover {
-                background-color: #046293;
-            }
-
-            .plyr--sharing-button--email {
-                background-color: #777;
-            }
-            .plyr--sharing-button--email:hover {
-                background-color: #5e5e5e;
-            }
-
-            .plyr--sharing-button--xing {
-                background-color: #1a7576;
-            }
-            .plyr--sharing-button--xing:hover {
-                background-color: #114c4c;
-            }
-
             .plyr--sharing-button--whatsapp {
                 background-color: #25D366;
             }
             .plyr--sharing-button--whatsapp:hover {
                 background-color: #1da851;
-            }
-
-            .plyr--sharing-button--hackernews {
-                background-color: #FF6600;
-            }
-            .plyr--sharing-button--hackernews:focus,
-            .plyr--sharing-button--hackernews:hover {
-                background-color: #FB6200;
-            }
-
-            .plyr--sharing-button--vk {
-                background-color: #507299;
-            }
-            .plyr--sharing-button--vk:hover {
-                background-color: #43648c;
             }
 
             .plyr--sharing-button--facebook {
