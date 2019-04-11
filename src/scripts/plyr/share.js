@@ -45,11 +45,14 @@ const share = {
 
             const params = utils.getUrlParams(document.location.href) || {};
 
+            const publisherIdLegacy = params.pubid || params.publisherid;
             const publisherId = typeof publisherIdLegacy !== 'undefined' && publisherIdLegacy !== '' ? publisherIdLegacy : '';
             const gameId = typeof params.gameid !== 'undefined' && params.gameid !== '' ? params.gameid : '';
             const title = typeof params.title !== 'undefined' && params.title !== '' ? params.title : '';
             const colorMain = typeof params.colormain !== 'undefined' && params.colormain !== '' ? params.colormain : '';
             const colorAccent = typeof params.coloraccent !== 'undefined' && params.coloraccent !== '' ? params.coloraccent : '';
+            const langCodeLegacy = params.lang || params.langcode;
+            const langCode = typeof langCodeLegacy !== 'undefined' && langCodeLegacy !== '' ? langCodeLegacy : 'en-us';
             const keys = utils.parseJson(params.keys);
 
             const shareLink = `https://player.tubia.com/index.html?
