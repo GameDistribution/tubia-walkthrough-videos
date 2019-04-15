@@ -694,10 +694,6 @@ class Player {
                     }
                 }, this.transitionSpeed / 1.5);
 
-                utils.on(this.player.media, 'loaded started impression contentpause contentresume midpoint complete allcomplete click', (event) => {
-                    console.log('**__', event);
-                });
-
                 // Record Tubia "Video Play" event in Tunnl.
                 (new Image()).src = `https://ana.tunnl.com/event?tub_id=${this.videoId}&eventtype=1&page_url=${encodeURIComponent(this.options.url)}`;
             });
