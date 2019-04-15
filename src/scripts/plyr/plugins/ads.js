@@ -702,10 +702,6 @@ class Ads {
             utils.dispatchEvent.call(this.player, this.player.media, eventMessage);
         };
 
-        utils.on(this.player.media, 'loaded started impression contentpause contentresume midpoint complete allcomplete click', (eventAds) => {
-            console.log('**__', eventAds);
-        });
-
         switch (event.type) {
             case google.ima.AdEvent.Type.LOADED:
                 dispatchEvent('loaded');

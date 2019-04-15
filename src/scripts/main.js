@@ -669,6 +669,10 @@ class Player {
                 controls,
             });
 
+            this.player.on('adsstarted', () => {
+                console.log('**__', 'ads started.....');
+            });
+
             // Set some listeners.
             this.player.on('ready', () => {
                 // Start transition towards showing the player.
@@ -745,8 +749,6 @@ class Player {
                         }
                     }
                     /* eslint-enable */
-
-                    console.log('**__', 'cc.js loaded ..!!');
                 })
                 .catch(error => {
                     throw new Error(error);
