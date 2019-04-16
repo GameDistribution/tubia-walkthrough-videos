@@ -184,10 +184,6 @@ class Player {
                                 // No need to throw an error or log. It's just Lotame.
                             }
                         });
-
-                        this.player.on('adsstarted', () => {
-                            console.log('**__', 'ads started.....');
-                        });
                     }
 
                     resolve();
@@ -671,6 +667,26 @@ class Player {
                 morevideos,
                 share,
                 controls,
+            });
+
+            this.player.on('adsclick', () => {
+                console.log('**__', 'ads clicked ....');
+                // window['_cc13997'].bcpw('act', 'ad click');
+            });
+
+            this.player.on('adscomplete', () => {
+                // window['_cc13997'].bcpw('act', 'ad complete');
+            });
+
+            this.player.on('adsimpression', () => {
+                // window['_cc13997'].bcpw('genp', 'ad video');
+                // window['_cc13997'].bcpw('act', 'ad impression');
+            });
+
+            this.player.on('adsskipped', () => {
+                console.log('**__', 'ads skipped ....');
+                // window['_cc13997'].bcpw('genp', 'ad video');
+                // window['_cc13997'].bcpw('act', 'ad impression');
             });
 
             // Set some listeners.

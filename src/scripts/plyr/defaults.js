@@ -302,6 +302,7 @@ const defaults = {
         'adsallcomplete',
         'adsimpression',
         'adsclick',
+        'adsskipped',
     ],
 
     // Selectors
