@@ -302,7 +302,7 @@ const defaults = {
         'adsallcomplete',
         'adsimpression',
         'adsclick',
-        'adsskip',
+        'adsskipped',
     ],
 
     // Selectors

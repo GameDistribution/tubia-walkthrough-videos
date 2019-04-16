@@ -670,23 +670,28 @@ class Player {
             });
 
             this.player.on('adsclick', () => {
-                console.log('**__', 'ads clicked ....');
-                // window['_cc13997'].bcpw('act', 'ad click');
+                /* eslint-disable */
+                window['_cc13997'].bcpw('act', 'ad click');
+                /* eslint-enable */
             });
 
             this.player.on('adscomplete', () => {
-                // window['_cc13997'].bcpw('act', 'ad complete');
+                /* eslint-disable */
+                window['_cc13997'].bcpw('act', 'ad complete');
+                /* eslint-enable */
             });
 
             this.player.on('adsimpression', () => {
-                // window['_cc13997'].bcpw('genp', 'ad video');
-                // window['_cc13997'].bcpw('act', 'ad impression');
+                /* eslint-disable */
+                window['_cc13997'].bcpw('genp', 'ad video');
+                window['_cc13997'].bcpw('act', 'ad impression');
+                /* eslint-enable */
             });
 
-            this.player.on('adsskip', () => {
-                console.log('**__', 'ads skipped ....');
-                // window['_cc13997'].bcpw('genp', 'ad video');
-                // window['_cc13997'].bcpw('act', 'ad impression');
+            this.player.on('adsskipped', () => {
+                /* eslint-disable */
+                window['_cc13997'].bcpw('act', 'ad skipped');
+                /* eslint-enable */
             });
 
             // Set some listeners.
@@ -756,7 +761,7 @@ class Player {
                         && typeof window['_cc13997'].bcpf === 'function'
                         && typeof window['_cc13997'].add === 'function') {
                         window['_cc13997'].add('med', 'video');
-
+                        window['_cc13997'].add('genp', `domain : ${parent.location.origin}`);
                         // Must wait for the load event, before running Lotame.
                         if (document.readyState === 'complete') {
                             window['_cc13997'].bcpf();
