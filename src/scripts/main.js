@@ -184,6 +184,10 @@ class Player {
                                 // No need to throw an error or log. It's just Lotame.
                             }
                         });
+
+                        this.player.on('adsstarted', () => {
+                            console.log('**__', 'ads started.....');
+                        });
                     }
 
                     resolve();
@@ -667,10 +671,6 @@ class Player {
                 morevideos,
                 share,
                 controls,
-            });
-
-            this.player.on('adsstarted', () => {
-                console.log('**__', 'ads started.....');
             });
 
             // Set some listeners.
