@@ -683,7 +683,7 @@ class Player {
                 // window['_cc13997'].bcpw('act', 'ad impression');
             });
 
-            this.player.on('adsskipped', () => {
+            this.player.on('adsskip', () => {
                 console.log('**__', 'ads skipped ....');
                 // window['_cc13997'].bcpw('genp', 'ad video');
                 // window['_cc13997'].bcpw('act', 'ad impression');
