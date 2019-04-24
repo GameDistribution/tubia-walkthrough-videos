@@ -757,6 +757,7 @@ class Player {
             utils.loadScript('https://tags.crwdcntrl.net/c/13997/cc.js?ns=_cc13997', 'LOTCC_13997')
                 .then(() => {
                     /* eslint-disable */
+                    console.log('**--', this.origin);
                     if (typeof window['_cc13997'] === 'object'
                         && typeof window['_cc13997'].bcpf === 'function'
                         && typeof window['_cc13997'].add === 'function') {
