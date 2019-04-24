@@ -757,12 +757,11 @@ class Player {
             utils.loadScript('https://tags.crwdcntrl.net/c/13997/cc.js?ns=_cc13997', 'LOTCC_13997')
                 .then(() => {
                     /* eslint-disable */
-                    console.log('**--', this.origin);
                     if (typeof window['_cc13997'] === 'object'
                         && typeof window['_cc13997'].bcpf === 'function'
                         && typeof window['_cc13997'].add === 'function') {
                         window['_cc13997'].add('med', 'video');
-                        window['_cc13997'].add('genp', `domain : ${parent.location.origin}`);
+                        window['_cc13997'].add('genp', `domain : ${this.origin}`);
                         // Must wait for the load event, before running Lotame.
                         if (document.readyState === 'complete') {
                             window['_cc13997'].bcpf();
