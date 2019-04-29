@@ -3,6 +3,39 @@
         position: absolute;
         top: 10px;
         right: 10px;
+        display: flex;
+        flex-direction: column-reverse;
+        justify-content: center;
+        align-items: center;
+        width: 64px;
+        height: 64px;
+    }
+
+    .plyr--share-button svg {
+      position: absolute;
+    }
+
+    .plyr--share-button svg[class=icon--pressed] {
+      z-index: 99;
+      background: #000;
+      right: -3px;
+      border-radius: 30px;
+      padding: 2px;
+      width: 20px;
+    }
+
+    .plyr--share-button .plyr--share-title {
+      transition: top 0.4s ease-in-out;
+      background: rgba(0, 0, 0, 0.50);
+      top: 55px;
+      position: absolute;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 13px;
+    }
+
+    .plyr--share-button[aria-pressed=true] .plyr--share-title {
+      top: calc(100% + 5px);
     }
 
     &.plyr--share-active .plyr__controls > .plyr__morevideos{
@@ -21,7 +54,19 @@
         height: 100%;
         background-color: rgba(0, 0, 0, 0.9);
         opacity: 1;
-        padding-top: 20%;
+        display: flex;
+        padding: 0;
+        align-items: center;
+        flex-direction: row;
+
+        & > div {
+          display: flex;
+          flex: 1;
+          flex-wrap: wrap;
+          justify-content: center;
+          align-items: center;
+          flex-direction: column;
+        }
 
         .plyr--share-fullscreen-input {
             height: 60px;
@@ -31,6 +76,7 @@
             background-color: #fff;
             border-radius: 10px;
             outline: none;
+            padding: 0 15px;
         }
 
         #toast {
@@ -42,11 +88,7 @@
             color: #fff;
             text-align: center;
             border-radius: 2px;
-            position: fixed;
             z-index: 1;
-            left: 0;
-            right: 0;
-            bottom: 40%;
             font-size: 17px;
             white-space: nowrap;
             #img {

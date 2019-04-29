@@ -454,6 +454,9 @@ const defaults = {
         domain: 'gamedistribution.com',
         category: '',
     },
+
+    // Lottie Animations
+    lottieAnim: ['plyr--share-button'],
 };
 
 export default defaults;

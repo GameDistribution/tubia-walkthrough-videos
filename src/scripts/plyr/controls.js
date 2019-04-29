@@ -215,7 +215,7 @@ const controls = {
                 toggle = true;
                 label = 'shareOpen';
                 labelPressed = 'shareClose';
-                icon = 'share';
+                icon = '';
                 iconPressed = 'close';
                 break;
 
