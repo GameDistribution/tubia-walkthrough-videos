@@ -49,6 +49,12 @@ module.exports = function (grunt) {
                 ],
                 dest: './dist',
             },
+            files: {
+              src: './src/animations/**/*',
+              dest: './dist/animations',
+              flatten: true,
+              expand: true
+            }
         },
 
         /**

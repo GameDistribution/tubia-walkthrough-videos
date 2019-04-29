@@ -24,6 +24,7 @@ import controls from './controls';
 import media from './media';
 import source from './source';
 import ui from './ui';
+import lotties from './lotties';
 
 // Private properties
 // TODO: Use a WeakMap for private globals
@@ -318,6 +319,8 @@ class Plyr {
         if (this.config.autoplay) {
             this.play();
         }
+
+        lotties.createAnimations();
     }
 
     // ---------------------------------------
