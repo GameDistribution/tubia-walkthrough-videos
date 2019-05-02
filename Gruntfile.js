@@ -46,6 +46,7 @@ module.exports = function (grunt) {
                     'examples/iframe.html',
                     'examples/legacy.html',
                     'examples/publisher.html',
+                    './favicon.ico',
                 ],
                 dest: './dist',
             },
