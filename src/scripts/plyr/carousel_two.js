@@ -1,6 +1,7 @@
 import utils from './utils';
 import defaults from './defaults';
 import controls from './controls';
+import lotties from './lotties';
 
 class CarouselTwo {
     constructor(p) {
@@ -61,6 +62,7 @@ class CarouselTwo {
         const closeButtonClickHandler = (() => {
             closeButton.addEventListener('click', () => {
                 document.querySelector('.plyr__morevideos').classList += ' hide';
+                lotties.playLottie('plyr--bar-morevideos');
             });
         })();
 

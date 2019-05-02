@@ -456,7 +456,25 @@ const defaults = {
     },
 
     // Lottie Animations
-    lottieAnim: ['plyr--share-button'],
+    lottieAnim: {
+        share:
+            {
+                container: 'plyr--share-button',
+            },
+        morevideos:
+            {
+                container: 'plyr--bar-morevideos',
+                speed: 2.5,
+            },
+        fullscreen:
+            {
+                container: 'plyr--button-fullscreen',
+            },
+        levels:
+            {
+                container: 'plyr--bar-playlist',
+            },
+    },
 };
 
 export default defaults;

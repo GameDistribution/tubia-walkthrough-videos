@@ -152,6 +152,7 @@ const controls = {
         let icon;
         let labelPressed;
         let iconPressed;
+        let lottieClass;
 
         if (!('type' in attributes)) {
             attributes.type = 'button';
@@ -173,6 +174,7 @@ const controls = {
                 labelPressed = 'pause';
                 icon = 'play';
                 iconPressed = 'pause';
+                lottieClass = false;
                 break;
 
             case 'mute':
@@ -181,6 +183,7 @@ const controls = {
                 labelPressed = 'unmute';
                 icon = 'volume';
                 iconPressed = 'muted';
+                lottieClass = false;
                 break;
 
             case 'captions':
@@ -189,14 +192,16 @@ const controls = {
                 labelPressed = 'disableCaptions';
                 icon = 'captions-off';
                 iconPressed = 'captions-on';
+                lottieClass = false;
                 break;
 
             case 'fullscreen':
                 toggle = true;
                 label = 'enterFullscreen';
                 labelPressed = 'exitFullscreen';
-                icon = 'enter-fullscreen';
-                iconPressed = 'exit-fullscreen';
+                icon = '';
+                iconPressed = '';
+                lottieClass = 'plyr--button-fullscreen';
                 break;
 
             case 'play-large':
@@ -206,6 +211,7 @@ const controls = {
                 type = 'play';
                 label = 'play';
                 icon = 'play';
+                lottieClass = false;
                 break;
 
             case 'share':
@@ -217,6 +223,7 @@ const controls = {
                 labelPressed = 'shareClose';
                 icon = '';
                 iconPressed = 'close';
+                lottieClass = 'plyr--share-button';
                 break;
 
             case 'playlist':
@@ -228,6 +235,7 @@ const controls = {
                 labelPressed = 'playlistClose';
                 icon = 'playlist';
                 iconPressed = 'close';
+                lottieClass = 'plyr--bar-playlist';
                 break;
             case 'morevideos':
                 attributes.class += ` ${
@@ -243,6 +251,7 @@ const controls = {
             default:
                 label = type;
                 icon = buttonType;
+                lottieClass = false;
         }
 
         // Setup toggle icon and labels
@@ -270,6 +279,11 @@ const controls = {
                     class: 'label--not-pressed',
                 })
             );
+
+            // Set lottie class
+            if (lottieClass) {
+                button.setAttribute('lottie-class', lottieClass);
+            };
 
             // Add aria attributes
             attributes['aria-pressed'] = false;
@@ -307,10 +321,10 @@ const controls = {
             button.insertAdjacentHTML('beforeend', html);
         }
 
-        // if (type === "morevideos") {
-        //     const html = `<button class="plyr_morevideos_button"></button>`;
-        //     button.insertAdjacentHTML("beforeend", html);
-        // }
+        if (type === 'morevideos') {
+            const html = "<button class='plyr_morevideos_button'></button>";
+            button.insertAdjacentHTML('beforeend', html);
+        }
 
         if (type === 'playlist') {
             const html = `
@@ -318,7 +332,7 @@ const controls = {
                     ${
     this.config.playlist.type === 'related'
         ? 'Related'
-        : 'Levels'
+        : ''
 }
                 </span>
             `;
@@ -478,21 +492,25 @@ const controls = {
     },
 
     createLogo() {
-        const svg = ` 
-        <?xml version="1.0"?>
-        <svg xmlns="http://www.w3.org/2000/svg" height="21px" viewBox="-32 -12 372 372.00061" width="21px" class=""><g><path d="m29.292969 348.75c-5.238281 0-10.480469-1.375-15.269531-4.128906-9.628907-5.53125-15.371094-15.464844-15.371094-26.566406v-287.359376c0-11.105468 5.742187-21.039062 15.371094-26.570312 9.636718-5.53125 21.101562-5.496094 30.695312.089844l246.625 143.675781c9.523438 5.554687 15.21875 15.453125 15.21875 26.484375 0 11.027344-5.695312 20.921875-15.21875 26.480469l-246.625 143.679687c-4.824219 2.808594-10.121094 4.214844-15.425781 4.214844zm-.003907-331.667969c-2.320312 0-4.644531.609375-6.765624 1.828125-4.269532 2.449219-6.816407 6.855469-6.816407 11.785156v287.359376c0 4.921874 2.546875 9.328124 6.816407 11.777343 4.269531 2.457031 9.351562 2.441407 13.605468-.039062l246.628906-143.679688c4.222657-2.457031 6.75-6.851562 6.75-11.742187s-2.527343-9.28125-6.75-11.742188l-246.628906-143.675781c-2.136718-1.253906-4.484375-1.871094-6.839844-1.871094zm0 0" data-original="#000000" class="active-path" data-old_color="#E6D3D3" fill="#FFFDFD"/><path d="m194.78125 144.527344c0 7.066406-5.722656 12.789062-12.789062 12.789062-7.066407 0-12.792969-5.722656-12.792969-12.789062s5.726562-12.789063 12.792969-12.789063c7.066406 0 12.789062 5.722657 12.789062 12.789063zm0 0" data-original="#000000" class="active-path" data-old_color="#E6D3D3" fill="#FFFDFD"/><path d="m109.507812 144.527344c0 7.066406-5.730468 12.789062-12.792968 12.789062s-12.789063-5.722656-12.789063-12.789062 5.726563-12.789063 12.789063-12.789063 12.792968 5.722657 12.792968 12.789063zm0 0" data-original="#000000" class="active-path" data-old_color="#E6D3D3" fill="#FFFDFD"/><path d="m121.585938 174.375c-2.199219 4.195312-3.550782 9.007812-3.550782 14.214844 0 15.695312 11.453125 28.421875 25.585938 28.421875 14.128906 0 25.582031-12.726563 25.582031-28.421875 0-5.207032-1.351563-10.019532-3.546875-14.214844-4.4375 8.460938-39.640625 8.460938-44.070312 0zm0 0" data-original="#000000" class="active-path" data-old_color="#E6D3D3" fill="#FFFDFD"/></g> </svg>
-        `;
-        const container = utils.createElement('span', {
-            class: 'plyr__logo',
+        const container = utils.createElement('button', {
+            class: 'plyr--bar-morevideos plyr__control',
+            'lottie-class': 'plyr--bar-morevideos',
+            type: 'button',
+
         });
 
         const openInterestingVideos = (() => {
             container.addEventListener('click', () => {
-                document.querySelector('.plyr__morevideos').classList.remove('hide');
+                const isHidden = document.querySelector('.plyr__morevideos').classList.contains('hide');
+                const element = document.querySelector('.plyr__morevideos');
+                if (isHidden) {
+                    element.classList.remove('hide');
+                } else {
+                    element.classList.add('hide');
+                }
+                
             });
         })();
-
-        container.insertAdjacentHTML('beforeend', svg);
 
         return container;
     },

@@ -134,7 +134,7 @@
             z-index: 4; // Above playlist and non linear ad, but below video advertisement.
             bottom: 0;
             left: 0;
-            padding: $plyr-control-spacing / 2 $plyr-control-spacing;
+            padding: 0;
         }
 
         .plyr__controls-right {
@@ -216,7 +216,7 @@
     &.plyr--captions-enabled [data-plyr='captions'],
     &.plyr--pip-supported [data-plyr='pip'],
     &.plyr--airplay-supported [data-plyr='airplay'],
-    &.plyr--fullscreen-enabled [data-plyr='fullscreen'] {
+    &.plyr--fullscreen-enabled {
         display: inline-block;
     }
 }

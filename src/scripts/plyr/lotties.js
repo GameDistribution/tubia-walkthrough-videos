@@ -11,30 +11,66 @@ const lotties = {
     // Create lottie Animations
     createAnimations() {
         setTimeout(() => {
-            defaults.lottieAnim.forEach((element, index) => {
+            Object.keys(defaults.lottieAnim).forEach((key, index)=>{
+                const element = defaults.lottieAnim[key];
+                const container = document.querySelector(`[lottie-class="${element.container}"]`);
                 const params = {
-                    container: document.querySelector(`.${defaults.lottieAnim[index]}`),
+                    container: document.querySelector(`[lottie-class="${element.container}"]`),
                     autoplay: false,
                     loop: false,
-                    path: `./animations/${defaults.lottieAnim[index]}.json`,
+                    path: `./animations/${element.container}.json`,
                     renderer: 'svg',
                 };
-                document.querySelector(`.${defaults.lottieAnim[index]}`).setAttribute('id', defaults.lottieAnim[index]);
-                anim[defaults.lottieAnim[index]] = bodymovin.loadAnimation(params);
-                document.querySelector(`.${defaults.lottieAnim[index]}`).addEventListener('click', this.clickLottieSVG);
+
+                anim[element.container] = bodymovin.loadAnimation(params);
+
+                if (element.speed) {
+                    anim[element.container].setSpeed(element.speed);
+                }
+
+                container.addEventListener('click', this.clickLottieSVG);
             });
         }, 100);
+        this.addExitFullscreenListeners();
+    },
+
+    // Detect whether user presses to esc key
+    addExitFullscreenListeners() {
+        document.addEventListener('webkitfullscreenchange', this.toggleFullscreen, false);
+        document.addEventListener('mozfullscreenchange', this.toggleFullscreen, false);
+        document.addEventListener('fullscreenchange', this.toggleFullscreen, false);
+        document.addEventListener('MSFullscreenChange', this.toggleFullscreen, false);
+    },
+
+    toggleFullscreen() {
+        // Play/Reverse play lottie icon depends on fullscreen active mode
+        if (!document.webkitIsFullScreen && !document.mozFullScreen && !document.msFullscreenElement) {
+            lotties.reversePlayLottie('plyr--button-fullscreen');
+        } else {
+            lotties.playLottie('plyr--button-fullscreen');
+        }
     },
     
     clickLottieSVG() {
-        const currAnim = anim[this.getAttribute('id')];
-        const currFNum = currAnim.currentRawFrame;
+        const currAnim = this.getAttribute('lottie-class');
+        const currFNum = anim[currAnim].currentRawFrame;
         if (!currFNum) {
-            currAnim.setDirection(1);
+            lotties.playLottie(currAnim);
         } else {
-            currAnim.setDirection(-1);
+            lotties.reversePlayLottie(currAnim);
         }
-        currAnim.goToAndPlay(currFNum, true);
+    },
+
+    playLottie(element) {
+        const el = anim[element];
+        el.setDirection(1);
+        el.goToAndPlay(0, true);
+    },
+
+    reversePlayLottie(element) {
+        const el = anim[element];
+        el.setDirection(-1);
+        el.goToAndPlay(20, true);
     },
 
 };

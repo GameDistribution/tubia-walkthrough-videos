@@ -36,6 +36,18 @@
         }
     }
 
+    .plyr__control[lottie-class] {
+        display: flex;
+        align-items: center;
+        max-width: 45px;
+        svg.icon--pressed,
+        svg.icon--not-pressed,
+        span.label--pressed,
+        span.label--not-pressed {
+            display: none !important;
+        }
+    }
+
     // Change icons on state change
     .plyr__control[aria-pressed='false'] .icon--pressed,
     .plyr__control[aria-pressed='true'] .icon--not-pressed,
