@@ -114,7 +114,7 @@ class CueMark {
     }
 
     hide(event) {
-        this.wrapper.removeEventListener('click');
+        // this.wrapper.removeEventListener('click', true);
         this.wrapper.setAttribute('class', 'progress--mark-wrapper');
         document.querySelector('.plyr__tooltip').style.opacity = 1;
         // this.wrapper.style.opacity=0;
