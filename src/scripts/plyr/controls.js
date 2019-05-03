@@ -488,13 +488,37 @@ const controls = {
 
         const openInterestingVideos = (() => {
             container.addEventListener('click', () => {
-                document.querySelector('.plyr__morevideos').classList.remove('hide');
+                controls.toggleInterestingVideos();
             });
         })();
 
         container.insertAdjacentHTML('beforeend', svg);
 
         return container;
+    },
+
+    toggleInterestingVideos() {
+        const element = document.querySelector('.plyr__morevideos');
+        const isHidden = element.classList.contains('hide');
+
+        if (isHidden) {
+            controls.showInterestingVideos();
+        } else {
+            controls.hideInterestingVideos();
+        }
+    },
+
+    showInterestingVideos() {
+        const element = document.querySelector('.plyr__morevideos');
+        const isHidden = element.classList.contains('hide');
+        if (isHidden) {
+            element.classList.remove('hide');
+        }
+    },
+
+    hideInterestingVideos() {
+        const element = document.querySelector('.plyr__morevideos');
+        element.classList.add('hide');
     },
 
     // Create title

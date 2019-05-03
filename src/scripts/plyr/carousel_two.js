@@ -14,6 +14,7 @@ class CarouselTwo {
         this.openedMagic = window.localStorage.getItem('openedMagic') || false;
         this.currentData = null;
         this.videoPaused = false;
+        this.videoStarted = false;
         this.timer = null;
         this.attachedLoadedDataEvent = false;
         this.magicDelay = parseInt(60000, 10);
@@ -49,6 +50,9 @@ class CarouselTwo {
         };
 
         const moreVideosWrapper = document.querySelector(defaults.selectors.morevideos);
+        
+        // Hide More Videos as a default
+        moreVideosWrapper.classList.add('hide');
 
         const caption = utils.createElement('div', {
             class: this.classes.interesting,
@@ -122,8 +126,17 @@ class CarouselTwo {
 
         relatedVideosWrapper.appendChild(utils.createElement('div',{style:'clear:both'}));
 
-        vidEl.addEventListener('pause', () => { this.videoPaused = true; });
-        vidEl.addEventListener('play', () => { this.videoPaused = false; });
+        vidEl.addEventListener('pause', () => { 
+            this.videoPaused = true; 
+            controls.showInterestingVideos();
+        });
+        vidEl.addEventListener('play', () => { 
+            this.videoStarted = true;
+            if (this.videoPaused && this.videoStarted) 
+            { 
+                controls.hideInterestingVideos(); 
+            }
+        });
         moreVideosWrapper.appendChild(relatedVideosWrapper);
     }
 
