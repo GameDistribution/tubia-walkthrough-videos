@@ -11,6 +11,7 @@ import html5 from './html5';
 import playlist from './playlist';
 import morevideos from './morevideos';
 import Mark from './cuemark';
+import lotties from './lotties';
 
 // Sniff out the browser
 const browser = utils.getBrowser();
@@ -522,6 +523,8 @@ const controls = {
     showInterestingVideos() {
         const element = document.querySelector('.plyr__morevideos');
         const isHidden = element.classList.contains('hide');
+        lotties.playLottie('plyr--bar-morevideos');
+
         if (isHidden) {
             element.classList.remove('hide');
         }
@@ -529,6 +532,7 @@ const controls = {
 
     hideInterestingVideos() {
         const element = document.querySelector('.plyr__morevideos');
+        lotties.reversePlayLottie('plyr--bar-morevideos');
         element.classList.add('hide');
     },
 
