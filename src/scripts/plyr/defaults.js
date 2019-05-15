@@ -107,7 +107,8 @@ const defaults = {
     // Captions settings
     captions: {
         active: true,
-        language: window.navigator.language.split('-')[0],
+        language: (navigator.language || navigator.userLanguage).split('-')[0],
+        // See following issue: https://github.com/sampotts/plyr/issues/893
     },
 
     // Fullscreen settings
