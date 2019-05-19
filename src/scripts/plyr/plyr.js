@@ -117,6 +117,8 @@ class Plyr {
             quality: [],
         };
 
+        lotties.createAnimations();
+        
         // Debugging
         // TODO: move to globals
         this.debug = new Console(this.config.debug);
@@ -319,8 +321,6 @@ class Plyr {
         if (this.config.autoplay) {
             this.play();
         }
-
-        lotties.createAnimations();
     }
 
     // ---------------------------------------

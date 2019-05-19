@@ -460,20 +460,40 @@ const defaults = {
     lottieAnim: {
         share:
             {
+                eventlisteners: true,
                 container: 'plyr--share-button',
             },
         morevideos:
             {
+                eventlisteners: true,
                 container: 'plyr--bar-morevideos',
                 speed: 2.5,
             },
         fullscreen:
             {
+                eventlisteners: true,
                 container: 'plyr--button-fullscreen',
             },
         levels:
             {
+                eventlisteners: true,
                 container: 'plyr--bar-playlist',
+            },
+        magicspace:
+            {
+                container: 'magic-space',
+                loop: true,
+            },
+        magiclock:
+            {
+                eventlisteners: true,
+                container: 'magic-lock',
+                playWhenHover: true,
+                onMouseOver: 'magic-space',
+            },
+        magictimer:
+            {
+                container: 'magic-timer',
             },
     },
 };

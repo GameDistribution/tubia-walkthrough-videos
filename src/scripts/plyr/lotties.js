@@ -11,24 +11,35 @@ const lotties = {
     // Create lottie Animations
     createAnimations() {
         setTimeout(() => {
-            Object.keys(defaults.lottieAnim).forEach((key, index)=>{
+            Object.keys(defaults.lottieAnim).forEach((key)=>{
                 const element = defaults.lottieAnim[key];
                 const container = document.querySelector(`[lottie-class="${element.container}"]`);
                 const params = {
                     container: document.querySelector(`[lottie-class="${element.container}"]`),
-                    autoplay: false,
-                    loop: false,
+                    autoplay: element.autoplay,
+                    loop: element.loop,
                     path: `./animations/${element.container}.json`,
                     renderer: 'svg',
                 };
 
+                // eslint-disable-next-line
                 anim[element.container] = bodymovin.loadAnimation(params);
 
                 if (element.speed) {
                     anim[element.container].setSpeed(element.speed);
                 }
-
-                container.addEventListener('click', this.clickLottieSVG);
+                
+                if (element.eventlisteners) {
+                    if (element.playWhenHover) {
+                        if (element.onMouseOver) {
+                            container.setAttribute('play-this', element.onMouseOver);
+                        }
+                        container.addEventListener('mouseover', this.mouseOverLottieSVG);
+                        container.addEventListener('mouseout', this.mouseOutLottieSVG);
+                    } else {
+                        container.addEventListener('click', this.clickLottieSVG);
+                    }
+                }
             });
         }, 100);
         this.addExitFullscreenListeners();
@@ -61,8 +72,23 @@ const lotties = {
         }
     },
 
+    mouseOverLottieSVG() {
+        const playThis = this.getAttribute('play-this');
+        const el = anim[!playThis ? this.getAttribute('lottie-class') : playThis];
+        
+        el.play();
+    },
+    
+    mouseOutLottieSVG() {
+        const playThis = this.getAttribute('play-this');
+        const el = anim[!playThis ? this.getAttribute('lottie-class') : playThis];
+
+        el.stop();
+    },
+
     playLottie(element) {
         const el = anim[element];
+        console.warn(el);
         el.setDirection(1);
         el.goToAndPlay(0, true);
     },

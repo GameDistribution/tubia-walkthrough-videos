@@ -18,7 +18,7 @@
         min-height: auto;
 
         svg {
-            display: block;
+            display: inline-block;
             fill: currentColor;
             height: $plyr-control-icon-size;
             pointer-events: none;
@@ -45,6 +45,11 @@
         span.label--pressed,
         span.label--not-pressed {
             display: none !important;
+        }
+    }
+    .plyr__controls-right {
+        .plyr__control[lottie-class] {
+            max-height: 40px;
         }
     }
 

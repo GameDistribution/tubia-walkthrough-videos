@@ -500,11 +500,9 @@ const controls = {
 
         });
 
-        const openInterestingVideos = (() => {
-            container.addEventListener('click', () => {
-                controls.toggleInterestingVideos();
-            });
-        })();
+        container.addEventListener('click', () => {
+            controls.toggleInterestingVideos();
+        });
 
         return container;
     },
