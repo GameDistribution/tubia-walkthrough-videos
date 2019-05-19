@@ -1,4 +1,10 @@
 const sass = require('node-sass');
+const autoprefixer = require('autoprefixer')({
+    browsers: 'last 2 version',
+});
+const cssnano = require('cssnano')({
+    reduceIdents: false,
+});
 
 /**
  * atob
@@ -7,12 +13,12 @@ const sass = require('node-sass');
  */
 function atob(str) {
     if (str) {
-        return new Buffer(str, 'base64').toString('binary');
+        return Buffer.alloc(str).toString('binary');
     }
     return null;
 }
 
-module.exports = function (grunt) {
+module.exports = function gruntMain (grunt) {
     const startTS = Date.now();
 
     grunt.initConfig({
@@ -51,11 +57,17 @@ module.exports = function (grunt) {
                 dest: './dist',
             },
             files: {
-              src: './src/animations/**/*',
-              dest: './dist/animations',
-              flatten: true,
-              expand: true
-            }
+                src: './src/animations/**/*',
+                dest: './dist/animations',
+                flatten: true,
+                expand: true,
+            },
+            files: {
+                src: ['./node_modules/lottie-web/build/player/lottie.min.js'],
+                dest: './dist/scripts',
+                flatten: true,
+                expand: true,
+            },
         },
 
         /**
@@ -165,12 +177,8 @@ module.exports = function (grunt) {
             options: {
                 map: false,
                 processors: [
-                    require('autoprefixer')({
-                        browsers: 'last 2 version',
-                    }), // vendor prefixes. for more: https://github.com/ai/browserslist
-                    require('cssnano')({
-                        reduceIdents: false,
-                    }),
+                    autoprefixer, // vendor prefixes. for more: https://github.com/ai/browserslist
+                    cssnano,
                 ],
             },
             build: {
@@ -345,25 +353,25 @@ module.exports = function (grunt) {
     // Register all tasks.
     grunt.registerTask('duration',
         'Displays the duration of the grunt task up until this point.',
-        function () {
+        () => {
             const date = new Date(Date.now() - startTS);
             let hh = date.getUTCHours();
             let mm = date.getUTCMinutes();
             let ss = date.getSeconds();
             if (hh < 10) {
-                hh = '0' + hh;
+                hh = `0${hh}`;
             }
             if (mm < 10) {
-                mm = '0' + mm;
+                mm = `0${mm}`;
             }
             if (ss < 10) {
-                ss = '0' + ss;
+                ss = `0${ss}`;
             }
-            console.log('Duration: ' + hh + ':' + mm + ':' + ss);
+            console.warn(`Duration: ${hh}:${mm}:${ss}`);
         });
     grunt.registerTask('sourcemaps',
         'Build with sourcemaps',
-        function () {
+        () => {
             grunt.config.set('svgstore.options.includedemo', true);
             grunt.config.set('uglify.options.sourceMap', true);
             grunt.config.set('uglify.options.sourceMapIncludeSources', true);
@@ -375,7 +383,7 @@ module.exports = function (grunt) {
     grunt.registerTask('default',
         'Start BrowserSync and watch for any changes so we can do live ' +
         'updates while developing.',
-        function () {
+        () => {
             const tasksArray = [
                 'copy',
                 'sass',
@@ -395,7 +403,7 @@ module.exports = function (grunt) {
         });
     grunt.registerTask('build',
         'Build and optimize the js.',
-        function () {
+        () => {
             const tasksArray = [
                 'clean',
                 'copy',
@@ -414,7 +422,7 @@ module.exports = function (grunt) {
         });
     grunt.registerTask('deploy',
         'Upload the build files.',
-        function () {
+        () => {
             const project = grunt.option('project');
             const bucket = grunt.option('bucket');
             const folderIn = grunt.option('in');
@@ -424,10 +432,10 @@ module.exports = function (grunt) {
             // The service account key of our google cloud account for
             // uploading to storage is stringified and then encoded as
             // base64 using btoa()
-            console.log(grunt.option('key'));
-            let keyObj = grunt.option('key');
-            let key = JSON.parse(atob(keyObj));
-            console.log(key);
+            console.warn(grunt.option('key'));
+            const keyObj = grunt.option('key');
+            const key = JSON.parse(atob(keyObj));
+            console.warn(key);
 
             if (project === undefined) {
                 grunt.fail.warn('Cannot upload without a project name');
@@ -440,7 +448,7 @@ module.exports = function (grunt) {
             if (key === undefined || key === null) {
                 grunt.fail.warn('Cannot upload without an auth key');
             } else {
-                console.log('Key loaded...');
+                console.warn('Key loaded...');
             }
 
             grunt.config.merge({
@@ -462,25 +470,22 @@ module.exports = function (grunt) {
                 },
             });
 
-            console.log('Project: ' + project);
-            console.log('Bucket: ' + bucket);
+            console.warn('Project:', project);
+            console.warn('Bucket: ', bucket);
 
             if (folderIn === undefined && folderOut === undefined) {
-                console.log('Deploying: ./dist/ to gs://' + bucket + '/');
-            } else {
-                if (folderIn !== undefined) {
-                    if (folderOut === undefined) {
-                        grunt.fail.warn(
-                            'No use in specifying "in" without "out"');
-                    }
-                    console.log('Deploying: ../' + folderIn + ' to gs://' +
-                        bucket + '/' + folderOut);
-                    grunt.config.set('gcs.dist', {
-                        cwd: '../' + folderIn, src: ['**/*'], dest: folderOut,
-                    });
-                } else if (folderOut !== undefined) {
-                    grunt.fail.warn('No use in specifying "out" without "in"');
+                console.warn(`Deploying: ./dist/ to gs://${bucket}/`);
+            } else if (folderIn !== undefined) {
+                if (folderOut === undefined) {
+                    grunt.fail.warn(
+                        'No use in specifying "in" without "out"');
                 }
+                console.warn(`Deploying: ../${folderIn} to gs:// ${bucket}/${folderOut}`);
+                grunt.config.set('gcs.dist', {
+                    cwd: `../${folderIn}`, src: ['**/*'], dest: folderOut,
+                }); 
+            } else if (folderOut !== undefined) {
+                grunt.fail.warn('No use in specifying "out" without "in"');
             }
 
             grunt.task.run('gcs');
