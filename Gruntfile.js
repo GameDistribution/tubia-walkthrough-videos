@@ -56,13 +56,13 @@ module.exports = function gruntMain (grunt) {
                 ],
                 dest: './dist',
             },
-            files: {
+            animations: {
                 src: './src/animations/**/*',
                 dest: './dist/animations',
                 flatten: true,
                 expand: true,
             },
-            files: {
+            scripts: {
                 src: ['./node_modules/lottie-web/build/player/lottie.min.js'],
                 dest: './dist/scripts',
                 flatten: true,
