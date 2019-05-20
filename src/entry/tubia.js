@@ -42,9 +42,9 @@ class Tubia {
         }];
 
         const domain = settingsArray[0].url.toLowerCase().replace(/^(?:https?:\/\/)?/i, '').split('/')[0];
-        let url = 'https://player.tubia.com/index.html?';
+        let url = 'https://player.tubia.com/test/index.html?';
         if (domain === 'localhost:8081') {
-            url = '/index.html?';
+            url = '/test/index.html?';
         }
 
         settingsArray.forEach(setting => {
