@@ -88,7 +88,6 @@ const lotties = {
 
     playLottie(element) {
         const el = anim[element];
-        console.warn(el);
         el.setDirection(1);
         el.goToAndPlay(0, true);
     },
