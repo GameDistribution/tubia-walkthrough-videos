@@ -32,19 +32,19 @@ class CarouselTwo {
             .map(m => ({ video: m.videos[0], picture: m.pictures[0] }));
         
         this.modes = {
-            insane: {
+            insane: filteredArray(0).length && {
                 type: 0,
                 title: filteredArray(0)[0].video.title,
                 data: filteredArray(0)[0] || null,
                 section: utils.createElement('div',{class:'mode'}),
             },
-            best: {
+            best: filteredArray(1).length && {
                 type: 1,
                 title: filteredArray(1)[0].video.title,
                 data: filteredArray(1)[0] || null,
                 section: utils.createElement('div',{class:'mode'}),
             },
-            magic: {
+            magic: filteredArray(2).length && {
                 type: 2,
                 title: this.openedMagic ? filteredArray(2)[0].video.title : 'WATCH VIDEO TO UNLOCK',
                 data: filteredArray(2)[0] || null,
