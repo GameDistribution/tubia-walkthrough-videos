@@ -14,6 +14,9 @@ const lotties = {
             Object.keys(defaults.lottieAnim).forEach((key)=>{
                 const element = defaults.lottieAnim[key];
                 const container = document.querySelector(`[lottie-class="${element.container}"]`);
+                
+                if (!container) return;
+                
                 const params = {
                     container: document.querySelector(`[lottie-class="${element.container}"]`),
                     autoplay: element.autoplay,
@@ -88,12 +91,18 @@ const lotties = {
 
     playLottie(element) {
         const el = anim[element];
+        
+        if (!el) return;
+        
         el.setDirection(1);
         el.goToAndPlay(0, true);
     },
 
     reversePlayLottie(element) {
         const el = anim[element];
+        
+        if (!el) return;
+        
         el.setDirection(-1);
         el.goToAndPlay(20, true);
     },
