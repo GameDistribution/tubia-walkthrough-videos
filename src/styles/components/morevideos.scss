@@ -15,7 +15,7 @@
             font-weight: 600;
         }
     }
-
+    
     .plyr__morevideos {
         position: absolute;
         z-index: 0;
@@ -25,7 +25,7 @@
         -webkit-transform-origin: bottom;
         transform-origin: bottom;
         height: auto;
-        padding-bottom: 10vh;
+        padding-bottom: 17vh;
 
         &:after {
             width: 100%;
@@ -60,7 +60,7 @@
         .related--videos-close-button{
             position: absolute;
             z-index: 9999999;
-            right: 60px;
+            right: 0.5vw;
             background-color: unset;
             border: unset;
             outline: none;
@@ -117,6 +117,11 @@
         }
     }
 
+    @media (min-width: $plyr-bp-lg) {
+        .plyr__morevideos {
+            padding-bottom: 11vh;
+        }
+    }
 
     // morevideos is enabled.
     &.plyr--morevideos-enabled {
