@@ -36,7 +36,6 @@
         // unless the controls are hidden.
         &.plyr--non-linear {
             top: auto;
-            transform: translateY(-$plyr-control-spacing * 6);
             background-color: unset !important;
             z-index: 9999 !important;
             bottom: -54px !important;
@@ -98,15 +97,10 @@
     &.plyr--hide-controls {
         .plyr__ads {
             &.plyr--non-linear {
-                transform: translateY(5px);
                 bottom: 5px !important;
+                position: absolute;
+                z-index: 9999 !important;
             }
-        }
-        .plyr--non-linear {
-            transform: translateY(-$plyr-control-spacing * 6);
-            z-index: 9999 !important;
-            bottom: 0px !important;
-            position: absolute;
         }
     }
 }
