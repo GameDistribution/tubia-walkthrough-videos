@@ -99,7 +99,14 @@
         .plyr__ads {
             &.plyr--non-linear {
                 transform: translateY(5px);
+                bottom: 5px !important;
             }
+        }
+        .plyr--non-linear {
+            transform: translateY(-$plyr-control-spacing * 6);
+            z-index: 9999 !important;
+            bottom: 0px !important;
+            position: absolute;
         }
     }
 }
