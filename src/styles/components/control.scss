@@ -39,7 +39,9 @@
     .plyr__control[lottie-class] {
         display: flex;
         align-items: center;
-        max-width: 45px;
+        max-width: 38px;
+        padding: 3px;
+        margin-bottom: 3px;
         svg.icon--pressed,
         svg.icon--not-pressed,
         span.label--pressed,
