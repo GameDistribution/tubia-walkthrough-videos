@@ -608,6 +608,7 @@ class Ads {
         const settings = new google.ima.AdsRenderingSettings();
         settings.enablePreloading = true;
         settings.restoreCustomPlaybackStateOnAdBreakComplete = true;
+        document.querySelector('#tubia__advertisement_slot').style.visibility = 'visible';
         // settings.useStyledLinearAds = false;
         // Make sure we always have an ad timer.
         settings.uiElements = [
@@ -847,6 +848,7 @@ class Ads {
 
             case google.ima.AdEvent.Type.USER_CLOSE:
                 dispatchEvent('complete');
+                document.querySelector('#tubia__advertisement_slot').style.visibility = 'hidden';
                 break;
 
             case google.ima.AdEvent.Type.CLICK:
