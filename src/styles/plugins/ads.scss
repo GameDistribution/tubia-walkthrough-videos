@@ -103,4 +103,11 @@
             }
         }
     }
+    &.plyr--stopped {
+        .plyr__ads {
+            &.plyr--non-linear {
+                bottom: 0 !important;
+            }
+        }
+    }
 }
