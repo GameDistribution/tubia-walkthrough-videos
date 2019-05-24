@@ -38,7 +38,7 @@
             top: auto;
             background-color: unset !important;
             z-index: 9999 !important;
-            bottom: -54px !important;
+            bottom: 0px !important;
             position: absolute;
         }
 
@@ -97,7 +97,7 @@
     &.plyr--hide-controls {
         .plyr__ads {
             &.plyr--non-linear {
-                bottom: 5px !important;
+                bottom: 0px !important;
                 position: absolute;
                 z-index: 9999 !important;
             }
