@@ -39,6 +39,10 @@
             transform: translateY(-$plyr-control-spacing * 6);
             background-color: #111 unset !important;
             z-index: 9999 !important;
+            overflow: visible;
+            &.minimized {
+                transform: translateY($plyr-control-spacing * 6 + 8px) !important;
+            }
         }
 
         // The countdown label
@@ -100,4 +104,30 @@
             }
         }
     }
+}
+
+.toggle-button {
+    width: 22px;
+    box-shadow: 0 0 black;
+    height: 12px;
+    background: rgba(255, 255, 255, 0.6);
+    position: absolute;
+    right: 0;
+    top: -12px;
+    z-index: 99;
+    color: #757575;
+    z-index: 99;
+    text-align: center;
+    line-height: 16px;
+    &:hover {
+        background: rgba(255, 255, 255, 0.85);
+    }
+}
+
+#tubia__advertisement_slot {
+    visibility: visible;
+    width: 468px;
+    height: 60px;
+    z-index: 3;
+    overflow: visible;
 }
