@@ -41,7 +41,7 @@
             z-index: 9999 !important;
             overflow: visible;
             &.minimized {
-                transform: translateY($plyr-control-spacing * 6 + 8px) !important;
+                transform: translateY($plyr-control-spacing * 9 + 9px) !important;
             }
         }
 
