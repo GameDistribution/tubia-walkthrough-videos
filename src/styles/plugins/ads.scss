@@ -36,10 +36,9 @@
         // unless the controls are hidden.
         &.plyr--non-linear {
             top: auto;
-            background-color: unset !important;
+            transform: translateY(-$plyr-control-spacing * 6);
+            background-color: #111 unset !important;
             z-index: 9999 !important;
-            bottom: 0px !important;
-            position: absolute;
         }
 
         // The countdown label
@@ -97,16 +96,7 @@
     &.plyr--hide-controls {
         .plyr__ads {
             &.plyr--non-linear {
-                bottom: 0px !important;
-                position: absolute;
-                z-index: 9999 !important;
-            }
-        }
-    }
-    &.plyr--stopped {
-        .plyr__ads {
-            &.plyr--non-linear {
-                bottom: 0 !important;
+                transform: translateY(5px);
             }
         }
     }
