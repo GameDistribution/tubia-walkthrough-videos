@@ -721,6 +721,10 @@ class Ads {
             utils.dispatchEvent.call(this.player, this.player.media, eventMessage);
         };
 
+        const holder = document.getElementById('tubia__advertisement_slot');
+        if (holder.classList.contains('leaderboard')) holder.classList.remove('leaderboard');
+        if (holder.classList.contains('banner')) holder.classList.remove('banner');
+        
         switch (event.type) {
             case google.ima.AdEvent.Type.LOADED:
                 dispatchEvent('loaded');
@@ -742,6 +746,11 @@ class Ads {
                         this.elements.container.style.height = `${advertisement.height}px`;
                         this.elements.container.firstChild.style.width = `${advertisement.width}px`;
                         this.elements.container.firstChild.style.height = `${advertisement.height}px`;
+                        if (advertisement.width === '728' && advertisement.height === '90') {
+                            holder.classList.add('leaderboard');
+                        } else if (advertisement.width === '468' && advertisement.height === '60') {
+                            holder.classList.add('banner');
+                        }
                     }
                 }
 

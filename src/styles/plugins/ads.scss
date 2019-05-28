@@ -40,8 +40,15 @@
             background-color: unset !important;
             z-index: 9999 !important;
             overflow: visible;
-            &.minimized {
-                transform: translateY($plyr-control-spacing * 9 + 9px) !important;
+            &.leaderboard {
+                &.minimized {
+                    transform: translateY($plyr-control-spacing * 9 + 9px) !important;
+                }
+            }
+            &.banner {
+                &.minimized {
+                    transform: translateY($plyr-control-spacing * 6 + 9px) !important;
+                }
             }
         }
 
