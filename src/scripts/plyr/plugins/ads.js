@@ -38,6 +38,7 @@ class Ads {
         this.elements = {
             container: null,
             displayContainer: null,
+            toggleButtonContainer: null,
             toggleButton: null,
         };
         this.events = {};
@@ -47,7 +48,7 @@ class Ads {
         this.previousMidrollTime = 0;
         this.requestRunning = false;
         this.slotId = 'tubia__advertisement_slot';
-        this.toggleButtonId = 'tubia__toggle_ad';
+        this.toggleButtonContainerId = 'tubia__toggle_ad';
 
         // For testing:
         // this.tag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=480x70&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dnonlinear&correlator=';
@@ -252,13 +253,19 @@ class Ads {
         this.player.elements.container.appendChild(this.elements.container);
 
         // Create the toggle button to show or hide the ad
-        this.elements.toggleButton = utils.createElement('span', {
-            class: 'toggle-button',
-            id: this.toggleButtonId,
-        }, '−');
-        document.getElementById(this.slotId).appendChild(this.elements.toggleButton);
-        this.elements.toggleButton.style.visibility = 'hidden';
-        this.elements.toggleButton.addEventListener('click', this.toggleAd);
+        
+        this.elements.toggleButtonContainer = utils.createElement('div', {
+            class: 'toggle-button-container',
+            id: this.toggleButtonContainerId,
+        });
+        document.getElementById(this.slotId).appendChild(this.elements.toggleButtonContainer);
+
+        this.elements.toggleButtonContainer.appendChild(utils.createElement('span', {
+            class: 'toggle-button', 
+        }, '-'));
+
+        this.elements.toggleButtonContainer.style.visibility = 'hidden';
+        this.elements.toggleButtonContainer.addEventListener('click', this.toggleAd);
 
         // So we can run VPAID2
         google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.INSECURE);
