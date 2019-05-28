@@ -746,9 +746,9 @@ class Ads {
                         this.elements.container.style.height = `${advertisement.height}px`;
                         this.elements.container.firstChild.style.width = `${advertisement.width}px`;
                         this.elements.container.firstChild.style.height = `${advertisement.height}px`;
-                        if (advertisement.width === '728' && advertisement.height === '90') {
+                        if (advertisement.width === 728 && advertisement.height === 90) {
                             holder.classList.add('leaderboard');
-                        } else if (advertisement.width === '468' && advertisement.height === '60') {
+                        } else if (advertisement.width === 468 && advertisement.height === 60) {
                             holder.classList.add('banner');
                         }
                     }
