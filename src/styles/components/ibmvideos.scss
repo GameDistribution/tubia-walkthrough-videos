@@ -17,15 +17,16 @@
             padding-left: 13vw;
         }
         .character {
-            display: block;
+            display: flex;
             position: absolute;
             z-index: 9;
             width: 11vw;
-            height: auto;
+            height: 22vh;
             margin-left: -12vw;
-            margin-top: 4px;
+            flex-direction: row;
             svg {
-                width: 100%;
+                width: auto;
+                height: auto;
                 display: block;
             }
         }
