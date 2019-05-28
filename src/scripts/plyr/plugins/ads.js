@@ -865,6 +865,8 @@ class Ads {
             case google.ima.AdEvent.Type.USER_CLOSE:
                 dispatchEvent('complete');
                 document.querySelector('#tubia__advertisement_slot').style.visibility = 'hidden';
+                document.getElementById('tubia__toggle_ad').style.visibility = 'hidden';
+
                 break;
 
             case google.ima.AdEvent.Type.CLICK:
