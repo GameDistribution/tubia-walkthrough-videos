@@ -765,7 +765,6 @@ class Ads {
                 if (!ad.isLinear()) {
                     this.showAd('nonlinear');
                     document.getElementById('tubia__toggle_ad').style.visibility = 'visible';
-                    const holder = document.getElementById('tubia__advertisement_slot');
                     if (holder.classList.contains('minimized')) {
                         holder.classList.remove('minimized');
                     }
