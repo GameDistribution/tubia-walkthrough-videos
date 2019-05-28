@@ -346,7 +346,7 @@ class CarouselTwo {
 
         const characterCarousel =
         `<svg preserveAspectRatio="none" width="100%" height="100%">
-            <use xlink:href="libs/gd/sprite.svg#plyr-character-carousel"></use>
+            <use xlink:href="./libs/gd/sprite.svg#plyr-character-carousel"></use>
         </svg>      
         `;
 
