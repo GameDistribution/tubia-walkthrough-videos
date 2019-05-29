@@ -259,11 +259,12 @@ class Ads {
             id: this.toggleButtonContainerId,
         });
         document.getElementById(this.slotId).appendChild(this.elements.toggleButtonContainer);
-
-        this.elements.toggleButtonContainer.appendChild(utils.createElement('span', {
+        this.elements.toggleButton = utils.createElement('span', {
             class: 'toggle-button', 
-        }, '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M24 22h-24l12-20z"/></svg>'));
-
+        });
+        this.elements.toggleButton.insertAdjacentHTML('afterbegin', '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M24 22h-24l12-20z"/></svg>');
+        this.elements.toggleButtonContainer.appendChild(this.elements.toggleButton);
+        
         this.elements.toggleButtonContainer.style.visibility = 'hidden';
         this.elements.toggleButtonContainer.addEventListener('click', this.toggleAd);
 
