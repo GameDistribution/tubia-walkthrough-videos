@@ -720,10 +720,6 @@ class Ads {
             const eventMessage = `ads${type.replace(/_/g, '').toLowerCase()}`;
             utils.dispatchEvent.call(this.player, this.player.media, eventMessage);
         };
-
-        const holder = document.getElementById('tubia__advertisement_slot');
-        if (holder.classList.contains('leaderboard')) holder.classList.remove('leaderboard');
-        if (holder.classList.contains('banner')) holder.classList.remove('banner');
         
         switch (event.type) {
             case google.ima.AdEvent.Type.LOADED:
@@ -742,6 +738,7 @@ class Ads {
                 } else {
                     const advertisement = ad[Object.keys(ad)[0]];
                     if (advertisement) {
+                        const holder = document.getElementById('tubia__advertisement_slot');
                         this.elements.toggleButtonContainer.style.visibility = 'visible';
                         utils.toggleClass(this.elements.container, this.player.config.classNames.nonLinearAdvertisement, true);
                         this.elements.container.style.width = `${advertisement.width}px`;
@@ -749,8 +746,10 @@ class Ads {
                         this.elements.container.firstChild.style.width = `${advertisement.width}px`;
                         this.elements.container.firstChild.style.height = `${advertisement.height}px`;
                         if (advertisement.width === 728 && advertisement.height === 90) {
+                            if (holder.classList.contains('banner')) holder.classList.remove('banner');
                             holder.classList.add('leaderboard');
                         } else if (advertisement.width === 468 && advertisement.height === 60) {
+                            if (holder.classList.contains('leaderboard')) holder.classList.remove('leaderboard');
                             holder.classList.add('banner');
                         }
                     }
