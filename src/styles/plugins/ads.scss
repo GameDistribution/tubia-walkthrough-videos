@@ -44,7 +44,7 @@
                 &.minimized {
                     transform: translateY($plyr-control-spacing * 9 + 9px) !important;
                     .toggle-button-container {
-                        transform: translateY(-$plyr-control-spacing * 9 + 9px + 12px) !important;
+                        transform: translateY(-85px) !important;
                     }
                 }
             }
@@ -52,7 +52,7 @@
                 &.minimized {
                     transform: translateY($plyr-control-spacing * 6 + 9px) !important;
                     .toggle-button-container {
-                        transform: translateY(-$plyr-control-spacing * 6 + 9px + 12px) !important;
+                        transform: translateY(-58px) !important;
                     }
                 }
             }
@@ -131,8 +131,8 @@
     .toggle-button {
         width: 32px;
         box-shadow: 0 0 black;
-        height: 12px;
-        border-radius: 4px 4px 0 0;
+        height: 16px;
+        border-radius: 6px;
         background: #e6e6e6;
         right: 0;
         z-index: 99;
@@ -153,5 +153,10 @@
             border-radius: 0 0 2px 2px;
             margin-left: -3px;
         }
+        svg {
+            width: 7px;
+            fill: #b1afaf;
+            margin-top: -4px;
+        } 
     }
 }
