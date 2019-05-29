@@ -46,7 +46,7 @@ class CarouselTwo {
             },
             magic: filteredArray(2).length && {
                 type: 2,
-                title: this.openedMagic ? filteredArray(2)[0].video.title : 'Magic Mode',
+                title: filteredArray(2)[0].video.title,
                 data: filteredArray(2)[0] || null,
                 section: utils.createElement('div',{class:`mode magic-video ${this.openedMagic ? 'magic-opened' : 'magic-not-opened'}`}),
             },
