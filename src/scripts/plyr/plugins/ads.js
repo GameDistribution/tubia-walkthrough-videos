@@ -731,6 +731,7 @@ class Ads {
                 // Make sure that our ad containers have the correct size and styling.
                 // Ad.getVastMediaWidth() and Ad.getVastMediaHeight() are now released.
                 if (ad.isLinear()) {
+                    this.elements.toggleButtonContainer.style.visibility = 'hidden';
                     utils.toggleClass(this.elements.container, this.player.config.classNames.nonLinearAdvertisement, false);
                     this.elements.container.style.width = '100%';
                     this.elements.container.style.height = '100%';
@@ -741,6 +742,7 @@ class Ads {
                 } else {
                     const advertisement = ad[Object.keys(ad)[0]];
                     if (advertisement) {
+                        this.elements.toggleButtonContainer.style.visibility = 'visible';
                         utils.toggleClass(this.elements.container, this.player.config.classNames.nonLinearAdvertisement, true);
                         this.elements.container.style.width = `${advertisement.width}px`;
                         this.elements.container.style.height = `${advertisement.height}px`;
