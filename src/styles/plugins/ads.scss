@@ -115,27 +115,37 @@
 
 .toggle-button-container {
     width: 100%;
-    height: 12px;
+    height: 16px;
     display: flex;
     align-items: center;
     align-content: center;
     flex-direction: column;
     position: absolute;
-    top: -12px;
+    top: calc(100% - 20px);
     .toggle-button {
-        width: 22px;
+        width: 32px;
         box-shadow: 0 0 black;
         height: 12px;
-        background: rgba(255, 255, 255, 0.6);
+        border-radius: 4px 4px 0 0;
+        background: #e6e6e6;
         right: 0;
-        top: -12px;
         z-index: 99;
         color: #757575;
         z-index: 99;
         text-align: center;
         line-height: 16px;
         &:hover {
-            background: rgba(255, 255, 255, 0.85);
+            background: #fff;
+        }
+        &:after {
+            width: 38px;
+            height: 4px;
+            display: block;
+            content: ' ';
+            position: absolute;
+            background: #bdbdbd;
+            border-radius: 0 0 2px 2px;
+            margin-left: -3px;
         }
     }
 }
