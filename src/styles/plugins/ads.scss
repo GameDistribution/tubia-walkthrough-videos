@@ -143,16 +143,6 @@
         &:hover {
             background: #fff;
         }
-        &:after {
-            width: 38px;
-            height: 6px;
-            display: block;
-            content: ' ';
-            position: absolute;
-            background: #d4d4d4;
-            border-radius: 0 0 2px 2px;
-            margin-left: -3px;
-        }
         svg {
             width: 7px;
             fill: #b1afaf;
