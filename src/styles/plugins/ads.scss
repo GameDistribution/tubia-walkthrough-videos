@@ -43,11 +43,17 @@
             &.leaderboard {
                 &.minimized {
                     transform: translateY($plyr-control-spacing * 9 + 9px) !important;
+                    .toggle-button-container {
+                        transform: translateY(-$plyr-control-spacing * 9 + 9px) !important;
+                    }
                 }
             }
             &.banner {
                 &.minimized {
                     transform: translateY($plyr-control-spacing * 6 + 9px) !important;
+                    .toggle-button-container {
+                        transform: translateY(-$plyr-control-spacing * 6 + 9px) !important;
+                    }
                 }
             }
         }
