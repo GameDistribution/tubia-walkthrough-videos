@@ -68,6 +68,12 @@ module.exports = function gruntMain (grunt) {
                 flatten: true,
                 expand: true,
             },
+            fonts: {
+                src: ['./src/styles/fonts/**/*'],
+                dest: './dist/fonts',
+                flatten: true,
+                expand: true,
+            },
         },
 
         /**
