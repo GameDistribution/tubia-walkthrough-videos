@@ -30,9 +30,10 @@
       background: rgba(0, 0, 0, 0.50);
       top: 55px;
       position: absolute;
-      padding: 3px 10px;
-      border-radius: 20px;
-      font-size: 13px;
+      padding: .2vw 1vw;
+      border-radius: 2vw;
+      font-size: 1.2vw;
+      font-family: 'gaegu', sans-serif;
     }
 
     .plyr--share-button[aria-pressed=true] .plyr--share-title {

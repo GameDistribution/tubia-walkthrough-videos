@@ -158,16 +158,18 @@
                 top: calc(100% + .7vw);
                 width: 100%;
                 height: 2vw;
-                color: #ffb744;
+                color: #fff;
                 display: flex;
                 font-weight: 700;
                 font-size: 1.5vw;
+                letter-spacing: .05vw;
                 z-index: 1;
                 align-content: center;
                 align-items: center;
                 vertical-align: middle;
                 text-align: center;
                 flex-direction: column;
+                font-family: 'gaegu', sans-serif;
             }
 
             img {

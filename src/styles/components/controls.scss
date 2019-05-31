@@ -76,10 +76,11 @@
             top: 18px;
             left: 53px;
             line-height: 100%;
-            text-transform: uppercase;
             font-weight: 600;
             font-size: 20px;
+            font-family: 'gaegu', sans-serif;
             transform: translateX(0px);
+            letter-spacing: 0px;
             @media (max-width: $plyr-bp-sm) {
                 display: none;
             }
