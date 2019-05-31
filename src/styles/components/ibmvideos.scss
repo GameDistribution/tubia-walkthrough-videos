@@ -278,7 +278,7 @@
 
 .control {
     width: 10vh;
-    height: 100%;
+    height: calc(12vw + 13vh);
     position: absolute;
     z-index: 99;
     display: flex;
