@@ -482,9 +482,7 @@ const controls = {
                 </g>
                 </svg>
             `;
-        const container = utils.createElement('a', {
-            href: 'https://tubia.com/',
-            target: '_blank',
+        const container = utils.createElement('span', {
             class: 'plyr__logo plyr__logo-top',
         });
         container.insertAdjacentHTML('beforeend', svg);
