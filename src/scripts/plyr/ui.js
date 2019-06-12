@@ -150,10 +150,12 @@ const ui = {
         utils.toggleClass(this.elements.container, this.config.classNames.playing, this.playing);
         utils.toggleClass(this.elements.container, this.config.classNames.stopped, this.paused);
 
-        if (this.playing || this.paused)
+        if (this.playing || !this.paused)
         {
-            this.toggleMoreVideos(false);
-        }
+            controls.hideInterestingVideos();
+        } else {
+            controls.showInterestingVideos();
+        } 
 
         // Set ARIA state
         utils.toggleState(this.elements.buttons.play, this.playing);
