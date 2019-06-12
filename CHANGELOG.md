@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.0.19
+- Added related videos to the carousel
+- Added lottie animations
+- Fix alignment of hidden ad container to avoid clicking issues
+- Some visual improvements for the player ui and its elements
+- Fix IE10 Unable to get property split of undefined or null reference (https://github.com/sampotts/plyr/issues/893)
+
 ## v2.0.18
 - Fix for YouTube .getVideoData() issue (fixes #709)
 
