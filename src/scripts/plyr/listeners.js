@@ -459,6 +459,9 @@ class Listeners {
         // Playlist toggle
         on(this.player.elements.buttons.playlist, 'click', this.player.togglePlaylist);
 
+        // morevideos toggle
+        on(this.player.elements.buttons.morevideos, 'click', this.player.toggleMoreVideos);
+        
         // Share toggle
         on(this.player.elements.buttons.share, 'click', this.player.toggleShare);
 

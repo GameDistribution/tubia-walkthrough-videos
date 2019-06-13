@@ -3,7 +3,7 @@
         position: absolute;
         top: 0;
         left: 0;
-        width: 150px;
+        width: 55px;
         padding: 10px;
         overflow: hidden;
         svg {
@@ -12,6 +12,10 @@
             transition: transform 0.1s cubic-bezier(.51, .92, .24, 1.15), opacity 0.15s linear;
             transition-delay: 0.5s, 0.5s;
             fill: #fff;
+        }
+
+        &.plyr__logo-top{
+            top: -4px;
         }
     }
 

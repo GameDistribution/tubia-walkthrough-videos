@@ -18,7 +18,7 @@
         min-height: auto;
 
         svg {
-            display: block;
+            display: inline-block;
             fill: currentColor;
             height: $plyr-control-icon-size;
             pointer-events: none;
@@ -33,6 +33,25 @@
         // Tab focus
         &.plyr__tab-focus {
             @include plyr-tab-focus();
+        }
+    }
+
+    .plyr__control[lottie-class] {
+        display: flex;
+        align-items: center;
+        max-width: 38px;
+        padding: 3px;
+        margin-bottom: 3px;
+        svg.icon--pressed,
+        svg.icon--not-pressed,
+        span.label--pressed,
+        span.label--not-pressed {
+            display: none !important;
+        }
+    }
+    .plyr__controls-right {
+        .plyr__control[lottie-class] {
+            max-height: 40px;
         }
     }
 

@@ -1,0 +1,275 @@
+.plyr {
+    .plyr--morevideos-button {
+        position: absolute;
+        top: 0px;
+        right: 25px;
+        color: #fff;
+
+        &.hide{
+            display: none;
+        }
+
+        &:before {
+            content: "...";
+            font-size: 2em;
+            font-weight: 600;
+        }
+    }
+    
+    .plyr__morevideos {
+        position: absolute;
+        z-index: 0;
+        bottom: 0;
+        width: 100%;
+        overflow: hidden;
+        -webkit-transform-origin: bottom;
+        transform-origin: bottom;
+        height: auto;
+        padding-bottom: 17vh;
+
+        &:after {
+            width: 100%;
+            height: 100%;
+            left: 0;
+            top: 0;
+            position: absolute;
+            content: " ";
+            border-radius: 5px;
+            z-index: -9;
+            -webkit-transition: opacity .2s ease-in-out;
+            transition: opacity .2s ease-in-out;
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(10%,rgba(0,0,0,.8)),to(transparent));
+            background: linear-gradient(0deg,rgba(0,0,0,.9) 65%,transparent);
+        }
+
+        .related--videos-mode-caption{
+            position: absolute;
+            // background: rgba(193, 0, 71,0.5);
+            background-image:repeating-linear-gradient(to right, transparent , red 50%,transparent);
+            text-shadow: 1px 2px 1px #000000;
+            top: 0px;
+            width: 100%;
+            position: absolute;
+            z-index: 9999;
+            font-weight: bold;
+            font-size: 20px;
+            color:#fff;
+
+        }
+
+        .related--videos-close-button{
+            display: none;
+            position: absolute;
+            z-index: 9999999;
+            right: 0.5vw;
+            background-color: unset;
+            border: unset;
+            outline: none;
+            color: #fff;
+            top: -5px;
+            line-height: 27px;
+            font-family: 'gaegu', sans-serif;
+            .icon-close {
+                width: 18px;
+                height: 18px;
+                display: inline-block;
+                &::before, &::after {
+                    content: "";
+                    position: absolute;
+                    width: 18px;
+                    top: 51%;
+                    height: 20px;
+                    left: 5px;
+                    background: #fff;
+                }
+                &::before { 
+                transform: rotate(45deg);
+                height: 2px;
+                margin-top: -3px;
+                }
+                &::after {
+                    transform: rotate(-45deg);
+                    height: 2px;
+                    margin-top: -3px;
+                }
+            }
+            &:hover {
+                color: #ECC546;
+                cursor: pointer;
+                .icon-close {
+                    &::before, &::after {
+                        background: #ECC546;
+                        cursor: pointer;
+                    }
+                }
+            }
+          
+          }
+
+        .morevideos--caption {
+            color: #000;
+            font-weight: bold;
+            height: 20px;
+            font-size: 20px;
+        }
+
+        &.hide{
+            pointer-events: none;
+            opacity: 0;
+        }
+    }
+
+    @media (min-width: $plyr-bp-lg) {
+        .plyr__morevideos {
+            padding-bottom: 11vh;
+        }
+    }
+
+    // morevideos is enabled.
+    &.plyr--morevideos-enabled {
+        .plyr__morevideos {
+            display: block;
+        }
+    }
+
+    // When the morevideos is displayed
+    &.plyr--morevideos-enabled.plyr--morevideos-active:not(.plyr--hide-controls) {
+
+        .plyr__morevideos:not(.hide) {
+            opacity: 1;
+        }
+        .plyr__morevideos {
+            transform: scaleY(1);
+
+            // visibility: visible;
+            &:before {
+                transform: scaleY(1);
+                opacity: 1;
+                transition: transform 0.2s cubic-bezier(.51, .92, .24, 1.15);
+            }
+
+            &:after {
+                transform: scaleY(1);
+                opacity: 1;
+                transition: transform 0.4s cubic-bezier(.51, .92, .24, 1.15);
+                transition-delay: 0.1s;
+            }
+
+            .plyr__background,
+            .plyr__shadow {
+                opacity: 1;
+                transition: all .1s linear;
+            }
+
+            ul {
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+
+                li {
+                    span {
+                        opacity: 1;
+                        transition: all .1s linear;
+                    }
+
+                    &:before {
+                        transform: scaleY(1);
+                        transition: transform 0.1s cubic-bezier(.51, .92, .24, 1.15);
+                    }
+
+                    // Todo: write some SASS logic for this.
+                    /* &:nth-child(1):before {
+                    transition-delay: 0.6s;
+                }
+                &:nth-child(2):before {
+                    transition-delay: 0.65s;
+                }
+                &:nth-child(3):before {
+                    transition-delay: 0.7s;
+                }
+                &:nth-child(4):before {
+                    transition-delay: 0.75s;
+                }
+                &:nth-child(5):before {
+                    transition-delay: 0.8s;
+                }
+                &:nth-child(6):before {
+                    transition-delay: 0.85s;
+                }
+                &:nth-child(7):before {
+                    transition-delay: 0.9s;
+                }
+                &:nth-child(8):before {
+                    transition-delay: 0.95s;
+                }
+                &:nth-child(n+9):before {
+                    transition-delay: 1s;
+                }*/
+                }
+            }
+        }
+    }
+
+    // When the playlist is hidden
+    &.plyr--morevideos-enabled:not(.plyr--morevideos-active) {
+        .plyr__morevideos {
+            // transform: scaleY(0);
+            transition: transform 0s linear;
+            transition-delay: 0.2s;
+
+
+
+            ul li {
+                span {
+                    opacity: 0;
+                    transition: opacity 0.1s linear;
+                    transition-delay: 0s;
+                }
+
+                &:before {
+                    // transform: scaleY(0);
+                    transition: transform 0.2s cubic-bezier(.51, .92, .24, 1.15);
+                    transition-delay: 0.2s;
+                }
+
+                // Todo: write some SASS logic for this.
+                &:nth-child(1):before {
+                    transition-delay: 0.3s;
+                }
+
+                &:nth-child(2):before {
+                    transition-delay: 0.35s;
+                }
+
+                &:nth-child(3):before {
+                    transition-delay: 0.4s;
+                }
+
+                &:nth-child(4):before {
+                    transition-delay: 0.45s;
+                }
+
+                &:nth-child(5):before {
+                    transition-delay: 0.5s;
+                }
+
+                &:nth-child(6):before {
+                    transition-delay: 0.55s;
+                }
+
+                &:nth-child(7):before {
+                    transition-delay: 0.6s;
+                }
+
+                &:nth-child(8):before {
+                    transition-delay: 0.65s;
+                }
+
+                &:nth-child(n+9):before {
+                    transition-delay: 0.7s;
+                }
+            }
+        }
+    }
+
+
+}

@@ -101,6 +101,7 @@ class Player {
         this.transitionSpeed = 2000;
         this.startPlyrHandler = this.startPlyr.bind(this);
         this.player = null;
+        this.nextCuePoint = null;
 
         // Set the proper origin URL for postMessage requests.
         this.origin = document.location.origin;
@@ -141,7 +142,7 @@ class Player {
     start() {
         // Send event to our publisher.
         try {
-            parent.postMessage({name: 'onStart'}, this.origin);
+            parent.postMessage({ name: 'onStart' }, this.origin);
         } catch (postMessageError) {
             console.error(postMessageError);
         }
@@ -195,7 +196,10 @@ class Player {
             this.videoSearchPromise.then(() => {
                 // Yes argument gameid is expecting the videoId...
                 const videoDataUrl = `https://api.tubia.com/api/player/publish/?gameid=${this.videoId}&publisherid=${this.options.publisherId}&domain=${encodeURIComponent(this.options.domain)}`;
-                const videoDataRequest = new Request(videoDataUrl, {method: 'GET'});
+
+                // videoDataUrl = 'http://104.196.166.83:8085/api/player/publish/?gameid=f9f096cf81034a0baca18ae34951092f&publisherid=dc63a91fa184423482808bed4d782320&domain=player.tubia.com';
+
+                const videoDataRequest = new Request(videoDataUrl, { method: 'GET' });
 
                 // Record Tubia "Video Loaded" event in Tunnl.
                 (new Image()).src = `https://ana.tunnl.com/event?tub_id=${this.videoId}&eventtype=0&page_url=${encodeURIComponent(this.options.url)}`;
@@ -217,7 +221,7 @@ class Player {
                         // Invoke callback to end-user containing our video data.
                         try {
                             if (parent === top) {
-                                parent.postMessage({name: 'onFound', payload: data}, this.origin);
+                                parent.postMessage({ name: 'onFound', payload: data }, this.origin);
                             }
                         } catch (postMessageError) {
                             console.error(postMessageError);
@@ -327,13 +331,13 @@ class Player {
             const checkImage = path =>
                 new Promise(resolve => {
                     const img = new Image();
-                    img.onload = () => resolve({path, status: 'ok'});
-                    img.onerror = () => resolve({path, status: 'error'});
+                    img.onload = () => resolve({ path, status: 'ok' });
+                    img.onerror = () => resolve({ path, status: 'error' });
                     img.src = path;
 
                     // Always resolve.
                     setTimeout(() => {
-                        resolve({path, status: 'error'});
+                        resolve({ path, status: 'error' });
                     }, 2000);
                 });
             const loadImg = (...paths) => Promise.all(paths.map(checkImage));
@@ -447,7 +451,7 @@ class Player {
      */
     notFound(origin, message) {
         try {
-            parent.postMessage({name: 'onNotFound', payload: 'No video has been found!'}, this.origin);
+            parent.postMessage({ name: 'onNotFound', payload: 'No video has been found!' }, this.origin);
         } catch (postMessageError) {
             console.error(postMessageError);
         }
@@ -477,7 +481,7 @@ class Player {
      */
     onError(origin, error) {
         try {
-            parent.postMessage({name: 'onError', payload: error}, this.origin);
+            parent.postMessage({ name: 'onError', payload: error }, this.origin);
         } catch (postMessageError) {
             console.error(postMessageError);
         }
@@ -546,6 +550,7 @@ class Player {
      * Load the Plyr library.
      */
     loadPlyr() {
+        const nextCueTime = '';
         this.videoDataPromise.then((json) => {
             if (!json) {
                 this.onError('loadPlyr json', 'No video data has been found!');
@@ -592,6 +597,18 @@ class Player {
                 data: json.cuepoints,
             };
 
+            // Setup the morevideos.
+            const morevideos = {
+                active: true,
+                type: json.playlistType ? json.playlistType : 'cue',
+                data: json.relatedVideos,
+            };
+
+            // Setup the share
+            const share = {
+                active: true,
+            };
+
             // We don't want certain options when our view is too small.
             if ((this.container.offsetWidth >= 400)
                 && (!/Mobi/.test(navigator.userAgent))) {
@@ -604,6 +621,8 @@ class Player {
             // Check if we want a playlist.
             if (json.cuepoints && json.cuepoints.length > 0) {
                 controls.push('playlist');
+                controls.push('morevideos');
+                controls.push('share');
             }
 
             // Create the Plyr instance.
@@ -642,8 +661,37 @@ class Player {
                 fullscreen: {
                     enabled: (json.fullScreenEnabled) ? json.fullScreenEnabled : true,
                 },
+                duration: null,
+                seekTime: nextCueTime,
                 playlist,
+                morevideos,
+                share,
                 controls,
+            });
+
+            this.player.on('adsclick', () => {
+                /* eslint-disable */
+                window['_cc13997'].bcpw('act', 'ad click');
+                /* eslint-enable */
+            });
+
+            this.player.on('adscomplete', () => {
+                /* eslint-disable */
+                window['_cc13997'].bcpw('act', 'ad complete');
+                /* eslint-enable */
+            });
+
+            this.player.on('adsimpression', () => {
+                /* eslint-disable */
+                window['_cc13997'].bcpw('genp', 'ad video');
+                window['_cc13997'].bcpw('act', 'ad impression');
+                /* eslint-enable */
+            });
+
+            this.player.on('adsskipped', () => {
+                /* eslint-disable */
+                window['_cc13997'].bcpw('act', 'ad skipped');
+                /* eslint-enable */
             });
 
             // Set some listeners.
@@ -665,7 +713,7 @@ class Player {
                     this.player.elements.container.classList.toggle('tubia__active');
                     // Return ready callback for our clients.
                     try {
-                        parent.postMessage({name: 'onReady'}, this.origin);
+                        parent.postMessage({ name: 'onReady' }, this.origin);
                     } catch (postMessageError) {
                         console.error(postMessageError);
                     }
@@ -713,7 +761,7 @@ class Player {
                         && typeof window['_cc13997'].bcpf === 'function'
                         && typeof window['_cc13997'].add === 'function') {
                         window['_cc13997'].add('med', 'video');
-
+                        window['_cc13997'].add('genp', `domain : ${this.origin}`);
                         // Must wait for the load event, before running Lotame.
                         if (document.readyState === 'complete') {
                             window['_cc13997'].bcpf();
@@ -734,7 +782,7 @@ class Player {
      * Set some theme styling, which overwrites colors of our loaded CSS.
      */
     setTheme() {
-        if(this.options.colorMain !== '' && this.options.colorAccent !== '') {
+        if (this.options.colorMain !== '' && this.options.colorAccent !== '') {
             const css = `
                 .tubia .tubia__transition:after {
                     background-color: ${this.options.colorMain};

@@ -1,6 +1,6 @@
 {
     "name": "@gamedistribution.com/tubia",
-    "version": "1.2.5",
+    "version": "2.0.19",
     "author": "Tubia.com",
     "description": "Tubia.com HTML5 video player",
     "url": "https://tubia.com",
@@ -19,6 +19,9 @@
         "babel-polyfill": "^6.26.0",
         "custom-event-polyfill": "^1.0.6",
         "es6-promise": "^4.2.5",
+        "js-yaml": "^3.13.1",
+        "lottie-web": "^5.5.2",
+        "sshpk": "^1.16.1",
         "whatwg-fetch": "^3.0.0"
     },
     "devDependencies": {
@@ -47,7 +50,7 @@
         "grunt-replace": "^1.0.1",
         "grunt-sass": "^3.0.2",
         "grunt-svgstore": "^2.0.0",
-        "node-sass": "^4.11.0"
+        "node-sass": "^4.12.0"
     },
     "engines": {
         "node": ">= 10.15.0",

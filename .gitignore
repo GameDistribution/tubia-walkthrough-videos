@@ -2,7 +2,7 @@
 /node_modules
 .idea/
 .sass-cache/
-/dist/*
+/dist
 
 # Files
 *.zip

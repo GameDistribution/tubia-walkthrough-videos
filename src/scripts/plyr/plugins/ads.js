@@ -38,6 +38,8 @@ class Ads {
         this.elements = {
             container: null,
             displayContainer: null,
+            toggleButtonContainer: null,
+            toggleButton: null,
         };
         this.events = {};
         this.safetyTimer = null;
@@ -46,6 +48,7 @@ class Ads {
         this.previousMidrollTime = 0;
         this.requestRunning = false;
         this.slotId = 'tubia__advertisement_slot';
+        this.toggleButtonContainerId = 'tubia__toggle_ad';
 
         // For testing:
         // this.tag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=480x70&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dnonlinear&correlator=';
@@ -248,6 +251,22 @@ class Ads {
             id: this.slotId, // Element id is needed by SpotX.
         });
         this.player.elements.container.appendChild(this.elements.container);
+
+        // Create the toggle button to show or hide the ad
+        
+        this.elements.toggleButtonContainer = utils.createElement('div', {
+            class: 'toggle-button-container',
+            id: this.toggleButtonContainerId,
+        });
+        document.getElementById(this.slotId).appendChild(this.elements.toggleButtonContainer);
+        this.elements.toggleButton = utils.createElement('span', {
+            class: 'toggle-button', 
+        });
+        this.elements.toggleButton.insertAdjacentHTML('afterbegin', '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M24 22h-24l12-20z"/></svg>');
+        this.elements.toggleButtonContainer.appendChild(this.elements.toggleButton);
+        
+        this.elements.toggleButtonContainer.style.visibility = 'hidden';
+        this.elements.toggleButtonContainer.addEventListener('click', this.toggleAd);
 
         // So we can run VPAID2
         google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.INSECURE);
@@ -596,7 +615,7 @@ class Ads {
             this.onAdError(e);
         }
     }
-
+    
     /**
      * This method is called whenever the ads are ready inside the AdDisplayContainer
      * @param {Event} adsManagerLoadedEvent
@@ -608,6 +627,7 @@ class Ads {
         const settings = new google.ima.AdsRenderingSettings();
         settings.enablePreloading = true;
         settings.restoreCustomPlaybackStateOnAdBreakComplete = true;
+        document.querySelector('#tubia__advertisement_slot').style.visibility = 'visible';
         // settings.useStyledLinearAds = false;
         // Make sure we always have an ad timer.
         settings.uiElements = [
@@ -701,28 +721,38 @@ class Ads {
             const eventMessage = `ads${type.replace(/_/g, '').toLowerCase()}`;
             utils.dispatchEvent.call(this.player, this.player.media, eventMessage);
         };
-
+        
         switch (event.type) {
             case google.ima.AdEvent.Type.LOADED:
                 dispatchEvent('loaded');
                 // Make sure that our ad containers have the correct size and styling.
                 // Ad.getVastMediaWidth() and Ad.getVastMediaHeight() are now released.
                 if (ad.isLinear()) {
+                    this.elements.toggleButtonContainer.style.visibility = 'hidden';
                     utils.toggleClass(this.elements.container, this.player.config.classNames.nonLinearAdvertisement, false);
                     this.elements.container.style.width = '100%';
                     this.elements.container.style.height = '100%';
                     this.elements.container.style.backgroundColor = '#000000';
                     this.elements.container.firstChild.style.width = '100%';
                     this.elements.container.firstChild.style.height = '100%';
-                    this.elements.container.firstChild.style.backgroundColor = '#000000';
+                    this.elements.container.firstChild.style.backgound = '#000000';
                 } else {
                     const advertisement = ad[Object.keys(ad)[0]];
                     if (advertisement) {
+                        const holder = document.getElementById('tubia__advertisement_slot');
+                        this.elements.toggleButtonContainer.style.visibility = 'visible';
                         utils.toggleClass(this.elements.container, this.player.config.classNames.nonLinearAdvertisement, true);
                         this.elements.container.style.width = `${advertisement.width}px`;
                         this.elements.container.style.height = `${advertisement.height}px`;
                         this.elements.container.firstChild.style.width = `${advertisement.width}px`;
                         this.elements.container.firstChild.style.height = `${advertisement.height}px`;
+                        if (advertisement.width === 728 && advertisement.height === 90) {
+                            if (holder.classList.contains('banner')) holder.classList.remove('banner');
+                            holder.classList.add('leaderboard');
+                        } else if (advertisement.width === 468 && advertisement.height === 60) {
+                            if (holder.classList.contains('leaderboard')) holder.classList.remove('leaderboard');
+                            holder.classList.add('banner');
+                        }
                     }
                 }
 
@@ -736,6 +766,11 @@ class Ads {
                 // Because non-linear ads won't trigger CONTENT_PAUSE_REQUESTED.
                 if (!ad.isLinear()) {
                     this.showAd('nonlinear');
+                    document.getElementById('tubia__toggle_ad').style.visibility = 'visible';
+                    const holder = document.getElementById('tubia__advertisement_slot');
+                    if (holder.classList.contains('minimized')) {
+                        holder.classList.remove('minimized');
+                    }
                 }
                 break;
 
@@ -847,6 +882,9 @@ class Ads {
 
             case google.ima.AdEvent.Type.USER_CLOSE:
                 dispatchEvent('complete');
+                document.querySelector('#tubia__advertisement_slot').style.visibility = 'hidden';
+                document.getElementById('tubia__toggle_ad').style.visibility = 'hidden';
+
                 break;
 
             case google.ima.AdEvent.Type.CLICK:
@@ -935,6 +973,19 @@ class Ads {
      */
     hideAd() {
         this.elements.container.style.zIndex = '';
+    }
+
+    /**
+     * Toggle the advertisement holder
+     */
+    toggleAd() {
+        this.holder = document.getElementById('tubia__advertisement_slot');
+        
+        if (this.holder.classList.contains('minimized')) {
+            this.holder.classList.remove('minimized');
+        } else {
+            this.holder.classList.add('minimized');
+        }
     }
 
     /**

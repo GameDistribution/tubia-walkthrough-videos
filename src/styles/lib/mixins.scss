@@ -46,7 +46,8 @@
 }
 
 @mixin plyr-range-thumb-active($color: rgba($plyr-range-thumb-bg, 0.5)) {
-    box-shadow: $plyr-range-thumb-shadow, 0 0 0 $plyr-range-thumb-active-shadow-width $color;
+    box-shadow: $plyr-range-thumb-shadow,
+        0 0 0 $plyr-range-thumb-active-shadow-width $color;
 }
 
 // Fullscreen styles
@@ -85,6 +86,20 @@
 
         + svg {
             display: none;
+        }
+    }
+    .plyr__control {
+        &[data-plyr="fullscreen"] {
+            & .icon--pressed {
+                display: block;
+                fill: currentColor;
+                height: 18px;
+                pointer-events: none;
+                width: 18px;
+            }
+            & .icon--not-pressed {
+                display: none;
+            }
         }
     }
 

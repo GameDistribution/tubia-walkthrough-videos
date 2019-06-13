@@ -1,4 +1,16 @@
+/*! Fonts:
+    googlefont Gaegu */
+
+@font-face {
+    font-family: 'gaegubold';
+    src: url('./../../fonts/gaegu-bold-webfont.woff2') format('woff2'),
+         url('./../../fonts/gaegu-bold-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
 .tubia {
+    font-family: 'gaegubold';
     display: block;
     position: absolute;
     top: 0;
@@ -12,6 +24,10 @@
     visibility: hidden;
     transition: opacity 1s cubic-bezier(0.4, 0.0, 1, 1);
     background-color: #000;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 
     &:before {
         display: block;

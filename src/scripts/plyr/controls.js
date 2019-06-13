@@ -9,6 +9,9 @@ import i18n from './i18n';
 import captions from './captions';
 import html5 from './html5';
 import playlist from './playlist';
+import morevideos from './morevideos';
+import Mark from './cuemark';
+import lotties from './lotties';
 
 // Sniff out the browser
 const browser = utils.getBrowser();
@@ -25,19 +28,26 @@ const controls = {
         const range = utils.is.event(target) ? target.target : target;
 
         // Needs to be a valid <input type='range'>
-        if (!utils.is.element(range) || range.getAttribute('type') !== 'range') {
+        if (
+            !utils.is.element(range) ||
+            range.getAttribute('type') !== 'range'
+        ) {
             return;
         }
 
         // Set CSS custom property
-        range.style.setProperty('--value', `${range.value / range.max * 100}%`);
+        range.style.setProperty(
+            '--value',
+            `${(range.value / range.max) * 100}%`
+        );
     },
 
     // Get icon URL
     getIconUrl() {
         return {
             url: this.config.iconUrl,
-            absolute: this.config.iconUrl.indexOf('http') === 0 || (browser.isIE && !window.svg4everybody),
+            absolute: this.config.iconUrl.indexOf('http') === 0 ||
+                (browser.isIE && !window.svg4everybody),
         };
     },
 
@@ -45,7 +55,9 @@ const controls = {
     createIcon(type, attributes) {
         const namespace = 'http://www.w3.org/2000/svg';
         const iconUrl = controls.getIconUrl.call(this);
-        const iconPath = `${!iconUrl.absolute ? iconUrl.url : ''}#${this.config.iconPrefix}`;
+        const iconPath = `${!iconUrl.absolute ? iconUrl.url : ''}#${
+            this.config.iconPrefix
+        }`;
 
         // Create <svg>
         const icon = document.createElementNS(namespace, 'svg');
@@ -53,7 +65,7 @@ const controls = {
             icon,
             utils.extend(attributes, {
                 role: 'presentation',
-            }),
+            })
         );
 
         // Create the <use> to reference sprite
@@ -66,7 +78,11 @@ const controls = {
         if ('href' in use) {
             use.setAttributeNS('http://www.w3.org/1999/xlink', 'href', path);
         } else {
-            use.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', path);
+            use.setAttributeNS(
+                'http://www.w3.org/1999/xlink',
+                'xlink:href',
+                path
+            );
         }
 
         // Add <use> to <svg>
@@ -114,12 +130,11 @@ const controls = {
 
         badge.appendChild(
             utils.createElement(
-                'span',
-                {
+                'span', {
                     class: this.config.classNames.menu.badge,
                 },
-                text,
-            ),
+                text
+            )
         );
 
         return badge;
@@ -127,6 +142,8 @@ const controls = {
 
     // Create a <button>
     createButton(buttonType, attr) {
+
+
         const button = utils.createElement('button');
         const attributes = Object.assign({}, attr);
         let type = utils.toCamelCase(buttonType);
@@ -136,6 +153,7 @@ const controls = {
         let icon;
         let labelPressed;
         let iconPressed;
+        let lottieClass;
 
         if (!('type' in attributes)) {
             attributes.type = 'button';
@@ -157,6 +175,7 @@ const controls = {
                 labelPressed = 'pause';
                 icon = 'play';
                 iconPressed = 'pause';
+                lottieClass = false;
                 break;
 
             case 'mute':
@@ -165,6 +184,7 @@ const controls = {
                 labelPressed = 'unmute';
                 icon = 'volume';
                 iconPressed = 'muted';
+                lottieClass = false;
                 break;
 
             case 'captions':
@@ -173,54 +193,98 @@ const controls = {
                 labelPressed = 'disableCaptions';
                 icon = 'captions-off';
                 iconPressed = 'captions-on';
+                lottieClass = false;
                 break;
 
             case 'fullscreen':
                 toggle = true;
                 label = 'enterFullscreen';
                 labelPressed = 'exitFullscreen';
-                icon = 'enter-fullscreen';
-                iconPressed = 'exit-fullscreen';
+                icon = '';
+                iconPressed = '';
+                lottieClass = 'plyr--button-fullscreen';
                 break;
 
             case 'play-large':
-                attributes.class += ` ${this.config.classNames.control}--overlaid`;
+                attributes.class += ` ${
+                    this.config.classNames.control
+                }--overlaid`;
                 type = 'play';
                 label = 'play';
                 icon = 'play';
+                lottieClass = false;
                 break;
 
             case 'share':
+                attributes.class += ` ${
+                    this.config.classNames.share.button
+                }`;
                 toggle = true;
                 label = 'shareOpen';
                 labelPressed = 'shareClose';
-                icon = 'share';
+                icon = '';
                 iconPressed = 'close';
+                lottieClass = 'plyr--share-button';
                 break;
 
             case 'playlist':
-                attributes.class += ` ${this.config.classNames.playlist.button}`;
+                attributes.class += ` ${
+                    this.config.classNames.playlist.button
+                }`;
                 toggle = true;
                 label = 'playlistOpen';
                 labelPressed = 'playlistClose';
                 icon = 'playlist';
                 iconPressed = 'close';
+                lottieClass = 'plyr--bar-playlist';
                 break;
-
+            case 'morevideos':
+                attributes.class += ` ${
+                    this.config.classNames.morevideos.button
+                }`;
+                // if you want it to show -> !this.config.hideControls
+                if(this.config.hideControls)  {
+                    attributes.class += ' hide';
+                }
+                toggle = true;
+                label = 'morevideosOpen';
+                break;
             default:
                 label = type;
                 icon = buttonType;
+                lottieClass = false;
         }
 
         // Setup toggle icon and labels
         if (toggle) {
             // Icon
-            button.appendChild(controls.createIcon.call(this, iconPressed, { class: 'icon--pressed' }));
-            button.appendChild(controls.createIcon.call(this, icon, { class: 'icon--not-pressed' }));
+            button.appendChild(
+                controls.createIcon.call(this, iconPressed, {
+                    class: 'icon--pressed',
+                })
+            );
+            button.appendChild(
+                controls.createIcon.call(this, icon, {
+                    class: 'icon--not-pressed',
+                })
+            );
 
             // Label/Tooltip
-            button.appendChild(controls.createLabel.call(this, labelPressed, { class: 'label--pressed' }));
-            button.appendChild(controls.createLabel.call(this, label, { class: 'label--not-pressed' }));
+            button.appendChild(
+                controls.createLabel.call(this, labelPressed, {
+                    class: 'label--pressed',
+                })
+            );
+            button.appendChild(
+                controls.createLabel.call(this, label, {
+                    class: 'label--not-pressed',
+                })
+            );
+
+            // Set lottie class
+            if (lottieClass) {
+                button.setAttribute('lottie-class', lottieClass);
+            };
 
             // Add aria attributes
             attributes['aria-pressed'] = false;
@@ -231,7 +295,13 @@ const controls = {
         }
 
         // Merge attributes
-        utils.extend(attributes, utils.getAttributesFromSelector(this.config.selectors.buttons[type], attributes));
+        utils.extend(
+            attributes,
+            utils.getAttributesFromSelector(
+                this.config.selectors.buttons[type],
+                attributes
+            )
+        );
 
         utils.setAttributes(button, attributes);
 
@@ -252,10 +322,19 @@ const controls = {
             button.insertAdjacentHTML('beforeend', html);
         }
 
+        if (type === 'morevideos') {
+            const html = "<button class='plyr_morevideos_button'></button>";
+            button.insertAdjacentHTML('beforeend', html);
+        }
+
         if (type === 'playlist') {
             const html = `
                 <span class="plyr__playlist-button-title">
-                    ${(this.config.playlist.type === 'related') ? 'Related' : 'Levels'}
+                    ${
+    this.config.playlist.type === 'related'
+        ? 'Related'
+        : ''
+}
                 </span>
             `;
             button.insertAdjacentHTML('beforeend', html);
@@ -274,25 +353,26 @@ const controls = {
 
         return button;
     },
+    
 
     // Create an <input type='range'>
     createRange(type, attributes) {
         // Seek label
         const label = utils.createElement(
-            'label',
-            {
+            'label', {
                 for: attributes.id,
                 class: this.config.classNames.hidden,
             },
-            i18n.get(type, this.config),
+            i18n.get(type, this.config)
         );
 
         // Seek input
         const input = utils.createElement(
             'input',
             utils.extend(
-                utils.getAttributesFromSelector(this.config.selectors.inputs[type]),
-                {
+                utils.getAttributesFromSelector(
+                    this.config.selectors.inputs[type]
+                ), {
                     type: 'range',
                     min: 0,
                     max: 100,
@@ -300,8 +380,8 @@ const controls = {
                     value: 0,
                     autocomplete: 'off',
                 },
-                attributes,
-            ),
+                attributes
+            )
         );
 
         this.elements.inputs[type] = input;
@@ -320,14 +400,15 @@ const controls = {
         const progress = utils.createElement(
             'progress',
             utils.extend(
-                utils.getAttributesFromSelector(this.config.selectors.display[type]),
-                {
+                utils.getAttributesFromSelector(
+                    this.config.selectors.display[type]
+                ), {
                     min: 0,
                     max: 100,
                     value: 0,
                 },
-                attributes,
-            ),
+                attributes
+            )
         );
 
         // Create the label inside
@@ -364,57 +445,91 @@ const controls = {
 
         container.appendChild(
             utils.createElement(
-                'span',
-                {
+                'span', {
                     class: this.config.classNames.hidden,
                 },
-                i18n.get(type, this.config),
-            ),
+                i18n.get(type, this.config)
+            )
         );
 
-        container.appendChild(utils.createElement('span', utils.getAttributesFromSelector(this.config.selectors.display[type]), '00:00'));
+        container.appendChild(
+            utils.createElement(
+                'span',
+                utils.getAttributesFromSelector(
+                    this.config.selectors.display[type]
+                ),
+                '00:00'
+            )
+        );
 
         this.elements.display[type] = container;
 
         return container;
     },
 
-    // Create logo
-    createLogo() {
+    leftTopCreateLogo() {
         const svg = ` 
-                <?xml version="1.0" encoding="utf-8"?>
-                <svg preserveAspectRatio="xMinYMin meet" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-                     viewBox="0 0 359 74" style="enable-background:new 0 0 359 74;" xml:space="preserve">
-                <g>
-                    <path class="st0" d="M108.7,14.4H84.1v-3.9h54v3.9h-24.7v48.1h-4.6V14.4H108.7z"/>
-                    <path class="st0" d="M211.1,62.5v-52h34.5c8.1,0,12.3,3.3,12.3,12.5c0,6.3-1,10.6-7.6,12.4v0.1c6.8,1.4,8.6,6,8.6,12.5
-                        c0,9.4-4.5,14.5-13.2,14.5L211.1,62.5z M244.6,33.6c6.6,0,8.7-4.5,8.7-10.4c0-8.6-4.8-8.8-8.4-8.8h-29.1v19.2H244.6z M215.7,58.6
-                        H243c7.6,0,11.3-2.6,11.3-10.2c0-4.6-1.4-10.9-9.3-10.9h-29.4L215.7,58.6L215.7,58.6z"/>
-                    <path class="st0" d="M281,10.5v52h-4.6v-52L281,10.5z"/>
-                    <path class="st0" d="M345.6,62.4h5.8l-25.8-50.7H320l-25.8,50.7h5.4l6.9-13.5h32.4L345.6,62.4z M308.5,44.8L322.7,17h0.1l13.9,27.8
-                        H308.5z"/>
-                    <path class="st0" d="M191.2,10.5v32.3c0,6.8,0,16.4-10.6,16.4h-17.1c-10.6,0-10.6-9.6-10.6-16.4V10.5h-4.6v35.6
-                        c0,13.4,7.1,16.9,15.2,16.9h17.1c8.1,0,15.2-3.5,15.2-16.9V10.5H191.2z"/>
-                </g>
+                <svg preserveAspectRatio="xMinYMin meet" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 60 74" style="enable-background:new 0 0 60 74;" xml:space="preserve">
+                    
                 <g>
                     <path class="st0" d="M33.9,63.7c-0.9,0-1.8-0.2-2.6-0.7L13.2,52.3c-1.6-0.9-2.5-2.6-2.5-4.4V26.2c0-1.8,1-3.5,2.5-4.4l18.1-10.7
                         c1.6-1,3.6-1,5.3,0l18.1,10.7c1.6,0.9,2.5,2.6,2.5,4.4v21.6c0,1.8-1,3.5-2.5,4.4L36.5,63C35.7,63.5,34.8,63.7,33.9,63.7z
-                         M33.9,13.5c-0.4,0-0.7,0.1-1,0.3L14.8,24.5c-0.6,0.4-1,1-1,1.7v21.6c0,0.7,0.4,1.4,1,1.7l18.1,10.7c0.6,0.4,1.4,0.4,2.1,0L53,49.6
-                        c0.6-0.4,1-1,1-1.7V26.2c0-0.7-0.4-1.4-1-1.7L34.9,13.8C34.6,13.6,34.3,13.5,33.9,13.5z"/>
+                        M33.9,13.5c-0.4,0-0.7,0.1-1,0.3L14.8,24.5c-0.6,0.4-1,1-1,1.7v21.6c0,0.7,0.4,1.4,1,1.7l18.1,10.7c0.6,0.4,1.4,0.4,2.1,0L53,49.6
+                        c0.6-0.4,1-1,1-1.7V26.2c0-0.7-0.4-1.4-1-1.7L34.9,13.8C34.6,13.6,34.3,13.5,33.9,13.5z"></path>
                     <path class="st0" d="M41.2,36.2l-11-7.7l0,0l0,0c-0.1-0.1-0.3-0.1-0.5-0.1c-0.2,0-0.3,0-0.5,0.1c-0.3,0.2-0.5,0.5-0.5,0.8v15.4
                         c0,0.4,0.2,0.7,0.5,0.8l0.1,0.1h0c0.1,0,0.2,0.1,0.3,0.1c0.1,0,0.3,0,0.6-0.2l10.9-7.6c0.3-0.2,0.5-0.5,0.5-0.8
-                        S41.4,36.4,41.2,36.2z"/>
+                        S41.4,36.4,41.2,36.2z"></path>
                 </g>
                 </svg>
             `;
-        const container = utils.createElement('a', {
-            href: 'https://tubia.com/',
-            target: '_blank',
-            class: 'plyr__logo',
+        const container = utils.createElement('span', {
+            class: 'plyr__logo plyr__logo-top',
         });
         container.insertAdjacentHTML('beforeend', svg);
 
         return container;
+    },
+
+    createLogo() {
+        const container = utils.createElement('button', {
+            class: 'plyr--bar-morevideos plyr__control',
+            'lottie-class': 'plyr--bar-morevideos',
+            type: 'button',
+
+        });
+
+        container.addEventListener('click', () => {
+            controls.toggleInterestingVideos();
+        });
+
+        return container;
+    },
+
+    toggleInterestingVideos() {
+        const element = document.querySelector('.plyr__morevideos');
+        const isHidden = element.classList.contains('hide');
+
+        if (isHidden) {
+            controls.showInterestingVideos();
+        } else {
+            controls.hideInterestingVideos();
+        }
+    },
+
+    showInterestingVideos() {
+        const element = document.querySelector('.plyr__morevideos');
+        const isHidden = element.classList.contains('hide');
+        lotties.playLottie('plyr--bar-morevideos');
+
+        if (isHidden) {
+            element.classList.remove('hide');
+        }
+    },
+
+    hideInterestingVideos() {
+        const element = document.querySelector('.plyr__morevideos');
+        lotties.reversePlayLottie('plyr--bar-morevideos');
+        element.classList.add('hide');
     },
 
     // Create title
@@ -423,7 +538,6 @@ const controls = {
             class: 'plyr__title',
         });
         container.innerText = this.config.title;
-
         return container;
     },
 
@@ -435,18 +549,25 @@ const controls = {
             class: this.config.classNames.control,
         });
 
+
         const radio = utils.createElement(
             'input',
-            utils.extend(utils.getAttributesFromSelector(this.config.selectors.inputs[type]), {
-                type: 'radio',
-                name: `plyr-${type}`,
-                value,
-                checked,
-                class: 'plyr__sr-only',
-            }),
+            utils.extend(
+                utils.getAttributesFromSelector(
+                    this.config.selectors.inputs[type]
+                ), {
+                    type: 'radio',
+                    name: `plyr-${type}`,
+                    value,
+                    checked,
+                    class: 'plyr__sr-only',
+                }
+            )
         );
 
-        const faux = utils.createElement('span', { 'aria-hidden': true });
+        const faux = utils.createElement('span', {
+            'aria-hidden': true,
+        });
 
         label.appendChild(radio);
         label.appendChild(faux);
@@ -478,7 +599,11 @@ const controls = {
         const visible = `${this.config.classNames.tooltip}--visible`;
 
         const toggle = toggleEvent => {
-            utils.toggleClass(this.elements.display.seekTooltip, visible, toggleEvent);
+            utils.toggleClass(
+                this.elements.display.seekTooltip,
+                visible,
+                toggleEvent
+            );
         };
 
         // Hide on touch
@@ -489,9 +614,13 @@ const controls = {
 
         // Determine percentage, if already visible
         if (utils.is.event(event)) {
-            percent = 100 / clientRect.width * (event.pageX - clientRect.left);
+            percent =
+                (100 / clientRect.width) * (event.pageX - clientRect.left);
         } else if (utils.hasClass(this.elements.display.seekTooltip, visible)) {
-            percent = parseFloat(this.elements.display.seekTooltip.style.left, 10);
+            percent = parseFloat(
+                this.elements.display.seekTooltip.style.left,
+                10
+            );
         } else {
             return;
         }
@@ -504,17 +633,22 @@ const controls = {
         }
 
         // Display the time a click would seek to
-        ui.updateTimeDisplay.call(this, this.elements.display.seekTooltip, this.duration / 100 * percent);
+        ui.updateTimeDisplay.call(
+            this,
+            this.elements.display.seekTooltip,
+            (this.duration / 100) * percent
+        );
 
         // Set position
         this.elements.display.seekTooltip.style.left = `${percent}%`;
-
         // Show/hide the tooltip
         // If the event is a moues in/out and percentage is inside bounds
-        if (utils.is.event(event) && [
-            'mouseenter',
-            'mouseleave',
-        ].includes(event.type)) {
+        if (
+            utils.is.event(event) && [
+                'mouseenter',
+                'mouseleave',
+            ].includes(event.type)
+        ) {
             toggle(event.type === 'mouseenter');
         }
     },
@@ -534,6 +668,12 @@ const controls = {
         utils.toggleHidden(tab, !toggle);
     },
 
+    // Hide/show the morevideos
+    toggleMoreVideos(setting, toggle) {
+        const tab = this.elements.morevideos[setting];
+        utils.toggleHidden(tab, !toggle);
+    },
+
     // Set the quality menu
     // TODO: Vimeo support
     setQualityMenu(options) {
@@ -547,11 +687,14 @@ const controls = {
 
         // Set options if passed and filter based on config
         if (utils.is.array(options)) {
-            this.options.quality = options.filter(quality => this.config.quality.options.includes(quality));
+            this.options.quality = options.filter(quality =>
+                this.config.quality.options.includes(quality)
+            );
         }
 
         // Toggle the pane and tab
-        const toggle = !utils.is.empty(this.options.quality) && this.options.quality.length > 1;
+        const toggle = !utils.is.empty(this.options.quality) &&
+            this.options.quality.length > 1;
         controls.toggleTab.call(this, type, toggle);
 
         // If we're hiding, nothing more to do
@@ -593,13 +736,22 @@ const controls = {
         };
 
         // Sort options by the config and then render options
-        this.options.quality.sort((a, b) => {
-            const sorting = this.config.quality.options;
-            return sorting.indexOf(a) > sorting.indexOf(b) ? 1 : -1;
-        }).forEach(quality => {
-            const label = controls.getLabel.call(this, 'quality', quality);
-            controls.createMenuItem.call(this, quality, list, type, label, getBadge(quality));
-        });
+        this.options.quality
+            .sort((a, b) => {
+                const sorting = this.config.quality.options;
+                return sorting.indexOf(a) > sorting.indexOf(b) ? 1 : -1;
+            })
+            .forEach(quality => {
+                const label = controls.getLabel.call(this, 'quality', quality);
+                controls.createMenuItem.call(
+                    this,
+                    quality,
+                    list,
+                    type,
+                    label,
+                    getBadge(quality)
+                );
+            });
 
         controls.updateSetting.call(this, type, list);
     },
@@ -633,7 +785,9 @@ const controls = {
 
         switch (setting) {
             case 'captions':
-                value = this.captions.active ? this.captions.language : i18n.get('disabled', this.config);
+                value = this.captions.active ?
+                    this.captions.language :
+                    i18n.get('disabled', this.config);
                 break;
 
             default:
@@ -645,14 +799,21 @@ const controls = {
                 }
 
                 // Unsupported value
-                if (!utils.is.empty(this.options[setting]) && !this.options[setting].includes(value)) {
-                    this.debug.warn(`Unsupported value of '${value}' for ${setting}`);
+                if (
+                    !utils.is.empty(this.options[setting]) &&
+                    !this.options[setting].includes(value)
+                ) {
+                    this.debug.warn(
+                        `Unsupported value of '${value}' for ${setting}`
+                    );
                     return;
                 }
 
                 // Disabled value
                 if (!this.config[setting].options.includes(value)) {
-                    this.debug.warn(`Disabled value of '${value}' for ${setting}`);
+                    this.debug.warn(
+                        `Disabled value of '${value}' for ${setting}`
+                    );
                     return;
                 }
 
@@ -667,7 +828,9 @@ const controls = {
         // Update the label
         if (!utils.is.empty(value)) {
             if (this.elements.settings.tabs[setting]) {
-                const label = this.elements.settings.tabs[setting].querySelector(`.${this.config.classNames.menu.value}`);
+                const label = this.elements.settings.tabs[
+                    setting
+                ].querySelector(`.${this.config.classNames.menu.value}`);
                 label.innerHTML = controls.getLabel.call(this, setting, value);
             }
         }
@@ -732,7 +895,11 @@ const controls = {
             return null;
         }
 
-        if (support.textTracks && captions.getTracks.call(this).length && this.captions.active) {
+        if (
+            support.textTracks &&
+            captions.getTracks.call(this).length &&
+            this.captions.active
+        ) {
             const currentTrack = captions.getCurrentTrack.call(this);
 
             if (utils.is.track(currentTrack)) {
@@ -764,7 +931,8 @@ const controls = {
         // Re-map the tracks into just the data we need
         const tracks = captions.getTracks.call(this).map(track => ({
             language: track.language,
-            label: !utils.is.empty(track.label) ? track.label : track.language.toUpperCase(),
+            label: !utils.is.empty(track.label) ?
+                track.label : track.language.toUpperCase(),
         }));
 
         // Add the "Disabled" option to turn off captions
@@ -782,7 +950,8 @@ const controls = {
                 'language',
                 track.label || track.language,
                 controls.createBadge.call(this, track.language.toUpperCase()),
-                track.language.toLowerCase() === this.captions.language.toLowerCase(),
+                track.language.toLowerCase() ===
+                this.captions.language.toLowerCase()
             );
         });
 
@@ -792,7 +961,10 @@ const controls = {
     // Set a list of available captions languages
     setSpeedMenu(options) {
         // Do nothing if not selected
-        if (!this.config.controls.includes('settings') || !this.config.settings.includes('speed')) {
+        if (
+            !this.config.controls.includes('settings') ||
+            !this.config.settings.includes('speed')
+        ) {
             return;
         }
 
@@ -819,10 +991,13 @@ const controls = {
         }
 
         // Set options if passed and filter based on config
-        this.options.speed = this.options.speed.filter(speed => this.config.speed.options.includes(speed));
+        this.options.speed = this.options.speed.filter(speed =>
+            this.config.speed.options.includes(speed)
+        );
 
         // Toggle the pane and tab
-        const toggle = !utils.is.empty(this.options.speed) && this.options.speed.length > 1;
+        const toggle = !utils.is.empty(this.options.speed) &&
+            this.options.speed.length > 1;
         controls.toggleTab.call(this, type, toggle);
 
         // Check if we need to toggle the parent
@@ -854,15 +1029,21 @@ const controls = {
 
     // Check if we need to hide/show the settings menu
     checkMenu() {
-        const { tabs } = this.elements.settings;
-        const visible = !utils.is.empty(tabs) && Object.values(tabs).some(tab => !tab.hidden);
+        const {
+            tabs,
+        } = this.elements.settings;
+        const visible = !utils.is.empty(tabs) &&
+            Object.values(tabs).some(tab => !tab.hidden);
 
         utils.toggleHidden(this.elements.settings.menu, !visible);
     },
 
     // Show/hide menu
     toggleMenu(event) {
-        const { form } = this.elements.settings;
+
+        const {
+            form,
+        } = this.elements.settings;
         const button = this.elements.buttons.settings;
 
         // Menu and button are required
@@ -870,10 +1051,16 @@ const controls = {
             return;
         }
 
-        const show = utils.is.boolean(event) ? event : utils.is.element(form) && form.getAttribute('aria-hidden') === 'true';
+        const show = utils.is.boolean(event) ?
+            event :
+            utils.is.element(form) &&
+            form.getAttribute('aria-hidden') === 'true';
+
+
 
         if (utils.is.event(event)) {
-            const isMenuItem = utils.is.element(form) && form.contains(event.target);
+            const isMenuItem =
+                utils.is.element(form) && form.contains(event.target);
             const isButton = event.target === this.elements.buttons.settings;
 
             // If the click was inside the form or if the click
@@ -896,7 +1083,11 @@ const controls = {
 
         if (utils.is.element(form)) {
             form.setAttribute('aria-hidden', !show);
-            utils.toggleClass(this.elements.container, this.config.classNames.menu.open, show);
+            utils.toggleClass(
+                this.elements.container,
+                this.config.classNames.menu.open,
+                show
+            );
 
             if (show) {
                 form.removeAttribute('tabindex');
@@ -937,7 +1128,9 @@ const controls = {
 
     // Toggle Menu
     showTab(event) {
-        const { menu } = this.elements.settings;
+        const {
+            menu,
+        } = this.elements.settings;
         const tab = event.target;
         const show = tab.getAttribute('aria-expanded') === 'false';
         const pane = document.getElementById(tab.getAttribute('aria-controls'));
@@ -955,11 +1148,17 @@ const controls = {
 
         // Hide all other tabs
         // Get other tabs
-        const current = menu.querySelector('[role="tabpanel"][aria-hidden="false"]');
+        const current = menu.querySelector(
+            '[role="tabpanel"][aria-hidden="false"]'
+        );
         const container = current.parentNode;
 
         // Set other toggles to be expanded false
-        Array.from(menu.querySelectorAll(`[aria-controls="${current.getAttribute('id')}"]`)).forEach(toggle => {
+        Array.from(
+            menu.querySelectorAll(
+                `[aria-controls="${current.getAttribute('id')}"]`
+            )
+        ).forEach(toggle => {
             toggle.setAttribute('aria-expanded', false);
         });
 
@@ -975,10 +1174,13 @@ const controls = {
             // Restore auto height/width
             const restore = e => {
                 // We're only bothered about height and width on the container
-                if (e.target !== container || ![
-                    'width',
-                    'height',
-                ].includes(e.propertyName)) {
+                if (
+                    e.target !== container ||
+                    ![
+                        'width',
+                        'height',
+                    ].includes(e.propertyName)
+                ) {
                     return;
                 }
 
@@ -1008,17 +1210,21 @@ const controls = {
         pane.removeAttribute('tabindex');
 
         // Focus the first item
-        pane.querySelectorAll('button:not(:disabled), input:not(:disabled), [tabindex]')[0].focus();
+        pane.querySelectorAll(
+            'button:not(:disabled), input:not(:disabled), [tabindex]'
+        )[0].focus();
     },
 
-    // Show playlist
-    setPlaylist() {
-        const type = 'playlist';
-        const list = this.elements.playlist.querySelector('ul');
+    // Show morevideos
+    setmoreVideoList() {
+        const type = 'morevideos';
 
-        // Toggle the playlist
-        const hasItems = playlist.getData.call(this).length;
-        controls.togglePlaylist.call(this, type, hasItems);
+        const list = this.elements.morevideos.querySelector('ul');
+
+        // Toggle the morevideos
+        const hasItems = morevideos.getData.call(this).length;
+
+        controls.toggleMoreVideos.call(this, type, hasItems);
 
         // Empty the menu
         utils.emptyElement(list);
@@ -1028,12 +1234,58 @@ const controls = {
             return;
         }
 
-        if(this.config.playlist.type === 'cue') {
+        // Re-map the tracks into just the data we need
+        const items = morevideos.getData.call(this).map(item => ({
+            link: item.cuePoint / 1000,
+            name: item.name,
+        }));
+
+        // Generate options
+        items.forEach((item, index) => {
+            const counter = index + 1;
+            let itemNumber = 0;
+            if (counter.toString().length === 1) {
+                itemNumber = `0${counter}`;
+            } else {
+                itemNumber = counter;
+            }
+            controls.createMoreVideosItem.call(
+                this,
+                list,
+                item.link,
+                item.name,
+                itemNumber
+            );
+        });
+    },
+
+    // Show playlist
+    setPlaylist() {
+
+        const type = 'playlist';
+        const list = this.elements.playlist.querySelector('ul');
+
+        // Toggle the playlist
+        const hasItems = playlist.getData.call(this).length;
+        controls.togglePlaylist.call(this, type, hasItems);
+
+
+        // Empty the menu
+        utils.emptyElement(list);
+
+
+        // If there's no items, bail
+        if (!hasItems) {
+            return;
+        }
+
+        if (this.config.playlist.type === 'cue') {
             // Re-map the tracks into just the data we need
             const items = playlist.getData.call(this).map(item => ({
                 link: item.cuePoint / 1000,
                 name: item.name,
             }));
+
 
             // Generate options
             items.forEach((item, index) => {
@@ -1049,14 +1301,15 @@ const controls = {
                     list,
                     item.link,
                     item.name,
-                    itemNumber,
+                    itemNumber
                 );
             });
-        } else if(this.config.playlist.type === 'related') {
+        } else if (this.config.playlist.type === 'related') {
             // Re-map the tracks into just the data we need
             const items = playlist.getData.call(this).map(item => ({
                 link: item.PageUrl,
-                name: (item.Title && item.Title !== '') ? item.Title : 'Check out this game!',
+                name: item.Title && item.Title !== '' ?
+                    item.Title : 'Check out this game!',
                 image: item.GameImage,
             }));
 
@@ -1075,10 +1328,41 @@ const controls = {
                     item.link,
                     item.name,
                     item.image,
-                    itemNumber,
+                    itemNumber
                 );
             });
         }
+    },
+
+    // Create a morevideos item for seeking
+    createMoreVideosItem(list, cue, title, counter) {
+        const label = utils.createElement('span', {
+            class: 'plyr_name',
+        });
+        const count = utils.createElement('span', {
+            class: 'plyr__count',
+        });
+        const imageItem = utils.createElement('div', {
+            class: 'plyr__background',
+        });
+
+        const item = utils.createElement('li', {
+            class: counter === '01' ? 'active' : '',
+        });
+
+        // Jump to the time we want.
+        utils.on(item, 'click', () => {
+            // Todo: we want to set the current active class based on seekTime.
+            // this.jumpTo(cue);
+        });
+
+        label.insertAdjacentHTML('beforeend', title);
+        count.insertAdjacentHTML('beforeend', counter);
+
+        item.appendChild(imageItem);
+        item.appendChild(count);
+        item.appendChild(label);
+        list.appendChild(item);
     },
 
     // Create a playlist cue item for seeking
@@ -1089,23 +1373,12 @@ const controls = {
         const count = utils.createElement('span', {
             class: 'plyr__count',
         });
-        const backgroundPositions = [
-            'left',
-            'top',
-            'right',
-            'bottom',
-            'center',
-        ];
         const imageItem = utils.createElement('div', {
             class: 'plyr__background',
         });
-        imageItem.style.backgroundImage = `url("data:image/svg+xml;base64, PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxMCcgaGVpZ2h0PScxMCc+DQogIDxyZWN0IHdpZHRoPScxMCcgaGVpZ2h0PScxMCcgZmlsbD0nIzAwMCcgZmlsbC1vcGFjaXR5PSIwLjYiIC8+DQogIDxyZWN0IHg9JzAnIHk9JzAnIHdpZHRoPSc1JyBoZWlnaHQ9JzUnIGZpbGw9JyMwMDAnIGZpbGwtb3BhY2l0eT0iMSIgLz4NCjwvc3ZnPg=="), url(${this.media.getAttribute('poster')})`;
-        imageItem.style.backgroundSize = `2px, ${Math.floor(Math.random() * 300) + 100}%`;
-        imageItem.style.backgroundPosition = `center, ${backgroundPositions[Math.floor(Math.random() * backgroundPositions.length)]}`;
-        imageItem.style.backgroundRepeat = 'repeat, no-repeat';
 
         const item = utils.createElement('li', {
-            class: (counter === '01') ? 'active' : '',
+            class: counter === '01' ? 'active' : '',
         });
 
         // Jump to the time we want.
@@ -1134,13 +1407,9 @@ const controls = {
         const imageItem = utils.createElement('div', {
             class: 'plyr__background',
         });
-        imageItem.style.backgroundImage = `url("data:image/svg+xml;base64, PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxMCcgaGVpZ2h0PScxMCc+DQogIDxyZWN0IHdpZHRoPScxMCcgaGVpZ2h0PScxMCcgZmlsbD0nIzAwMCcgZmlsbC1vcGFjaXR5PSIwLjYiIC8+DQogIDxyZWN0IHg9JzAnIHk9JzAnIHdpZHRoPSc1JyBoZWlnaHQ9JzUnIGZpbGw9JyMwMDAnIGZpbGwtb3BhY2l0eT0iMSIgLz4NCjwvc3ZnPg=="), url(${image})`;
-        imageItem.style.backgroundSize = '2px, 100%';
-        imageItem.style.backgroundPosition = 'center, center';
-        imageItem.style.backgroundRepeat = 'repeat, no-repeat';
 
         const item = utils.createElement('li', {
-            class: (counter === '01') ? 'active' : '',
+            class: counter === '01' ? 'active' : '',
         });
 
         // Jump to the time we want.
@@ -1160,20 +1429,29 @@ const controls = {
     // Build the default HTML
     // TODO: Set order based on order in the config.controls array?
     create(data) {
+
         // Do nothing if we want no controls
         if (utils.is.empty(this.config.controls)) {
             return null;
         }
 
         // Create the container
-        const container = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.wrapper));
-        const containerLeft = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.left));
-        const containerRight = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.controls.right));
-
-        // Show a logo
-        if (this.config.controls.includes('logo')) {
-            this.elements.container.appendChild(controls.createLogo.call(this, 'logo'));
-        }
+        const container = utils.createElement(
+            'div',
+            utils.getAttributesFromSelector(
+                this.config.selectors.controls.wrapper
+            )
+        );
+        const containerLeft = utils.createElement(
+            'div',
+            utils.getAttributesFromSelector(this.config.selectors.controls.left)
+        );
+        const containerRight = utils.createElement(
+            'div',
+            utils.getAttributesFromSelector(
+                this.config.selectors.controls.right
+            )
+        );
 
         // Video title
         if (this.config.controls.includes('title')) {
@@ -1181,23 +1459,22 @@ const controls = {
         }
 
         // Share button
-        // if (this.config.controls.includes('share')) {
-        //     container.appendChild(controls.createButton.call(this, 'share'));
-        // }
-
-        // Playlist button
-        if (this.config.controls.includes('playlist')) {
-            container.appendChild(controls.createButton.call(this, 'playlist'));
+        if (this.config.controls.includes('share')) {
+            container.appendChild(controls.createButton.call(this, 'share'));
         }
 
         // Restart button
         if (this.config.controls.includes('restart')) {
-            containerLeft.appendChild(controls.createButton.call(this, 'restart'));
+            containerLeft.appendChild(
+                controls.createButton.call(this, 'restart')
+            );
         }
 
         // Rewind button
         if (this.config.controls.includes('rewind')) {
-            containerLeft.appendChild(controls.createButton.call(this, 'rewind'));
+            containerLeft.appendChild(
+                controls.createButton.call(this, 'rewind')
+            );
         }
 
         // Play/Pause button
@@ -1207,12 +1484,65 @@ const controls = {
 
         // Fast forward button
         if (this.config.controls.includes('fast-forward')) {
-            containerLeft.appendChild(controls.createButton.call(this, 'fast-forward'));
+            const item = containerLeft.appendChild(
+                controls.createButton.call(this, 'fast-forward')
+            );
+            // eslint-disable-next-line no-shadow
+            const captions = utils.createElement('div', {
+                class: 'plyr__levelCaptions',
+            });
+            this.on('timeupdate', () => {
+
+                const playingTime = this.currentTime;
+                if (this.config.playlist.type === 'cue') {
+                    // eslint-disable-next-line no-shadow
+                    const items = playlist.getData.call(this).map(item => ({
+                        link: item.cuePoint / 1000,
+                        name: item.name,
+                    }));
+                    // eslint-disable-next-line no-shadow
+                    items.forEach((item, i) => {
+                        const counter = i + 1;
+                        // const itemNumber = 0;
+                        if (i < items.length - 1) {
+                            if (
+                                playingTime > item.link &&
+                                playingTime < items[counter].link
+                            ) {
+                                this.nextCuePoint = items[counter].link;
+                                captions.innerHTML =
+                                    `<span>${  item.name  }</span>`;
+                            } else if (
+                                playingTime < items[0].link ||
+                                (i === items.length - 1 &&
+                                    playingTime > item.link)
+                            ) {
+                                this.nextCuePoint = items[0].link;
+                            }
+                        } else if (
+                            i === items.length - 1 &&
+                            playingTime > item.link
+                        ) {
+                            this.nextCuePoint = items[0].link;
+                            items[counter].link = item.link;
+                        }
+                    });
+                    // Jump to the time we want.
+                    utils.on(item, 'click', () => {
+                        this.jumpTo(this.nextCuePoint);
+                    });
+                }
+            });
         }
+
+
 
         // Progress
         if (this.config.controls.includes('progress')) {
-            const progress = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.progress));
+            const progress = utils.createElement(
+                'div',
+                utils.getAttributesFromSelector(this.config.selectors.progress)
+            );
 
             // Seek range slider
             const seek = controls.createRange.call(this, 'seek', {
@@ -1220,6 +1550,57 @@ const controls = {
             });
             progress.appendChild(seek.label);
             progress.appendChild(seek.input);
+
+
+            // controls.CreateProgressLevel.call(this, progress);
+            if (this.config.playlist.type === 'cue') {
+                const items = playlist.getData.call(this).map(item => ({
+                    link: item.cuePoint / 1000,
+                    name: item.name,
+                }));
+
+          
+                setTimeout(() => {
+                    this.mark = new Mark(this);
+                    items.forEach((item, index) => {
+                        const counter = index + 1;
+                        // eslint-disable-next-line no-unused-vars
+                        let itemNumber = 0;
+                        if (counter > 1) {
+                            const cuePercentage = counter === 1 ? 0 : (item.link / this.duration) * 100;
+                            if (counter.toString().length === 1) {
+                                itemNumber = `0${counter}`;
+                            } else {
+                                itemNumber = counter;
+                            }
+                            const cueElement = utils.createElement('span', {
+                                class: 'plyr__cues--progress',
+                            });
+
+
+                            cueElement.style.left = `${cuePercentage.toString()}%`;
+
+
+                        
+                            cueElement.dataset.cue = item.link;
+                            cueElement.dataset.value = counter;
+
+                            progress.appendChild(cueElement);
+                            this.mark.create(cueElement);
+
+                            
+                        }
+
+                    });
+                }, 2000);
+            }
+
+
+
+
+
+
+
 
             // Buffer progress
             progress.appendChild(controls.createProgress.call(this, 'buffer'));
@@ -1229,11 +1610,10 @@ const controls = {
             // Seek tooltip
             if (this.config.tooltips.seek) {
                 const tooltip = utils.createElement(
-                    'span',
-                    {
+                    'span', {
                         class: this.config.classNames.tooltip,
                     },
-                    '00:00',
+                    '00:00'
                 );
 
                 progress.appendChild(tooltip);
@@ -1244,15 +1624,8 @@ const controls = {
             container.appendChild(this.elements.progress);
         }
 
-        // Media current time display
-        if (this.config.controls.includes('current-time')) {
-            containerLeft.appendChild(controls.createTime.call(this, 'currentTime'));
-        }
 
-        // Media duration display
-        if (this.config.controls.includes('duration')) {
-            containerLeft.appendChild(controls.createTime.call(this, 'duration'));
-        }
+
 
         // Toggle mute button
         if (this.config.controls.includes('mute')) {
@@ -1278,7 +1651,7 @@ const controls = {
                 'volume',
                 utils.extend(attributes, {
                     id: `plyr-volume-${data.id}`,
-                }),
+                })
             );
             volume.appendChild(range.label);
             volume.appendChild(range.input);
@@ -1288,13 +1661,32 @@ const controls = {
             containerLeft.appendChild(volume);
         }
 
+        // Media current time display
+        if (this.config.controls.includes('current-time')) {
+            containerLeft.appendChild(
+                controls.createTime.call(this, 'currentTime')
+            );
+        }
+
+        // Media duration display
+        if (this.config.controls.includes('duration')) {
+            containerLeft.appendChild(
+                controls.createTime.call(this, 'duration')
+            );
+        }
+
         // Toggle captions button
         if (this.config.controls.includes('captions')) {
-            containerRight.appendChild(controls.createButton.call(this, 'captions'));
+            containerRight.appendChild(
+                controls.createButton.call(this, 'captions')
+            );
         }
 
         // Settings button / menu
-        if (this.config.controls.includes('settings') && !utils.is.empty(this.config.settings)) {
+        if (
+            this.config.controls.includes('settings') &&
+            !utils.is.empty(this.config.settings)
+        ) {
             const menu = utils.createElement('div', {
                 class: 'plyr__menu',
                 hidden: '',
@@ -1306,7 +1698,7 @@ const controls = {
                     'aria-haspopup': true,
                     'aria-controls': `plyr-settings-${data.id}`,
                     'aria-expanded': false,
-                }),
+                })
             );
 
             const form = utils.createElement('form', {
@@ -1341,15 +1733,21 @@ const controls = {
 
                 const button = utils.createElement(
                     'button',
-                    utils.extend(utils.getAttributesFromSelector(this.config.selectors.buttons.settings), {
-                        type: 'button',
-                        class: `${this.config.classNames.control} ${this.config.classNames.control}--forward`,
-                        id: `plyr-settings-${data.id}-${type}-tab`,
-                        'aria-haspopup': true,
-                        'aria-controls': `plyr-settings-${data.id}-${type}`,
-                        'aria-expanded': false,
-                    }),
-                    i18n.get(type, this.config),
+                    utils.extend(
+                        utils.getAttributesFromSelector(
+                            this.config.selectors.buttons.settings
+                        ), {
+                            type: 'button',
+                            class: `${this.config.classNames.control} ${
+                                this.config.classNames.control
+                            }--forward`,
+                            id: `plyr-settings-${data.id}-${type}-tab`,
+                            'aria-haspopup': true,
+                            'aria-controls': `plyr-settings-${data.id}-${type}`,
+                            'aria-expanded': false,
+                        }
+                    ),
+                    i18n.get(type, this.config)
                 );
 
                 const value = utils.createElement('span', {
@@ -1381,15 +1779,16 @@ const controls = {
                 });
 
                 const back = utils.createElement(
-                    'button',
-                    {
+                    'button', {
                         type: 'button',
-                        class: `${this.config.classNames.control} ${this.config.classNames.control}--back`,
+                        class: `${this.config.classNames.control} ${
+                            this.config.classNames.control
+                        }--back`,
                         'aria-haspopup': true,
                         'aria-controls': `plyr-settings-${data.id}-home`,
                         'aria-expanded': false,
                     },
-                    i18n.get(type, this.config),
+                    i18n.get(type, this.config)
                 );
 
                 pane.appendChild(back);
@@ -1417,12 +1816,39 @@ const controls = {
 
         // Airplay button
         if (this.config.controls.includes('airplay') && support.airplay) {
-            containerRight.appendChild(controls.createButton.call(this, 'airplay'));
+            containerRight.appendChild(
+                controls.createButton.call(this, 'airplay')
+            );
+        }
+
+
+        // Playlist button
+        if (this.config.controls.includes('playlist')) {
+            containerRight.appendChild(
+                controls.createButton.call(this, 'playlist')
+            );
+        }
+
+        // morevideos button
+        if (this.config.controls.includes('morevideos')) {
+            this.elements.container.appendChild(
+                controls.createButton.call(this, 'morevideos')
+            );
         }
 
         // Toggle fullscreen button
         if (this.config.controls.includes('fullscreen')) {
-            containerRight.appendChild(controls.createButton.call(this, 'fullscreen'));
+            containerRight.appendChild(
+                controls.createButton.call(this, 'fullscreen')
+            );
+        }
+
+        // Show a logo
+        if (this.config.controls.includes('logo')) {
+            this.elements.container.appendChild(
+                controls.leftTopCreateLogo.call(this, 'logo')
+            );
+            containerRight.appendChild(controls.createLogo.call(this, 'logo'));
         }
 
         // Larger overlaid play button
@@ -1443,12 +1869,63 @@ const controls = {
         this.elements.controls = container;
 
         if (this.isHTML5) {
-            controls.setQualityMenu.call(this, html5.getQualityOptions.call(this));
+            controls.setQualityMenu.call(
+                this,
+                html5.getQualityOptions.call(this)
+            );
         }
 
         controls.setSpeedMenu.call(this);
 
         return container;
+    },
+
+    ClearAllLevels() {
+
+        [].forEach.call(document.querySelectorAll('.plyr__cues--progress'), (e) => {
+            e.parentNode.removeChild(e);
+
+        });
+    },
+
+    CreateProgressLevel(progress) {
+        let counter = 0;
+        let cuePercentage = 0;
+
+
+        controls.ClearAllLevels.call(this);
+
+        if (this.config.playlist.type === 'cue') {
+            const items = playlist.getData.call(this).map(item => ({
+                link: item.cuePoint / 1000,
+                name: item.name,
+            }));
+
+
+
+            items.forEach((item, index) => {
+                counter = index + 1;
+                // eslint-disable-next-line no-unused-vars
+                let itemNumber = 0;
+                setTimeout(() => {
+                    cuePercentage = (item.link / this.duration) * 100;
+
+
+                    if (counter.toString().length === 1) {
+                        itemNumber = `0${counter}`;
+                    } else {
+                        itemNumber = counter;
+                    }
+
+                    const cueElement = utils.createElement('span', {
+                        class: 'plyr__cues--progress',
+                    });
+                    cueElement.style.left = `${cuePercentage.toString()}%`;
+
+                    progress.appendChild(cueElement);
+                }, 1000);
+            });
+        }
     },
 
     // Insert controls
@@ -1471,7 +1948,10 @@ const controls = {
         this.elements.controls = null;
 
         // HTML or Element passed as the option
-        if (utils.is.string(this.config.controls) || utils.is.element(this.config.controls)) {
+        if (
+            utils.is.string(this.config.controls) ||
+            utils.is.element(this.config.controls)
+        ) {
             container = this.config.controls;
         } else if (utils.is.function(this.config.controls)) {
             // A custom function to build controls
@@ -1499,7 +1979,9 @@ const controls = {
 
         // Inject to custom location
         if (utils.is.string(this.config.selectors.controls.container)) {
-            target = document.querySelector(this.config.selectors.controls.container);
+            target = document.querySelector(
+                this.config.selectors.controls.container
+            );
         }
 
         // Inject into the container by default
@@ -1534,7 +2016,7 @@ const controls = {
                     this.config.selectors.labels,
                     ' .',
                     this.config.classNames.hidden,
-                ].join(''),
+                ].join('')
             );
 
             Array.from(labels).forEach(label => {

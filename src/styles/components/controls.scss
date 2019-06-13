@@ -3,6 +3,13 @@
 // --------------------------------------------------------------
 
 .plyr {
+
+    // .plyr__playlist{
+    //     .active{
+    //         .plyr__count
+    //     }
+    // }
+
     // Hide native controls
     &.plyr--full-ui ::-webkit-media-controls {
         display: none;
@@ -50,13 +57,6 @@
         }
 
         .plyr--playlist-button {
-            position: absolute;
-            z-index: 2;
-            top: 2px;
-            right: 4px;
-            svg.icon--pressed {
-                margin-top: -2px;
-            }
             span {
                 position: absolute;
                 top: 8px;
@@ -73,16 +73,27 @@
 
         .plyr__title {
             position: absolute;
-            top: 10px;
-            left: 50%;
+            top: 18px;
+            left: 53px;
             line-height: 100%;
-            text-transform: uppercase;
             font-weight: 600;
-            font-size: 16px;
-            transform: translateX(-50%);
+            font-size: 20px;
+            font-family: 'gaegu', sans-serif;
+            transform: translateX(0px);
+            letter-spacing: 0px;
             @media (max-width: $plyr-bp-sm) {
                 display: none;
             }
+        }
+       .ply__relatedVideos{
+            position: absolute;
+            bottom: 50px;
+            left: 100px;
+            line-height: 100%;
+            text-transform: uppercase;
+            font-weight: 600;
+            font-size: 20px;
+            transform: translateX(-50%);
         }
 
         //@media (min-width: $plyr-bp-sm) {
@@ -124,12 +135,20 @@
             z-index: 4; // Above playlist and non linear ad, but below video advertisement.
             bottom: 0;
             left: 0;
-            padding: $plyr-control-spacing / 2 $plyr-control-spacing;
+            padding: 0;
         }
 
         .plyr__controls-right {
             left: auto;
             right: 0;
+            span.plyr__logo{
+                position: relative;
+                width: 30px;
+                padding: 0;
+                margin: 0;
+                height: 28px;
+                & svg{height: 30px;}
+            }
         }
 
         .plyr__control {
@@ -147,6 +166,16 @@
         }
     }
 
+.plyr__cues--progress {
+    //border-radius: 50%;
+    position: absolute;
+    width: 5px;
+    height: $plyr-range-track-height;
+    background:$plyr-video-control-cue-color;
+    top: -$plyr-range-track-height;
+    z-index: 1;
+    // pointer-events: none;
+}
     // Audio controls
     &.plyr--audio .plyr__controls {
         background: $plyr-audio-controls-bg;
@@ -155,13 +184,21 @@
         padding: $plyr-control-spacing;
     }
 
+    &.plyr--video.plyr--hide-controls .plyr__controls .plyr__morevideos {
+        visibility: visible;
+        &:after {
+            visibility: visible;
+            transition: opacity 1s linear;
+            transition-delay: 1s;
+        }
+    }
+
     // Hide controls
     &.plyr--video.plyr--hide-controls .plyr__controls {
-        opacity: 0;
+        visibility: hidden;
         pointer-events: none;
-        // transform: translateY(100%);
         &:after {
-            opacity: 0;
+            visibility: hidden;
             transition: opacity 1s linear;
             transition-delay: 1s;
         }
@@ -174,10 +211,13 @@
     [data-plyr='fullscreen'] {
         display: none;
     }
+    .plyr.plyr--captions-enabled [data-plyr=captions], .plyr [data-plyr=captions], [data-plyr='captions'] {
+        display:none !important;
+    }
     &.plyr--captions-enabled [data-plyr='captions'],
     &.plyr--pip-supported [data-plyr='pip'],
     &.plyr--airplay-supported [data-plyr='airplay'],
-    &.plyr--fullscreen-enabled [data-plyr='fullscreen'] {
+    &.plyr--fullscreen-enabled {
         display: inline-block;
     }
 }

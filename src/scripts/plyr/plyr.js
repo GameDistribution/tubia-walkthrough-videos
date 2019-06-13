@@ -5,7 +5,10 @@
 // License: The MIT License (MIT)
 // ==========================================================================
 
-import { providers, types } from './types';
+import {
+    providers,
+    types,
+} from './types';
 import defaults from './defaults';
 import support from './support';
 import utils from './utils';
@@ -21,6 +24,7 @@ import controls from './controls';
 import media from './media';
 import source from './source';
 import ui from './ui';
+import lotties from './lotties';
 
 // Private properties
 // TODO: Use a WeakMap for private globals
@@ -54,8 +58,7 @@ class Plyr {
         }
 
         // Set config
-        this.config = utils.extend(
-            {},
+        this.config = utils.extend({},
             defaults,
             options || {},
             (() => {
@@ -98,7 +101,12 @@ class Plyr {
             active: null,
         };
 
-        // Playlist
+        // morevideos
+        this.morevideos = {
+            active: true,
+        };
+
+        // Share
         this.share = {
             active: null,
         };
@@ -109,6 +117,8 @@ class Plyr {
             quality: [],
         };
 
+        lotties.createAnimations();
+        
         // Debugging
         // TODO: move to globals
         this.debug = new Console(this.config.debug);
@@ -481,7 +491,9 @@ class Plyr {
      * Get buffered
      */
     get buffered() {
-        const { buffered } = this.media;
+        const {
+            buffered,
+        } = this.media;
 
         // YouTube / Vimeo return a float between 0-1
         if (utils.is.number(buffered)) {
@@ -539,7 +551,9 @@ class Plyr {
 
         // Use config if all else fails
         if (!utils.is.number(volume)) {
-            ({ volume } = this.config);
+            ({
+                volume,
+            } = this.config);
         }
 
         // Maximum is volumeMax
@@ -552,7 +566,7 @@ class Plyr {
         }
 
         // Update config
-        this.config.volume = volume;
+        this.config.volume = volume; 
 
         // Set the player volume
         this.media.volume = volume;
@@ -875,7 +889,7 @@ class Plyr {
 
         // Toggle state
         utils.toggleState(this.elements.buttons.captions, this.captions.active);
-
+         
         // Add class hook
         utils.toggleClass(this.elements.container, this.config.classNames.captions.active, this.captions.active);
 
@@ -958,6 +972,37 @@ class Plyr {
 
         // Trigger an event
         utils.dispatchEvent.call(this, this.media, this.playlist.active ? 'playlistenabled' : 'playlistdisabled');
+    }
+
+    /**
+     * Toggle morevideos
+     * @param {boolean} input - Whether to enable morevideos
+     */
+    toggleMoreVideos(input) {
+        // If there's no full support, or there's no caption toggle
+        if (!this.supported.ui || !utils.is.element(this.elements.buttons.morevideos)) {
+            return;
+        }
+        // If the method is called without parameter, toggle based on current value
+        const show = utils.is.boolean(input) ? input : this.elements.container.className.indexOf(this.config.classNames.morevideos.active) === -1;
+
+        // Nothing to change...
+        if (this.morevideos.active === show) {
+            return;
+        }
+
+        // Set global
+        this.morevideos.active = show;
+
+        // Toggle state
+        utils.toggleState(this.elements.buttons.morevideos, this.morevideos.active);
+
+        // Add class hook
+        utils.toggleClass(this.elements.container, this.config.classNames.morevideos.active, this.morevideos.active);
+        
+        // Trigger an event
+        utils.dispatchEvent.call(this, this.media, this.morevideos.active ? 'morevideosenabled' : 'morevideosdisabled');
+
     }
 
     /**
@@ -1124,6 +1169,8 @@ class Plyr {
         if (!show || this.playing) {
             this.timers.controls = setTimeout(() => {
                 // We need controls of course...
+
+
                 if (!utils.is.element(this.elements.controls)) {
                     return;
                 }
@@ -1142,11 +1189,14 @@ class Plyr {
                 const toggled = utils.toggleClass(this.elements.container, this.config.classNames.hideControls, true);
 
                 // Trigger event and close menu
+
                 if (toggled) {
                     utils.dispatchEvent.call(this, this.media, 'controlshidden');
 
                     if (this.config.controls.includes('settings') && !utils.is.empty(this.config.settings)) {
                         controls.toggleMenu.call(this, false);
+                        // this.toggleMoreVideos(false);
+                        this.togglePlaylist(false);
                     }
                 }
             }, delay);

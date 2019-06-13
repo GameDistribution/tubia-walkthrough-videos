@@ -26,7 +26,7 @@ const utils = {
         boolean(input) {
             return this.getConstructor(input) === Boolean;
         },
-        function(input) {
+        function (input) {
             return this.getConstructor(input) === Function;
         },
         array(input) {
@@ -525,6 +525,9 @@ const utils = {
         return matches.call(element, selector);
     },
 
+    
+
+
     // Find all elements
     getElements(selector) {
         return this.elements.container.querySelectorAll(selector);
@@ -555,6 +558,7 @@ const utils = {
                 captions: utils.getElement.call(this, this.config.selectors.buttons.captions),
                 fullscreen: utils.getElement.call(this, this.config.selectors.buttons.fullscreen),
                 playlist: utils.getElement.call(this, this.config.selectors.buttons.playlist),
+                morevideos: utils.getElement.call(this, this.config.selectors.buttons.morevideos),
                 share: utils.getElement.call(this, this.config.selectors.buttons.share),
             };
 

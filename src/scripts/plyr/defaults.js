@@ -22,7 +22,7 @@ const defaults = {
     seekTime: 10,
 
     // Default volume
-    volume: 1,
+    volume: .5,
     muted: false,
 
     // Pass a custom duration
@@ -89,15 +89,7 @@ const defaults = {
     // Speed default and options to display
     speed: {
         selected: 1,
-        options: [
-            0.5,
-            0.75,
-            1,
-            1.25,
-            1.5,
-            1.75,
-            2,
-        ],
+        options: [1],
     },
 
     // Keyboard shortcut settings
@@ -108,14 +100,15 @@ const defaults = {
 
     // Display tooltips
     tooltips: {
-        controls: false,
+        controls: true,
         seek: true,
     },
 
     // Captions settings
     captions: {
-        active: false,
-        language: window.navigator.language.split('-')[0],
+        active: true,
+        language: (navigator.language || navigator.userLanguage).split('-')[0],
+        // See following issue: https://github.com/sampotts/plyr/issues/893
     },
 
     // Fullscreen settings
@@ -139,6 +132,14 @@ const defaults = {
         data: [],
     },
 
+    // morevideos settings
+    morevideos: {
+        enabled: true,
+        active: true,
+        type:'cue',
+        data: [],
+    },
+
     // Sharing settings
     share: {
         enabled: true,
@@ -151,7 +152,7 @@ const defaults = {
         // 'restart',
         // 'rewind',
         'play',
-        // 'fast-forward',
+        'fast-forward',
         'progress',
         'current-time',
         'mute',
@@ -202,6 +203,9 @@ const defaults = {
         playlist: 'Playlist',
         playlistOpen: 'Open playlist',
         playlistClose: 'Close playlist',
+        morevideos:'More Videos',
+        morevideosOpen:'Open More Videos',
+        morevideosClose:'Close More Videos',
         share: 'Share',
         shareOpen: 'Open sharing',
         shareClose: 'Close sharing',
@@ -216,6 +220,7 @@ const defaults = {
             api: 'https://www.youtube.com/iframe_api',
         },
     },
+
 
     // Custom control listeners
     listeners: {
@@ -236,6 +241,7 @@ const defaults = {
         loop: null,
         language: null,
         playlist: null,
+        morevideos: null,
         share: null,
     },
 
@@ -269,6 +275,8 @@ const defaults = {
         'exitfullscreen',
         'playlistenabled',
         'playlistdisabled',
+        'morevideosenabled',
+        'morevideosdisabled',
         'shareenabled',
         'sharedisabled',
         'captionsenabled',
@@ -295,6 +303,7 @@ const defaults = {
         'adsallcomplete',
         'adsimpression',
         'adsclick',
+        'adsskipped',
     ],
 
     // Selectors
@@ -302,6 +311,10 @@ const defaults = {
     selectors: {
         editable: 'input, textarea, select, [contenteditable]',
         container: '.plyr',
+        videContainer : '#tubia-container',
+        playerVideo :'#plyr__tubia',
+        playerSource:'#plyr__tubia source',
+        playerTitle : '.plyr__title',
         controls: {
             container: null,
             wrapper: '.plyr__controls',
@@ -323,6 +336,7 @@ const defaults = {
             settings: '[data-plyr="settings"]',
             loop: '[data-plyr="loop"]',
             playlist: '[data-plyr="playlist"]',
+            morevideos: '[data-plyr="morevideos"]',
             share: '[data-plyr="share"]',
         },
         inputs: {
@@ -343,6 +357,7 @@ const defaults = {
         progress: '.plyr__progress',
         captions: '.plyr__captions',
         playlist: '.plyr__playlist',
+        morevideos: '.plyr__morevideos',
         share: '.plyr__share',
         menu: {
             quality: '.js-plyr__menu__list--quality',
@@ -398,11 +413,18 @@ const defaults = {
             active: 'plyr--playlist-active',
             button: 'plyr--playlist-button',
         },
+        morevideos: {
+            enabled: 'plyr--morevideos-enabled',
+            active: 'plyr--morevideos-active',
+            button: 'plyr--morevideos-button',
+        },
         share: {
             enabled: 'plyr--share-enabled',
             active: 'plyr--share-active',
+            button: 'plyr--share-button',
         },
     },
+    
 
     // Embed attributes
     attributes: {
@@ -425,13 +447,54 @@ const defaults = {
         prerollEnabled: true,
         midrollEnabled: true,
         videoInterval: 60,
-        overlayInterval: 15,
+        overlayInterval: 10,
         gdprTargeting: true,
         tag: '',
         tagLegacy: '',
         keys: null,
         domain: 'gamedistribution.com',
         category: '',
+    },
+
+    // Lottie Animations
+    lottieAnim: {
+        share:
+            {
+                eventlisteners: true,
+                container: 'plyr--share-button',
+            },
+        morevideos:
+            {
+                eventlisteners: true,
+                container: 'plyr--bar-morevideos',
+                speed: 2.5,
+            },
+        fullscreen:
+            {
+                eventlisteners: true,
+                container: 'plyr--button-fullscreen',
+            },
+        levels:
+            {
+                eventlisteners: true,
+                container: 'plyr--bar-playlist',
+            },
+        magicspace:
+            {
+                container: 'magic-space',
+                loop: true,
+            },
+        magiclock:
+            {
+                eventlisteners: true,
+                container: 'magic-lock',
+                playWhenHover: true,
+                onMouseOver: 'magic-space',
+            },
+        magictimer:
+            {
+                container: 'magic-timer',
+            },
     },
 };
 

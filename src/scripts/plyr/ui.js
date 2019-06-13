@@ -7,6 +7,8 @@ import captions from './captions';
 import controls from './controls';
 import i18n from './i18n';
 import playlist from './playlist';
+import morevideos from './morevideos';
+import share from './share';
 
 const ui = {
     addStyleHook() {
@@ -60,6 +62,12 @@ const ui = {
         // Playlist
         playlist.setup.call(this);
 
+        // morevideos
+        morevideos.setup.call(this);
+
+        // share
+        share.setup.call(this);
+
         // Captions
         captions.setup.call(this);
 
@@ -98,6 +106,7 @@ const ui = {
         // Set the title
         ui.setTitle.call(this);
     },
+
 
     // Setup aria attribute for play and iframe title
     setTitle() {
@@ -141,11 +150,19 @@ const ui = {
         utils.toggleClass(this.elements.container, this.config.classNames.playing, this.playing);
         utils.toggleClass(this.elements.container, this.config.classNames.stopped, this.paused);
 
+        if (this.playing || !this.paused)
+        {
+            controls.hideInterestingVideos();
+        } else {
+            controls.showInterestingVideos();
+        } 
+
         // Set ARIA state
         utils.toggleState(this.elements.buttons.play, this.playing);
 
         // Toggle controls
         this.toggleControls(!this.playing);
+
     },
 
     // Check if media is loading
@@ -260,7 +277,7 @@ const ui = {
 
                     break;
 
-                // Check buffer status
+                    // Check buffer status
                 case 'playing':
                 case 'progress':
                     ui.setProgress.call(this, this.elements.display.buffer, this.buffered * 100);
@@ -289,6 +306,14 @@ const ui = {
 
     // Handle time change event
     timeUpdate(event) {
+
+        // Toggle interesting videos when the time remains 20 sec
+        const remainingTime = this.duration - this.currentTime;
+        const isInterestingVideosHidden = document.querySelector('.plyr__morevideos').classList.contains('hide');
+        if (remainingTime < 10 && isInterestingVideosHidden)  {
+            controls.showInterestingVideos();
+        }
+
         // Only invert if only one time element is displayed and used for both duration and currentTime
         const invert = !utils.is.element(this.elements.display.duration) && this.config.invertTime;
 

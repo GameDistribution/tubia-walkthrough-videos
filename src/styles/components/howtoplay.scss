@@ -1,0 +1,60 @@
+body {
+    @include plyr-font-smoothing($plyr-font-smoothing);
+
+    .tubia__how-to-player {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: #333;
+        width: 200px;
+        height: 130px;
+        border: 3px solid #fff;
+        z-index: 9999;
+        background-size: contain;
+        visibility: visible;
+        opacity: 1;
+        transition: visibility 2s linear 2s, opacity 2s,background-image 1s;
+     
+
+        .tubia__how-to-player--label {
+            font-family: $plyr-font-family;
+            font-size: 15px;
+            position: absolute;
+            bottom: 0px;
+            background-color: #333;
+            color: #fff;
+            width: 100%;
+            text-align: center;
+        }
+
+        .tubia__how-to-player--close {
+            background: #fff;
+            position: absolute;
+            top: -10px;
+            z-index: 9999;
+            right: -10px;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            text-align: center;
+
+            &:before {
+                content: "\00D7";
+                font-size: 22px;
+                font-weight: bold;
+            }
+
+            &:hover {
+                background: #333;
+                color: #fff;
+                cursor: pointer;
+            }
+        }
+
+        &.tubia__how-to-player-hide {
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 2s linear 2s, opacity 2s;
+        }
+    }
+}

@@ -37,6 +37,25 @@
         &.plyr--non-linear {
             top: auto;
             transform: translateY(-$plyr-control-spacing * 6);
+            background-color: unset !important;
+            z-index: 9999 !important;
+            overflow: visible;
+            &.leaderboard {
+                &.minimized {
+                    transform: translateY($plyr-control-spacing * 9 + 9px) !important;
+                    .toggle-button-container {
+                        transform: translateY(-85px) !important;
+                    }
+                }
+            }
+            &.banner {
+                &.minimized {
+                    transform: translateY($plyr-control-spacing * 6 + 9px) !important;
+                    .toggle-button-container {
+                        transform: translateY(-58px) !important;
+                    }
+                }
+            }
         }
 
         // The countdown label
@@ -97,5 +116,37 @@
                 transform: translateY(5px);
             }
         }
+    }
+}
+
+.toggle-button-container {
+    width: 100%;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    align-content: center;
+    flex-direction: column;
+    position: absolute;
+    top: calc(100% - 15px);
+    .toggle-button {
+        width: 32px;
+        box-shadow: 0 0 black;
+        height: 16px;
+        border-radius: 6px;
+        background: #e6e6e6;
+        right: 0;
+        z-index: 99;
+        color: #757575;
+        z-index: 99;
+        text-align: center;
+        line-height: 10px;
+        &:hover {
+            background: #fff;
+        }
+        svg {
+            width: 7px;
+            fill: #b1afaf;
+            margin-top: -4px;
+        } 
     }
 }

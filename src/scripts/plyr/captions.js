@@ -114,7 +114,7 @@ const captions = {
 
                 // Turn off native caption rendering to avoid double captions
                 // eslint-disable-next-line
-                track.mode = 'hidden';
+                track.mode = 'showing';
             });
 
             // Get current track

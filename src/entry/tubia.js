@@ -43,10 +43,10 @@ class Tubia {
 
         const domain = settingsArray[0].url.toLowerCase().replace(/^(?:https?:\/\/)?/i, '').split('/')[0];
         let url = 'https://player.tubia.com/index.html?';
-        if (domain === 'spele.nl') { // Spele.nl is our /test/ domain.
+        if (domain === 'localhost:8081') {
+            url = '/test/index.html?';
+        } else if (domain === 'test.spele.nl') {
             url = 'https://player.tubia.com/test/index.html?';
-        } else if (domain === 'localhost:8081') {
-            url = '/index.html?';
         }
 
         settingsArray.forEach(setting => {
@@ -64,6 +64,7 @@ class Tubia {
 
         const frame = document.createElement('iframe');
         frame.src = url;
+        frame.setAttribute('id', 'tubiaFrame');
         frame.setAttribute('frameBorder', '0');
         frame.setAttribute('scrolling', 'no');
         frame.setAttribute('allowfullscreen', 'true');
