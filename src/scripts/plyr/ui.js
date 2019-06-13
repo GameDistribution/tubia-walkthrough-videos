@@ -310,7 +310,7 @@ const ui = {
         // Toggle interesting videos when the time remains 20 sec
         const remainingTime = this.duration - this.currentTime;
         const isInterestingVideosHidden = document.querySelector('.plyr__morevideos').classList.contains('hide');
-        if (remainingTime < 20 && isInterestingVideosHidden)  {
+        if (remainingTime < 10 && isInterestingVideosHidden)  {
             controls.showInterestingVideos();
         }
 
