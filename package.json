@@ -19,7 +19,9 @@
         "babel-polyfill": "^6.26.0",
         "custom-event-polyfill": "^1.0.6",
         "es6-promise": "^4.2.5",
+        "js-yaml": "^3.13.1",
         "lottie-web": "^5.5.2",
+        "sshpk": "^1.16.1",
         "whatwg-fetch": "^3.0.0"
     },
     "devDependencies": {
