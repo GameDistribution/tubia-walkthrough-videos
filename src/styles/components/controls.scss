@@ -70,7 +70,26 @@
                 }
             }
         }
-
+        .plyr__title-content {
+            position: absolute;
+            top: 2px;
+            left: 0vw;
+            text-align: left;
+            width: 30vw;
+            line-height: 100%;
+            font-weight: 600;
+            font-size: 20px;
+            font-family: 'gaegu', sans-serif;
+            transform: translateX(0px);
+            letter-spacing: 0px;
+            .back-button { 
+                top: 12px;
+                left: 14px;
+                border: none;
+                position: absolute;
+            } 
+        }
+        
         .plyr__title {
             position: absolute;
             top: 18px;

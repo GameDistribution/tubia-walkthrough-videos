@@ -9,8 +9,6 @@
         svg {
             opacity: 0;
             transform: translateY(-200%);
-            transition: transform 0.1s cubic-bezier(.51, .92, .24, 1.15), opacity 0.15s linear;
-            transition-delay: 0.5s, 0.5s;
             fill: #fff;
         }
 

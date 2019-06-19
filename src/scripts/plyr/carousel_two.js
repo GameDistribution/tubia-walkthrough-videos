@@ -27,7 +27,7 @@ class CarouselTwo {
             closeButton: 'related--videos-close-button',
             character: 'related--videos-tubia-character',
         };
-
+        
         const filteredArray = (type) => this.moreItems.filter((element) => element.videos.some((vid) => vid.videoType === type))
             .map(m => ({ video: m.videos[0], picture: m.pictures[0] }));
         
@@ -372,6 +372,20 @@ class CarouselTwo {
         const { video, picture } = data;   
         const vidEl = document.querySelector('video');
         
+        if (this.player.media.plyr.config.title !== video.title) {
+            if (this.player.config.controls.includes('logo')) {
+                document.querySelector('.plyr__logo-top').style.display = 'none';
+            }
+            document.getElementById('videoTitle').style.display = 'none';
+            document.getElementById('btnloadDefault').style.display = 'block';
+        } else
+        {
+            if (this.player.config.controls.includes('logo')) {
+                document.querySelector('.plyr__logo-top').style.display = 'block';
+            }
+            document.getElementById('videoTitle').style.visibility = 'block';
+            document.getElementById('btnloadDefault').style.visibility = 'none';
+        }
 
         vidEl.setAttribute('poster', picture.link);
         const source = document.querySelector(defaults.selectors.playerSource);

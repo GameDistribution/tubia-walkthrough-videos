@@ -574,6 +574,12 @@ class Player {
             videoSource.src = sourceUrl;
             videoSource.type = sourceType;
 
+            const { detail } = json;
+            localStorage.setItem('defaultVideo',JSON.stringify({
+                url: sourceUrl,
+                type: sourceType,
+                videoTitle: detail[0].title }));
+
             videoElement.appendChild(videoSource);
             this.container.appendChild(videoElement);
 

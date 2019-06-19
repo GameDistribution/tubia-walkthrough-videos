@@ -12,6 +12,8 @@ import playlist from './playlist';
 import morevideos from './morevideos';
 import Mark from './cuemark';
 import lotties from './lotties';
+import CarouselTwo from './carousel_two';
+import defaults from './defaults';
 
 // Sniff out the browser
 const browser = utils.getBrowser();
@@ -534,11 +536,53 @@ const controls = {
 
     // Create title
     createTitle() {
-        const container = utils.createElement('span', {
-            class: 'plyr__title',
+       
+        const container = utils.createElement('div', {
+            class: 'plyr__title-container',
         });
-        container.innerText = this.config.title;
+
+        const title = utils.createElement('div', {
+            class: 'plyr__title-content',
+        });
+        container.appendChild(title);
+
+        const btnloadDefault = utils.createElement('button', {
+            class: 'back-button',
+            id: 'btnloadDefault',
+            style: 'display: none',
+        }, 'Go back');
+        
+        btnloadDefault.addEventListener('click', () => {
+            const json =localStorage.getItem('defaultVideo');
+            if(!json) return;
+
+            controls.ClearAllLevels.call(this);
+            const { url } = JSON.parse(json);
+            const { videoTitle } = JSON.parse(json);
+            const source = document.querySelector(defaults.selectors.playerSource);
+            document.querySelector('#videoTitle').innerText = videoTitle;
+            
+            source.setAttribute('src',  url);
+            const vidEl = document.querySelector('video');
+            vidEl.load();
+
+            if (this.config.controls.includes('logo')) {
+                document.querySelector('.plyr__logo-top').style.display = 'block';
+            }
+            document.getElementById('videoTitle').style.display = 'block';
+            document.getElementById('btnloadDefault').style.display = 'none';
+        });
+        
+        title.appendChild(btnloadDefault);
+
+        const text = utils.createElement('span', {
+            class: 'plyr__title',
+            id: 'videoTitle',
+        }, this.config.title);
+        title.appendChild(text);
+        
         return container;
+
     },
 
     // Create a settings menu item
@@ -579,6 +623,11 @@ const controls = {
 
         item.appendChild(label);
         list.appendChild(item);
+    },
+
+    loadMainVideo() {
+        console.warn('Load the original video.');
+        CarouselTwo.playVideoEvent.call(controls.Player);
     },
 
     // Update hover tooltip for seeking
