@@ -46,7 +46,15 @@ const share = {
 
         document.querySelector('.plyr--share-button').addEventListener('click', () => {
 
-            const shareLink = document.location.href;
+            const json =localStorage.getItem('defaultVideo');
+            let shareLink;
+            
+            if(!json) {
+                shareLink = document.location.href;
+            } else {
+                const { gameUrl } = JSON.parse(json);
+                shareLink = gameUrl;
+            }
             
             const shareScreenContent = `
             <div>

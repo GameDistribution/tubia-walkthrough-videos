@@ -575,6 +575,7 @@ class Player {
             const source = (json.files && json.files.length > 0) ? json.files[json.files.length - 1].linkSecure : `https://storage.googleapis.com/vooxe_eu/vids/default/${json.detail[0].mediaURL}`;
             const sourceUrl = source.replace(/^http:\/\//i, 'https://');
             const sourceType = (json.files && json.files.length > 0) ? json.files[json.files.length - 1].type : 'video/mp4';
+            const gameUrl = this.options.url;
             videoSource.src = sourceUrl;
             videoSource.type = sourceType;
 
@@ -582,7 +583,8 @@ class Player {
             localStorage.setItem('defaultVideo',JSON.stringify({
                 url: sourceUrl,
                 type: sourceType,
-                videoTitle: detail[0].title }));
+                videoTitle: detail[0].title,
+                gameUrl }));
 
             videoElement.appendChild(videoSource);
             this.container.appendChild(videoElement);
