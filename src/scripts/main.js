@@ -7,6 +7,7 @@ import 'whatwg-fetch';
 import PackageJSON from '../../package.json';
 import Plyr from './plyr/plyr';
 import utils from './plyr/utils';
+import adblocker from './plyr/adblocker';
 
 /**
  * Player
@@ -28,7 +29,7 @@ class Player {
             'background: #006897');
         console.log.apply(console, banner);
         /* eslint-enable */
-
+        
         const params = utils.getUrlParams(document.location.href) || {};
 
         // Get URL parameter values from i-frame URL.
@@ -140,6 +141,9 @@ class Player {
      * Initialise the Tubia application. Fetch the data.
      */
     start() {
+        // Check if an Ad Blocker Plugin exists
+        adblocker.check();
+
         // Send event to our publisher.
         try {
             parent.postMessage({ name: 'onStart' }, this.origin);
