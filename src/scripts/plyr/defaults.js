@@ -495,6 +495,11 @@ const defaults = {
             {
                 container: 'magic-timer',
             },
+        cryingcharacter: {
+            container: 'crying-character',
+            loop: true,
+            autoplay: true,
+        },
     },
 };
 

@@ -3,6 +3,7 @@
 // ==========================================================================
 import defaults from './defaults';
 import utils from './utils';
+import lotties from './lotties';
 
 const adblocker = {
     
@@ -21,8 +22,9 @@ const adblocker = {
         fetch(request).then((response) => response).then(() => {
             // There's nothing blocks our precious ads.
         }).catch(() => {
+            lotties.createAnimations();
             console.warn('Please, deactivate the adblocker plugin or check the network policies.');
-            const adblockWarning = utils.createElement('div', { id: 'adblockWarningPopup', class: 'popup adblocker'});
+            const adblockWarning = utils.createElement('div', { id: 'adblockWarningPopup', class: 'popup adblocker invisible'});
             const content = `
                 <div class="container">
                 <div class="column-left">
@@ -33,7 +35,7 @@ const adblocker = {
                     </div>
                 </div>
                 <div class="column-right">
-                    &nbsp;
+                    <div class="crying-character" lottie-class="crying-character"></div>
                 </div>
                 </div>
             `;
@@ -41,6 +43,12 @@ const adblocker = {
             const container = document.querySelector('body');
 
             container.append(adblockWarning);
+
+            setTimeout(() => {
+                if (adblockWarning.classList.contains('invisible')){
+                    adblockWarning.classList.remove('invisible');
+                }
+            }, 500);
         });
 
         return adsblocked;
