@@ -20,7 +20,7 @@
     -webkit-transition: opacity .2s ease-out;
     -o-transition: opacity .2s ease-out;
     .container {
-        padding: 5vh;
+        padding: 10vh;
         width: 100%;
         max-width: 600px;
         border-radius: 25px;
@@ -28,20 +28,25 @@
         display: flex;
         flex-flow: row;
         .column-left {
+            flex-direction: column;
+            align-content: unset;
+            display: flex;
+            justify-content: center;
             font-family: 'Helvetica Neue', 'Segoe UI', Helvetica, Arial, sans-serif;
             .title {
                 font-family: 'gaegu', sans-serif;
-                line-height: 7vh;
-                font-size: 10vh;
+                line-height: 40px;
+                font-size: 45px;
             } 
             .subtitle {
                 font-family: 'gaegu', sans-serif;
                 padding: 0;
-                font-size: 5vh;
+                font-size: 24px;
             }
         
             .text {
                 font-size: 15px;
+                line-height: 18px;
             }
         }
         .column-right {
