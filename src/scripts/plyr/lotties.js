@@ -21,7 +21,7 @@ const lotties = {
                     container: document.querySelector(`[lottie-class="${element.container}"]`),
                     autoplay: element.autoplay,
                     loop: element.loop,
-                    path: `./animations/${element.container}.json`,
+                    path: element.cdn ? element.cdn : `./animations/${element.container}.json`,
                     renderer: 'svg',
                 };
 

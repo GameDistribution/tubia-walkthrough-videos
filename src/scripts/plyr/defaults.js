@@ -499,6 +499,7 @@ const defaults = {
             container: 'crying-character',
             loop: true,
             autoplay: true,
+            cdn: 'https://cdn.tubia.com/media/crying-character.json',
         },
     },
 };
