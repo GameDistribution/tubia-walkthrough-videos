@@ -27,6 +27,9 @@
         transform-origin: bottom;
         height: auto;
         padding-bottom: 17vh;
+        @media (max-width: $plyr-bp-sm) {
+            visibility: hidden;
+        }
 
         &:after {
             width: 100%;
