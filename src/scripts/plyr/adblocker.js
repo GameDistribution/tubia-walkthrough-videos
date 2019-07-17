@@ -31,7 +31,7 @@ const adblocker = {
                     <div class="title">Oh no!</div>
                     <div class="subtitle">Adblocker is found!</div>
                     <div class="text">
-                        Hey! You want to learn how to play this game so badly, right? You can just turn off your adblocker to watch this amazing walkthough video.
+                        Hey! You want to learn how to play this game so badly, right? You can just turn off your adblocker to watch this amazing walkthrough video.
                     </div>
                 </div>
                 <div class="column-right">
