@@ -38,7 +38,7 @@ const share = {
         // Enable UI
         share.show.call(this);
 
-        const plyrWrapper = document.querySelector('.plyr__video-wrapper');
+        const shareScreenWrapper = document.querySelector('.plyr__controls');
 
         const shareScreen = utils.createElement('div', {
             class: 'plyr--share-fullscreen',
@@ -55,7 +55,9 @@ const share = {
                 const { gameUrl } = JSON.parse(json);
                 shareLink = gameUrl;
             }
-            
+            console.warn('tıklandı');
+            shareScreen.classList.toggle('active');
+
             const shareScreenContent = `
             <div>
                 <input type="text" id="shareInput" class="plyr--share-fullscreen-input" value="${shareLink}"/>
@@ -90,7 +92,7 @@ const share = {
             `;
 
             shareScreen.innerHTML = shareScreenContent;
-            plyrWrapper.appendChild(shareScreen);
+            shareScreenWrapper.prepend(shareScreen);
 
             document.querySelector('#shareInput').addEventListener('click', (e) => {
                 document.getElementById(e.target.id).select();

@@ -10,6 +10,7 @@
         width: 64px;
         height: 64px;
         max-width: 64px !important;
+        z-index: 99;
     }
 
     .plyr--share-button svg {
@@ -343,5 +344,11 @@
 
     .plyr--share-fullscreen {
         opacity: 0;
+        position: absolute;
+        z-index: -99;
+        &.active {
+          opacity: 1;
+          z-index: 9;
+        }
     }
 }
