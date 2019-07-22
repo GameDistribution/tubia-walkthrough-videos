@@ -501,6 +501,12 @@ const defaults = {
             autoplay: true,
             cdn: 'https://cdn.tubia.com/media/crying-character.json',
         },
+        loadinganimation: {
+            container: 'loading-animation',
+            loop: true,
+            autoplay: true,
+            cdn: 'https://cdn.tubia.com/media/loading-animation.json',
+        },
     },
 };
 

@@ -33,6 +33,7 @@ import lotties from './lotties';
 // Plyr instance
 class Plyr {
     constructor(target, options) {
+        
         this.timers = {};
 
         // State
@@ -117,8 +118,6 @@ class Plyr {
             quality: [],
         };
 
-        lotties.createAnimations();
-        
         // Debugging
         // TODO: move to globals
         this.debug = new Console(this.config.debug);

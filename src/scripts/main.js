@@ -8,6 +8,7 @@ import PackageJSON from '../../package.json';
 import Plyr from './plyr/plyr';
 import utils from './plyr/utils';
 import adblocker from './plyr/adblocker';
+import lotties from './plyr/lotties';
 
 /**
  * Player
@@ -77,6 +78,7 @@ class Player {
             videoInterval, // Todo: testing. Video midroll interval.
             category,
             keys,
+            lottie: true,
         };
 
         // Test domains.
@@ -117,7 +119,12 @@ class Player {
         }
 
         this.container = document.getElementById('tubia');
-        this.transitionElement = this.container.querySelector('.tubia__transition');
+        if (this.options.lottie) {
+            this.animationElement = this.container.querySelector('.tubia__animation');
+        } else {
+            this.transitionElement = this.container.querySelector('.tubia__transition');
+        }
+        
         this.playButton = null;
         this.hexagonLoader = null;
         this.posterPosterElement = null;
@@ -143,7 +150,7 @@ class Player {
     start() {
         // Check if an Ad Blocker Plugin exists
         adblocker.check();
-
+        
         // Send event to our publisher.
         try {
             parent.postMessage({ name: 'onStart' }, this.origin);
@@ -290,7 +297,11 @@ class Player {
      */
     createMarkup() {
         const html = `
-            <div class="tubia__transition"></div>
+            <div class="tubia__transition" style="display: none !important;"></div>
+            <div class="tubia__animation">
+                <div class="loading-animation" lottie-class="loading-animation"></div>
+            </div>
+            
             <button class="tubia__play-button">
                 <svg class="tubia__play-icon" viewBox="0 0 18 18" version="1.1" xmlns="http://www.w3.org/2000/svg">
                     <g>
@@ -302,7 +313,7 @@ class Player {
                     <path class="tubia__hexagon-line-animation" d="M-1665.43,90.94V35.83a15.09,15.09,0,0,1,6.78-12.59l48.22-31.83a15.09,15.09,0,0,1,16-.38L-1547,19.13a15.09,15.09,0,0,1,7.39,13V90.94a15.09,15.09,0,0,1-7.21,12.87l-47.8,29.24a15.09,15.09,0,0,1-15.75,0l-47.8-29.24A15.09,15.09,0,0,1-1665.43,90.94Z" transform="translate(1667.43 13.09)"/>
                 </svg>
             </button>
-            <div class="tubia__hexagon-loader">
+            <div class="tubia__hexagon-loader" style="display: none !important;">
                 <svg class="tubia__hexagon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 129.78 150.37">
                     <path class="tubia__hexagon-base" d="M-1665.43,90.94V35.83a15.09,15.09,0,0,1,6.78-12.59l48.22-31.83a15.09,15.09,0,0,1,16-.38L-1547,19.13a15.09,15.09,0,0,1,7.39,13V90.94a15.09,15.09,0,0,1-7.21,12.87l-47.8,29.24a15.09,15.09,0,0,1-15.75,0l-47.8-29.24A15.09,15.09,0,0,1-1665.43,90.94Z" transform="translate(1667.43 13.09)"/>
                     <path class="tubia__hexagon-line-animation" d="M-1665.43,90.94V35.83a15.09,15.09,0,0,1,6.78-12.59l48.22-31.83a15.09,15.09,0,0,1,16-.38L-1547,19.13a15.09,15.09,0,0,1,7.39,13V90.94a15.09,15.09,0,0,1-7.21,12.87l-47.8,29.24a15.09,15.09,0,0,1-15.75,0l-47.8-29.24A15.09,15.09,0,0,1-1665.43,90.94Z" transform="translate(1667.43 13.09)"/>
@@ -311,8 +322,16 @@ class Player {
             <div id="tubia__display-ad" class="tubia__display-ad"><iframe></iframe></div>
         `;
 
+        lotties.createAnimations();
+
         this.container.insertAdjacentHTML('beforeend', html);
-        this.transitionElement = this.container.querySelector('.tubia__transition');
+
+        if (this.options.lottie) {
+            this.animationElement = this.container.querySelector('.tubia__animation');
+        } else {
+            this.transitionElement = this.container.querySelector('.tubia__transition');
+        }
+
         this.playButton = this.container.querySelector('.tubia__play-button');
         this.hexagonLoader = this.container.querySelector('.tubia__hexagon-loader');
 
@@ -534,8 +553,10 @@ class Player {
         setTimeout(() => {
             // Show our spinner loader.
             this.hexagonLoader.classList.toggle('tubia__active');
-            // Hide the poster image.
-            this.posterPosterElement.style.display = 'none';
+            // If lottie animation is not active hide the poster image.
+            if (!this.options.lottie) {
+                this.posterPosterElement.style.display = 'none';
+            }
             // Remove the button.
             this.playButton.parentNode.removeChild(this.playButton);
             // Load our player.
@@ -709,18 +730,32 @@ class Player {
             // Set some listeners.
             this.player.on('ready', () => {
                 // Start transition towards showing the player.
-                this.transitionElement.classList.toggle('tubia__active');
-
+                if (this.options.lottie) {
+                    this.animationElement.classList.toggle('tubia__active');
+                } else {
+                    this.transitionElement.classList.toggle('tubia__active');
+                }
+                
                 setTimeout(() => {
                     // Hide our spinner loader.
                     this.hexagonLoader.classList.toggle('tubia__active');
                 }, this.transitionSpeed / 2);
 
                 setTimeout(() => {
-                    // Hide transition.
-                    this.transitionElement.classList.toggle('tubia__active');
-                    // Permanently hide the transition.
-                    this.transitionElement.style.display = 'none';
+                    if (this.options.lottie) {
+                        // Hide transition.
+                        this.animationElement.classList.toggle('tubia__active');
+                        // Permanently hide the transition.
+                        this.animationElement.style.opacity = 0;
+                        console.warn('gizle posteri');
+                        this.posterPosterElement.style.display = 'none';
+                    } else {
+                        // Hide transition.
+                        this.transitionElement.classList.toggle('tubia__active');
+                        // Permanently hide the transition.
+                        this.transitionElement.style.display = 'none';
+                    }
+                    
                     // Show the player.
                     this.player.elements.container.classList.toggle('tubia__active');
                     // Return ready callback for our clients.
