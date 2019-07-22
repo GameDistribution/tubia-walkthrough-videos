@@ -33,6 +33,8 @@ import lotties from './lotties';
 // Plyr instance
 class Plyr {
     constructor(target, options) {
+        // Create lottie animations
+        lotties.createAnimations();
         
         this.timers = {};
 

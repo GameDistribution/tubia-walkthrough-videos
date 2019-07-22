@@ -322,8 +322,6 @@ class Player {
             <div id="tubia__display-ad" class="tubia__display-ad"><iframe></iframe></div>
         `;
 
-        lotties.createAnimations();
-
         this.container.insertAdjacentHTML('beforeend', html);
 
         if (this.options.lottie) {
@@ -747,7 +745,6 @@ class Player {
                         this.animationElement.classList.toggle('tubia__active');
                         // Permanently hide the transition.
                         this.animationElement.style.opacity = 0;
-                        console.warn('gizle posteri');
                         this.posterPosterElement.style.display = 'none';
                     } else {
                         // Hide transition.
