@@ -55,7 +55,6 @@ const share = {
                 const { gameUrl } = JSON.parse(json);
                 shareLink = gameUrl;
             }
-            console.warn('tıklandı');
             shareScreen.classList.toggle('active');
 
             const shareScreenContent = `
