@@ -38,7 +38,7 @@ const share = {
         // Enable UI
         share.show.call(this);
 
-        const shareScreenWrapper = document.querySelector('.plyr__controls');
+        const shareScreenWrapper = document.querySelector('#tubia');
 
         const shareScreen = utils.createElement('div', {
             class: 'plyr--share-fullscreen',

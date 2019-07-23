@@ -1176,6 +1176,12 @@ class Plyr {
                     return;
                 }
 
+                // Do no hide controls when share wrapper is active
+                const shareWrapper = document.querySelector('.plyr--share-fullscreen');
+                if (shareWrapper && shareWrapper.classList.contains('active')) {
+                    return;
+                } 
+                
                 // If the mouse is over the controls (and not entering fullscreen), bail
                 if ((this.elements.controls.pressed || this.elements.controls.hover) && !isEnterFullscreen) {
                     return;
