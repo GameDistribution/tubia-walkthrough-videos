@@ -15,7 +15,7 @@ const lotties = {
                 const element = defaults.lottieAnim[key];
                 const container = document.querySelector(`[lottie-class="${element.container}"]`);
                 
-                if (!container) return;
+                if (!container||container.hasAttribute('loaded')) return;
                 
                 const params = {
                     container: document.querySelector(`[lottie-class="${element.container}"]`),
@@ -27,6 +27,8 @@ const lotties = {
 
                 // eslint-disable-next-line
                 anim[element.container] = bodymovin.loadAnimation(params);
+
+                container.setAttribute('loaded', true);
 
                 if (element.speed) {
                     anim[element.container].setSpeed(element.speed);

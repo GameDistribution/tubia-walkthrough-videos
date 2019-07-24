@@ -10,6 +10,7 @@
         width: 64px;
         height: 64px;
         max-width: 64px !important;
+        z-index: 99;
     }
 
     .plyr--share-button svg {
@@ -47,301 +48,307 @@
     &.plyr--share-active .plyr__control--overlaid{
         opacity: 0;
     }
+}
 
-    &.plyr--share-active .plyr--share-fullscreen {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.9);
-        opacity: 1;
+.plyr--share-fullscreen {
+  opacity: 0;
+  position: absolute;
+  z-index: -99;
+  &.active {
+    opacity: 1;
+    z-index: 9;
+  }
+}
+
+.plyr--share-fullscreen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  opacity: 1;
+  display: flex;
+  padding: 0;
+  align-items: center;
+  flex-direction: row;
+
+  & > div {
+    display: flex;
+    flex: 1;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+
+  .plyr--share-fullscreen-input {
+      height: 60px;
+      width: 90%;
+      border: 3px solid #ff9400;
+      font-size: 20px;
+      background-color: #fff;
+      border-radius: 10px;
+      outline: none;
+      padding: 0 15px;
+  }
+
+  #toast {
+      visibility: hidden;
+      max-width: 50px;
+      height: 50px;
+      margin: auto;
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      border-radius: 2px;
+      z-index: 1;
+      font-size: 17px;
+      white-space: nowrap;
+      #img {
         display: flex;
-        padding: 0;
+        justify-content: center;
         align-items: center;
-        flex-direction: row;
-
-        & > div {
-          display: flex;
-          flex: 1;
-          flex-wrap: wrap;
-          justify-content: center;
-          align-items: center;
-          flex-direction: column;
-        }
-
-        .plyr--share-fullscreen-input {
-            height: 60px;
-            width: 90%;
-            border: 3px solid #ff9400;
-            font-size: 20px;
-            background-color: #fff;
-            border-radius: 10px;
-            outline: none;
-            padding: 0 15px;
-        }
-
-        #toast {
-            visibility: hidden;
-            max-width: 50px;
-            height: 50px;
-            margin: auto;
-            background-color: #333;
-            color: #fff;
-            text-align: center;
-            border-radius: 2px;
-            z-index: 1;
-            font-size: 17px;
-            white-space: nowrap;
-            #img {
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              width: 50px;
-              height: 50px;
-              float: left;
-              padding-top: 16px;
-              padding-bottom: 16px;
-              box-sizing: border-box;
-              background-color: #111;
-              color: #fff;
-                svg{
-                    width: 32px;
-                    height: 32px;
-                }
-            }
-            #desc {
-              color: #fff;
-              padding: 16px;
-              overflow: hidden;
-              white-space: nowrap;
-            }
-            &.show {
-              visibility: visible;
-              -webkit-animation: fadein 0.5s, expand 0.5s 0.5s,stay 3s 1s, shrink 0.5s 2s, fadeout 0.5s 2.5s;
-              animation: fadein 0.5s, expand 0.5s 0.5s,stay 3s 1s, shrink 0.5s 4s, fadeout 0.5s 4.5s;
-            }
+        width: 50px;
+        height: 50px;
+        float: left;
+        padding-top: 16px;
+        padding-bottom: 16px;
+        box-sizing: border-box;
+        background-color: #111;
+        color: #fff;
+          svg{
+              width: 32px;
+              height: 32px;
           }
-          
-          @-webkit-keyframes fadein {
-            from {
-              bottom: 0;
-              opacity: 0;
-            }
-          
-            to {
-              bottom: 30px;
-              opacity: 1;
-            }
-          }
-          
-          
-          @keyframes fadein {
-            from {
-              bottom: 0;
-              opacity: 0;
-            }
-          
-            to {
-              bottom: 30px;
-              opacity: 1;
-            }
-          }
-          
-          
-          @-webkit-keyframes expand {
-            from {
-              min-width: 50px;
-            }
-          
-            to {
-              min-width: 350px;
-            }
-          }
-          
-          
-          @keyframes expand {
-            from {
-              min-width: 50px;
-            }
-          
-            to {
-              min-width: 350px;
-            }
-          }
-          
-          
-          @-webkit-keyframes stay {
-            from {
-              min-width: 350px;
-            }
-          
-            to {
-              min-width: 350px;
-            }
-          }
-          
-          
-          @keyframes stay {
-            from {
-              min-width: 350px;
-            }
-          
-            to {
-              min-width: 350px;
-            }
-          }
-          
-          
-          @-webkit-keyframes shrink {
-            from {
-              min-width: 350px;
-            }
-          
-            to {
-              min-width: 50px;
-            }
-          }
-          
-          
-          @keyframes shrink {
-            from {
-              min-width: 350px;
-            }
-          
-            to {
-              min-width: 50px;
-            }
-          }
-          
-          
-          @-webkit-keyframes fadeout {
-            from {
-              bottom: 30px;
-              opacity: 1;
-            }
-          
-            to {
-              bottom: 60px;
-              opacity: 0;
-            }
-          }
-          
-          
-          @keyframes fadeout {
-            from {
-              bottom: 30px;
-              opacity: 1;
-            }
-          
-            to {
-              bottom: 60px;
-              opacity: 0;
-            }
-          }
-
-        .plyr--share-buttons-wrapper {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-
-            .plyr--sharing-button__icon,
-            .plyr--sharing-button__link {
-                display: inline-block;
-            }
-
-            .plyr--sharing-button__link {
-                text-decoration: none;
-                color: #fff;
-                margin: 0.5em;
-            }
-
-            .plyr--sharing-button {
-                border-radius: 5px;
-                transition: 25ms ease-out;
-                padding: 0.5em 0.75em;
-                font-family: Helvetica Neue,Helvetica,Arial,sans-serif;
-            }
-
-            .plyr--sharing-button__icon svg {
-                width: 1em;
-                height: 1em;
-                margin-right: 0.4em;
-                vertical-align: top;
-            }
-
-            .plyr--sharing-button--small svg {
-                margin: 0;
-                vertical-align: middle;
-            }
-
-            /* Non solid icons get a stroke */
-            .plyr--sharing-button__icon {
-                stroke: #fff;
-                fill: none;
-            }
-
-            /* Solid icons get a fill */
-            .plyr--sharing-button__icon--solid,
-            .plyr--sharing-button__icon--solidcircle {
-                fill: #fff;
-                stroke: none;
-            }
-
-            .plyr--sharing-button--twitter {
-                background-color: #55acee;
-            }
-            .plyr--sharing-button--twitter:hover {
-                background-color: #2795e9;
-            }
-
-            .plyr--sharing-button--facebook {
-                background-color: #3b5998;
-            }
-            .plyr--sharing-button--facebook:hover {
-                background-color: #2d4373;
-            }
-
-            .plyr--sharing-button--whatsapp {
-                background-color: #25D366;
-            }
-            .plyr--sharing-button--whatsapp:hover {
-                background-color: #1da851;
-            }
-
-            .plyr--sharing-button--facebook {
-                background-color: #3b5998;
-                border-color: #3b5998;
-            }
-            .plyr--sharing-button--facebook:active,
-            .plyr--sharing-button--facebook:hover {
-                background-color: #2d4373;
-                border-color: #2d4373;
-            }
-
-            .plyr--sharing-button--twitter {
-                background-color: #55acee;
-                border-color: #55acee;
-            }
-            .plyr--sharing-button--twitter:active,
-            .plyr--sharing-button--twitter:hover {
-                background-color: #2795e9;
-                border-color: #2795e9;
-            }
-
-            .plyr--sharing-button--whatsapp {
-                background-color: #25D366;
-                border-color: #25D366;
-            }
-            .plyr--sharing-button--whatsapp:active,
-            .plyr--sharing-button--whatsapp:hover {
-                background-color: #1DA851;
-                border-color: #1DA851;
-            }
-        }
+      }
+      #desc {
+        color: #fff;
+        padding: 16px;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+      &.show {
+        visibility: visible;
+        -webkit-animation: fadein 0.5s, expand 0.5s 0.5s,stay 3s 1s, shrink 0.5s 2s, fadeout 0.5s 2.5s;
+        animation: fadein 0.5s, expand 0.5s 0.5s,stay 3s 1s, shrink 0.5s 4s, fadeout 0.5s 4.5s;
+      }
     }
-
-    .plyr--share-fullscreen {
+    
+    @-webkit-keyframes fadein {
+      from {
+        bottom: 0;
         opacity: 0;
+      }
+    
+      to {
+        bottom: 30px;
+        opacity: 1;
+      }
     }
+    
+    
+    @keyframes fadein {
+      from {
+        bottom: 0;
+        opacity: 0;
+      }
+    
+      to {
+        bottom: 30px;
+        opacity: 1;
+      }
+    }
+    
+    
+    @-webkit-keyframes expand {
+      from {
+        min-width: 50px;
+      }
+    
+      to {
+        min-width: 350px;
+      }
+    }
+    
+    
+    @keyframes expand {
+      from {
+        min-width: 50px;
+      }
+    
+      to {
+        min-width: 350px;
+      }
+    }
+    
+    
+    @-webkit-keyframes stay {
+      from {
+        min-width: 350px;
+      }
+    
+      to {
+        min-width: 350px;
+      }
+    }
+    
+    
+    @keyframes stay {
+      from {
+        min-width: 350px;
+      }
+    
+      to {
+        min-width: 350px;
+      }
+    }
+    
+    
+    @-webkit-keyframes shrink {
+      from {
+        min-width: 350px;
+      }
+    
+      to {
+        min-width: 50px;
+      }
+    }
+    
+    
+    @keyframes shrink {
+      from {
+        min-width: 350px;
+      }
+    
+      to {
+        min-width: 50px;
+      }
+    }
+    
+    
+    @-webkit-keyframes fadeout {
+      from {
+        bottom: 30px;
+        opacity: 1;
+      }
+    
+      to {
+        bottom: 60px;
+        opacity: 0;
+      }
+    }
+    
+    
+    @keyframes fadeout {
+      from {
+        bottom: 30px;
+        opacity: 1;
+      }
+    
+      to {
+        bottom: 60px;
+        opacity: 0;
+      }
+    }
+
+  .plyr--share-buttons-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      .plyr--sharing-button__icon,
+      .plyr--sharing-button__link {
+          display: inline-block;
+      }
+
+      .plyr--sharing-button__link {
+          text-decoration: none;
+          color: #fff;
+          margin: 0.5em;
+      }
+
+      .plyr--sharing-button {
+          border-radius: 5px;
+          transition: 25ms ease-out;
+          padding: 0.5em 0.75em;
+          font-family: Helvetica Neue,Helvetica,Arial,sans-serif;
+      }
+
+      .plyr--sharing-button__icon svg {
+          width: 1em;
+          height: 1em;
+          margin-right: 0.4em;
+          vertical-align: top;
+      }
+
+      .plyr--sharing-button--small svg {
+          margin: 0;
+          vertical-align: middle;
+      }
+
+      /* Non solid icons get a stroke */
+      .plyr--sharing-button__icon {
+          stroke: #fff;
+          fill: none;
+      }
+
+      /* Solid icons get a fill */
+      .plyr--sharing-button__icon--solid,
+      .plyr--sharing-button__icon--solidcircle {
+          fill: #fff;
+          stroke: none;
+      }
+
+      .plyr--sharing-button--twitter {
+          background-color: #55acee;
+      }
+      .plyr--sharing-button--twitter:hover {
+          background-color: #2795e9;
+      }
+
+      .plyr--sharing-button--facebook {
+          background-color: #3b5998;
+      }
+      .plyr--sharing-button--facebook:hover {
+          background-color: #2d4373;
+      }
+
+      .plyr--sharing-button--whatsapp {
+          background-color: #25D366;
+      }
+      .plyr--sharing-button--whatsapp:hover {
+          background-color: #1da851;
+      }
+
+      .plyr--sharing-button--facebook {
+          background-color: #3b5998;
+          border-color: #3b5998;
+      }
+      .plyr--sharing-button--facebook:active,
+      .plyr--sharing-button--facebook:hover {
+          background-color: #2d4373;
+          border-color: #2d4373;
+      }
+
+      .plyr--sharing-button--twitter {
+          background-color: #55acee;
+          border-color: #55acee;
+      }
+      .plyr--sharing-button--twitter:active,
+      .plyr--sharing-button--twitter:hover {
+          background-color: #2795e9;
+          border-color: #2795e9;
+      }
+
+      .plyr--sharing-button--whatsapp {
+          background-color: #25D366;
+          border-color: #25D366;
+      }
+      .plyr--sharing-button--whatsapp:active,
+      .plyr--sharing-button--whatsapp:hover {
+          background-color: #1DA851;
+          border-color: #1DA851;
+      }
+  }
 }

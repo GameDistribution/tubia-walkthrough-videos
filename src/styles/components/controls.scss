@@ -69,13 +69,16 @@
                     display: none;
                 }
             }
+            .plyr__playlist-button-title {
+                display: none;
+            }
         }
         .plyr__title-content {
             position: absolute;
             top: 2px;
             left: 0vw;
             text-align: left;
-            width: 30vw;
+            width: 50vw;
             line-height: 100%;
             font-weight: 600;
             font-size: 20px;

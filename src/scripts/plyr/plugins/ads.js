@@ -965,7 +965,7 @@ class Ads {
      * @param {String} adType
      */
     showAd(adType) {
-        this.elements.container.style.zIndex = (adType === 'nonlinear') ? '3' : '4';
+        this.elements.container.style.zIndex = (adType === 'nonlinear') ? '3' : '99';
     }
 
     /**

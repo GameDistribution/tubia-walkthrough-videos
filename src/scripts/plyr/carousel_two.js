@@ -12,6 +12,7 @@ class CarouselTwo {
     }
 
     setup() {
+        lotties.createAnimations();
         this.openedMagic = window.localStorage.getItem('openedMagic') || false;
         this.currentData = null;
         this.videoPaused = false;

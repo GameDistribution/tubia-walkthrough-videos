@@ -33,6 +33,9 @@ import lotties from './lotties';
 // Plyr instance
 class Plyr {
     constructor(target, options) {
+        // Create lottie animations
+        lotties.createAnimations();
+        
         this.timers = {};
 
         // State
@@ -117,8 +120,6 @@ class Plyr {
             quality: [],
         };
 
-        lotties.createAnimations();
-        
         // Debugging
         // TODO: move to globals
         this.debug = new Console(this.config.debug);
@@ -1175,6 +1176,12 @@ class Plyr {
                     return;
                 }
 
+                // Do no hide controls when share wrapper is active
+                const shareWrapper = document.querySelector('.plyr--share-fullscreen');
+                if (shareWrapper && shareWrapper.classList.contains('active')) {
+                    return;
+                } 
+                
                 // If the mouse is over the controls (and not entering fullscreen), bail
                 if ((this.elements.controls.pressed || this.elements.controls.hover) && !isEnterFullscreen) {
                     return;

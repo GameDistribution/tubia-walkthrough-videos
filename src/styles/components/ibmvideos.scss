@@ -166,10 +166,13 @@
                 z-index: 1;
                 align-content: center;
                 align-items: center;
-                vertical-align: middle;
                 text-align: center;
                 flex-direction: column;
                 font-family: 'gaegu', sans-serif;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                display: block;
+                overflow: hidden;
             }
 
             img {
