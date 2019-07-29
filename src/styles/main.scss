@@ -1,13 +1,16 @@
 /*! Fonts:
     googlefont Gaegu */
 
+
 @font-face {
     font-family: 'gaegubold';
-    src: url('./../../fonts/gaegu-bold-webfont.woff2') format('woff2'),
-         url('./../../fonts/gaegu-bold-webfont.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
-}
+    src: url('https://cdn.tubia.com/media/gaegu-bold-webfont.eot'); /* IE9 Compat Modes */
+    src: url('https://cdn.tubia.com/media/gaegu-bold-webfont.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+         url('https://cdn.tubia.com/media/gaegu-bold-webfont.woff2') format('woff2'), /* Super Modern Browsers */
+         url('https://cdn.tubia.com/media/gaegu-bold-webfont.woff') format('woff'), /* Pretty Modern Browsers */
+         url('https://cdn.tubia.com/media/gaegu-bold-webfont.ttf') format('truetype'), /* Safari, Android, iOS */
+         url('https://cdn.tubia.com/media/gaegu-bold-webfont.svg#svgFontName') format('svg'); /* Legacy iOS */
+  }
 
 .tubia {
     font-family: 'gaegubold';

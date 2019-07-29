@@ -33,8 +33,11 @@
       position: absolute;
       padding: .2vw 1vw;
       border-radius: 2vw;
-      font-size: 1.2vw;
-      font-family: 'gaegu', sans-serif;
+      font-size: 1.1em;
+      font-family: 'gaegubold', sans-serif;
+      @media (max-width: $plyr-bp-sm) {
+        font-size: 0.8em;
+      }  
     }
 
     .plyr--share-button[aria-pressed=true] .plyr--share-title {
@@ -69,6 +72,9 @@
           justify-content: center;
           align-items: center;
           flex-direction: column;
+          @media (max-width: $plyr-bp-sm) {
+            padding-top: 80px;
+          }  
         }
 
         .plyr--share-fullscreen-input {
@@ -80,6 +86,11 @@
             border-radius: 10px;
             outline: none;
             padding: 0 15px;
+            @media (max-width: $plyr-bp-sm) {
+              font-size: 15px;
+              height: 38px;
+              border-width: 2px;
+            }
         }
 
         #toast {
@@ -93,6 +104,10 @@
             z-index: 1;
             font-size: 17px;
             white-space: nowrap;
+            @media (max-width: $plyr-bp-sm) {
+              height: 36px;
+              font-size: 15px;
+            } 
             #img {
               display: flex;
               justify-content: center;
@@ -103,18 +118,27 @@
               padding-top: 16px;
               padding-bottom: 16px;
               box-sizing: border-box;
-              background-color: #111;
               color: #fff;
                 svg{
                     width: 32px;
                     height: 32px;
                 }
+              @media (max-width: $plyr-bp-sm) {
+                height: 36px;
+                font-size: 15px;
+                padding-top: 18px;
+              }
             }
             #desc {
               color: #fff;
               padding: 16px;
               overflow: hidden;
               white-space: nowrap;
+              @media (max-width: $plyr-bp-sm) {
+                height: 36px;
+                font-size: 15px;
+                padding: 10px 12px;
+              }
             }
             &.show {
               visibility: visible;
@@ -261,6 +285,9 @@
                 transition: 25ms ease-out;
                 padding: 0.5em 0.75em;
                 font-family: Helvetica Neue,Helvetica,Arial,sans-serif;
+                @media (max-width: $plyr-bp-sm) {
+                  padding: 0.3em .55em;
+                }
             }
 
             .plyr--sharing-button__icon svg {
@@ -345,6 +372,8 @@
         opacity: 0;
         position: absolute;
         z-index: -99;
+        top: 0;
+        left: 0;
         &.active {
           opacity: 1;
           z-index: 9;
