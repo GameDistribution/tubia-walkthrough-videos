@@ -372,6 +372,8 @@
         opacity: 0;
         position: absolute;
         z-index: -99;
+        top: 0;
+        left: 0;
         &.active {
           opacity: 1;
           z-index: 9;
