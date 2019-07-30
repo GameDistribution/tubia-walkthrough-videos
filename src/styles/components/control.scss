@@ -48,6 +48,11 @@
         span.label--not-pressed {
             display: none !important;
         }
+        &.plyr--bar-morevideos {
+            @media (max-width: $plyr-bp-sm) {
+                display: none;
+            }
+        }
     }
     .plyr__controls-right {
         .plyr__control[lottie-class] {
