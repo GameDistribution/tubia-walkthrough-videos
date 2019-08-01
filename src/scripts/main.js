@@ -8,7 +8,6 @@ import PackageJSON from '../../package.json';
 import Plyr from './plyr/plyr';
 import utils from './plyr/utils';
 import adblocker from './plyr/adblocker';
-import lotties from './plyr/lotties';
 
 /**
  * Player
@@ -263,17 +262,8 @@ class Player {
                                     data.playlistType = 'related';
                                     data.cuepoints = related;
                                     resolve(data);
-                                }).catch((error) => {
-                                    /* eslint-disable */
-                                    if (typeof window['ga'] !== 'undefined') {
-                                        window['ga']('tubia.send', {
-                                            hitType: 'event',
-                                            eventCategory: 'ERROR',
-                                            eventAction: this.options.domain,
-                                            eventLabel: `start relatedVideosRequest | ${error}`,
-                                        });
-                                    }
-                                    /* eslint-enable */
+                                }).catch(() => {
+                                    // TODO: Report this issue to honeybadger.
                                 });
                         }
                     }).catch(error => reject(error));
@@ -480,17 +470,6 @@ class Player {
         // Report missing video.
         this.reportToMatchmaking();
 
-        /* eslint-disable */
-        if (typeof window['ga'] !== 'undefined') {
-            window['ga']('tubia.send', {
-                hitType: 'event',
-                eventCategory: 'VIDEO_NOT_FOUND',
-                eventAction: this.options.url,
-                eventLabel: `${origin} | ${message}`,
-            });
-        }
-        /* eslint-enable */
-
         throw new Error(message);
     }
 
@@ -512,16 +491,7 @@ class Player {
             this.container.classList.add('tubia__error');
         }
 
-        /* eslint-disable */
-        if (typeof window['ga'] !== 'undefined') {
-            window['ga']('tubia.send', {
-                hitType: 'event',
-                eventCategory: 'ERROR',
-                eventAction: this.options.domain,
-                eventLabel: `${origin} | ${error}`,
-            });
-        }
-        /* eslint-enable */
+        // TODO: Send this issue to honeybadger.
 
         throw new Error(error);
     }
@@ -786,7 +756,9 @@ class Player {
                     'name': 'tubia',
                     'cookieExpires': 90 * 86400,
                 }, 'auto');
-                window['ga']('tubia.send', 'pageview');
+
+                const videoTrackingUrl = `https://${this.options.domain}/index.html?publisherid=${this.options.publisherId}&title=${encodeURIComponent(this.options.title)}&url=${encodeURIComponent(this.options.url)}`;
+                window['ga']('tubia.send', 'pageview', videoTrackingUrl);
 
                 // Anonymize IP for GDPR purposes.
                 if (this.options.gdprTracking) {
@@ -911,17 +883,8 @@ class Player {
             if (!contentType || !contentType.includes('application/json')) {
                 throw new TypeError('Oops, we didn\'t get JSON!');
             }
-        }).catch((error) => {
-            /* eslint-disable */
-            if (typeof window['ga'] !== 'undefined') {
-                window['ga']('tubia.send', {
-                    hitType: 'event',
-                    eventCategory: 'ERROR',
-                    eventAction: this.options.domain,
-                    eventLabel: `${error} | videoCounterRequest`,
-                });
-            }
-            /* eslint-enable */
+        }).catch(() => {
+            // TODO: Report this issue to honeybadger.
         });
     }
 }

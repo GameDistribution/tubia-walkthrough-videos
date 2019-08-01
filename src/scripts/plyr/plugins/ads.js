@@ -362,18 +362,6 @@ class Ads {
                             tnl_tubia_category: this.category.toLowerCase(),
                         });
 
-                        // Send event for Tunnl debugging.
-                        /* eslint-disable */
-                        if (typeof window['ga'] !== 'undefined') {
-                            window['ga']('tubia.send', {
-                                hitType: 'event',
-                                eventCategory: 'AD_REQUEST',
-                                eventAction: this.domain,
-                                eventLabel: unit,
-                            });
-                        }
-                        /* eslint-enable */
-
                         // Make the request for a VAST tag from the Prebid.js wrapper.
                         // Get logging from the wrapper using: ?idhbtubia_debug=true
                         // To get a copy of the current config: copy(idhbtubia.getConfig());
@@ -525,18 +513,6 @@ class Ads {
                             'tnl_tubia_category': this.category.toLowerCase(),
                         };
 
-                        // Send event for Tunnl debugging.
-                        /* eslint-disable */
-                        if (typeof window['ga'] !== 'undefined') {
-                            window['ga']('gd.send', {
-                                hitType: 'event',
-                                eventCategory: 'AD_REQUEST_FALLBACK',
-                                eventAction: this.domain,
-                                eventLabel: error,
-                            });
-                        }
-                        /* eslint-enable */
-
                         resolve(keys);
                     });
             }
@@ -581,33 +557,6 @@ class Ads {
             // We don't want non-linear FULL SLOT ads when we're running mid-rolls on desktop
             adsRequest.forceNonLinearFullSlot = (!isMidrollDesktop);
             this.player.debug.log(`ADVERTISEMENT: forceNonLinearFullSlot: ${(!isMidrollDesktop)}`);
-
-            // Send event for Tunnl debugging.
-            /* eslint-disable */
-            if (typeof window['ga'] !== 'undefined') {
-                const time = new Date();
-                const h = time.getHours();
-                const d = time.getDate();
-                const m = time.getMonth();
-                const y = time.getFullYear();
-                let categoryName = '';
-                if (this.adPosition === 0) {
-                    categoryName = 'POSTROLL';
-                } else if (this.adPosition === 1) {
-                    categoryName = 'PREROLL';
-                } else if (this.adPosition === 2) {
-                    categoryName = 'MIDROLL_NON_LINEAR';
-                } else if (this.adPosition === 3) {
-                    categoryName = 'MIDROLL_LINEAR';
-                }
-                window.ga('tubia.send', {
-                    hitType: 'event',
-                    eventCategory: categoryName,
-                    eventAction: `${this.domain} | h${h} d${d} m${m} y${y}`,
-                    eventLabel: vastUrl,
-                });
-            }
-            /* eslint-enable */
 
             // Get us some ads!
             this.loader.requestAds(adsRequest);
@@ -776,66 +725,6 @@ class Ads {
 
             case google.ima.AdEvent.Type.IMPRESSION:
                 dispatchEvent('impression');
-
-                try {
-                    const time = new Date();
-                    const h = time.getHours();
-                    const d = time.getDate();
-                    const m = time.getMonth();
-                    const y = time.getFullYear();
-
-                    /* eslint-disable */
-                    if (typeof window.ga !== 'undefined') {
-                        window.ga('tubia.send', {
-                            hitType: 'event',
-                            eventCategory: 'IMPRESSION',
-                            eventAction: this.domain,
-                            eventLabel: `h${h} d${d} m${m} y${y}`,
-                        });
-                    }
-                    /* eslint-enable */
-
-                    // Check which bidder served us the impression.
-                    // We can call on a Prebid.js method. If it exists we report it.
-                    // Our default ad provider is Ad Exchange.
-                    if (utils.is.object(window.pbjstubia)) {
-                        const winners = window.pbjstubia.getHighestCpmBids();
-                        if (this.debug) {
-                            this.player.debug.log('Winner(s)', winners);
-                        }
-                        // Todo: There can be multiple winners...
-                        if (winners.length > 0) {
-                            winners.forEach((winner) => {
-
-                                /* eslint-disable */
-                                if (typeof window['ga'] !== 'undefined' && winner.bidder) {
-                                    window['ga']('tubia.send', {
-                                        hitType: 'event',
-                                        eventCategory: `IMPRESSION_${winner.bidder.toUpperCase()}`,
-                                        eventAction: this.domain,
-                                        eventLabel: `h${h} d${d} m${m} y${y}`,
-                                    });
-                                }
-                                /* eslint-enable */
-                            });
-                        } else {
-                            /* eslint-disable */
-                            if (typeof window['ga'] !== 'undefined') {
-                                window['ga']('tubia.send', {
-                                    hitType: 'event',
-                                    eventCategory: `IMPRESSION_ADEXCHANGE${this.adPosition === 2 ? '_NON_LINEAR' : '_LINEAR'}`,
-                                    eventAction: this.domain,
-                                    eventLabel: `h${h} d${d} m${m} y${y}`,
-                                });
-                            }
-                            /* eslint-enable */
-                        }
-                    }
-                } catch (error) {
-                    this.player.debug.warn('error', error);
-                }
-
-                /* eslint-enable */
                 break;
 
             case google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED:
@@ -901,63 +790,8 @@ class Ads {
      * https://developers.google.com/interactive-media-ads/docs/sdks/html5/v3/apis#ima.AdError.getErrorCode
      * @param {Event} event
      */
-    onAdError(event) {
+    onAdError() {
         this.cancel();
-
-        try {
-            /* eslint-disable */
-            if (typeof window['ga'] !== 'undefined') {
-                window['ga']('tubia.send', {
-                    hitType: 'event',
-                    eventCategory: 'AD_ERROR',
-                    eventAction: event.getError().getErrorCode().toString() || event.getError().getVastErrorCode().toString(),
-                    eventLabel: event.getError().getMessage(),
-                });
-            }
-            /* eslint-enable */
-
-            // Check which bidder served us a possible broken advertisement.
-            // We can call on a Prebid.js method. If it exists we report it.
-            // If there is no winning bid we assume the problem lies with AdExchange.
-            // As our default ad provider is Ad Exchange.
-            if (utils.is.object(window.pbjstubia)) {
-                const winners = window.pbjstubia.getHighestCpmBids();
-                if (this.debug) {
-                    this.player.debug.log('Failed winner(s)', winners);
-                }
-                // Todo: There can be multiple winners...
-                if (winners.length > 0) {
-                    winners.forEach((winner) => {
-                        const adId = winner.adId ? winner.adId : null;
-                        const creativeId = winner.creativeId ? winner.creativeId : null;
-
-                        /* eslint-disable */
-                        if (typeof window['ga'] !== 'undefined' && winner.bidder) {
-                            window['ga']('tubia.send', {
-                                hitType: 'event',
-                                eventCategory: `AD_ERROR_${winner.bidder.toUpperCase()}`,
-                                eventAction: event.getError().getErrorCode().toString() || event.getError().getVastErrorCode().toString(),
-                                eventLabel: `${adId} | ${creativeId}`,
-                            });
-                        }
-                        /* eslint-enable */
-                    });
-                } else {
-                    /* eslint-disable */
-                    if (typeof window['ga'] !== 'undefined') {
-                        window['ga']('tubia.send', {
-                            hitType: 'event',
-                            eventCategory: `AD_ERROR_ADEXCHANGE${this.adPosition === 2 ? '_NON_LINEAR' : '_LINEAR'}`,
-                            eventAction: event.getError().getErrorCode().toString() || event.getError().getVastErrorCode().toString(),
-                            eventLabel: event.getError().getMessage(),
-                        });
-                    }
-                    /* eslint-enable */
-                }
-            }
-        } catch (error) {
-            this.player.debug.warn('error', error);
-        }
     }
 
     /**
