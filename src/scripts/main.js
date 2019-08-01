@@ -757,8 +757,13 @@ class Player {
                     'cookieExpires': 90 * 86400,
                 }, 'auto');
 
-                const videoTrackingUrl = `https://${this.options.domain}/index.html?publisherid=${this.options.publisherId}&title=${encodeURIComponent(this.options.title)}&url=${encodeURIComponent(this.options.url)}`;
-                window['ga']('tubia.send', 'pageview', videoTrackingUrl);
+                const pageView = {
+                    hitType: 'pageview',
+                    page: `index.html?publisherid=${this.options.publisherId}&title=${encodeURIComponent(this.options.title)}&url=${encodeURIComponent(this.options.url)}`;,
+                    location: this.options.domain,
+                    title: this.options.title,
+                };
+                window['ga']('tubia.send', pageView);
 
                 // Anonymize IP for GDPR purposes.
                 if (this.options.gdprTracking) {
