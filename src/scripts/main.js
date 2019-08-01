@@ -759,7 +759,7 @@ class Player {
 
                 const pageView = {
                     hitType: 'pageview',
-                    page: `index.html?publisherid=${this.options.publisherId}&title=${encodeURIComponent(this.options.title)}&url=${encodeURIComponent(this.options.url)}`;,
+                    page: `index.html?publisherid=${this.options.publisherId}&title=${encodeURIComponent(this.options.title)}&url=${encodeURIComponent(this.options.url)}`,
                     location: this.options.domain,
                     title: this.options.title,
                 };
