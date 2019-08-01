@@ -8,7 +8,6 @@ import PackageJSON from '../../package.json';
 import Plyr from './plyr/plyr';
 import utils from './plyr/utils';
 import adblocker from './plyr/adblocker';
-import lotties from './plyr/lotties';
 
 /**
  * Player
