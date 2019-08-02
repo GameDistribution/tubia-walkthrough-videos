@@ -1,7 +1,5 @@
 const sass = require('node-sass');
-const autoprefixer = require('autoprefixer')({
-    browsers: 'last 2 version',
-});
+const autoprefixer = require('autoprefixer');
 const cssnano = require('cssnano')({
     reduceIdents: false,
 });
@@ -206,9 +204,6 @@ module.exports = function gruntMain (grunt) {
                         presets: [[
                             '@babel/preset-env',
                             {
-                                targets: {
-                                    browsers: ['> 1%'],
-                                },
                                 debug: false,
                             },
                         ]],
