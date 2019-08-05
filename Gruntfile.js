@@ -1,7 +1,5 @@
 const sass = require('node-sass');
-const autoprefixer = require('autoprefixer')({
-    browsers: 'last 2 version',
-});
+const autoprefixer = require('autoprefixer');
 const cssnano = require('cssnano')({
     reduceIdents: false,
 });
@@ -52,6 +50,7 @@ module.exports = function gruntMain (grunt) {
                     'examples/iframe.html',
                     'examples/legacy.html',
                     'examples/publisher.html',
+                    'examples/portal.html',
                     './favicon.ico',
                 ],
                 dest: './dist',
@@ -95,6 +94,7 @@ module.exports = function gruntMain (grunt) {
                         'examples/iframe.html',
                         'examples/legacy.html',
                         'examples/publisher.html',
+                        'examples/portal.html',
                     ],
                     dest: './dist',
                 }],
@@ -206,9 +206,6 @@ module.exports = function gruntMain (grunt) {
                         presets: [[
                             '@babel/preset-env',
                             {
-                                targets: {
-                                    browsers: ['> 1%'],
-                                },
                                 debug: false,
                             },
                         ]],
@@ -315,6 +312,7 @@ module.exports = function gruntMain (grunt) {
                     'examples/iframe.html',
                     'examples/legacy.html',
                     'examples/publisher.html',
+                    'examples/portal.html',
                 ],
                 tasks: ['copy'],
             },
