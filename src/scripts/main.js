@@ -513,6 +513,17 @@ class Player {
         // Call Google Analytics and Death Star.
         this.analytics();
 
+        // Call HoneyBadger tool to start watching errors.
+        const debug = (location.hostname === 'localhost' || location.hostname === '127.0.0.1') || this.options.testing;
+        const hbConfig = {
+            apiKey: 'b4753ed6',
+            environment: debug ? 'development' : 'production',
+            disabled: debug,
+        };
+        
+        // eslint-disable-next-line no-undef
+        Honeybadger.configure(hbConfig);
+
         // Remove our click listener to avoid double clicks.
         this.playButton.removeEventListener('click', this.startPlyrHandler, false);
 
