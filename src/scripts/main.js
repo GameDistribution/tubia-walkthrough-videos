@@ -128,9 +128,6 @@ class Player {
         this.hexagonLoader = null;
         this.posterPosterElement = null;
 
-        // Call Google Analytics and Death Star.
-        this.analytics();
-
         // Make sure the DOM is ready!
         // The Tubia instance sometimes gets called from the <head> by clients.
         if (document.readyState === 'interactive' || document.readyState === 'complete') {
@@ -512,6 +509,10 @@ class Player {
      * Method for animating into loading the Plyr player.
      */
     startPlyr() {
+        
+        // Call Google Analytics and Death Star.
+        this.analytics();
+
         // Remove our click listener to avoid double clicks.
         this.playButton.removeEventListener('click', this.startPlyrHandler, false);
 
