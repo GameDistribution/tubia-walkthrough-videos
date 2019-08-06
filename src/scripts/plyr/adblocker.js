@@ -10,7 +10,7 @@ const adblocker = {
     // Check an existing Ad Blocker Plugin
     check(adsblocked) {
         
-        const URL = `https://adservice.google.com/adsid/integrator.js?domain=${defaults.ads.domain}`;   
+        const URL = 'https://imasdk.googleapis.com/js/sdkloader/ima3.js';   
         
         const config = {
             method: 'HEAD',
@@ -44,11 +44,9 @@ const adblocker = {
 
             container.append(adblockWarning);
 
-            setTimeout(() => {
-                if (adblockWarning.classList.contains('invisible')){
-                    adblockWarning.classList.remove('invisible');
-                }
-            }, 500);
+            if (adblockWarning.classList.contains('invisible')){
+                adblockWarning.classList.remove('invisible');
+            }
 
             // Configure HoneyBadger tool.
             const debug = (location.hostname === 'localhost' || location.hostname === '127.0.0.1') || location.href.replace(/^(?:https?:\/\/)?/i, '').split('/')[0].split('.')[0] === 'test';
