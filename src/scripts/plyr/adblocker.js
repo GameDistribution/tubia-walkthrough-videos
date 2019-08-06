@@ -44,6 +44,30 @@ const adblocker = {
 
             container.append(adblockWarning);
 
+            
+            // Configure HoneyBadger tool.
+            const debug = (location.hostname === 'localhost' || location.hostname === '127.0.0.1') || location.href.replace(/^(?:https?:\/\/)?/i, '').split('/')[0].split('.')[0] === 'test';
+            const hbConfig = {
+                apiKey: 'b4753ed6',
+                environment: debug ? 'development' : 'production',
+                disabled: debug,
+            };
+            
+            // eslint-disable-next-line no-undef
+            Honeybadger.configure(hbConfig);
+            
+            const hbObj = {
+                message: 'An adblocker plugin has been found. The player could not be started.',
+                name: 'AdBlocker',
+                component: 'player',
+                action: 'show',
+                environment: debug ? 'development' : 'production',
+                projectRoot: location.href,
+            };
+            
+            // eslint-disable-next-line no-undef
+            Honeybadger.notify('error', hbObj);
+
             setTimeout(() => {
                 if (adblockWarning.classList.contains('invisible')){
                     adblockWarning.classList.remove('invisible');
