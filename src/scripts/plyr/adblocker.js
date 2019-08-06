@@ -10,7 +10,7 @@ const adblocker = {
     // Check an existing Ad Blocker Plugin
     check(adsblocked) {
         
-        const URL = 'https://imasdk.googleapis.com/js/sdkloader/ima3.js';   
+        const URL = 'https://adservice.google.com.tr/adsid/integrator.js?domain=player.tubia.com';   
         
         const config = {
             method: 'HEAD',
