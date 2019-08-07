@@ -8,6 +8,7 @@ import PackageJSON from '../../package.json';
 import Plyr from './plyr/plyr';
 import utils from './plyr/utils';
 import adblocker from './plyr/adblocker';
+import CodeMonitor from './plyr/codemonitor';
 
 /**
  * Player
@@ -29,7 +30,7 @@ class Player {
             'background: #006897');
         console.log.apply(console, banner);
         /* eslint-enable */
-        
+
         const params = utils.getUrlParams(document.location.href) || {};
 
         // Get URL parameter values from i-frame URL.
@@ -79,6 +80,9 @@ class Player {
             keys,
             lottie: true,
         };
+
+        // Honeybadger Code Monitoring
+        this.codemonitor = CodeMonitor();
 
         // Test domains.
         const testDomains = [
@@ -260,7 +264,16 @@ class Player {
                                     data.cuepoints = related;
                                     resolve(data);
                                 }).catch(() => {
-                                    // TODO: Report this issue to honeybadger.
+                                    this.codemonitor.notifyError({
+                                        message: 'The related videos could not fetched.',
+                                        component: 'video',
+                                        action: 'request',
+                                        projectRoot: this.options.domain,
+                                        params: {
+                                            gameId: this.options.gameId,
+                                            href: this.options.href,
+                                        },
+                                    });
                                 });
                         }
                     }).catch(error => reject(error));
@@ -488,7 +501,17 @@ class Player {
             this.container.classList.add('tubia__error');
         }
 
-        // TODO: Send this issue to honeybadger.
+        // Send this error to honeybadger.
+        this.codemonitor.notifyError({
+            message: `An error occured: ${error}`,
+            component: 'player',
+            action: 'error',
+            projectRoot: this.options.domain,
+            params: {
+                gameId: this.options.gameId,
+                href: this.options.href,
+            },
+        });
 
         throw new Error(error);
     }
@@ -513,16 +536,8 @@ class Player {
         // Call Google Analytics and Death Star.
         this.analytics();
 
-        // Call HoneyBadger tool to start watching errors.
-        const debug = (location.hostname === 'localhost' || location.hostname === '127.0.0.1') || this.options.testing;
-        const hbConfig = {
-            apiKey: 'b4753ed6',
-            environment: debug ? 'development' : 'production',
-            disabled: debug,
-        };
-        
-        // eslint-disable-next-line no-undef
-        Honeybadger.configure(hbConfig);
+        // Configure Honeybadger to start monitoring the system
+        this.codemonitor.configure();
 
         // Remove our click listener to avoid double clicks.
         this.playButton.removeEventListener('click', this.startPlyrHandler, false);

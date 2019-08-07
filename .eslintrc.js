@@ -11,6 +11,7 @@ module.exports = {
         'Plyr': false,
         'jQuery': false,
         'google': false,
+        'Honeybadger': false,
     },
     'rules': {
         'no-param-reassign': ["error", { "props": false }],
