@@ -189,7 +189,9 @@ class Player {
                         window.addEventListener('load', () => {
                             try {
                                 /* eslint-disable */
-                                window['_cc13997'].bcpw('int', `category : ${data.category.toLowerCase()}`);
+                                if (typeof window['_cc13997'] !== 'undefined') {
+                                    window['_cc13997'].bcpw('int', `category : ${data.category.toLowerCase()}`);
+                                }
                                 /* eslint-enable */
                             } catch (error) {
                                 // No need to throw an error or log. It's just Lotame.
@@ -699,26 +701,35 @@ class Player {
 
             this.player.on('adsclick', () => {
                 /* eslint-disable */
-                window['_cc13997'].bcpw('act', 'ad click');
+                if (typeof window['_cc13997'] !== 'undefined') {
+                    window['_cc13997'].bcpw('act', 'ad click');
+                }
                 /* eslint-enable */
             });
 
             this.player.on('adscomplete', () => {
                 /* eslint-disable */
-                window['_cc13997'].bcpw('act', 'ad complete');
+                if (typeof window['_cc13997'] !== 'undefined') {
+                    window['_cc13997'].bcpw('act', 'ad complete');
+                }
                 /* eslint-enable */
             });
 
             this.player.on('adsimpression', () => {
                 /* eslint-disable */
-                window['_cc13997'].bcpw('genp', 'ad video');
-                window['_cc13997'].bcpw('act', 'ad impression');
+                if (typeof window['_cc13997'] !== 'undefined') {
+                    window['_cc13997'].bcpw('genp', 'ad video');
+                    window['_cc13997'].bcpw('act', 'ad impression');
+                }
+                
                 /* eslint-enable */
             });
 
             this.player.on('adsskipped', () => {
                 /* eslint-disable */
-                window['_cc13997'].bcpw('act', 'ad skipped');
+                if (typeof window['_cc13997'] !== 'undefined') {
+                    window['_cc13997'].bcpw('act', 'ad skipped');
+                }
                 /* eslint-enable */
             });
 
