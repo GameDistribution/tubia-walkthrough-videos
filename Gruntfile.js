@@ -62,10 +62,24 @@ module.exports = function gruntMain (grunt) {
                 expand: true,
             },
             scripts: {
-                src: ['./node_modules/lottie-web/build/player/lottie.min.js'],
+                src:    [
+                    './node_modules/lottie-web/build/player/lottie.min.js',
+                    './src/scripts/plyr/.load.js',
+                ],
                 dest: './dist/scripts',
                 flatten: true,
                 expand: true,
+                // eslint-disable-next-line func-names, object-shorthand
+                rename: function (dest, src) {
+                    let filename;
+                    if (src.charAt(0) === '.') {
+                        filename = src.substring(1, src.length);
+                    } else {
+                        filename = src;
+                    }
+                    // eslint-disable-next-line prefer-template
+                    return `./dist/scripts/${filename}`;
+                },
             },
             fonts: {
                 src: ['./src/styles/fonts/**/*'],
@@ -219,6 +233,10 @@ module.exports = function gruntMain (grunt) {
             entry: {
                 src: 'src/entry/entry.js',
                 dest: 'dist/libs/gd/entry.js',
+            },
+            load: {
+                src: 'dist/scripts/load.js',
+                dest: 'dist/scripts/load.min.js',
             },
         },
 
