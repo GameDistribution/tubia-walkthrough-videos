@@ -62,10 +62,7 @@ module.exports = function gruntMain (grunt) {
                 expand: true,
             },
             scripts: {
-                src:    [
-                    './node_modules/lottie-web/build/player/lottie.min.js',
-                    './src/scripts/plyr/.load.js',
-                ],
+                src:    ['./node_modules/lottie-web/build/player/lottie.min.js'],
                 dest: './dist/scripts',
                 flatten: true,
                 expand: true,
@@ -233,10 +230,6 @@ module.exports = function gruntMain (grunt) {
             entry: {
                 src: 'src/entry/entry.js',
                 dest: 'dist/libs/gd/entry.js',
-            },
-            load: {
-                src: 'dist/scripts/load.js',
-                dest: 'dist/scripts/load.min.js',
             },
         },
 
