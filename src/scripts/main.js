@@ -189,9 +189,7 @@ class Player {
                         window.addEventListener('load', () => {
                             try {
                                 /* eslint-disable */
-                                if (typeof window['_cc13997'] !== 'undefined') {
-                                    window['_cc13997'].bcpw('int', `category : ${data.category.toLowerCase()}`);
-                                }
+                                window['_cc13997'].bcpw('int', `category : ${data.category.toLowerCase()}`);
                                 /* eslint-enable */
                             } catch (error) {
                                 // No need to throw an error or log. It's just Lotame.
@@ -700,37 +698,44 @@ class Player {
             });
 
             this.player.on('adsclick', () => {
-                /* eslint-disable */
-                if (typeof window['_cc13997'] !== 'undefined') {
+                try {
+                    /* eslint-disable */
                     window['_cc13997'].bcpw('act', 'ad click');
+                    /* eslint-enable */
+                } catch (error) {
+                    // No need to throw an error or log. It's just Lotame.
                 }
-                /* eslint-enable */
             });
 
             this.player.on('adscomplete', () => {
-                /* eslint-disable */
-                if (typeof window['_cc13997'] !== 'undefined') {
+                try {
+                    /* eslint-disable */
                     window['_cc13997'].bcpw('act', 'ad complete');
+                    /* eslint-enable */
+                } catch (error) {
+                    // No need to throw an error or log. It's just Lotame.
                 }
-                /* eslint-enable */
             });
 
             this.player.on('adsimpression', () => {
-                /* eslint-disable */
-                if (typeof window['_cc13997'] !== 'undefined') {
+                try {
+                    /* eslint-disable */
                     window['_cc13997'].bcpw('genp', 'ad video');
                     window['_cc13997'].bcpw('act', 'ad impression');
+                    /* eslint-enable */
+                } catch (error) {
+                    // No need to throw an error or log. It's just Lotame.
                 }
-                
-                /* eslint-enable */
             });
 
             this.player.on('adsskipped', () => {
-                /* eslint-disable */
-                if (typeof window['_cc13997'] !== 'undefined') {
+                try {
+                    /* eslint-disable */
                     window['_cc13997'].bcpw('act', 'ad skipped');
+                    /* eslint-enable */
+                } catch (error) {
+                    // No need to throw an error or log. It's just Lotame.
                 }
-                /* eslint-enable */
             });
 
             // Set some listeners.
