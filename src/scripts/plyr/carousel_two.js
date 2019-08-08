@@ -364,8 +364,11 @@ class CarouselTwo {
 
         }
 
-        document.querySelector(defaults.selectors.buttons.playlist).style.display = 'none';
-
+        const playList = document.querySelector(defaults.selectors.buttons.playlist); 
+        if (playList) {
+            playList.style.display = 'none';
+        }
+        
         controls.ClearAllLevels.call(this);
         const data = this.currentData;
 

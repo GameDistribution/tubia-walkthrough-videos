@@ -633,6 +633,7 @@ class Player {
             };
 
             // Setup the share
+            // eslint-disable-next-line no-unused-vars
             const share = {
                 active: true,
             };

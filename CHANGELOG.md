@@ -1,6 +1,7 @@
 # Changelog
 ## v2.0.19.1
 - Fix importing share function depending on presence of any cuepoints
+- Control if there is an existing playlist in the player before hide it
 
 ## v2.0.19
 - Added related videos to the carousel
