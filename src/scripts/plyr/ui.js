@@ -66,7 +66,9 @@ const ui = {
         morevideos.setup.call(this);
 
         // share
-        share.setup.call(this);
+        if (this.config.controls.includes('share')) {
+            share.setup.call(this);
+        }
 
         // Captions
         captions.setup.call(this);

@@ -1,4 +1,6 @@
 # Changelog
+## v2.0.19.1
+- Fix importing share function depending on presence of any cuepoints
 
 ## v2.0.19
 - Added related videos to the carousel

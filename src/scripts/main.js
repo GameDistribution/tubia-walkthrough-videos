@@ -644,13 +644,13 @@ class Player {
                 controls.push('settings');
                 // controls.push('captions');
                 controls.push('pip');
+                controls.push('share');
             }
 
             // Check if we want a playlist.
             if (json.cuepoints && json.cuepoints.length > 0) {
                 controls.push('playlist');
                 controls.push('morevideos');
-                controls.push('share');
             }
 
             // Create the Plyr instance.

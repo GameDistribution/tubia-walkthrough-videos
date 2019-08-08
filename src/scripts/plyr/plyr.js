@@ -111,7 +111,7 @@ class Plyr {
 
         // Share
         this.share = {
-            active: null,
+            active: true,
         };
 
         // Options
