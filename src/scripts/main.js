@@ -693,7 +693,7 @@ class Player {
                 seekTime: nextCueTime,
                 playlist,
                 morevideos,
-                share,
+                share: true,
                 controls,
             });
 
