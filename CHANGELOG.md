@@ -2,6 +2,8 @@
 ## v2.0.19.2
 - Avoid use enabled property without checking the existence
 - Monitor ad errors in honeybadger tool
+- Fix broken webkitCancelFullScreen call occured on Firefox browser
+
 
 ## v2.0.19.1
 - Fix importing share function depending on presence of any cuepoints

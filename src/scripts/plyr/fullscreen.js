@@ -195,8 +195,16 @@ class Fullscreen {
         } else if (!Fullscreen.native) {
             toggleFallback.call(this, false);
         } else if (!this.prefix) {
-            document.webkitCancelFullScreen();
-            // document.cancelFullScreen();
+            if (document.mozCancelFullScreen) {
+                // https://bugzilla.mozilla.org/show_bug.cgi?id=867967
+                document.mozCancelFullScreen();
+                // **Note:** Following workaround doesn't work for Android FF
+                const fullScreenElement = document.querySelector(document.mozFullScreenElement);
+                const fullScreenElementPrev = fullScreenElement.prev();
+                fullScreenElement.detach().insertAfter(fullScreenElementPrev);
+            } else if (document.webkitCancelFullScreen) {
+                document.webkitCancelFullScreen();
+            }
         } else if (!utils.is.empty(this.prefix)) {
             const action = this.prefix === 'moz' ? 'Cancel' : 'Exit';
             document[`${this.prefix}${action}${this.name}`]();
