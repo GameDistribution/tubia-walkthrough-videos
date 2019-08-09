@@ -7,6 +7,7 @@
 /* global google */
 
 import utils from '../utils';
+import CodeMonitor from '../codemonitor';
 
 class Ads {
     /**
@@ -15,6 +16,9 @@ class Ads {
      * @return {Ads}
      */
     constructor(player) {
+        // Honeybadger Code Monitoring
+        this.codemonitor = CodeMonitor();
+        
         this.player = player;
 
         this.tag = player.config.ads.tag;
@@ -60,9 +64,14 @@ class Ads {
             this.on('error', () => {
                 // The advertisement failed! Continue video...
                 this.player.play();
+                const err = 'Initial loaderPromise failed to load.';
+                this.monitorError(err, 'load',
+                    {
+                        tag: this.tag,
+                    },);
 
                 // Reject our loader promise.
-                reject(new Error('Initial loaderPromise failed to load.'));
+                reject(new Error(err));
             });
         });
 
@@ -109,7 +118,10 @@ class Ads {
                 this.player.debug.log('Starting a pre-roll advertisement.');
                 this.requestAd()
                     .then(vastUrl => this.loadAd(vastUrl))
-                    .catch(error => this.player.debug.log(error));
+                    .catch(error => {
+                        this.player.debug.log(error);
+                        this.monitorError(error, 'load');
+                    });
             }
         });
 
@@ -269,7 +281,16 @@ class Ads {
         this.elements.toggleButtonContainer.addEventListener('click', this.toggleAd);
 
         // So we can run VPAID2
-        google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.INSECURE);
+        try {
+            google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.INSECURE);
+        }
+        catch (error) {
+            this.monitorError(`VpaidMode could not set its insecure value. Error:${error}`, 'setting',
+                {
+                    vpaidmode: Object.prototype.hasOwnProperty.call(google.ima.ImaSdkSettings, 'VpaidMode') ? google.ima.ImaSdkSettings.VpaidMode : null,
+                    insecure: Object.prototype.hasOwnProperty.call(google.ima.ImaSdkSettings.VpaidMode, 'INSECURE') ? google.ima.ImaSdkSettings.VpaidMode.INSECURE : null,
+                },);
+        }
 
         // Set language
         if (!google.ima.settings.setLocale) {
@@ -529,7 +550,13 @@ class Ads {
         const { container } = this.player.elements;
 
         if (typeof google === 'undefined') {
-            this.trigger('error', 'Unable to request ad, google IMA SDK not defined.');
+            const err = 'Unable to request ad, google IMA SDK not defined.';
+            this.trigger('error', err);
+            this.monitorError(err, 'load',
+                {
+                    vastUrl,
+                    insecure: Object.prototype.hasOwnProperty.call(google.ima.ImaSdkSettings.VpaidMode, 'INSECURE') ? google.ima.ImaSdkSettings.VpaidMode.INSECURE : null,   
+                },);
             return;
         }
 
@@ -576,7 +603,12 @@ class Ads {
         const settings = new google.ima.AdsRenderingSettings();
         settings.enablePreloading = true;
         settings.restoreCustomPlaybackStateOnAdBreakComplete = true;
-        document.querySelector('#tubia__advertisement_slot').style.visibility = 'visible';
+        
+        const slot = document.getElementById('#tubia__advertisement_slot');
+        if (slot) {
+            document.getElementById('#tubia__advertisement_slot').style.visibility = 'visible';
+        }
+
         // settings.useStyledLinearAds = false;
         // Make sure we always have an ad timer.
         settings.uiElements = [
@@ -791,7 +823,8 @@ class Ads {
      * https://developers.google.com/interactive-media-ads/docs/sdks/html5/v3/apis#ima.AdError.getErrorCode
      * @param {Event} event
      */
-    onAdError() {
+    onAdError(err) {
+        this.monitorError(err, 'thrown');
         this.cancel();
     }
 
@@ -873,6 +906,17 @@ class Ads {
 
         // Tell our instance that we're done for now
         // this.trigger('error');
+    }
+
+    monitorError(error, action, params) {
+        const err = {
+            message: error,
+            component: 'ad',
+            action,
+            projectRoot: this.domain,
+            params: params || {},
+        };
+        this.codemonitor.notifyError(err);
     }
 
     /**
