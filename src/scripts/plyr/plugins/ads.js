@@ -719,7 +719,7 @@ class Ads {
                     this.elements.container.firstChild.style.height = '100%';
                     this.elements.container.firstChild.style.backgound = '#000000';
                 } else {
-                    const advertisement = ad[Object.keys(ad)[0]];
+                    const advertisement = (typeof Object.keys(ad) === 'object' && Object.keys(ad).length > 0) ? ad[Object.keys(ad)[0]] : false;
                     if (advertisement) {
                         const holder = document.getElementById('tubia__advertisement_slot');
                         this.elements.toggleButtonContainer.style.visibility = 'visible';
