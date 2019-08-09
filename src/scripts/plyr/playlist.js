@@ -33,7 +33,9 @@ const playlist = {
         }
 
         // Set the class hook
-        utils.toggleClass(this.elements.container, this.config.classNames.playlist.enabled, !utils.is.empty(playlist.getData.call(this)));
+        if (Object.prototype.hasOwnProperty.call(this.config.classNames.playlist, 'enabled')) {
+            utils.toggleClass(this.elements.container, this.config.classNames.playlist.enabled, !utils.is.empty(playlist.getData.call(this)));
+        }
 
         // If no playlist data, hide container
         if (utils.is.empty(playlist.getData.call(this))) {

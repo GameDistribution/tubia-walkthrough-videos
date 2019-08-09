@@ -6,7 +6,7 @@ import utils from './utils';
 
 class Storage {
     constructor(player) {
-        this.enabled = player.config.storage.enabled;
+        this.enabled = Object.prototype.hasOwnProperty.call(player.config.storage, 'enabled') ? player.config.storage.enabled : false;
         this.key = player.config.storage.key;
     }
 

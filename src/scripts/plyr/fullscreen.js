@@ -157,7 +157,9 @@ class Fullscreen {
         }
 
         // Add styling hook to show button
-        utils.toggleClass(this.player.elements.container, this.player.config.classNames.fullscreen.enabled, this.enabled);
+        if (Object.prototype.hasOwnProperty.call(this.player.config.classNames.fullscreen, 'enabled')) {
+            utils.toggleClass(this.player.elements.container, this.player.config.classNames.fullscreen.enabled, this.enabled);
+        }
     }
 
     // Make an element fullscreen

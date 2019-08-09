@@ -54,7 +54,9 @@ const captions = {
         }
 
         // Set the class hook
-        utils.toggleClass(this.elements.container, this.config.classNames.captions.enabled, !utils.is.empty(captions.getTracks.call(this)));
+        if (Object.prototype.hasOwnProperty.call(this.config.classNames.captions, 'enabled')) {
+            utils.toggleClass(this.elements.container, this.config.classNames.captions.enabled, !utils.is.empty(captions.getTracks.call(this)));
+        }
 
         // Get tracks
         const tracks = captions.getTracks.call(this);

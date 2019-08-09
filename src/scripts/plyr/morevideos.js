@@ -42,8 +42,10 @@ const morevideos = {
         }
 
         // // Set the class hook
-        utils.toggleClass(this.elements.container, this.config.classNames.morevideos.enabled, !utils.is.empty(morevideos.getData.call(this)));
-
+        if (Object.prototype.hasOwnProperty.call(this.config.classNames.morevideos, 'enabled')) {
+            utils.toggleClass(this.elements.container, this.config.classNames.morevideos.enabled, !utils.is.empty(morevideos.getData.call(this)));
+        }
+        
         // // If no morevideos data, hide container
         if (utils.is.empty(morevideos.getData.call(this))) {
             return;
