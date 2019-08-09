@@ -1,4 +1,7 @@
 # Changelog
+## v2.0.19.2
+- Avoid use enabled property without checking the existence
+
 ## v2.0.19.1
 - Fix importing share function depending on presence of any cuepoints
 - Control if there is an existing playlist in the player before hide it
