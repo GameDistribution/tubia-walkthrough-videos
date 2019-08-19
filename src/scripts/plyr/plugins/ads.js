@@ -285,11 +285,7 @@ class Ads {
             google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.INSECURE);
         }
         catch (error) {
-            this.monitorError(`VpaidMode could not set its insecure value. Error:${error}`, 'setting',
-                {
-                    vpaidmode: Object.prototype.hasOwnProperty.call(google.ima.ImaSdkSettings, 'VpaidMode') ? google.ima.ImaSdkSettings.VpaidMode : null,
-                    insecure: Object.prototype.hasOwnProperty.call(google.ima.ImaSdkSettings.VpaidMode, 'INSECURE') ? google.ima.ImaSdkSettings.VpaidMode.INSECURE : null,
-                },);
+            this.monitorError(`VpaidMode could not set its insecure value. Error:${error}`, 'setting');
         }
 
         // Set language
@@ -604,9 +600,9 @@ class Ads {
         settings.enablePreloading = true;
         settings.restoreCustomPlaybackStateOnAdBreakComplete = true;
         
-        const slot = document.getElementById('#tubia__advertisement_slot');
+        const slot = document.getElementById(this.slotId);
         if (slot) {
-            document.getElementById('#tubia__advertisement_slot').style.visibility = 'visible';
+            slot.style.visibility = 'visible';
         }
 
         // settings.useStyledLinearAds = false;
@@ -721,7 +717,7 @@ class Ads {
                 } else {
                     const advertisement = (typeof Object.keys(ad) === 'object' && Object.keys(ad).length > 0) ? ad[Object.keys(ad)[0]] : false;
                     if (advertisement) {
-                        const holder = document.getElementById('tubia__advertisement_slot');
+                        const holder = document.getElementById(this.slotId);
                         this.elements.toggleButtonContainer.style.visibility = 'visible';
                         utils.toggleClass(this.elements.container, this.player.config.classNames.nonLinearAdvertisement, true);
                         this.elements.container.style.width = `${advertisement.width}px`;
@@ -749,7 +745,7 @@ class Ads {
                 if (!ad.isLinear()) {
                     this.showAd('nonlinear');
                     document.getElementById('tubia__toggle_ad').style.visibility = 'visible';
-                    const holder = document.getElementById('tubia__advertisement_slot');
+                    const holder = document.getElementById(this.slotId);
                     if (holder.classList.contains('minimized')) {
                         holder.classList.remove('minimized');
                     }
@@ -804,7 +800,7 @@ class Ads {
 
             case google.ima.AdEvent.Type.USER_CLOSE:
                 dispatchEvent('complete');
-                document.querySelector('#tubia__advertisement_slot').style.visibility = 'hidden';
+                document.getElementById(this.slotId).style.visibility = 'hidden';
                 document.getElementById('tubia__toggle_ad').style.visibility = 'hidden';
 
                 break;
@@ -847,7 +843,7 @@ class Ads {
      * Toggle the advertisement holder
      */
     toggleAd() {
-        this.holder = document.getElementById('tubia__advertisement_slot');
+        this.holder = document.getElementById(this.slotId);
         
         if (this.holder.classList.contains('minimized')) {
             this.holder.classList.remove('minimized');
