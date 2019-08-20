@@ -277,7 +277,15 @@ class Ads {
         this.elements.toggleButtonContainer.appendChild(this.elements.toggleButton);
         
         this.elements.toggleButtonContainer.style.visibility = 'hidden';
-        this.elements.toggleButtonContainer.addEventListener('click', this.toggleAd);
+        this.elements.toggleButtonContainer.addEventListener('click', () => {
+            this.holder = document.getElementById(this.slotId);
+        
+            if (this.holder.classList.contains('minimized')) {
+                this.holder.classList.remove('minimized');
+            } else {
+                this.holder.classList.add('minimized');
+            }
+        });
 
         // So we can run VPAID2
         try {
@@ -830,19 +838,6 @@ class Ads {
      */
     hideAd() {
         this.elements.container.style.zIndex = '';
-    }
-
-    /**
-     * Toggle the advertisement holder
-     */
-    toggleAd() {
-        this.holder = document.getElementById(this.slotId);
-        
-        if (this.holder.classList.contains('minimized')) {
-            this.holder.classList.remove('minimized');
-        } else {
-            this.holder.classList.add('minimized');
-        }
     }
 
     /**
