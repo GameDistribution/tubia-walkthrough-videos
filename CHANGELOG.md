@@ -1,4 +1,7 @@
 # Changelog
+## v2.0.19.4
+- Fix 'Cannot read property classList of null' which issue affects to toggling subbanners
+
 ## v2.0.19.3
 - Make sure the received ad key is an object before get object's first element
 
