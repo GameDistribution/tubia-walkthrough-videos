@@ -626,7 +626,6 @@ const controls = {
     },
 
     loadMainVideo() {
-        console.warn('Load the original video.');
         CarouselTwo.playVideoEvent.call(controls.Player);
     },
 

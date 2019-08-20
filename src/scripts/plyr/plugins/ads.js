@@ -695,7 +695,6 @@ class Ads {
         // Proxy event
         const dispatchEvent = type => {
             const eventMessage = `ads${type.replace(/_/g, '').toLowerCase()}`;
-            console.warn('eventMessage', eventMessage);
             utils.dispatchEvent.call(this.player, this.player.media, eventMessage);
         };
         
