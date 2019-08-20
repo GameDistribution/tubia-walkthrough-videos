@@ -547,11 +547,7 @@ class Ads {
         if (typeof google === 'undefined') {
             const err = 'Unable to request ad, google IMA SDK not defined.';
             this.trigger('error', err);
-            this.monitorError(err, 'load',
-                {
-                    vastUrl,
-                    insecure: Object.prototype.hasOwnProperty.call(google.ima.ImaSdkSettings.VpaidMode, 'INSECURE') ? google.ima.ImaSdkSettings.VpaidMode.INSECURE : null,   
-                },);
+            this.monitorError(err, 'load');
             return;
         }
 
@@ -817,8 +813,7 @@ class Ads {
      * https://developers.google.com/interactive-media-ads/docs/sdks/html5/v3/apis#ima.AdError.getErrorCode
      * @param {Event} event
      */
-    onAdError(err) {
-        this.monitorError(err, 'thrown');
+    onAdError() {
         this.cancel();
     }
 
