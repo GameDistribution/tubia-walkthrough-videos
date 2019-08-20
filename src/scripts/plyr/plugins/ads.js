@@ -120,7 +120,6 @@ class Ads {
                     .then(vastUrl => this.loadAd(vastUrl))
                     .catch(error => {
                         this.player.debug.log(error);
-                        this.monitorError(error, 'load');
                     });
             }
         });
