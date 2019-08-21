@@ -1,4 +1,7 @@
 # Changelog
+## v2.0.19.5
+- When user hovers on the video will be playing immediately
+
 ## v2.0.19.4
 - Fix 'Cannot read property classList of null' which issue affects to toggling subbanners
 
