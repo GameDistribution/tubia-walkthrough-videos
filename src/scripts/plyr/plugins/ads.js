@@ -292,7 +292,7 @@ class Ads {
             google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.INSECURE);
         }
         catch (error) {
-            this.monitorError(`VpaidMode could not set its insecure value. Error:${error}`, 'setting');
+            this.player.debug.log(`VpaidMode could not set its insecure value. Error:${error}`);
         }
 
         // Set language
