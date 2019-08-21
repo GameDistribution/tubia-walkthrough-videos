@@ -106,6 +106,7 @@ class Player {
         this.videoDataPromise = null;
         this.transitionSpeed = 2000;
         this.startPlyrHandler = this.startPlyr.bind(this);
+        this.hoverPlyrHandler = this.hoverPlyr.bind(this);
         this.player = null;
         this.nextCuePoint = null;
 
@@ -324,6 +325,8 @@ class Player {
 
         this.container.insertAdjacentHTML('beforeend', html);
 
+        this.container.addEventListener('mouseover', this.hoverPlyrHandler, false);
+        
         if (this.options.lottie) {
             this.animationElement = this.container.querySelector('.tubia__animation');
         } else {
@@ -528,11 +531,21 @@ class Player {
     }
 
     /**
+     * hoverPlyr
+     * Method for starting player muted when user hovers the player
+     */
+    hoverPlyr() {
+        // Remove hover listener to avoid recall hover state.
+        this.container.removeEventListener('mouseover', this.hoverPlyrHandler, false);
+        this.startPlyr(true);
+    }
+
+    /**
      * startPlyr
      * Method for animating into loading the Plyr player.
      */
-    startPlyr() {
-        
+    startPlyr(isMuted) {
+
         // Call Google Analytics and Death Star.
         this.analytics();
 
@@ -555,7 +568,7 @@ class Player {
             // Remove the button.
             this.playButton.parentNode.removeChild(this.playButton);
             // Load our player.
-            this.loadPlyr();
+            this.loadPlyr(isMuted);
         }, 200); // Wait for the play button to hide.
 
         // Destroy our display ad if it exists.
@@ -569,7 +582,7 @@ class Player {
      * loadPlyr
      * Load the Plyr library.
      */
-    loadPlyr() {
+    loadPlyr(isMuted) {
         const nextCueTime = '';
         this.videoDataPromise.then((json) => {
             if (!json) {
@@ -584,6 +597,9 @@ class Player {
             videoElement.setAttribute('playsinline', 'true');
             videoElement.poster = this.posterUrl;
             videoElement.id = 'plyr__tubia';
+            if (isMuted) {
+                videoElement.setAttribute('muted', 'true');
+            }
 
             // Todo: If files (transcoded videos) doesn't exist we must load the raw video file.
             // Todo: However, currently the raw files are in the wrong google project and not served from a CDN, so expensive!

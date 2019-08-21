@@ -148,7 +148,21 @@ class CarouselTwo {
             vidEl.addEventListener('loadeddata', () => {
                 utils.toggleHidden(this.player.elements.volume, false);
                 utils.toggleHidden(this.player.elements.buttons.mute, false);
-                vidEl.play();
+                const promise = vidEl.play();
+                
+                if (vidEl.hasAttribute('muted')) {
+                    this.player.muted = true;
+                };
+
+                if (promise !== undefined) {
+                    // eslint-disable-next-line no-unused-vars
+                    promise.then().catch(() => {
+                        // Autoplay was prevented.
+                        // User should click to "Play" button to watch the video.
+                        // Unmute the muted video.
+                        this.player.muted = false;
+                    });
+                }
                 CarouselTwo.setMagicVideo.call(this);
             });
             this.attachedLoadedDataEvent = true;
