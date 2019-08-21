@@ -4,39 +4,43 @@
 
 import utils from './utils';
 
-const share = {
+class Share {
+    constructor(p) {
+        this.player = p.listeners.player;
+        this.setup();
+    }
 
     // Setup share
     setup() {
         
         // Requires UI support
-        if (!this.supported.ui) {
+        if (!this.player.supported.ui) {
             return;
         }
 
         // Set share enabled state if not set
-        if (!utils.is.boolean(this.share.active)) {
+        if (!utils.is.boolean(this.player.share.active)) {
 
-            const active = this.storage.get('share');
+            const active = this.player.storage.get('share');
 
             if (utils.is.boolean(active)) {
-                this.share.active = active;
+                this.player.share.active = active;
             } else {
-                this.share.active = this.config.share.active;
+                this.player.share.active = this.config.share.active;
             }
         }
 
         // Inject the container into the controls container
-        if (!utils.is.element(this.elements.share)) {
-            this.elements.share = utils.createElement('div', utils.getAttributesFromSelector(this.config.selectors.share));
+        if (!utils.is.element(this.player.elements.share)) {
+            this.player.elements.share = utils.createElement('div', utils.getAttributesFromSelector(this.player.config.selectors.share));
             document.querySelector('.plyr--share-button').appendChild(utils.createElement('span', {
                 class: 'plyr--share-title', 
             }, 'Share'));
-            this.elements.controls.appendChild(this.elements.share);
+            this.player.elements.controls.appendChild(this.player.elements.share);
         }
 
         // Enable UI
-        share.show.call(this);
+        Share.show.call(this);
 
         const shareScreenWrapper = document.querySelector('.plyr');
 
@@ -45,8 +49,11 @@ const share = {
         });
 
         document.querySelector('.plyr--share-button').addEventListener('click', () => {
-
-            const json =localStorage.getItem('defaultVideo');
+            let json = null;
+            if (this.player.storage.supported) {
+                json = localStorage.getItem('defaultVideo');
+            }
+            
             let shareLink;
             
             if(!json) {
@@ -103,28 +110,28 @@ const share = {
                 }, 3500);
             });
         });
-    },
+    }
 
-    hide() {
-        utils.toggleClass(this.elements.container, this.config.classNames.share.active, false);
-        utils.toggleState(this.elements.buttons.share, false);
-    },
+    static hide() {
+        utils.toggleClass(this.player.elements.container, this.player.config.classNames.share.active, false);
+        utils.toggleState(this.player.elements.buttons.share, false);
+    }
 
-    show() {
+    static show() {
         // Try to load the value from storage
         let active = false;
         // Otherwise fall back to the default config
         if (!utils.is.boolean(active)) {
-            ({ active } = this.config.share);
+            ({ active } = this.player.config.share);
         } else {
-            this.share.active = active;
+            this.player.share.active = active;
         }
 
         if (active) {
-            utils.toggleClass(this.elements.container, this.config.classNames.share.active, true);
-            utils.toggleState(this.elements.buttons.share, true);
+            utils.toggleClass(this.player.elements.container, this.player.config.classNames.share.active, true);
+            utils.toggleState(this.player.elements.buttons.share, true);
         }
-    },
+    }
 };
 
-export default share;
+export default Share;

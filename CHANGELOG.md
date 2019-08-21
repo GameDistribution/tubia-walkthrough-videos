@@ -1,4 +1,7 @@
 # Changelog
+## v2.0.19.6
+- Check if localstorage usage permission is enabled
+
 ## v2.0.19.5
 - When user hovers on the video will be playing immediately
 

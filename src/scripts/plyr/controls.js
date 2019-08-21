@@ -553,7 +553,10 @@ const controls = {
         }, 'Go back');
         
         btnloadDefault.addEventListener('click', () => {
-            const json =localStorage.getItem('defaultVideo');
+            let json = null;
+            if (this.storage.supported) {
+                json = localStorage.getItem('defaultVideo');
+            }
             if(!json) return;
 
             controls.ClearAllLevels.call(this);

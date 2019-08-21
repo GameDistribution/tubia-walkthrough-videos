@@ -9,6 +9,7 @@ import Plyr from './plyr/plyr';
 import utils from './plyr/utils';
 import adblocker from './plyr/adblocker';
 import CodeMonitor from './plyr/codemonitor';
+import Storage from './plyr/storage';
 
 /**
  * Player
@@ -32,6 +33,9 @@ class Player {
         /* eslint-enable */
 
         const params = utils.getUrlParams(document.location.href) || {};
+        
+        // Setup local storage for player settings
+        this.storage = Storage;
 
         // Get URL parameter values from i-frame URL.
         // We also have to deal with legacy parameters.
@@ -612,11 +616,15 @@ class Player {
             videoSource.type = sourceType;
 
             const { detail } = json;
-            localStorage.setItem('defaultVideo',JSON.stringify({
-                url: sourceUrl,
-                type: sourceType,
-                videoTitle: detail[0].title,
-                gameUrl }));
+            
+            if (this.storage.supported) {
+                localStorage.setItem('defaultVideo',JSON.stringify({
+                    url: sourceUrl,
+                    type: sourceType,
+                    videoTitle: detail[0].title,
+                    gameUrl }));
+            }
+            
 
             videoElement.appendChild(videoSource);
             this.container.appendChild(videoElement);

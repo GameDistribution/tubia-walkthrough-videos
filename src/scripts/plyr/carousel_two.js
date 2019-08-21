@@ -2,6 +2,7 @@ import utils from './utils';
 import defaults from './defaults';
 import controls from './controls';
 import lotties from './lotties';
+import Storage from './storage';
 
 class CarouselTwo {
     constructor(p) {
@@ -12,8 +13,17 @@ class CarouselTwo {
     }
 
     setup() {
+        // Setup local storage for player settings
+        this.storage = Storage;
+        
         lotties.createAnimations();
-        this.openedMagic = window.localStorage.getItem('openedMagic') || false;
+        
+        if (this.storage.supported) {
+            this.openedMagic = this.player.storage.get('openedMagic') || false;
+        } else {
+            this.openedMagic = false;
+        }
+
         this.currentData = null;
         this.videoPaused = false;
         this.videoStarted = false;
@@ -369,13 +379,14 @@ class CarouselTwo {
 
     static playVideoEvent() {
 
-        if (localStorage.getItem('openedMagic')) {
-            const container = document.querySelector(defaults.selectors.container);
-            const magicTimerEl = container.querySelector('.related--magic-timer');
-          
-            if (magicTimerEl)
-                magicTimerEl.parentNode.removeChild(magicTimerEl);
-
+        if (this.storage.supported) {
+            if (this.player.storage.get('openedMagic')) {
+                const container = document.querySelector(defaults.selectors.container);
+                const magicTimerEl = container.querySelector('.related--magic-timer');
+            
+                if (magicTimerEl)
+                    magicTimerEl.parentNode.removeChild(magicTimerEl);
+            }
         }
 
         const playList = document.querySelector(defaults.selectors.buttons.playlist); 
@@ -481,7 +492,10 @@ class CarouselTwo {
                             lotties.playLottie('magic-lock');
                             
                             this.player.elements.controls.removeAttribute('style');
-                            window.localStorage.setItem('openedMagic', this.openedMagic);
+                            
+                            if (this.storage.supported) {
+                                this.player.storage.set({ openedMagic: this.openedMagic });
+                            }
                             
                             // setting magic video
                             CarouselTwo.createTitle.call(this, this.modes.magic);

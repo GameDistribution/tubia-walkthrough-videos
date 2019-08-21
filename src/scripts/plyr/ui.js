@@ -8,7 +8,7 @@ import controls from './controls';
 import i18n from './i18n';
 import playlist from './playlist';
 import morevideos from './morevideos';
-import share from './share';
+import Share from './share';
 
 const ui = {
     addStyleHook() {
@@ -67,7 +67,7 @@ const ui = {
 
         // share
         if (this.config.controls.includes('share')) {
-            share.setup.call(this);
+            this.share = new Share(this);
         }
 
         // Captions
