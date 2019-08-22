@@ -310,13 +310,6 @@ const ui = {
     // Handle time change event
     timeUpdate(event) {
 
-        // Toggle interesting videos when the time remains 20 sec
-        const remainingTime = this.duration - this.currentTime;
-        const isInterestingVideosHidden = document.querySelector('.plyr__morevideos').classList.contains('hide');
-        if (remainingTime < 10 && isInterestingVideosHidden)  {
-            controls.showInterestingVideos();
-        }
-
         // Only invert if only one time element is displayed and used for both duration and currentTime
         const invert = !utils.is.element(this.elements.display.duration) && this.config.invertTime;
 
