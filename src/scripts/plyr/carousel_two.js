@@ -274,7 +274,7 @@ class CarouselTwo {
     static updateControls(direction) {
         const container = document.querySelector('.related--videos');
         const playerWidth = document.querySelector('.plyr--video').offsetWidth;
-        const videoWidth = document.querySelector('.mode').offsetWidth;
+        const videoWidth = document.querySelector('.mode').scrollWidth;
         const maxNumber = Math.floor(playerWidth / videoWidth);
         const prev = document.querySelector('.control.prev');
         const next = document.querySelector('.control.next');
