@@ -152,15 +152,16 @@ const ui = {
         utils.toggleClass(this.elements.container, this.config.classNames.playing, this.playing);
         utils.toggleClass(this.elements.container, this.config.classNames.stopped, this.paused);
 
-        if (this.playing || !this.paused)
+        if ((this.playing || !this.paused) && this.ready) 
         {
             controls.hideInterestingVideos();
-        } else {
+        } else if (this.ready && !this.playing) {
             controls.showInterestingVideos();
         } 
 
         // Set ARIA state
-        utils.toggleState(this.elements.buttons.play, this.playing);
+        // Do not show play button when carousel is shown
+        // utils.toggleState(this.elements.buttons.play, this.playing);
 
         // Toggle controls
         this.toggleControls(!this.playing);

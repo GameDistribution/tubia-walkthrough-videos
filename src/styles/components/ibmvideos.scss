@@ -14,10 +14,11 @@
         transition: margin .2s ease-in-out;
         margin-left: 0px;
         &:nth-child(2) {
-            padding-left: 13vw;
+            padding-left: 5vw;
         }
         .character {
-            display: flex;
+            // display: flex;
+            display: none;
             position: absolute;
             z-index: 9;
             width: 11vw;
@@ -32,8 +33,8 @@
         }
 
         >div.mode {
-            width: 24vw;
-            height: 14vw;
+            width: 26vw;
+            height: 16vw;
             float: left;
             margin-right: $related-videos-padding-between-videos;
             position: relative;
@@ -54,6 +55,11 @@
                 align-items: center;
                 align-content: center;
                 vertical-align: middle;
+            }
+            &:first-child{
+                &:before {
+                    display: none;
+                }
             }
             &:after {
                 width: 100%;
@@ -161,7 +167,7 @@
                 color: #fff;
                 display: flex;
                 font-weight: 700;
-                font-size: 1.5vw;
+                font-size: 2vw;
                 letter-spacing: .05vw;
                 z-index: 1;
                 align-content: center;
@@ -176,7 +182,7 @@
             }
 
             img {
-                width: 100%;
+                width: 26vw;
                 height: 100%;
                 border-radius: 5px;
             }
@@ -280,8 +286,8 @@
 }
 
 .control {
-    width: 10vh;
-    height: calc(12vw + 17vh);
+    width: 12vh;
+    height: calc(12vw + 21vh);
     position: absolute;
     z-index: 99;
     display: flex;
@@ -293,8 +299,8 @@
     }
     svg {
         background: #ffb745;
-        width: 10vh;
-        height: 6vh;
+        width: 12vh;
+        height: 7vh;
         border-radius: 30vh;
         fill: #fff;
         border: .5vh solid #e8a233

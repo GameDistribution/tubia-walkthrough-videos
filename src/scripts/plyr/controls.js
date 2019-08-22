@@ -519,19 +519,35 @@ const controls = {
     },
 
     showInterestingVideos() {
-        const element = document.querySelector('.plyr__morevideos');
-        const isHidden = element.classList.contains('hide');
-        lotties.playLottie('plyr--bar-morevideos');
+        const playButton = document.querySelector('.plyr__control--overlaid');
+        const moreVideosButton = document.querySelector('.plyr__morevideos');
+        
+        if(typeof(playButton) !== 'undefined' && playButton !== null){
+            playButton.style.visibility = 'hidden';
+        }
 
-        if (isHidden) {
-            element.classList.remove('hide');
+        if(typeof(moreVideosButton) !== 'undefined' && moreVideosButton !== null){
+            const isHidden = moreVideosButton.classList.contains('hide');
+            lotties.playLottie('plyr--bar-morevideos');
+
+            if (isHidden) {
+                moreVideosButton.classList.remove('hide');
+            }    
         }
     },
 
     hideInterestingVideos() {
-        const element = document.querySelector('.plyr__morevideos');
-        lotties.reversePlayLottie('plyr--bar-morevideos');
-        element.classList.add('hide');
+        const playButton = document.querySelector('.plyr__control--overlaid');
+        const moreVideosButton = document.querySelector('.plyr__morevideos');
+        
+        if(typeof(playButton) !== 'undefined' && playButton !== null){
+            playButton.style.visibility = 'show';
+        }
+
+        if(typeof(moreVideosButton) !== 'undefined' && moreVideosButton !== null){
+            lotties.reversePlayLottie('plyr--bar-morevideos');
+            moreVideosButton.classList.add('hide');
+        }
     },
 
     // Create title
