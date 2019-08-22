@@ -21,7 +21,7 @@
             position: absolute;
             z-index: 9;
             width: 11vw;
-            height: 22vh;
+            height: 25vh;
             margin-left: -12vw;
             flex-direction: row;
             svg {
@@ -32,8 +32,8 @@
         }
 
         >div.mode {
-            width: 22vw;
-            height: 12vw;
+            width: 24vw;
+            height: 14vw;
             float: left;
             margin-right: $related-videos-padding-between-videos;
             position: relative;
@@ -176,7 +176,7 @@
             }
 
             img {
-                width: 22vw;
+                width: 100%;
                 height: 100%;
                 border-radius: 5px;
             }
@@ -281,7 +281,7 @@
 
 .control {
     width: 10vh;
-    height: calc(12vw + 13vh);
+    height: calc(12vw + 17vh);
     position: absolute;
     z-index: 99;
     display: flex;
