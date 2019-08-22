@@ -1,4 +1,7 @@
 # Changelog
+## v2.0.19.7
+- Add compatible meta tag for ie browsers
+
 ## v2.0.19.6
 - Check if localstorage usage permission is enabled
 
