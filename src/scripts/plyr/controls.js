@@ -554,7 +554,9 @@ const controls = {
         
         btnloadDefault.addEventListener('click', () => {
             let json = null;
-            if (this.storage.supported) {
+
+            // eslint-disable-next-line no-undef
+            if (Player.storage.supported) {
                 json = localStorage.getItem('defaultVideo');
             }
             if(!json) return;
@@ -567,7 +569,15 @@ const controls = {
             
             source.setAttribute('src',  url);
             const vidEl = document.querySelector('video');
-            vidEl.load();
+
+            const promise = vidEl.load();
+
+            if (promise !== undefined) {
+                // eslint-disable-next-line no-unused-vars
+                promise.then().catch(() => {
+                    this.debug.warn('Video back button could not load the default video successfully.');
+                });
+            }
 
             if (this.config.controls.includes('logo')) {
                 document.querySelector('.plyr__logo-top').style.display = 'block';

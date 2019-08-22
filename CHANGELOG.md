@@ -2,6 +2,7 @@
 ## v2.0.19.7
 - Add compatible meta tag for ie browsers
 - Reduce size of carousel videos
+- Fix back button cannot load default video issue
 
 ## v2.0.19.6
 - Check if localstorage usage permission is enabled
