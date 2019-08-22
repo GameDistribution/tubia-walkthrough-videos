@@ -326,6 +326,12 @@ class Listeners {
                 } else {
                     this.player.pause();
                 }
+
+                // Unmute player if it was muted
+                if (this.player.muted) {
+                    this.player.muted = false;
+                }
+                
             });
         }
 
