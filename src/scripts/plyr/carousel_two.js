@@ -3,6 +3,7 @@ import defaults from './defaults';
 import controls from './controls';
 import lotties from './lotties';
 import Storage from './storage';
+import Player from '../main';
 
 class CarouselTwo {
     constructor(p) {
@@ -24,6 +25,7 @@ class CarouselTwo {
             this.openedMagic = false;
         }
 
+        this.willbePlayed = 0;
         this.currentData = null;
         this.videoPaused = false;
         this.videoStarted = false;
@@ -31,6 +33,7 @@ class CarouselTwo {
         this.attachedLoadedDataEvent = false;
         this.magicDelay = parseInt(60000, 10);
         this.countdown = this.magicDelay / 1000;
+        this.playNext = false;
         this.classes = {
             relatedVideos: 'related--videos',
             modeTitle: 'related--videos-mode-title',
@@ -158,21 +161,14 @@ class CarouselTwo {
             vidEl.addEventListener('loadeddata', () => {
                 utils.toggleHidden(this.player.elements.volume, false);
                 utils.toggleHidden(this.player.elements.buttons.mute, false);
-                const promise = vidEl.play();
-                
+                try {
+                    vidEl.play();
+                } catch {
+                    this.debug.error('Video could not played.');
+                }
                 if (vidEl.hasAttribute('muted')) {
                     this.player.muted = true;
                 };
-
-                if (promise !== undefined) {
-                    // eslint-disable-next-line no-unused-vars
-                    promise.then().catch(() => {
-                        // Autoplay was prevented.
-                        // User should click to "Play" button to watch the video.
-                        // Unmute the muted video.
-                        this.player.muted = false;
-                    });
-                }
                 CarouselTwo.setMagicVideo.call(this);
             });
             this.attachedLoadedDataEvent = true;
@@ -196,9 +192,71 @@ class CarouselTwo {
 
         moreVideosWrapper.appendChild(relatedVideosWrapper);
         CarouselTwo.createTubiaCharacter(this.modes.related);
+
+        this.nextVideoButton = document.getElementById('plyr__nextvideo-button');
+        
+        if (typeof (this.nextVideoButton) !== 'undefined' && this.nextVideoButton !== null) {
+            this.nextVideoButton.addEventListener('click', () => {
+                this.player.playNext = true;
+                CarouselTwo.loadNextVideo.call(this, this.modes.related);                
+            });
+            
+        } else {
+            this.debug.error('Make sure the iframe has a button with the setting: "id:plyr__nextvideo-button"');
+        }
+
+        const image = document.getElementById('plyr__nextvideo-image');
+
+        if (!utils.is.nullOrUndefined(image)) {
+            image.src = this.modes.related[this.willbePlayed].data.picture.link;
+        } else {
+            image.style.visibility = 'hidden';
+        }
     }
 
-    
+    static loadNextVideo(relatedVideos) {
+        // Load Next Video
+        controls.ClearAllLevels.call(this);
+        
+        const url = relatedVideos[this.willbePlayed].data.video.link;
+        const videoTitle = relatedVideos[this.willbePlayed].data.video.title;
+        const source = document.querySelector(defaults.selectors.playerSource);
+        
+        const image = document.getElementById('plyr__nextvideo-image');
+
+        if (!utils.is.nullOrUndefined(image)) {
+            image.src = relatedVideos[this.willbePlayed + 1].data.picture.link;
+        } else {
+            image.style.visibility = 'hidden';
+        }
+
+        if (!utils.is.nullOrUndefined(this.nextVideoButton)) {
+            document.querySelector('#videoTitle').innerText = videoTitle;
+            source.setAttribute('src',  url);
+            const nextVideo = document.querySelector('video');
+
+            try {
+                nextVideo.load();
+                if (this.willbePlayed === relatedVideos.length - 1) {
+                    this.willbePlayed = 0;
+                } else {
+                    this.willbePlayed += 1;
+                }
+
+                if (!this.nextVideoButton.classList.contains('hidden')) {
+                    this.nextVideoButton.classList.add('hidden');
+                }
+
+                const levelsButton = document.querySelector('.plyr--playlist-button');
+                if (!utils.is.nullOrUndefined(levelsButton)) {
+                    levelsButton.style.visibility = 'hidden';
+                }
+            }
+            catch(err) {
+                this.debug.warn('Video back button could not load the default video successfully.');
+            }
+        }
+    }
 
     static createThumbnails(mode) {
         const { data, section, type } = mode;

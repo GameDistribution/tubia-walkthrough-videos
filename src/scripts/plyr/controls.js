@@ -500,11 +500,44 @@ const controls = {
 
         });
 
-        container.addEventListener('click', () => {
-            controls.toggleInterestingVideos();
+        return container;
+    },
+
+    createNextVideoButton() {
+        const nextVideoButton = utils.createElement('button', {
+            class: 'hidden',
+            id: 'plyr__nextvideo-button',
+            type: 'button',
+        }, 'NEXT VIDEO');
+        
+        const hexagon = utils.createElement('span', {
+            class:'play-icon tubia__play-button',
+        });
+        hexagon.insertAdjacentHTML('afterbegin', `<svg class="tubia__play-icon" viewBox="0 0 18 18" version="1.1" xmlns="http://www.w3.org/2000/svg">
+        <g>
+            <path d="M15.5615866,8.10002147 L3.87056367,0.225209313 C3.05219207,-0.33727727 2,0.225209313 2,1.12518784 L2,16.8748122 C2,17.7747907 3.05219207,18.3372773 3.87056367,17.7747907 L15.5615866,9.89997853 C16.1461378,9.44998927 16.1461378,8.55001073 15.5615866,8.10002147 L15.5615866,8.10002147 Z"/>
+        </g>
+        </svg>
+        `);
+        const overlay = utils.createElement('div', {
+            class: 'overlay',
+        });
+        overlay.appendChild(hexagon);
+
+        const img = utils.createElement('img', {
+            id: 'plyr__nextvideo-image', 
         });
 
-        return container;
+        const timeToNext = utils.createElement('span', {
+            class: 'timer',
+            id: 'plyr__nextvideo-remainingtime',
+        }, '...');
+
+        nextVideoButton.appendChild(overlay);
+        nextVideoButton.appendChild(img);
+        nextVideoButton.appendChild(timeToNext);
+
+        return nextVideoButton;
     },
 
     toggleInterestingVideos() {
@@ -1927,7 +1960,7 @@ const controls = {
             );
             containerRight.appendChild(controls.createLogo.call(this, 'logo'));
         }
-
+        
         // Larger overlaid play button
         if (this.config.controls.includes('play-large')) {
             const button = controls.createButton.call(this, 'play-large');
@@ -1940,9 +1973,15 @@ const controls = {
             button.insertAdjacentHTML('beforeend', hexagon);
             this.elements.container.appendChild(button);
         }
-
+        
+        const playerContainer = document.querySelector('.plyr');
+        if ((!utils.is.nullOrUndefined(playerContainer))) {
+            playerContainer.appendChild(controls.createNextVideoButton.call(this, 'nextVideoButton'));
+        }
+        
         container.appendChild(containerLeft);
         container.appendChild(containerRight);
+        
         this.elements.controls = container;
 
         if (this.isHTML5) {

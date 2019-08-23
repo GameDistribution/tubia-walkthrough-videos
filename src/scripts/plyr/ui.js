@@ -9,6 +9,7 @@ import i18n from './i18n';
 import playlist from './playlist';
 import morevideos from './morevideos';
 import Share from './share';
+import CarouselTwo from './carousel_two';
 
 const ui = {
     addStyleHook() {
@@ -155,9 +156,10 @@ const ui = {
         if ((this.playing || !this.paused) && this.ready) 
         {
             controls.hideInterestingVideos();
-        } else if (this.ready && !this.playing) {
+        } else if (this.ready && !this.playing && !this.playNext) {
             controls.showInterestingVideos();
         } 
+        this.playNext = false;
 
         // Set ARIA state
         // Do not show play button when carousel is shown
@@ -310,6 +312,30 @@ const ui = {
     // Handle time change event
     timeUpdate(event) {
 
+        // Toggle next video button when the time remains 20 sec
+        const remainingTime = Math.floor(this.duration) - Math.floor(this.currentTime);
+        const nextVideoButton = document.getElementById('plyr__nextvideo-button');
+        const rtSpan = document.getElementById('plyr__nextvideo-remainingtime');
+
+        if (remainingTime <= 11)  {
+            if (!utils.is.nullOrUndefined(rtSpan)) {
+                rtSpan.innerText = remainingTime - 1;
+            }
+            if (!utils.is.nullOrUndefined(nextVideoButton)) {
+                if (nextVideoButton.classList.contains('hidden')) {
+                    nextVideoButton.classList.remove('hidden');
+                }
+            } else {
+                this.debug.error('Make sure the iframe has a button with the setting: "id:plyr__nextvideo-button"');
+            }
+            if (remainingTime === 1) {
+                // Load Next Video
+                nextVideoButton.click();
+            }
+        } else if (!utils.is.nullOrUndefined(nextVideoButton) && !nextVideoButton.classList.contains('hidden')) {
+            nextVideoButton.classList.add('hidden');
+        }
+        
         // Only invert if only one time element is displayed and used for both duration and currentTime
         const invert = !utils.is.element(this.elements.display.duration) && this.config.invertTime;
 

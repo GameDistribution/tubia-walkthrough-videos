@@ -330,6 +330,11 @@ class Listeners {
                 // Unmute player if it was muted
                 if (this.player.muted) {
                     this.player.muted = false;
+
+                    const vidEl = document.querySelector('video');
+                    if (!utils.is.nullOrUndefined(vidEl) && vidEl.hasAttribute('muted')) {
+                        vidEl.removeAttribute('muted');
+                    }
                 }
                 
             });

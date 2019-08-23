@@ -1,4 +1,7 @@
 # Changelog
+## v2.0.20
+- Add functionality to load the next video with a counter in last 10sec
+
 ## v2.0.19.7
 - Add compatible meta tag for ie browsers
 - Reduce size of carousel videos
