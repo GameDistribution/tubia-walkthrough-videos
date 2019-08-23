@@ -17,6 +17,7 @@ const CodeMonitor = () => {
         apiKey: 'b4753ed6',
         environment: debug ? 'development' : 'production',
         disabled: debug,
+        maxErrors: 20,
     };
 
     return {
