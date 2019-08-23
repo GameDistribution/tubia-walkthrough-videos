@@ -14,6 +14,7 @@
 
         // Seek tooltip to show time
         .plyr__tooltip {
+            display: none !important;
             font-size: $plyr-font-size-time;
             left: 0;
         }
