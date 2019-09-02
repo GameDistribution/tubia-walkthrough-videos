@@ -329,7 +329,7 @@ class Player {
 
         this.container.insertAdjacentHTML('beforeend', html);
 
-        this.container.addEventListener('mouseover', this.hoverPlyrHandler, false);
+        // this.container.addEventListener('mouseover', this.hoverPlyrHandler, false);
         
         if (this.options.lottie) {
             this.animationElement = this.container.querySelector('.tubia__animation');
@@ -548,7 +548,7 @@ class Player {
      * startPlyr
      * Method for animating into loading the Plyr player.
      */
-    startPlyr(isMuted) {
+    startPlyr() {
 
         // Call Google Analytics and Death Star.
         this.analytics();
@@ -572,7 +572,7 @@ class Player {
             // Remove the button.
             this.playButton.parentNode.removeChild(this.playButton);
             // Load our player.
-            this.loadPlyr(isMuted);
+            this.loadPlyr();
         }, 200); // Wait for the play button to hide.
 
         // Destroy our display ad if it exists.
@@ -586,7 +586,7 @@ class Player {
      * loadPlyr
      * Load the Plyr library.
      */
-    loadPlyr(isMuted) {
+    loadPlyr() {
         const nextCueTime = '';
         this.videoDataPromise.then((json) => {
             if (!json) {
@@ -601,9 +601,6 @@ class Player {
             videoElement.setAttribute('playsinline', 'true');
             videoElement.poster = this.posterUrl;
             videoElement.id = 'plyr__tubia';
-            if (isMuted) {
-                videoElement.setAttribute('muted', 'true');
-            }
 
             // Todo: If files (transcoded videos) doesn't exist we must load the raw video file.
             // Todo: However, currently the raw files are in the wrong google project and not served from a CDN, so expensive!
