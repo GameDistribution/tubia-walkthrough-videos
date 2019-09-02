@@ -628,6 +628,9 @@ const controls = {
                 });
             }
 
+            this.ads.clearSafetyTimer('ready()');
+            this.ads.ready();
+
             if (this.config.controls.includes('logo')) {
                 document.querySelector('.plyr__logo-top').style.display = 'block';
             }

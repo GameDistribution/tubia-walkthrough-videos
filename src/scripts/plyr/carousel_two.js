@@ -4,12 +4,15 @@ import controls from './controls';
 import lotties from './lotties';
 import Storage from './storage';
 import Player from '../main';
+import Ads from './plugins/ads';
 
 class CarouselTwo {
     constructor(p) {
         this.player = p.listeners.player;
         this.moreItems = p.config.morevideos.data.filter((element) => element.videos.some((vid) => vid.videoType >=0 && vid.videoType<=3));
         if (this.moreItems.length === 0 || this.moreItems === undefined) return;
+        // Ads
+        this.ads = new Ads(this.player);
         this.setup();
     }
 
@@ -24,7 +27,6 @@ class CarouselTwo {
         } else {
             this.openedMagic = false;
         }
-
         this.willbePlayed = 0;
         this.currentData = null;
         this.videoPaused = false;
@@ -161,10 +163,17 @@ class CarouselTwo {
             vidEl.addEventListener('loadeddata', () => {
                 utils.toggleHidden(this.player.elements.volume, false);
                 utils.toggleHidden(this.player.elements.buttons.mute, false);
-                try {
-                    vidEl.play();
-                } catch {
-                    this.debug.error('Video could not played.');
+
+                const playPromise = vidEl.play();
+
+                // In browsers that don’t yet support this functionality,
+                // playPromise won’t be defined.
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        // Automatic playback started!
+                    }).catch((err) => {
+                        console.error(`Video could not played. Error: ${err}`);
+                    });
                 }
                 if (vidEl.hasAttribute('muted')) {
                     this.player.muted = true;
@@ -215,6 +224,9 @@ class CarouselTwo {
     }
 
     static loadNextVideo(relatedVideos) {
+        this.ads.clearSafetyTimer('ready()');
+        this.ads.ready();
+        
         // Load Next Video
         controls.ClearAllLevels.call(this);
         
@@ -256,6 +268,7 @@ class CarouselTwo {
                 this.debug.warn('Video back button could not load the default video successfully.');
             }
         }
+        
     }
 
     static createThumbnails(mode) {
@@ -385,6 +398,8 @@ class CarouselTwo {
 
         const button = utils.createElement('button', { class: 'tubia__play-button' });
         section.addEventListener('click', () => {
+            this.ads.clearSafetyTimer('ready()');
+            this.ads.ready();
             this.currentData = data;
             CarouselTwo.playVideoEvent.call(this);
         });

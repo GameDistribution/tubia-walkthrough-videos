@@ -2,6 +2,7 @@
 ## v2.0.20
 - Add functionality to load the next video with a counter in last 10sec
 - Stop playing video When user hovers on it
+- Clear safety time for ads when video source is changed
 
 ## v2.0.19.7
 - Add compatible meta tag for ie browsers

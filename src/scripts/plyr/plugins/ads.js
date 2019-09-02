@@ -114,7 +114,6 @@ class Ads {
             // Start playing the advertisement when ready.
             if (this.prerollEnabled) {
                 this.adPosition = 1;
-                this.prerollEnabled = false;
                 this.player.debug.log('Starting a pre-roll advertisement.');
                 this.requestAd()
                     .then(vastUrl => this.loadAd(vastUrl))
