@@ -234,3 +234,24 @@
         position: absolute;
     }
 }
+
+@media (max-width: $plyr-bp-md) {
+    #plyr__nextvideo-button { 
+        width: 260px;
+        font-size: 1.2em;
+        padding: 0 30px;
+        height: 45px;
+        #plyr__nextvideo-image {
+            height: 150px;
+            top: -150px;
+        }
+        .overlay {
+            height: 150px;
+            top: -150px;
+        }
+        .play-icon {
+            top: 60px;
+        }
+    }
+    
+}
