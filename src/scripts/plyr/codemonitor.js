@@ -16,7 +16,7 @@ const CodeMonitor = () => {
     const hbConfig = {
         apiKey: 'b4753ed6',
         environment: debug ? 'development' : 'production',
-        disabled: debug,
+        disabled: true,
         maxErrors: 20,
     };
 
