@@ -162,8 +162,7 @@ const ui = {
         this.playNext = false;
 
         // Set ARIA state
-        // Do not show play button when carousel is shown
-        // utils.toggleState(this.elements.buttons.play, this.playing);
+        utils.toggleState(this.elements.buttons.play, this.playing);
 
         // Toggle controls
         this.toggleControls(!this.playing);
