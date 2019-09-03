@@ -497,7 +497,9 @@ const controls = {
             class: 'plyr--bar-morevideos plyr__control',
             'lottie-class': 'plyr--bar-morevideos',
             type: 'button',
-
+        });
+        container.addEventListener('click', () => {
+            controls.toggleInterestingVideos();
         });
 
         return container;

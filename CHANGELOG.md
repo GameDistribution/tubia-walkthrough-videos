@@ -1,4 +1,7 @@
 # Changelog
+## v2.0.20.1
+- Add missing toggle interesting videos listener
+
 ## v2.0.20
 - Add functionality to load the next video with a counter in last 10sec
 - Stop playing video When user hovers on it
