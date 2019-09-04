@@ -1,5 +1,8 @@
 # Changelog
-## v2.0.20.2
+## v2.0.20.4
+- Avoid duplicate ad request when play the video
+
+## v2.0.20.3
 - Show player container before hiding poster
 
 ## v2.0.20.2

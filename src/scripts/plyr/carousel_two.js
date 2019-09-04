@@ -398,8 +398,6 @@ class CarouselTwo {
 
         const button = utils.createElement('button', { class: 'tubia__play-button' });
         section.addEventListener('click', () => {
-            this.ads.clearSafetyTimer('ready()');
-            this.ads.ready();
             this.currentData = data;
             CarouselTwo.playVideoEvent.call(this);
         });
