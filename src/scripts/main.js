@@ -775,6 +775,9 @@ class Player {
                 }, this.transitionSpeed / 2);
 
                 setTimeout(() => {
+                    // Show the player.
+                    this.player.elements.container.classList.toggle('tubia__active');
+                    
                     if (this.options.lottie) {
                         // Hide transition.
                         this.animationElement.classList.toggle('tubia__active');
@@ -788,8 +791,6 @@ class Player {
                         this.transitionElement.style.display = 'none';
                     }
                     
-                    // Show the player.
-                    this.player.elements.container.classList.toggle('tubia__active');
                     // Return ready callback for our clients.
                     try {
                         parent.postMessage({ name: 'onReady' }, this.origin);

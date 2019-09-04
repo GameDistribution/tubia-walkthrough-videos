@@ -1,5 +1,8 @@
 # Changelog
 ## v2.0.20.2
+- Show player container before hiding poster
+
+## v2.0.20.2
 - Play video without waiting ad response, and pause when linear ad is shown
 
 ## v2.0.20.1

@@ -58,6 +58,9 @@
         opacity: 0;
         &.tubia__active {
             opacity: 1;
+            .plyr__control.plyr__control--overlaid {
+                display: none;
+            }
         }
     }
 
