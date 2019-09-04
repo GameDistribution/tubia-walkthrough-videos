@@ -1,4 +1,7 @@
 # Changelog
+## v2.0.20.2
+- Play video without waiting ad response, and pause when linear ad is shown
+
 ## v2.0.20.1
 - Add missing toggle interesting videos listener
 

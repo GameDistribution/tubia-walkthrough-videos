@@ -715,6 +715,7 @@ class Ads {
                     this.elements.container.firstChild.style.width = '100%';
                     this.elements.container.firstChild.style.height = '100%';
                     this.elements.container.firstChild.style.backgound = '#000000';
+                    this.player.pause();
                 } else {
                     const advertisement = (typeof Object.keys(ad) === 'object' && Object.keys(ad).length > 0) ? ad[Object.keys(ad)[0]] : false;
                     if (advertisement) {
