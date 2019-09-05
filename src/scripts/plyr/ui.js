@@ -157,7 +157,10 @@ const ui = {
         {
             controls.hideInterestingVideos();
         } else if (this.ready && !this.playing && !this.playNext) {
-            controls.showInterestingVideos();
+            // If the player stopped for preroll, do not show interesting videos
+            if (!this.ads.forcePauseContent) {
+                controls.showInterestingVideos();
+            }
         } 
         this.playNext = false;
 

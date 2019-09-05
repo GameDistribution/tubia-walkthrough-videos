@@ -53,6 +53,7 @@ class Ads {
         this.requestRunning = false;
         this.slotId = 'tubia__advertisement_slot';
         this.toggleButtonContainerId = 'tubia__toggle_ad';
+        this.forcePauseContent = false;
 
         // For testing:
         // this.tag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=480x70&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dnonlinear&correlator=';
@@ -63,7 +64,7 @@ class Ads {
             this.player.on('adsloaderready', resolve);
             this.on('error', () => {
                 // The advertisement failed! Continue video...
-                this.player.play();
+                this.playContent();
                 const err = 'Initial loaderPromise failed to load.';
                 this.monitorError(err, 'load',
                     {
@@ -707,6 +708,7 @@ class Ads {
                 // Make sure that our ad containers have the correct size and styling.
                 // Ad.getVastMediaWidth() and Ad.getVastMediaHeight() are now released.
                 if (ad.isLinear()) {
+                    this.forcePauseContent = true;
                     this.elements.toggleButtonContainer.style.visibility = 'hidden';
                     utils.toggleClass(this.elements.container, this.player.config.classNames.nonLinearAdvertisement, false);
                     this.elements.container.style.width = '100%';
@@ -715,8 +717,9 @@ class Ads {
                     this.elements.container.firstChild.style.width = '100%';
                     this.elements.container.firstChild.style.height = '100%';
                     this.elements.container.firstChild.style.backgound = '#000000';
-                    this.player.pause();
+                    this.pauseContent();
                 } else {
+                    this.forcePauseContent = false;
                     const advertisement = (typeof Object.keys(ad) === 'object' && Object.keys(ad).length > 0) ? ad[Object.keys(ad)[0]] : false;
                     if (advertisement) {
                         const holder = document.getElementById(this.slotId);
@@ -763,6 +766,7 @@ class Ads {
                 // This event indicates the ad has started - the video player can adjust the UI,
                 // for example display a pause button and remaining time. Fired when content should
                 // be paused. This usually happens right before an ad is about to cover the content
+                this.forcePauseContent = true;
                 this.pauseContent();
                 this.showAd();
                 break;
@@ -782,7 +786,7 @@ class Ads {
 
                 // Play our video
                 if (this.player.currentTime < this.player.duration) {
-                    this.player.play();
+                    this.playContent();
                 }
                 break;
 
@@ -852,6 +856,17 @@ class Ads {
     }
 
     /**
+     * Play our video
+     */
+    playContent() {
+        // Ad is playing.
+        this.playing = false;
+
+        // Play our video.
+        this.player.play();
+    }
+
+    /**
      * Cancel our ads, just resume the content and trigger an error
      */
     cancel() {
@@ -878,7 +893,7 @@ class Ads {
 
             // Play our video.
             if (this.player.currentTime < this.player.duration) {
-                this.player.play();
+                this.playContent();
             }
         }).catch(() => {
             this.player.debug.warn(new Error('adsLoaderPromise failed to load.'));

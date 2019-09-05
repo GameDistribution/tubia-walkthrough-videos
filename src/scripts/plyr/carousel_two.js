@@ -170,6 +170,9 @@ class CarouselTwo {
                 // playPromise won’t be defined.
                 if (playPromise !== undefined) {
                     playPromise.then(() => {
+                        if (this.ads.forcePauseContent) {
+                            vidEl.pause();
+                        }
                         // Automatic playback started!
                     }).catch((err) => {
                         console.error(`Video could not played. Error: ${err}`);
@@ -187,7 +190,11 @@ class CarouselTwo {
 
         vidEl.addEventListener('pause', () => { 
             this.videoPaused = true; 
-            controls.showInterestingVideos();
+            
+            // If the player stopped for preroll, do not show interesting videos
+            if (!this.ads.forcePauseContent) {
+                controls.showInterestingVideos();
+            }
         });
 
         vidEl.addEventListener('play', () => { 
