@@ -293,13 +293,6 @@ class Plyr {
         // Setup media
         media.setup.call(this);
 
-        // Listen for events if debugging
-        if (this.config.debug) {
-            utils.on(this.elements.container, this.config.events.join(' '), event => {
-                this.debug.log(`event: ${event.type}`);
-            });
-        }
-
         // Setup interface
         // If embed but not fully supported, build interface now to avoid flash of controls
         if (this.isHTML5 || (this.isEmbed && !this.supported.ui)) {
