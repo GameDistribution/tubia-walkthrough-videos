@@ -1,6 +1,7 @@
 # Changelog
 ## v2.0.20.4
 - Avoid duplicate ad request when play the video
+- Pause video when preroll ad is shown and avoid showing video carousel
 
 ## v2.0.20.3
 - Show player container before hiding poster
