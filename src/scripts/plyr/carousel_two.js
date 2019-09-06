@@ -190,11 +190,6 @@ class CarouselTwo {
 
         vidEl.addEventListener('pause', () => { 
             this.videoPaused = true; 
-            
-            // If the player stopped for preroll, do not show interesting videos
-            if (!this.ads.forcePauseContent) {
-                controls.showInterestingVideos();
-            }
         });
 
         vidEl.addEventListener('play', () => { 

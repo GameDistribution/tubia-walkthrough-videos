@@ -553,7 +553,9 @@ const controls = {
         }
     },
 
-    showInterestingVideos() {
+    showInterestingVideos(forcePauseContent) {
+        if (forcePauseContent) return;
+        
         const playButton = document.querySelector('.plyr__control--overlaid');
         const moreVideosButton = document.querySelector('.plyr__morevideos');
         

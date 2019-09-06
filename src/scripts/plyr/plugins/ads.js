@@ -53,7 +53,7 @@ class Ads {
         this.requestRunning = false;
         this.slotId = 'tubia__advertisement_slot';
         this.toggleButtonContainerId = 'tubia__toggle_ad';
-        this.forcePauseContent = false;
+        this.forcePauseContent = true;
 
         // For testing:
         // this.tag = 'https://pubads.g.doubleclick.net/gampad/ads?sz=480x70&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dnonlinear&correlator=';
@@ -239,6 +239,7 @@ class Ads {
         if (this.manager) {
             this.manager.destroy();
         }
+        this.forcePauseContent = false;
 
         // We're done with the current request.
         this.requestRunning = false;
@@ -805,7 +806,7 @@ class Ads {
                 break;
 
             case google.ima.AdEvent.Type.USER_CLOSE:
-                dispatchEvent('complete');
+                this.forcePauseContent = false;
                 document.getElementById(this.slotId).style.visibility = 'hidden';
                 document.getElementById('tubia__toggle_ad').style.visibility = 'hidden';
 

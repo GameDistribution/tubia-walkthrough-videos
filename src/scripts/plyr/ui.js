@@ -9,7 +9,6 @@ import i18n from './i18n';
 import playlist from './playlist';
 import morevideos from './morevideos';
 import Share from './share';
-import CarouselTwo from './carousel_two';
 
 const ui = {
     addStyleHook() {
@@ -152,15 +151,11 @@ const ui = {
         // Class hooks
         utils.toggleClass(this.elements.container, this.config.classNames.playing, this.playing);
         utils.toggleClass(this.elements.container, this.config.classNames.stopped, this.paused);
-
         if ((this.playing || !this.paused) && this.ready) 
         {
             controls.hideInterestingVideos();
         } else if (this.ready && !this.playing && !this.playNext) {
-            // If the player stopped for preroll, do not show interesting videos
-            if (!this.ads.forcePauseContent) {
-                controls.showInterestingVideos();
-            }
+            controls.showInterestingVideos(this.ads.forcePauseContent);
         } 
         this.playNext = false;
 
