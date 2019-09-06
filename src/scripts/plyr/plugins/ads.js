@@ -862,6 +862,7 @@ class Ads {
     playContent() {
         // Ad is playing.
         this.playing = false;
+        this.forcePauseContent = false;
 
         // Play our video.
         this.player.play();
