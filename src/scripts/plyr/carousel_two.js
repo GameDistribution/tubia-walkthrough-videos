@@ -3,16 +3,12 @@ import defaults from './defaults';
 import controls from './controls';
 import lotties from './lotties';
 import Storage from './storage';
-import Player from '../main';
-import Ads from './plugins/ads';
 
 class CarouselTwo {
     constructor(p) {
         this.player = p.listeners.player;
         this.moreItems = p.config.morevideos.data.filter((element) => element.videos.some((vid) => vid.videoType >=0 && vid.videoType<=3));
         if (this.moreItems.length === 0 || this.moreItems === undefined) return;
-        // Ads
-        this.ads = new Ads(this.player);
         this.setup();
     }
 
@@ -165,12 +161,12 @@ class CarouselTwo {
                 utils.toggleHidden(this.player.elements.buttons.mute, false);
 
                 const playPromise = vidEl.play();
-
                 // In browsers that don’t yet support this functionality,
                 // playPromise won’t be defined.
                 if (playPromise !== undefined) {
                     playPromise.then(() => {
-                        if (this.ads.forcePauseContent) {
+                        const {forcePauseContent} = this.player.media.plyr.ads;
+                        if (forcePauseContent) {
                             vidEl.pause();
                         }
                         // Automatic playback started!
