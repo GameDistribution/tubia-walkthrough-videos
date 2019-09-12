@@ -314,9 +314,9 @@ const ui = {
         const nextVideoButton = document.getElementById('plyr__nextvideo-button');
         const rtSpan = document.getElementById('plyr__nextvideo-remainingtime');
 
-        if (remainingTime <= 11)  {
+        if (remainingTime <= 10)  {
             if (!utils.is.nullOrUndefined(rtSpan)) {
-                rtSpan.innerText = remainingTime - 1;
+                rtSpan.innerText = remainingTime;
             }
             if (!utils.is.nullOrUndefined(nextVideoButton)) {
                 if (nextVideoButton.classList.contains('hidden')) {

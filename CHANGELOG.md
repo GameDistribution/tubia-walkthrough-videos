@@ -1,6 +1,7 @@
 # Changelog
 ## v2.0.21
 - Popup notification extension has been created
+- Fix next video timer's -1 value issue
 
 ## v2.0.20.4
 - Avoid duplicate ad request when play the video
