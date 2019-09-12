@@ -51,6 +51,7 @@ module.exports = function gruntMain (grunt) {
                     'examples/legacy.html',
                     'examples/publisher.html',
                     'examples/portal.html',
+                    'walkthroughnotification/walkthroughnotification.html',
                     './favicon.ico',
                 ],
                 dest: './dist',
@@ -84,6 +85,10 @@ module.exports = function gruntMain (grunt) {
                 flatten: true,
                 expand: true,
             },
+            walkthroughnotification: {
+                src: 'walkthroughnotification/walkthroughnotification.js',
+                dest: 'dist/libs/gd/walkthroughnotification.js',
+            },
         },
 
         /**
@@ -106,6 +111,7 @@ module.exports = function gruntMain (grunt) {
                         'examples/legacy.html',
                         'examples/publisher.html',
                         'examples/portal.html',
+                        'examples/walkthroughnotification.html',
                     ],
                     dest: './dist',
                 }],
@@ -182,6 +188,11 @@ module.exports = function gruntMain (grunt) {
             build: {
                 files: {
                     'dist/libs/gd/main.css': 'src/styles/plyr.scss',
+                },
+            },
+            notify: {
+                files: {
+                    'dist/libs/gd/walkthroughnotification.css': 'walkthroughnotification/walkthroughnotification.scss',
                 },
             },
         },
@@ -298,6 +309,7 @@ module.exports = function gruntMain (grunt) {
                 files: [
                     'src/scripts/**/*.js',
                     'src/entry/**/*.js',
+                    'walkthroughnotification/**/*',
                 ],
                 tasks: [
                     'eslint',
@@ -324,6 +336,7 @@ module.exports = function gruntMain (grunt) {
                     'examples/legacy.html',
                     'examples/publisher.html',
                     'examples/portal.html',
+                    'walkthroughnotification/walkthroughnotification.html',
                 ],
                 tasks: ['copy'],
             },

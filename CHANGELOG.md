@@ -1,4 +1,7 @@
 # Changelog
+## v2.0.21
+- Popup notification extension has been created
+
 ## v2.0.20.4
 - Avoid duplicate ad request when play the video
 - Pause video when preroll ad is shown and avoid showing video carousel

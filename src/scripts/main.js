@@ -156,6 +156,13 @@ class Player {
         // Check if an Ad Blocker Plugin exists
         adblocker.check();
         
+        // Watch the iframe messages and start to play if we receive a 'startPlay' message
+        window.addEventListener('message', (event) => {
+            if (event.data.name === 'startPlay') {
+                this.startPlyrHandler();
+            }
+        });
+
         // Send event to our publisher.
         try {
             parent.postMessage({ name: 'onStart' }, this.origin);
