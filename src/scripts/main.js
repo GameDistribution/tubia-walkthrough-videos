@@ -158,7 +158,7 @@ class Player {
         
         // Watch the iframe messages and start to play if we receive a 'startPlay' message
         window.addEventListener('message', (event) => {
-            if (event.data.name === 'startPlay') {
+            if (event.data === 'startPlay') {
                 this.startPlyrHandler();
             }
         });

@@ -42,6 +42,10 @@ class WalkthroughNotification {
         });
 
         const tubiaIframe = document.querySelectorAll('iframe[tubia-walkthrough=true]');
+        if (!tubiaIframe.length) {
+            console.warn('Please, make sure the page has a Tubia Walkthrough video.');
+            return;
+        };
         this.elements.wthVideo = tubiaIframe[0]||tubiaIframe;
         
         this.elements.notificationContainer = document.createElement('div');
@@ -69,7 +73,6 @@ class WalkthroughNotification {
         this.elements.page.appendChild(this.elements.notificationContainer);
 
         this.elements.wthVideoBtn = document.getElementById('showTubiaWalkthrough');
-        // this.elements.wthVideo = document.getElementById('tubiaWalkthroughVideo');
         this.elements.notificationPopup = document.getElementById('tubiaWalkthroughNotification');
 
         if (this.config.autoShow) {
@@ -82,13 +85,13 @@ class WalkthroughNotification {
             this.elements.wthVideoBtn.addEventListener('click', this.scrollToWalkthrough);
         } else {
             console.error(
-                'Make sure the page has a walkthrough caller button with the setting of "id:showTubiaWalkthrough".'
+                'Error! Make sure the page has a walkthrough caller button with the setting of "id:showTubiaWalkthrough".'
             );
         }
     }
 
     scrollToWalkthrough() {
-        if (typeof (this.elements.wthVideo) !== 'undefined' && this.elements.wthVideo !== null) {
+        if ((typeof (this.elements.wthVideo) !== 'undefined' && this.elements.wthVideo !== null)) {
             this.elements.wthVideo.scrollIntoView(true);
             if (this.config.autoPlay) {
                 setTimeout(() => {
@@ -100,7 +103,7 @@ class WalkthroughNotification {
             }, 100);
         } else {
             console.error(
-                'Make sure the page has a walkthrough video with the setting of "id:tubiaWalkthroughVideo".'
+                'Error! Make sure the page has a walkthrough video with the setting of "id:tubiaWalkthroughVideo".'
             );
         }
     }
