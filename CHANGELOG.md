@@ -1,7 +1,10 @@
 # Changelog
+## v2.0.22.1
+- Make magic popup skippable
+
 ## v2.0.22
 - Magic video popup has been created
-- Fix css problemss of popup notification
+- Fix css problems of popup notification
 
 ## v2.0.21
 - Popup notification extension has been created

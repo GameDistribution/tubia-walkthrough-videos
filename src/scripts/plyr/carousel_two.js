@@ -3,6 +3,7 @@ import defaults from './defaults';
 import controls from './controls';
 import lotties from './lotties';
 import Storage from './storage';
+import Player from '../main';
 
 class CarouselTwo {
     constructor(p) {
@@ -34,6 +35,7 @@ class CarouselTwo {
         this.countdown = this.magicDelay / 1000;
         this.playNext = false;
         this.player.magicPlayed = false;
+        this.player.magicSkipped = false;
         this.classes = {
             relatedVideos: 'related--videos',
             modeTitle: 'related--videos-mode-title',
@@ -232,17 +234,19 @@ class CarouselTwo {
             }
 
             this.magicVideoContainer = document.getElementById(this.magicVideoClasses.container);
+            Player.magicVideoContainer = this.magicVideoClasses.container;
             this.magicVideoButton = document.getElementById(this.magicVideoClasses.button);
             this.magicVideoClose = document.getElementById(this.magicVideoClasses.close);
 
             if (!utils.is.nullOrUndefined(this.magicVideoClose)) {
                 this.magicVideoClose.addEventListener('click', () => {
                     CarouselTwo.toggleMagicVideoLoader.call(this);
+                    this.player.magicSkipped = true;
                 });
             }
 
             // eslint-disable-next-line no-prototype-builtins
-            if (!utils.is.nullOrUndefined(this.magicVideoButton) && this.modes.magic.hasOwnProperty('data') && !this.player.magicPlayed) {
+            if (!utils.is.nullOrUndefined(this.magicVideoButton) && this.modes.magic.hasOwnProperty('data') && !this.player.magicPlayed && !this.player.magicSkipped) {
                 this.magicVideoButton.addEventListener('click', () => { CarouselTwo.loadMagicVideo.call(self, this.modes.magic); });
                 const showMagicVideo = setTimeout(() => {
                     if (!utils.is.nullOrUndefined(this.magicVideoContainer)) {
@@ -272,7 +276,6 @@ class CarouselTwo {
     }
 
     static toggleMagicVideoLoader() {
-        console.warn('this.magicVideoClasses', this.magicVideoClasses);
         this.magicVideoContainer = document.getElementById(this.magicVideoClasses.container);
         if (!this.magicVideoContainer.classList.contains('hidden')) {
             this.magicVideoContainer.classList.add('hidden');
