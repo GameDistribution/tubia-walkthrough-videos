@@ -423,6 +423,12 @@ const defaults = {
             active: 'plyr--share-active',
             button: 'plyr--share-button',
         },
+        magicvideo: {
+            container: 'plyr__magicvideo-container',
+            button: 'plyr__magicvideo-button',
+            image: 'plyr__magicvideo-image',
+            close: 'plyr__magicvideo-close',
+        },
     },
     
 
@@ -508,6 +514,9 @@ const defaults = {
             cdn: 'https://cdn.tubia.com/media/loading-animation.json',
         },
     },
+
+    // magic video settings
+    magicvideo: true,
 };
 
 export default defaults;

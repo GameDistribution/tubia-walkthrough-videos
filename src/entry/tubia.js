@@ -39,6 +39,7 @@ class Tubia {
             keys: this.options.keys,
             url: document.location.origin + document.location.pathname,
             href: document.location.href,
+            magicvideo: this.options.magicvideo,
         }];
 
         const domain = settingsArray[0].url.toLowerCase().replace(/^(?:https?:\/\/)?/i, '').split('/')[0];

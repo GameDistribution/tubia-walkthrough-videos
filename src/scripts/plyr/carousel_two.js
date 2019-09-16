@@ -17,6 +17,7 @@ class CarouselTwo {
         this.storage = Storage;
         
         lotties.createAnimations();
+        this.magicVideoClasses = this.player.config.classNames.magicvideo;
         
         if (this.storage.supported) {
             this.openedMagic = this.player.storage.get('openedMagic') || false;
@@ -32,6 +33,7 @@ class CarouselTwo {
         this.magicDelay = parseInt(60000, 10);
         this.countdown = this.magicDelay / 1000;
         this.playNext = false;
+        this.player.magicPlayed = false;
         this.classes = {
             relatedVideos: 'related--videos',
             modeTitle: 'related--videos-mode-title',
@@ -207,7 +209,6 @@ class CarouselTwo {
                 this.player.playNext = true;
                 CarouselTwo.loadNextVideo.call(this, this.modes.related);                
             });
-            
         } else {
             this.debug.error('Make sure the iframe has a button with the setting: "id:plyr__nextvideo-button"');
         }
@@ -218,6 +219,65 @@ class CarouselTwo {
             image.src = this.modes.related[this.willbePlayed].data.picture.link;
         } else {
             image.style.visibility = 'hidden';
+        }
+
+        const self = this;
+
+        // Create a magic video loader button
+        if (this.player.config.magicvideo) {
+            this.playerContainer = document.querySelector('.plyr');
+
+            if ((!utils.is.nullOrUndefined(this.playerContainer))) {
+                this.playerContainer.appendChild(controls.createMagicVideoButton.call(this, 'magicVideoButton'));
+            }
+
+            this.magicVideoContainer = document.getElementById(this.magicVideoClasses.container);
+            this.magicVideoButton = document.getElementById(this.magicVideoClasses.button);
+            this.magicVideoClose = document.getElementById(this.magicVideoClasses.close);
+
+            if (!utils.is.nullOrUndefined(this.magicVideoClose)) {
+                this.magicVideoClose.addEventListener('click', () => {
+                    CarouselTwo.toggleMagicVideoLoader.call(this);
+                });
+            }
+
+            // eslint-disable-next-line no-prototype-builtins
+            if (!utils.is.nullOrUndefined(this.magicVideoButton) && this.modes.magic.hasOwnProperty('data') && !this.player.magicPlayed) {
+                this.magicVideoButton.addEventListener('click', () => { CarouselTwo.loadMagicVideo.call(self, this.modes.magic); });
+                const showMagicVideo = setTimeout(() => {
+                    if (!utils.is.nullOrUndefined(this.magicVideoContainer)) {
+                        const hideMagicVideo = setTimeout(() => {
+                            CarouselTwo.toggleMagicVideoLoader.call(this);
+                            clearTimeout(hideMagicVideo);
+                        }, 10000);
+                        CarouselTwo.toggleMagicVideoLoader.call(this);
+                    }
+                    clearTimeout(showMagicVideo);
+                }, 180000);
+
+            } else if (utils.is.nullOrUndefined(this.magicVideoButton)) {
+                console.error('Make sure the iframe has a button with the setting: "id:plyr__nextvideo-button"');
+            } else {
+                console.warn("There's no magic video assigned to this video.");
+            }
+
+            const magicImage = document.getElementById(this.magicVideoClasses.image);
+
+            if (!utils.is.nullOrUndefined(magicImage)) {
+                magicImage.src = this.modes.related[this.willbePlayed].data.picture.link;
+            } else {
+                magicImage.style.visibility = 'hidden';
+            }
+        }
+    }
+
+    static toggleMagicVideoLoader() {
+        console.warn('this.magicVideoClasses', this.magicVideoClasses);
+        this.magicVideoContainer = document.getElementById(this.magicVideoClasses.container);
+        if (!this.magicVideoContainer.classList.contains('hidden')) {
+            this.magicVideoContainer.classList.add('hidden');
+        } else {
+            this.magicVideoContainer.classList.remove('hidden');
         }
     }
 
@@ -267,6 +327,55 @@ class CarouselTwo {
             }
         }
         
+    }
+
+    static loadMagicVideo() {
+        this.player.playNext = true;
+        this.player.magicPlayed = true;
+        this.ads = this.player.media.plyr.ads;
+        this.ads.clearSafetyTimer('ready()');
+        this.ads.ready();
+
+        if (this.player.config.controls.includes('logo')) {
+            document.querySelector('.plyr__logo-top').style.display = 'none';
+        }
+        document.getElementById('videoTitle').style.display = 'none';
+        document.getElementById('btnloadDefault').style.display = 'block';
+
+        CarouselTwo.toggleMagicVideoLoader.call(this);
+
+        controls.ClearAllLevels.call(this);
+
+        const url = this.modes.magic.data.video.link;
+        const videoTitle = this.modes.magic.data.video.title;
+        const source = document.querySelector(defaults.selectors.playerSource);
+
+        const image = document.getElementById('plyr__nextvideo-image');
+
+        if (!utils.is.nullOrUndefined(image)) {
+            image.src = this.modes.magic.data.picture.link;
+        } else {
+            image.style.visibility = 'hidden';
+        }
+
+        if (!utils.is.nullOrUndefined(this.magicVideoButton)) {
+            document.querySelector('#videoTitle').innerText = videoTitle;
+            source.setAttribute('src',  url);
+            const magicVideo = document.querySelector('video');
+            try {
+                magicVideo.load();
+                if (!this.magicVideoButton.classList.contains('hidden')) {
+                    this.magicVideoButton.classList.add('hidden');
+                }
+                const levelsButton = document.querySelector('.plyr--playlist-button');
+                if (!utils.is.nullOrUndefined(levelsButton)) {
+                    levelsButton.style.visibility = 'hidden';
+                }
+            }
+            catch(err) {
+                this.debug.warn('Magic video could not be loaded successfully.');
+            }
+        }
     }
 
     static createThumbnails(mode) {

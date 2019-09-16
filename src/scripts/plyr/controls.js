@@ -14,6 +14,7 @@ import Mark from './cuemark';
 import lotties from './lotties';
 import CarouselTwo from './carousel_two';
 import defaults from './defaults';
+import Player from '../main';
 
 // Sniff out the browser
 const browser = utils.getBrowser();
@@ -542,6 +543,42 @@ const controls = {
         return nextVideoButton;
     },
 
+    createMagicVideoButton() {
+        const magicVideoClasses = this.player.config.classNames.magicvideo;
+        const magicVideoContainer = utils.createElement('div', {
+            class: 'hidden',
+            id: magicVideoClasses.container,
+        });
+
+        const magicVideoButton = utils.createElement('button', {
+            id: magicVideoClasses.button,
+            type: 'button',
+        }, 'Watch this magic!');
+        
+        const img = utils.createElement('img', {
+            id: magicVideoClasses.image, 
+        });
+
+        const closeMagicVideo = utils.createElement('button', {
+            class: 'close',
+            id: magicVideoClasses.close,
+        });
+
+        closeMagicVideo.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+            <g id="baseline-chevron_right-24px" transform="translate(24 24) rotate(180)">
+            <path id="Path_3" data-name="Path 3" d="M10,6,8.59,7.41,13.17,12,8.59,16.59,10,18l6-6Z" fill="#fff"/>
+            <path id="Path_4" data-name="Path 4" d="M0,0H24V24H0Z" fill="none"/>
+            </g>
+        </svg>
+        `;
+
+        magicVideoButton.appendChild(img);
+        magicVideoContainer.appendChild(magicVideoButton);
+        magicVideoContainer.appendChild(closeMagicVideo);
+
+        return magicVideoContainer;
+    },
+
     toggleInterestingVideos() {
         const element = document.querySelector('.plyr__morevideos');
         const isHidden = element.classList.contains('hide');
@@ -607,9 +644,7 @@ const controls = {
         
         btnloadDefault.addEventListener('click', () => {
             let json = null;
-
-            // eslint-disable-next-line no-undef
-            if (Player.storage.supported) {
+            if (this.storage.enabled) {
                 json = localStorage.getItem('defaultVideo');
             }
             if(!json) return;

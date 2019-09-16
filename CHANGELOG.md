@@ -1,4 +1,7 @@
 # Changelog
+## v2.0.22
+- Magic video popup has been created
+
 ## v2.0.21
 - Popup notification extension has been created
 - Fix next video timer's -1 value issue
