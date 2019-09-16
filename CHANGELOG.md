@@ -1,6 +1,7 @@
 # Changelog
 ## v2.0.22.1
 - Make magic popup skippable
+- Revise popup notification css
 
 ## v2.0.22
 - Magic video popup has been created
