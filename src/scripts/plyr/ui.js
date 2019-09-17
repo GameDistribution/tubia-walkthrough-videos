@@ -10,6 +10,7 @@ import playlist from './playlist';
 import morevideos from './morevideos';
 import Share from './share';
 import Player from '../main';
+import CarouselTwo from './carousel_two';
 
 const ui = {
     addStyleHook() {
@@ -315,12 +316,21 @@ const ui = {
         const nextVideoButton = document.getElementById('plyr__nextvideo-button');
         const rtSpan = document.getElementById('plyr__nextvideo-remainingtime');
 
-        if (Math.floor(this.currentTime) >= 45 && Math.floor(this.currentTime)%45 === 0 && !this.magicPlayed && !this.magicSkipped){
-            this.magicVideoContainer = document.getElementById(this.config.classNames.magicvideo.container);
-            if (this.magicVideoContainer.classList.contains('hidden')) {
-                this.magicVideoContainer.classList.remove('hidden');
+        
+        if (Math.floor(this.currentTime) >= 45 && Math.floor(this.currentTime)%45 === 0) {
+            const mp = this.magicPlayed;
+            const ms = this.magicSkipped;
+            const ma = this.magicActive;
+
+            if (!mp && !ms && !ma){
+                this.magicVideoContainer = document.getElementById(this.config.classNames.magicvideo.container);
+    
+                if (!utils.is.nullOrUndefined(this.magicVideoContainer)) {
+                    CarouselTwo.magicVideoPopup.call(this, 'show');
+                }
             }
         }
+        
 
         if (remainingTime <= 10)  {
             if (!utils.is.nullOrUndefined(rtSpan)) {

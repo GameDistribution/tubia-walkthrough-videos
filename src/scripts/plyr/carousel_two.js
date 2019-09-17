@@ -36,6 +36,7 @@ class CarouselTwo {
         this.playNext = false;
         this.player.magicPlayed = false;
         this.player.magicSkipped = false;
+        this.player.magicActive = false;
         this.classes = {
             relatedVideos: 'related--videos',
             modeTitle: 'related--videos-mode-title',
@@ -240,7 +241,7 @@ class CarouselTwo {
 
             if (!utils.is.nullOrUndefined(this.magicVideoClose)) {
                 this.magicVideoClose.addEventListener('click', () => {
-                    CarouselTwo.toggleMagicVideoLoader.call(this);
+                    CarouselTwo.magicVideoPopup.call(this.player, 'hide');
                     this.player.magicSkipped = true;
                 });
             }
@@ -248,17 +249,6 @@ class CarouselTwo {
             // eslint-disable-next-line no-prototype-builtins
             if (!utils.is.nullOrUndefined(this.magicVideoButton) && this.modes.magic.hasOwnProperty('data') && !this.player.magicPlayed && !this.player.magicSkipped) {
                 this.magicVideoButton.addEventListener('click', () => { CarouselTwo.loadMagicVideo.call(self, this.modes.magic); });
-                const showMagicVideo = setTimeout(() => {
-                    if (!utils.is.nullOrUndefined(this.magicVideoContainer)) {
-                        const hideMagicVideo = setTimeout(() => {
-                            CarouselTwo.toggleMagicVideoLoader.call(this);
-                            clearTimeout(hideMagicVideo);
-                        }, 10000);
-                        CarouselTwo.toggleMagicVideoLoader.call(this);
-                    }
-                    clearTimeout(showMagicVideo);
-                }, 180000);
-
             } else if (utils.is.nullOrUndefined(this.magicVideoButton)) {
                 console.error('Make sure the iframe has a button with the setting: "id:plyr__nextvideo-button"');
             } else {
@@ -275,13 +265,36 @@ class CarouselTwo {
         }
     }
 
-    static toggleMagicVideoLoader() {
-        this.magicVideoContainer = document.getElementById(this.magicVideoClasses.container);
-        if (!this.magicVideoContainer.classList.contains('hidden')) {
-            this.magicVideoContainer.classList.add('hidden');
+    static toggleMagicVideoLoader(magicVideoContainerClass) {
+        const container = document.getElementById(magicVideoContainerClass);
+        if (!container.classList.contains('hidden')) {
+            container.classList.add('hidden');
         } else {
-            this.magicVideoContainer.classList.remove('hidden');
+            container.classList.remove('hidden');
         }
+    }
+
+    static magicVideoPopup(action) {
+        let hideMagicVideo = null;
+        const magicVideoContainerClass = Player.magicVideoContainer;
+        if (action === 'show') {
+            if (!utils.is.nullOrUndefined(this.magicVideoContainer)) {
+                CarouselTwo.toggleMagicVideoLoader.call(this, magicVideoContainerClass);
+                this.magicActive = true;
+                hideMagicVideo = setInterval(() => {
+                    if (!this.magicSkipped && !this.magicPlayed) {
+                        CarouselTwo.toggleMagicVideoLoader.call(this, magicVideoContainerClass);
+                        this.magicActive = false;
+                        clearInterval(hideMagicVideo);
+                    }
+                }, 10000);
+            }
+        } else if (action === 'hide') {
+            clearInterval(hideMagicVideo);
+            this.magicActive = false;
+            CarouselTwo.toggleMagicVideoLoader.call(this, magicVideoContainerClass);
+        }
+
     }
 
     static loadNextVideo(relatedVideos) {
@@ -345,8 +358,8 @@ class CarouselTwo {
         document.getElementById('videoTitle').style.display = 'none';
         document.getElementById('btnloadDefault').style.display = 'block';
 
-        CarouselTwo.toggleMagicVideoLoader.call(this);
-
+        CarouselTwo.magicVideoPopup.call(this.player, 'hide');
+        
         controls.ClearAllLevels.call(this);
 
         const url = this.modes.magic.data.video.link;

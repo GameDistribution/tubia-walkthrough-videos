@@ -2,6 +2,7 @@
 ## v2.0.22.2
 - Disable autoplay for notification popup
 - Reduce scroll to replacement of walkthrough video
+- Show magic popup every 45 sec unless user play, or skip it
 
 ## v2.0.22.1
 - Make magic popup skippable
