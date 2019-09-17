@@ -21,6 +21,7 @@ class WalkthroughNotification {
             closeButton: null,
             notificationPopup: null,
             notificationContainer: null,
+            pointtowalkthrough: null,
         };
 
         this.showNotification = this.showNotification.bind(this);
@@ -47,6 +48,12 @@ class WalkthroughNotification {
             return;
         };
         this.elements.wthVideo = tubiaIframe[0]||tubiaIframe;
+
+        const pointtowalkthroughHtml = `
+            <span id="pointtowalkthrough" style="margin-top:-${ this.elements.wthVideo.offsetHeight/2}px;"></span>
+        `;
+        this.elements.wthVideo.insertAdjacentHTML('beforebegin', pointtowalkthroughHtml);
+        this.elements.pointtowalkthrough = document.getElementById('pointtowalkthrough');
         
         this.elements.notificationContainer = document.createElement('div');
         this.elements.notificationContainer.setAttribute('id', 'tubiaWalkthroughNotification');
@@ -91,8 +98,8 @@ class WalkthroughNotification {
     }
 
     scrollToWalkthrough() {
-        if ((typeof (this.elements.wthVideo) !== 'undefined' && this.elements.wthVideo !== null)) {
-            this.elements.wthVideo.scrollIntoView(true);
+        if ((typeof (this.elements.pointtowalkthrough) !== 'undefined' && this.elements.pointtowalkthrough !== null)) {
+            this.elements.pointtowalkthrough.scrollIntoView(true);
             if (this.config.autoPlay) {
                 setTimeout(() => {
                     this.elements.wthVideo.contentWindow.postMessage('startPlay', '*');
