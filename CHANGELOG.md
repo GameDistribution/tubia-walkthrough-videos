@@ -1,4 +1,8 @@
 # Changelog
+## v2.0.22.2
+- Disable autoplay for notification popup
+- Reduce scroll to replacement of walkthrough video
+
 ## v2.0.22.1
 - Make magic popup skippable
 - Revise popup notification css
