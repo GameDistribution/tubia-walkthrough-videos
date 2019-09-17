@@ -321,8 +321,9 @@ const ui = {
             const mp = this.magicPlayed;
             const ms = this.magicSkipped;
             const ma = this.magicActive;
+            const hmv = this.hasMagicVideo;
 
-            if (!mp && !ms && !ma){
+            if (!mp && !ms && !ma && hmv) {
                 this.magicVideoContainer = document.getElementById(this.config.classNames.magicvideo.container);
     
                 if (!utils.is.nullOrUndefined(this.magicVideoContainer)) {

@@ -37,6 +37,7 @@ class CarouselTwo {
         this.player.magicPlayed = false;
         this.player.magicSkipped = false;
         this.player.magicActive = false;
+        this.player.hasMagicVideo = false;
         this.classes = {
             relatedVideos: 'related--videos',
             modeTitle: 'related--videos-mode-title',
@@ -120,6 +121,7 @@ class CarouselTwo {
             relatedVideosWrapper.appendChild(this.modes.best.section);
         }
         if (this.modes.magic.data) {
+            this.player.hasMagicVideo = true;
             CarouselTwo.createTitle.call(this, this.modes.magic);
             CarouselTwo.createScrews.call(this, this.modes.magic);
             CarouselTwo.createMagicAnimations.call(this, this.modes.magic);
@@ -227,7 +229,7 @@ class CarouselTwo {
         const self = this;
 
         // Create a magic video loader button
-        if (this.player.config.magicvideo) {
+        if (this.player.config.magicvideo && this.player.hasMagicVideo) {
             this.playerContainer = document.querySelector('.plyr');
 
             if ((!utils.is.nullOrUndefined(this.playerContainer))) {
