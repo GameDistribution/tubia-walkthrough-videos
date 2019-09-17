@@ -8,7 +8,7 @@ class WalkthroughNotification {
             alignment: 'br',
             character: 1,
             autoShow: true,
-            autoPlay: true,
+            autoPlay: false,
             wait: 1000, // Wait X ms before showing the notification
         };
        
