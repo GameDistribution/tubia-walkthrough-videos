@@ -38,6 +38,8 @@ class CarouselTwo {
         this.player.magicSkipped = false;
         this.player.magicActive = false;
         this.player.hasMagicVideo = false;
+        this.showMagicInCarousel = false;
+
         this.classes = {
             relatedVideos: 'related--videos',
             modeTitle: 'related--videos-mode-title',
@@ -122,22 +124,24 @@ class CarouselTwo {
         }
         if (this.modes.magic.data) {
             this.player.hasMagicVideo = true;
-            CarouselTwo.createTitle.call(this, this.modes.magic);
-            CarouselTwo.createScrews.call(this, this.modes.magic);
-            CarouselTwo.createMagicAnimations.call(this, this.modes.magic);
+            if (this.showMagicInCarousel) {
+                CarouselTwo.createTitle.call(this, this.modes.magic);
+                CarouselTwo.createScrews.call(this, this.modes.magic);
+                CarouselTwo.createMagicAnimations.call(this, this.modes.magic);
 
-            if (!this.openedMagic) {
-                this.modes.magic.section.addEventListener('mouseenter', CarouselTwo.hoverGifAnimateEvent);
-                this.modes.magic.section.addEventListener('mouseleave', CarouselTwo.hoverGifAnimateEvent);
-                CarouselTwo.createMagicPlay.call(this);
+                if (!this.openedMagic) {
+                    this.modes.magic.section.addEventListener('mouseenter', CarouselTwo.hoverGifAnimateEvent);
+                    this.modes.magic.section.addEventListener('mouseleave', CarouselTwo.hoverGifAnimateEvent);
+                    CarouselTwo.createMagicPlay.call(this);
+                }
+                else {
+                    CarouselTwo.createThumbnails.call(this, this.modes.magic);
+                    CarouselTwo.createHexagon.call(this, this.modes.magic);
+                    this.modes.magic.section.addEventListener('mouseenter', CarouselTwo.hoverGifAnimateEvent);
+                    this.modes.magic.section.addEventListener('mouseleave', CarouselTwo.hoverGifAnimateEvent);
+                }
+                relatedVideosWrapper.appendChild(this.modes.magic.section);
             }
-            else {
-                CarouselTwo.createThumbnails.call(this, this.modes.magic);
-                CarouselTwo.createHexagon.call(this, this.modes.magic);
-                this.modes.magic.section.addEventListener('mouseenter', CarouselTwo.hoverGifAnimateEvent);
-                this.modes.magic.section.addEventListener('mouseleave', CarouselTwo.hoverGifAnimateEvent);
-            }
-            relatedVideosWrapper.appendChild(this.modes.magic.section);
         }
 
         filteredArray(3).forEach((element) => {

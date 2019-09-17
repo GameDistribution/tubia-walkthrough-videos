@@ -1,6 +1,7 @@
 # Changelog
 ## v2.0.22.3
 - Show magic popup when only the video has a magic assigned
+- Do not show magic video in carousel
 
 ## v2.0.22.2
 - Disable autoplay for notification popup
