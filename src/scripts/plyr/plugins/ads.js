@@ -16,11 +16,14 @@ class Ads {
      * @return {Ads}
      */
     constructor(player) {
+
+        this.player = player;
+        if (this.player.config.isIE11) return;
+
         // Honeybadger Code Monitoring
         this.codemonitor = CodeMonitor();
         
-        this.player = player;
-
+       
         this.tag = player.config.ads.tag;
         this.tagLegacy = player.config.ads.tagLegacy;
         this.debug = player.config.debug;
@@ -103,6 +106,7 @@ class Ads {
      * Get the ads instance ready
      */
     ready() {
+        if (this.player.config.isIE11) return;
         // Start ticking our safety timer. If the whole advertisement
         // thing doesn't resolve within our set time; we bail
         this.startSafetyTimer(12000, 'ready()');
@@ -290,14 +294,16 @@ class Ads {
 
         // So we can run VPAID2
         try {
-            google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.INSECURE);
+            if (!utils.is.nullOrUndefined(google.ima.settings)) {
+                google.ima.settings.setVpaidMode(google.ima.ImaSdkSettings.VpaidMode.INSECURE);
+            }
         }
         catch (error) {
             this.player.debug.log(`VpaidMode could not set its insecure value. Error:${error}`);
         }
 
         // Set language
-        if (!google.ima.settings.setLocale) {
+        if (!utils.is.nullOrUndefined(google.ima.settings) && !google.ima.settings.setLocale) {
             google.ima.settings.setLocale(this.player.config.ads.language);
         }
 

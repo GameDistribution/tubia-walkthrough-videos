@@ -153,12 +153,11 @@ const ui = {
         // Class hooks
         utils.toggleClass(this.elements.container, this.config.classNames.playing, this.playing);
         utils.toggleClass(this.elements.container, this.config.classNames.stopped, this.paused);
-        if ((this.playing || !this.paused) && this.ready) 
-        {
+        if ((this.playing || !this.paused) && this.ready) {
             controls.hideInterestingVideos();
         } else if (this.ready && !this.playing && !this.playNext) {
-            controls.showInterestingVideos(this.ads.forcePauseContent);
-        } 
+            controls.showInterestingVideos(!utils.is.nullOrUndefined(this.ads) && Object.prototype.hasOwnProperty.call(this.ads, 'forcePauseContent') ? this.ads.forcePauseContent : false);
+        }
         this.playNext = false;
 
         // Set ARIA state
@@ -316,8 +315,8 @@ const ui = {
         const nextVideoButton = document.getElementById('plyr__nextvideo-button');
         const rtSpan = document.getElementById('plyr__nextvideo-remainingtime');
 
-        
-        if (Math.floor(this.currentTime) >= 45 && Math.floor(this.currentTime)%45 === 0) {
+
+        if (Math.floor(this.currentTime) >= 45 && Math.floor(this.currentTime) % 45 === 0) {
             const mp = this.magicPlayed;
             const ms = this.magicSkipped;
             const ma = this.magicActive;
@@ -325,15 +324,15 @@ const ui = {
 
             if (!mp && !ms && !ma && hmv) {
                 this.magicVideoContainer = document.getElementById(this.config.classNames.magicvideo.container);
-    
+
                 if (!utils.is.nullOrUndefined(this.magicVideoContainer)) {
                     CarouselTwo.magicVideoPopup.call(this, 'show');
                 }
             }
         }
-        
 
-        if (remainingTime <= 10)  {
+
+        if (remainingTime <= 10) {
             if (!utils.is.nullOrUndefined(rtSpan)) {
                 rtSpan.innerText = remainingTime;
             }
@@ -351,7 +350,7 @@ const ui = {
         } else if (!utils.is.nullOrUndefined(nextVideoButton) && !nextVideoButton.classList.contains('hidden')) {
             nextVideoButton.classList.add('hidden');
         }
-        
+
         // Only invert if only one time element is displayed and used for both duration and currentTime
         const invert = !utils.is.element(this.elements.display.duration) && this.config.invertTime;
 

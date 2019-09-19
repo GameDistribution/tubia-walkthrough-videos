@@ -1,6 +1,10 @@
 .plyr__morevideos{
     .related--videos{
         min-height: 100%;
+        width: -moz-fit-content;
+        width: -webkit-fit-content;
+        width: -ms-fit-content;
+        width: -o-fit-content;
         width: fit-content;
         height: 100%;
         /* width: 70%; */
@@ -33,7 +37,7 @@
         }
 
         >div.mode {
-            width: 26vw;
+            width: auto;
             height: 16vw;
             float: left;
             margin-right: $related-videos-padding-between-videos;

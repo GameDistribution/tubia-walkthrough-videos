@@ -31,8 +31,9 @@
       background: rgba(0, 0, 0, 0.50);
       top: 55px;
       position: absolute;
-      padding: .2vw 1vw;
+      padding: .2vw .7vw;
       border-radius: 2vw;
+      left: 0;
       font-size: 1.1em;
       font-family: 'gaegubold', sans-serif;
       @media (max-width: $plyr-bp-sm) {

@@ -98,8 +98,8 @@ class Share {
             `;
 
             shareScreen.innerHTML = shareScreenContent;
-            shareScreenWrapper.prepend(shareScreen);
-
+            shareScreenWrapper.insertBefore(shareScreen, shareScreenWrapper.firstChild);
+            
             document.querySelector('#shareInput').addEventListener('click', (e) => {
                 document.getElementById(e.target.id).select();
                 document.execCommand('copy');

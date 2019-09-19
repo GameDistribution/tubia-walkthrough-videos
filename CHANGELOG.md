@@ -1,4 +1,7 @@
 # Changelog
+## v2.0.22.4
+- Fix IE11 broken video and ui issues
+
 ## v2.0.22.3
 - Show magic popup when only the video has a magic assigned
 - Do not show magic video in carousel

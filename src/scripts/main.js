@@ -55,6 +55,7 @@ class Player {
         const category = utils.parseJson(params.category);
         const keys = utils.parseJson(params.keys);
         const magicvideo = typeof params.magicvideo !== 'undefined' && params.magicvideo !== '' ? parseInt(params.magicvideo, 10) : true;
+        const isIE11 = !!window.MSInputMethodContext && !!document.documentMode;
 
         // Set the URL's based on given (legacy) parameters.
         // Receiving a proper pageurl parameter is mandatory. We either get it directly from the iframe URL,
@@ -85,6 +86,7 @@ class Player {
             keys,
             lottie: true,
             magicvideo,
+            isIE11,
         };
 
         // Honeybadger Code Monitoring
@@ -155,6 +157,18 @@ class Player {
      * Initialise the Tubia application. Fetch the data.
      */
     start() {
+
+        // IE11 is not supported for imajs now.
+        // This issue should be fixed in newer updates.
+        if (!this.options.isIE11) {
+            const imaSdk = document.createElement('script');
+            imaSdk.src = 'https://imasdk.googleapis.com/js/sdkloader/ima3.js';
+            imaSdk.type = 'application/javascript';
+            document.head.appendChild(imaSdk);
+        } else {
+            console.warn('IE11 ads is not supported for now.');
+        }
+
         // Check if an Ad Blocker Plugin exists
         adblocker.check();
         
@@ -684,7 +698,8 @@ class Player {
                 controls.push('morevideos');
             }
 
-            const {magicvideo} = this.options;
+            const {magicvideo, isIE11} = this.options;
+
 
             // Create the Plyr instance.
             this.player = new Plyr('#plyr__tubia', {
@@ -729,6 +744,7 @@ class Player {
                 share: true,
                 controls,
                 magicvideo,
+                isIE11,
             });
 
             this.player.on('adsclick', () => {
