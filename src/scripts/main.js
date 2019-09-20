@@ -347,7 +347,8 @@ class Player {
                     <path class="tubia__hexagon-line-animation" d="M-1665.43,90.94V35.83a15.09,15.09,0,0,1,6.78-12.59l48.22-31.83a15.09,15.09,0,0,1,16-.38L-1547,19.13a15.09,15.09,0,0,1,7.39,13V90.94a15.09,15.09,0,0,1-7.21,12.87l-47.8,29.24a15.09,15.09,0,0,1-15.75,0l-47.8-29.24A15.09,15.09,0,0,1-1665.43,90.94Z" transform="translate(1667.43 13.09)"/>
                 </svg>
             </div>
-            <div id="tubia__display-ad" class="tubia__display-ad"><iframe></iframe></div>
+            <div id="tubia__banner-ad2" class="tubia__banner-ad-top tubia__banner"><iframe></iframe></div>
+            <div id="tubia__banner-ad" class="tubia__banner-ad-bottom tubia__banner"><iframe></iframe></div>
         `;
 
         this.container.insertAdjacentHTML('beforeend', html);
@@ -411,8 +412,10 @@ class Player {
             });
 
             // Create a display advertisement which will reside on top of the poster image.
-            const slotId = 'tubia__display-ad';
+            const slotId = 'tubia__banner-ad';
+            const slotId2 = 'tubia__banner-ad2';
             const slotElement = document.getElementById(slotId);
+            const slotElement2 = document.getElementById(slotId2);
             const isIE11 = !!window.MSInputMethodContext && !!document.documentMode;
             const displayIgnoreDomains = [
                 '1001spiele.de',
@@ -444,48 +447,47 @@ class Player {
             if (slotElement
                 && !isIE11
                 && displayIgnoreDomains.indexOf(this.options.domain.replace(/^(?:https?:\/\/)?(?:\/\/)?(?:www\.)?/i, '').split('/')[0]) === -1) {
+                
                 // Set adslot dimensions.
                 if (this.container.offsetWidth >= 970) {
-                    slotElement.style.width = '970px';
-                    slotElement.style.height = '90px';
+                    slotElement.classList.add('large-leaderboard');
+                    slotElement2.classList.add('large-leaderboard');
                 } else if (this.container.offsetWidth >= 728) {
-                    slotElement.style.width = '728px';
-                    slotElement.style.height = '90px';
+                    slotElement.classList.add('leaderboard');
+                    slotElement2.classList.add('leaderboard');
                 } else if (this.container.offsetWidth >= 468) {
-                    slotElement.style.width = '468px';
-                    slotElement.style.height = '60px';
+                    // banner
+                    slotElement.classList.add('banner');
+                    slotElement2.classList.add('banner');
                 } else if (this.container.offsetWidth >= 234) {
-                    slotElement.style.width = '234px';
-                    slotElement.style.height = '60px';
-                } else {
-                    slotElement.style.width = '100%';
-                    slotElement.style.height = '90px';
+                    slotElement.classList.add('half-banner');
+                    slotElement2.classList.add('half-banner');
                 }
 
                 // Set header bidding name space.
-                window.idhbtubia = window.idhbtubia || {};
-                window.idhbtubia.que = window.idhbtubia.que || [];
+                window.idhb = window.idhb || {};
+                window.idhb.que = window.idhb.que || [];
 
                 // Show some header bidding logging.
                 if (this.options.debug) {
-                    window.idhbtubia.getConfig();
-                    window.idhbtubia.debug(true);
+                    window.idhb.getConfig();
+                    window.idhb.debug(true);
                 }
 
                 // Load the ad.
-                window.idhbtubia.que.push(() => {
-                    window.idhbtubia.setAdserverTargeting({
-                        tnl_ad_pos: 'tubia_leaderboard',
-                    });
+                window.idhb.que.push(() => {
 
                     // Pass on the IAB CMP euconsent string. Most SSP's are part of the IAB group.
                     // So they will interpret and apply proper consent rules based on this string.
-                    window.idhbtubia.setDefaultGdprConsentString('BOWJjG9OWJjG9CLAAAENBx-AAAAiDAAA');
-                    window.idhbtubia.requestAds({
-                        slotIds: [slotId],
+                    // window.idhb.setDefaultGdprConsentString('BOWJjG9OWJjG9CLAAAENBx-AAAAiDAAA');
+                    window.idhb.requestAds({
+                        slotIds: [
+                            slotId,
+                            slotId2,
+                        ],
                         callback: (response) => {
                             if (this.options.debug) {
-                                console.info('window.idhbtubia.requestAds callback returned:', response);
+                                console.info('window.idhb.requestAds callback returned:', response);
                             }
                         },
                     });

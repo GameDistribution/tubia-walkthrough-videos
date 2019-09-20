@@ -263,8 +263,7 @@
         }
     }
 
-    .tubia__display-ad {
-        // display: none;
+    .tubia__banner-ad-bottom {
         position: absolute;
         z-index: 4;
         width: 100%;
@@ -278,6 +277,45 @@
             width: 100%;
             border: 0;
         }
+    }
+
+    .tubia__banner-ad-top {
+        position: absolute;
+        z-index: 4;
+        width: 100%;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        iframe {
+            position: absolute;
+            left: 0;
+            right: 0;
+            width: 100%;
+            border: 0;
+        }
+    }
+
+    .tubia__banner
+    {
+        width: 100%;
+        height: 90px;
+
+        &.large-leaderboard {
+            width: 970px;
+            height: 90px;
+         }
+         &.leaderboard {
+            width: 728px;
+            height: 90px;
+         }
+         &.banner {
+            width: 468px;
+            height: 60px;
+         }
+         &.half-banner {
+            width: 234px;
+            height: 60px;
+         }
     }
 
     @keyframes dash {
