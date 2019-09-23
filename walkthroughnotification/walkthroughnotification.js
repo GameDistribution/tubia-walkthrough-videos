@@ -1,7 +1,6 @@
 class WalkthroughNotification {
 
     constructor(config) {
-        
         const defaults = {
             message: 'Hey there! Do you need help? Let me show you the walkthrough.',
             calltoAction: 'Show Walkthrough',
@@ -22,6 +21,7 @@ class WalkthroughNotification {
             notificationPopup: null,
             notificationContainer: null,
             pointtowalkthrough: null,
+            animRepeater: null,
         };
 
         this.showNotification = this.showNotification.bind(this);
@@ -61,7 +61,7 @@ class WalkthroughNotification {
 
         this.elements.notificationContainer.innerHTML = `
           <!-- Tubia Walkthrough Notification -->
-          <div class="character-${this.config.character}"></div>
+          <div id="character-${this.config.character}" class="character-${this.config.character}"></div>
           <div class="container">
               <p>
                   ${this.config.message}
@@ -95,6 +95,30 @@ class WalkthroughNotification {
                 'Error! Make sure the page has a walkthrough caller button with the setting of "id:showTubiaWalkthrough".'
             );
         }
+
+        const params = {
+            container: document.getElementById(`character-${this.config.character}`), // the dom element that will contain the animation
+            renderer: 'svg',
+            loop: false,
+            autoplay: false,
+            path: 'https://cdn.tubia.com/media/animations/notification/char-anim-1.json', // the path to the animation json
+            autoLoadSegments: false,
+        };
+
+        // eslint-disable-next-line no-undef
+        const anim = lottie.loadAnimation(params);
+
+        anim.addEventListener('DOMLoaded',() => {
+            setTimeout(() => {
+                anim.play();
+            }, 300);
+            this.elements.animRepeater = setInterval(() => {
+                anim.playSegments([
+                    11,
+                    56,
+                ],true);
+            }, 10000);
+        });
     }
 
     scrollToWalkthrough() {
@@ -121,6 +145,8 @@ class WalkthroughNotification {
 
     hideNotification() {
         this.elements.notificationPopup.classList.add('hide');
+        console.warn('Remove timer');
+        clearInterval(this.elements.animRepeater);
     }
 }
 

@@ -1,3 +1,9 @@
+*,
+*::after,
+*::before {
+    box-sizing: border-box;
+}
+
 #pointtowalkthrough {
     width: 10px;
     height: 10px;
@@ -30,6 +36,9 @@
     &.hide {
         opacity: 0;
         visibility: hidden;
+        .character-1 {
+            visibility: hidden;
+        }
     }
 
     &.br {
@@ -103,11 +112,12 @@
     }
 
     .character-1 {
-        background: url(https://cdn.tubia.com/media/tubia-character-holding-popup.svg) no-repeat;
-        width: 100px;
-        height: 140px;
+        width: 230px;
+        height: auto;
         background-size: contain;
         position: absolute;
-        left: 0;
+        left: 5px;
+        z-index: -1;
+        top: -10px;
     }
 }
