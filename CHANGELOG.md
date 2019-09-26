@@ -1,4 +1,8 @@
 # Changelog
+## v2.0.23
+- Fix IE11 broken ads issue
+- Add static character option to walkthrough notification
+
 ## v2.0.22.4
 - Fix IE11 broken video and ui issues
 
