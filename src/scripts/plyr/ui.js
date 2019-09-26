@@ -9,7 +9,6 @@ import i18n from './i18n';
 import playlist from './playlist';
 import morevideos from './morevideos';
 import Share from './share';
-import Player from '../main';
 import CarouselTwo from './carousel_two';
 
 const ui = {

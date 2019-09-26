@@ -14,7 +14,6 @@ import Mark from './cuemark';
 import lotties from './lotties';
 import CarouselTwo from './carousel_two';
 import defaults from './defaults';
-import Player from '../main';
 
 // Sniff out the browser
 const browser = utils.getBrowser();

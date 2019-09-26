@@ -4,7 +4,6 @@
 // https://www.vi.ai/publisher-video-monetization/
 // ==========================================================================
 
-/* global google */
 
 import utils from '../utils';
 import CodeMonitor from '../codemonitor';
@@ -18,7 +17,6 @@ class Ads {
     constructor(player) {
 
         this.player = player;
-        if (this.player.config.isIE11) return;
 
         // Honeybadger Code Monitoring
         this.codemonitor = CodeMonitor();
@@ -86,14 +84,14 @@ class Ads {
                 window.google.ima = window.google.ima || {};
             }
 
-            if (!utils.is.object(window.idhb) || !utils.is.array(window.idhb.que)) {
-                window.idhb = window.idhb || {};
-                window.idhb.que = window.idhb.que || [];
+            if (!utils.is.object(window.idhbtubia) || !utils.is.array(window.idhbtubia.que)) {
+                window.idhbtubia = window.idhbtubia || {};
+                window.idhbtubia.que = window.idhbtubia.que || [];
 
                 // Show some header bidding logging.
                 if (this.debug) {
-                    window.idhb.getConfig();
-                    window.idhb.debug(true);
+                    window.idhbtubia.getConfig();
+                    window.idhbtubia.debug(true);
                 }
             }
 
@@ -106,7 +104,6 @@ class Ads {
      * Get the ads instance ready
      */
     ready() {
-        if (this.player.config.isIE11) return;
         // Start ticking our safety timer. If the whole advertisement
         // thing doesn't resolve within our set time; we bail
         this.startSafetyTimer(12000, 'ready()');
@@ -356,7 +353,7 @@ class Ads {
                         // HEADER BIDDING.
                         // We got an object with keys, so we know this
                         // will be a header bidding ad request.
-                        if (typeof window.idhb.requestAds === 'undefined') {
+                        if (typeof window.idhbtubia.requestAds === 'undefined') {
                             reject(new Error('Prebid.js wrapper script hit an error or didn\'t exist!'));
                             return;
                         }
@@ -396,21 +393,21 @@ class Ads {
                         // Make the request for a VAST tag from the Prebid.js wrapper.
                         // Get logging from the wrapper using: ?idhb_debug=true
                         // To get a copy of the current config: copy(idhb.getConfig());
-                        window.idhb.que.push(() => {
-                            window.idhb.setAdserverTargeting(data);
-                            window.idhb.setDfpAdUnitCode(unit);
+                        window.idhbtubia.que.push(() => {
+                            window.idhbtubia.setAdserverTargeting(data);
+                            window.idhbtubia.setDfpAdUnitCode(unit);
 
                             // This is to add a flag, which if set to false;
                             // non-personalized ads get requested from DFP and a no-consent
                             // string - BOa7h6KOa7h6KCLABBENCDAAAAAjyAAA - is sent to all SSPs.
                             // If set to true, then the wrapper will continue as if no consent was given.
                             // This is only for Google, as google is not part of the IAB group.
-                            window.idhb.allowPersonalizedAds(this.gdprTargeting);
+                            window.idhbtubia.allowPersonalizedAds(this.gdprTargeting);
 
                             // Pass on the IAB CMP euconsent string. Most SSP's are part of the IAB group.
                             // So they will interpret and apply proper consent rules based on this string.
-                            window.idhb.setDefaultGdprConsentString(consentString);
-                            window.idhb.requestAds({
+                            window.idhbtubia.setDefaultGdprConsentString(consentString);
+                            window.idhbtubia.requestAds({
                                 slotIds: [this.slotId],
                                 callback: vastUrl => {
                                     resolve(vastUrl);

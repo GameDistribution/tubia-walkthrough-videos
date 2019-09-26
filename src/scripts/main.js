@@ -55,7 +55,6 @@ class Player {
         const category = utils.parseJson(params.category);
         const keys = utils.parseJson(params.keys);
         const magicvideo = typeof params.magicvideo !== 'undefined' && params.magicvideo !== '' ? parseInt(params.magicvideo, 10) : true;
-        const isIE11 = !!window.MSInputMethodContext && !!document.documentMode;
 
         // Set the URL's based on given (legacy) parameters.
         // Receiving a proper pageurl parameter is mandatory. We either get it directly from the iframe URL,
@@ -86,7 +85,6 @@ class Player {
             keys,
             lottie: true,
             magicvideo,
-            isIE11,
         };
 
         // Honeybadger Code Monitoring
@@ -158,16 +156,10 @@ class Player {
      */
     start() {
 
-        // IE11 is not supported for imajs now.
-        // This issue should be fixed in newer updates.
-        if (!this.options.isIE11) {
-            const imaSdk = document.createElement('script');
-            imaSdk.src = 'https://imasdk.googleapis.com/js/sdkloader/ima3.js';
-            imaSdk.type = 'application/javascript';
-            document.head.appendChild(imaSdk);
-        } else {
-            console.warn('IE11 ads is not supported for now.');
-        }
+        const imaSdk = document.createElement('script');
+        imaSdk.src = 'https://imasdk.googleapis.com/js/sdkloader/ima3.js';
+        imaSdk.type = 'application/javascript';
+        document.head.appendChild(imaSdk);
 
         // Check if an Ad Blocker Plugin exists
         adblocker.check();
@@ -347,8 +339,7 @@ class Player {
                     <path class="tubia__hexagon-line-animation" d="M-1665.43,90.94V35.83a15.09,15.09,0,0,1,6.78-12.59l48.22-31.83a15.09,15.09,0,0,1,16-.38L-1547,19.13a15.09,15.09,0,0,1,7.39,13V90.94a15.09,15.09,0,0,1-7.21,12.87l-47.8,29.24a15.09,15.09,0,0,1-15.75,0l-47.8-29.24A15.09,15.09,0,0,1-1665.43,90.94Z" transform="translate(1667.43 13.09)"/>
                 </svg>
             </div>
-            <div id="tubia__banner-ad2" class="tubia__banner-ad-top tubia__banner"><iframe></iframe></div>
-            <div id="tubia__banner-ad" class="tubia__banner-ad-bottom tubia__banner"><iframe></iframe></div>
+            <div id="tubia__display-ad" class="tubia__display-ad tubia__banner"><iframe></iframe></div>
         `;
 
         this.container.insertAdjacentHTML('beforeend', html);
@@ -412,11 +403,8 @@ class Player {
             });
 
             // Create a display advertisement which will reside on top of the poster image.
-            const slotId = 'tubia__banner-ad';
-            const slotId2 = 'tubia__banner-ad2';
+            const slotId = 'tubia__display-ad';
             const slotElement = document.getElementById(slotId);
-            const slotElement2 = document.getElementById(slotId2);
-            const isIE11 = !!window.MSInputMethodContext && !!document.documentMode;
             const displayIgnoreDomains = [
                 '1001spiele.de',
                 '1001hry.cz',
@@ -445,51 +433,48 @@ class Player {
                 'wuki.com',
             ];
             if (slotElement
-                && !isIE11
                 && displayIgnoreDomains.indexOf(this.options.domain.replace(/^(?:https?:\/\/)?(?:\/\/)?(?:www\.)?/i, '').split('/')[0]) === -1) {
                 
                 // Set adslot dimensions.
                 if (this.container.offsetWidth >= 970) {
                     slotElement.classList.add('large-leaderboard');
-                    slotElement2.classList.add('large-leaderboard');
                 } else if (this.container.offsetWidth >= 728) {
                     slotElement.classList.add('leaderboard');
-                    slotElement2.classList.add('leaderboard');
                 } else if (this.container.offsetWidth >= 468) {
                     // banner
                     slotElement.classList.add('banner');
-                    slotElement2.classList.add('banner');
                 } else if (this.container.offsetWidth >= 234) {
                     slotElement.classList.add('half-banner');
-                    slotElement2.classList.add('half-banner');
                 }
 
                 // Set header bidding name space.
-                window.idhb = window.idhb || {};
-                window.idhb.que = window.idhb.que || [];
+                window.idhbtubia = window.idhbtubia || {};
+                window.idhbtubia.que = window.idhbtubia.que || [];
 
                 // Show some header bidding logging.
                 if (this.options.debug) {
-                    window.idhb.getConfig();
-                    window.idhb.debug(true);
+                    window.idhbtubia.getConfig();
+                    window.idhbtubia.debug(true);
                 }
 
                 // Load the ad.
-                window.idhb.que.push(() => {
-
-                    // Pass on the IAB CMP euconsent string. Most SSP's are part of the IAB group.
-                    // So they will interpret and apply proper consent rules based on this string.
-                    // window.idhb.setDefaultGdprConsentString('BOWJjG9OWJjG9CLAAAENBx-AAAAiDAAA');
-                    window.idhb.requestAds({
-                        slotIds: [
-                            slotId,
-                            slotId2,
-                        ],
-                        callback: (response) => {
-                            if (this.options.debug) {
-                                console.info('window.idhb.requestAds callback returned:', response);
-                            }
-                        },
+                
+                window.idhbtubia.que.push(() => {
+                    window.idhbtubia.setAdserverTargeting({
+                        tnl_ad_pos: 'tubia_leaderboard',    
+                    });
+                    window.idhbtubia.que.push(() => {
+                        // Pass on the IAB CMP euconsent string. Most SSP's are part of the IAB group.
+                        // So they will interpret and apply proper consent rules based on this string.
+                        window.idhbtubia.setDefaultGdprConsentString('BOWJjG9OWJjG9CLAAAENBx-AAAAiDAAA');
+                        window.idhbtubia.requestAds({
+                            slotIds: [slotId],
+                            callback: (response) => {
+                                if (this.options.debug) {
+                                    console.info('window.idhbtubia.requestAds callback returned:', response);
+                                }
+                            },
+                        });
                     });
                 });
             }
@@ -700,7 +685,7 @@ class Player {
                 controls.push('morevideos');
             }
 
-            const {magicvideo, isIE11} = this.options;
+            const {magicvideo} = this.options;
 
 
             // Create the Plyr instance.
@@ -746,7 +731,6 @@ class Player {
                 share: true,
                 controls,
                 magicvideo,
-                isIE11,
             });
 
             this.player.on('adsclick', () => {
