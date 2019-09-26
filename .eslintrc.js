@@ -42,7 +42,7 @@ module.exports = {
         ],
         'array-bracket-newline': [2, {'minItems': 2}],
         'array-element-newline': [2, {'minItems': 2}],
-        'import/no-cycle': false,
+        'import/no-cycle': 0,
     },
     'parserOptions': {
         'sourceType': 'module',
