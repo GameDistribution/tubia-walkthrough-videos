@@ -1,3 +1,4 @@
+
 class WalkthroughNotification {
 
     constructor(config) {
@@ -5,7 +6,7 @@ class WalkthroughNotification {
             message: 'Hey there! Do you need help? Let me show you the walkthrough.',
             calltoAction: 'Show Walkthrough',
             alignment: 'br',
-            character: 1,
+            character: 0,
             autoShow: true,
             autoPlay: false,
             wait: 1000, // Wait X ms before showing the notification
@@ -36,9 +37,9 @@ class WalkthroughNotification {
         const iframeList = document.querySelectorAll('iframe');
         iframeList.forEach(element => {
             if (element.hasAttribute('src')) {
-                if (element.src.indexOf('player.tubia.com') > -1) {
-                    element.setAttribute('tubia-walkthrough', true);
-                }
+                // if (element.src.indexOf('player.tubia.com') > -1) {
+                element.setAttribute('tubia-walkthrough', true);
+                // }
             }
         });
 
@@ -61,7 +62,7 @@ class WalkthroughNotification {
 
         this.elements.notificationContainer.innerHTML = `
           <!-- Tubia Walkthrough Notification -->
-          <div id="character-${this.config.character}" class="character-${this.config.character}"></div>
+          <div id="character-${this.config.character}" class="character-${this.config.character} character"></div>
           <div class="container">
               <p>
                   ${this.config.message}
@@ -95,32 +96,33 @@ class WalkthroughNotification {
                 'Error! Make sure the page has a walkthrough caller button with the setting of "id:showTubiaWalkthrough".'
             );
         }
-
-        const params = {
-            container: document.getElementById(`character-${this.config.character}`), // the dom element that will contain the animation
-            renderer: 'svg',
-            loop: false,
-            autoplay: false,
-            path: 'https://cdn.tubia.com/media/animations/notification/char-anim-1.json', // the path to the animation json
-            autoLoadSegments: false,
-        };
-
-        // eslint-disable-next-line no-undef
-        const anim = lottie.loadAnimation(params);
-
-        anim.addEventListener('DOMLoaded',() => {
-            setTimeout(() => {
-                anim.play();
-            }, 300);
-            this.elements.animRepeater = setInterval(() => {
-                anim.playSegments([
-                    11,
-                    56,
-                ],true);
-            }, 10000);
-        });
+        if (this.config.character) {
+            const params = {
+                container: document.getElementById(`character-${this.config.character}`), // the dom element that will contain the animation
+                renderer: 'svg',
+                loop: false,
+                autoplay: false,
+                path: `https://cdn.tubia.com/media/animations/notification/char-anim-${this.config.character}.json`,
+                autoLoadSegments: false,
+            };
+    
+            // eslint-disable-next-line no-undef
+            const anim = lottie.loadAnimation(params);
+    
+            anim.addEventListener('DOMLoaded',() => {
+                setTimeout(() => {
+                    anim.play();
+                }, 300);
+                this.elements.animRepeater = setInterval(() => {
+                    anim.playSegments([
+                        11,
+                        56,
+                    ],true);
+                }, 10000);
+            });
+        }
     }
-
+    
     scrollToWalkthrough() {
         if ((typeof (this.elements.pointtowalkthrough) !== 'undefined' && this.elements.pointtowalkthrough !== null)) {
             this.elements.pointtowalkthrough.scrollIntoView(true);
@@ -149,4 +151,3 @@ class WalkthroughNotification {
         clearInterval(this.elements.animRepeater);
     }
 }
-

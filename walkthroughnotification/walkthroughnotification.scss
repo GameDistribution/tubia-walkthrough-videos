@@ -36,7 +36,7 @@
     &.hide {
         opacity: 0;
         visibility: hidden;
-        .character-1 {
+        .character {
             visibility: hidden;
         }
     }
@@ -109,6 +109,17 @@
                 cursor: pointer;
             }
         }
+    }
+
+    .character-0 {
+        width: 135px;
+        height: 180px;
+        background-size: contain;
+        position: absolute;
+        left: -33px;
+        z-index: 1;
+        top: -10px;
+        background: url('https://cdn.tubia.com//media/tubia-character-holding-popup.svg');
     }
 
     .character-1 {
