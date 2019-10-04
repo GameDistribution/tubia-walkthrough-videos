@@ -1,4 +1,7 @@
 # Changelog
+## v2.0.23.1
+- Connect to headerlift for advertisement
+
 ## v2.0.23
 - Fix IE11 broken ads issue
 - Add static character option to walkthrough notification

@@ -147,7 +147,6 @@ class WalkthroughNotification {
 
     hideNotification() {
         this.elements.notificationPopup.classList.add('hide');
-        console.warn('Remove timer');
         clearInterval(this.elements.animRepeater);
     }
 }

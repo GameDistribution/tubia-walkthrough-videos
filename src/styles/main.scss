@@ -262,36 +262,32 @@
             animation-iteration-count: infinite;
         }
     }
-    .tubia__banner-ad,
-    .tubia__banner-ad-bottom {
-        position: absolute;
+    .tubia__banner {
+        position: absolute; 
         z-index: 4;
         width: 100%;
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
         iframe {
-            position: absolute;
             left: 0;
             right: 0;
             width: 100%;
             border: 0;
+            display: flex;
+            align-items: center;
+            position: absolute;
+        }
+    }
+
+    .tubia__banner-ad-bottom {
+        bottom: 0;
+        iframe {
+            vertical-align: bottom;
         }
     }
 
     .tubia__banner-ad-top {
-        position: absolute;
-        z-index: 4;
-        width: 100%;
         top: 0;
-        left: 50%;
-        transform: translateX(-50%);
         iframe {
-            position: absolute;
-            left: 0;
-            right: 0;
-            width: 100%;
-            border: 0;
+            vertical-align: top;
         }
     }
 

@@ -85,13 +85,13 @@ class Ads {
             }
 
             if (!utils.is.object(window.idhbtubia) || !utils.is.array(window.idhbtubia.que)) {
-                window.idhbtubia = window.idhbtubia || {};
-                window.idhbtubia.que = window.idhbtubia.que || [];
+                window.idhb = window.idhb || {};
+                window.idhb.que = window.idhb.que || [];
 
                 // Show some header bidding logging.
                 if (this.debug) {
-                    window.idhbtubia.getConfig();
-                    window.idhbtubia.debug(true);
+                    window.idhb.getConfig();
+                    window.idhb.debug(true);
                 }
             }
 
@@ -353,7 +353,7 @@ class Ads {
                         // HEADER BIDDING.
                         // We got an object with keys, so we know this
                         // will be a header bidding ad request.
-                        if (typeof window.idhbtubia.requestAds === 'undefined') {
+                        if (typeof window.idhb.requestAds === 'undefined') {
                             reject(new Error('Prebid.js wrapper script hit an error or didn\'t exist!'));
                             return;
                         }
@@ -393,21 +393,21 @@ class Ads {
                         // Make the request for a VAST tag from the Prebid.js wrapper.
                         // Get logging from the wrapper using: ?idhb_debug=true
                         // To get a copy of the current config: copy(idhb.getConfig());
-                        window.idhbtubia.que.push(() => {
-                            window.idhbtubia.setAdserverTargeting(data);
-                            window.idhbtubia.setDfpAdUnitCode(unit);
+                        window.idhb.que.push(() => {
+                            window.idhb.setAdserverTargeting(data);
+                            window.idhb.setDfpAdUnitCode(unit);
 
                             // This is to add a flag, which if set to false;
                             // non-personalized ads get requested from DFP and a no-consent
                             // string - BOa7h6KOa7h6KCLABBENCDAAAAAjyAAA - is sent to all SSPs.
                             // If set to true, then the wrapper will continue as if no consent was given.
                             // This is only for Google, as google is not part of the IAB group.
-                            window.idhbtubia.allowPersonalizedAds(this.gdprTargeting);
+                            window.idhb.allowPersonalizedAds(this.gdprTargeting);
 
                             // Pass on the IAB CMP euconsent string. Most SSP's are part of the IAB group.
                             // So they will interpret and apply proper consent rules based on this string.
-                            window.idhbtubia.setDefaultGdprConsentString(consentString);
-                            window.idhbtubia.requestAds({
+                            window.idhb.setDefaultGdprConsentString(consentString);
+                            window.idhb.requestAds({
                                 slotIds: [this.slotId],
                                 callback: vastUrl => {
                                     resolve(vastUrl);
