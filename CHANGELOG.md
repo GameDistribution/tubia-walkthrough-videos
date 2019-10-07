@@ -1,4 +1,7 @@
 # Changelog
+## v2.0.23.3
+- Align display banners center and hide them when video is played
+
 ## v2.0.23.2
 - Fix headerlift banner request
 

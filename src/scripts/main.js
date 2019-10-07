@@ -565,6 +565,9 @@ class Player {
      */
     startPlyr() {
 
+        // Add started class to handle display banners hide/show
+        this.container.classList.add('tubia__started');
+
         // Call Google Analytics and Death Star.
         this.analytics();
 

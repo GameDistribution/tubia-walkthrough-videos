@@ -43,8 +43,16 @@
     &.tubia__active {
         visibility: visible;
         opacity: 1;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
     }
 
+    &.tubia__started {
+        .tubia__banner {
+            visibility: hidden;
+        }
+    }
     &.tubia__error {
         display: none;
     }
