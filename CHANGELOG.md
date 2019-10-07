@@ -1,4 +1,7 @@
 # Changelog
+## v2.0.23.2
+- Fix headerlift banner request
+
 ## v2.0.23.1
 - Connect to headerlift for advertisement
 

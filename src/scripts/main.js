@@ -404,7 +404,7 @@ class Player {
             });
 
             // Create a display advertisement which will reside on top of the poster image.
-            const slotId = 'tubia__display-ad';
+            const slotId = 'tubia__banner-ad';
             const slotId2 = 'tubia__banner-ad2';
             const slotElement = document.getElementById(slotId);
             const slotElement2 = document.getElementById(slotId2);
@@ -467,21 +467,19 @@ class Player {
                 // Load the ad.
                 
                 window.idhb.que.push(() => {
-                    window.idhb.que.push(() => {
-                        // Pass on the IAB CMP euconsent string. Most SSP's are part of the IAB group.
-                        // So they will interpret and apply proper consent rules based on this string.
-                        // window.idhb.setDefaultGdprConsentString('BOWJjG9OWJjG9CLAAAENBx-AAAAiDAAA');
-                        window.idhb.requestAds({
-                            slotIds: [
-                                slotId,
-                                slotId2,
-                            ],
-                            callback: (response) => {
-                                if (this.options.debug) {
-                                    console.info('window.idhbtubia.requestAds callback returned:', response);
-                                }
-                            },
-                        });
+                    // Pass on the IAB CMP euconsent string. Most SSP's are part of the IAB group.
+                    // So they will interpret and apply proper consent rules based on this string.
+                    // window.idhb.setDefaultGdprConsentString('BOWJjG9OWJjG9CLAAAENBx-AAAAiDAAA');
+                    window.idhb.requestAds({
+                        slotIds: [
+                            slotId,
+                            slotId2,
+                        ],
+                        callback: (response) => {
+                            if (this.options.debug) {
+                                console.info('window.idhbtubia.requestAds callback returned:', response);
+                            }
+                        },
                     });
                 });
             }
