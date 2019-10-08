@@ -1,4 +1,7 @@
 # Changelog
+## v2.0.23.5
+- Load headerliftjs after content is created
+
 ## v2.0.23.4
 - Add page width parameter to headerlift
 

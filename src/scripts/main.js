@@ -309,12 +309,6 @@ class Player {
                 // Create the markup now that we have the stylesheets and main container ready.
                 this.createMarkup();
 
-                const headerLiftJs = document.createElement('script');
-                headerLiftJs.src = `https://hb.improvedigital.com/pbw/headerlift.min.js?t=tubia&page_width=${this.container.offsetWidth}`;
-                headerLiftJs.setAttribute('type', 'application/javascript');
-                headerLiftJs.setAttribute('async', 'async');
-                headerLiftJs.id = 'idhb';
-                document.head.appendChild(headerLiftJs);
             })
             .catch(error => this.notFound('start videoDataPromise', error));
     }
@@ -410,6 +404,13 @@ class Player {
                 this.playButton.classList.toggle('tubia__active');
                 this.playButton.addEventListener('click', this.startPlyrHandler, false);
             });
+
+            const headerLiftJs = document.createElement('script');
+            headerLiftJs.src = `https://hb.improvedigital.com/pbw/headerlift.min.js?t=tubia&page_width=${this.container.offsetWidth}`;
+            headerLiftJs.setAttribute('type', 'application/javascript');
+            headerLiftJs.setAttribute('async', 'async');
+            headerLiftJs.id = 'idhb';
+            document.head.appendChild(headerLiftJs);
 
             // Create a display advertisement which will reside on top of the poster image.
             const slotId = 'tubia__banner-ad';
