@@ -1,4 +1,7 @@
 # Changelog
+## v2.0.23.4
+- Add page width parameter to headerlift
+
 ## v2.0.23.3
 - Align display banners center and hide them when video is played
 
