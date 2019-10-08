@@ -467,14 +467,7 @@ class Player {
                 window.idhb = window.idhb || {};
                 window.idhb.que = window.idhb.que || [];
 
-                // Show some header bidding logging.
-                if (this.options.debug) {
-                    window.idhb.getConfig();
-                    window.idhb.debug(true);
-                }
-
                 // Load the ad.
-                
                 window.idhb.que.push(() => {
                     // Pass on the IAB CMP euconsent string. Most SSP's are part of the IAB group.
                     // So they will interpret and apply proper consent rules based on this string.
