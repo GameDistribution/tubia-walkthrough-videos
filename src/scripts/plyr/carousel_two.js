@@ -39,7 +39,6 @@ class CarouselTwo {
         this.player.magicActive = false;
         this.player.hasMagicVideo = false;
         this.showMagicInCarousel = false;
-
         this.classes = {
             relatedVideos: 'related--videos',
             modeTitle: 'related--videos-mode-title',
@@ -304,8 +303,9 @@ class CarouselTwo {
     }
 
     static loadNextVideo(relatedVideos) {
-        this.ads.clearSafetyTimer('ready()');
-        this.ads.ready();
+        const {ads} = this.player.media.plyr;
+        ads.clearSafetyTimer('ready()');
+        ads.ready();
         
         // Load Next Video
         controls.ClearAllLevels.call(this);
@@ -354,9 +354,9 @@ class CarouselTwo {
     static loadMagicVideo() {
         this.player.playNext = true;
         this.player.magicPlayed = true;
-        this.ads = this.player.media.plyr.ads;
-        this.ads.clearSafetyTimer('ready()');
-        this.ads.ready();
+        const {ads} = this.player.media.plyr;
+        ads.clearSafetyTimer('ready()');
+        ads.ready();
 
         if (this.player.config.controls.includes('logo')) {
             document.querySelector('.plyr__logo-top').style.display = 'none';

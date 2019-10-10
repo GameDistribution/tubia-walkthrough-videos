@@ -1,4 +1,7 @@
 # Changelog
+## v2.0.23.7
+- Fix broken load next video function
+
 ## v2.0.23.6
 - Add version tracker to index html file
 
