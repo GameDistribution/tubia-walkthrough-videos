@@ -1,4 +1,7 @@
 # Changelog
+## v2.0.23.6
+- Add version tracker to index html file
+
 ## v2.0.23.5
 - Load headerliftjs after content is created
 
