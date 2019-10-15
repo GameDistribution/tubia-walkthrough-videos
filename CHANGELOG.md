@@ -1,8 +1,11 @@
 # Changelog
+## v2.0.23.11
+- Move magic video button to safe area for small screens
+
 ## v2.0.23.10
 - Reduce magic video button for small screens
 
-## v2.0.23.9
+İ## v2.0.23.9
 - Add mobilebanner css class
 
 ## v2.0.23.8
