@@ -282,6 +282,7 @@
     &.hidden{
         left: -100%;
         opacity: 0;
+        visibility: hidden;
     }
     
     button {
@@ -323,3 +324,32 @@
         }
     }
 } 
+
+@media only screen and (max-width: 600px) {
+    #plyr__magicvideo-container {
+        font-size: 1em;
+        padding: 0 0 0 10px;
+        height: auto;
+        width: auto;
+        top: 10px;
+        text-indent: 6px;
+        line-height: 0.8em;
+        &.hidden{
+            left: -100%;
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        #plyr__magicvideo-button {
+            #plyr__magicvideo-image {
+                width: 80px;
+                height: auto;
+                margin-left: 10px;
+                margin-right: 20px;
+            }
+        }
+        .close {
+            width: 25px;
+        }
+    } 
+}
