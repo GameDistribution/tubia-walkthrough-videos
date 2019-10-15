@@ -1,4 +1,7 @@
 # Changelog
+## v2.0.23.9
+- Add mobilebanner css class
+
 ## v2.0.23.8
 - Do not request top display banner in small sizes
 

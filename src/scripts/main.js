@@ -458,6 +458,9 @@ class Player {
                     // banner
                     slotElement.classList.add('banner');
                     slotElement2.classList.add('banner');
+                } else if (this.container.offsetWidth >= 360) {
+                    slotElement.classList.add('mobile-banner');
+                    slotElement2.classList.add('mobile-banner');
                 } else if (this.container.offsetWidth >= 320) {
                     slotElement.classList.add('mobile-leaderboard');
                     slotElement2.classList.add('mobile-leaderboard');
