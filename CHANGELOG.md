@@ -1,4 +1,7 @@
 # Changelog
+## v2.0.23.8
+- Do not request top display banner in small sizes
+
 ## v2.0.23.7
 - Fix broken load next video function
 

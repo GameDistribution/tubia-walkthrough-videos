@@ -458,11 +458,22 @@ class Player {
                     // banner
                     slotElement.classList.add('banner');
                     slotElement2.classList.add('banner');
+                } else if (this.container.offsetWidth >= 320) {
+                    slotElement.classList.add('mobile-leaderboard');
+                    slotElement2.classList.add('mobile-leaderboard');
                 } else if (this.container.offsetWidth >= 234) {
                     slotElement.classList.add('half-banner');
                     slotElement2.classList.add('half-banner');
                 }
-
+                const slots = [ slotId ];
+                if (this.container.offsetHeight < 220) {
+                    const topBanner = document.getElementById('tubia__banner-ad2');
+                    if (!utils.is.nullOrUndefined(topBanner)) {
+                        topBanner.style.visibility = 'hidden';
+                    }
+                } else {
+                    slots.push(slotId2);
+                }
                 // Set header bidding name space.
                 window.idhb = window.idhb || {};
                 window.idhb.que = window.idhb.que || [];
@@ -473,10 +484,7 @@ class Player {
                     // So they will interpret and apply proper consent rules based on this string.
                     // window.idhb.setDefaultGdprConsentString('BOWJjG9OWJjG9CLAAAENBx-AAAAiDAAA');
                     window.idhb.requestAds({
-                        slotIds: [
-                            slotId,
-                            slotId2,
-                        ],
+                        slotIds: slots,
                         callback: (response) => {
                             if (this.options.debug) {
                                 console.info('window.idhbtubia.requestAds callback returned:', response);
