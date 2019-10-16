@@ -630,18 +630,19 @@ class Player {
             videoElement.setAttribute('controls', 'true');
             videoElement.setAttribute('crossorigin', 'true');
             videoElement.setAttribute('playsinline', 'true');
+            videoElement.setAttribute('type', (json.files && json.files.length > 0) ? json.files[json.files.length - 1].type : 'video/mp4');
+            videoElement.setAttribute('autoplay', 'true');
             videoElement.poster = this.posterUrl;
             videoElement.id = 'plyr__tubia';
-
+            
             // Todo: If files (transcoded videos) doesn't exist we must load the raw video file.
             // Todo: However, currently the raw files are in the wrong google project and not served from a CDN, so expensive!
-            const videoSource = document.createElement('source');
             const source = (json.files && json.files.length > 0) ? json.files[json.files.length - 1].linkSecure : `https://storage.googleapis.com/vooxe_eu/vids/default/${json.detail[0].mediaURL}`;
             const sourceUrl = source.replace(/^http:\/\//i, 'https://');
-            const sourceType = (json.files && json.files.length > 0) ? json.files[json.files.length - 1].type : 'video/mp4';
+            const sourceType = videoElement.type;
             const gameUrl = this.options.url;
-            videoSource.src = sourceUrl;
-            videoSource.type = sourceType;
+
+            videoElement.src = sourceUrl;
 
             const { detail } = json;
             
@@ -654,7 +655,7 @@ class Player {
             }
             
 
-            videoElement.appendChild(videoSource);
+            // videoElement.appendChild(videoSource);
             this.container.appendChild(videoElement);
 
             // Create the video player.

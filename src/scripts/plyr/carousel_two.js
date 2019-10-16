@@ -169,21 +169,21 @@ class CarouselTwo {
             vidEl.addEventListener('loadeddata', () => {
                 utils.toggleHidden(this.player.elements.volume, false);
                 utils.toggleHidden(this.player.elements.buttons.mute, false);
-
-                const playPromise = vidEl.play();
-                // In browsers that don’t yet support this functionality,
-                // playPromise won’t be defined.
-                if (playPromise !== undefined) {
-                    playPromise.then(() => {
+                const video = document.querySelector('video');
+                async function playMedia() {
+                    try {
+                        await video.play();
                         const {forcePauseContent} = this.player.media.plyr.ads;
                         if (forcePauseContent) {
-                            vidEl.pause();
+                            video.pause();
                         }
-                        // Automatic playback started!
-                    }).catch((err) => {
-                        console.error(`Video could not played. Error: ${err}`);
-                    });
+                    } catch (err) {
+                        this.debug.error(`Video playing error: ${err}`);
+                    }
                 }
+                
+                playMedia();
+
                 if (vidEl.hasAttribute('muted')) {
                     this.player.muted = true;
                 };
