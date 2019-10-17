@@ -319,8 +319,8 @@ class Player {
      */
     createMarkup() {
         const html = `
-            <div class="tubia__transition" style="display: none !important;"></div>
-            <div class="tubia__animation">
+            <div id="loader__transition" class="tubia__transition" style="display: none !important;"></div>
+            <div id="loader__animation" class="tubia__animation">
                 <div class="loading-animation" lottie-class="loading-animation"></div>
             </div>
             
@@ -373,7 +373,7 @@ class Player {
 
             // Check if the poster image exists.
             this.posterPosterElement = document.createElement('div');
-            this.posterPosterElement.classList.add('tubia__poster');
+            this.posterPosterElement.id = 'tubia__poster';
             const checkImage = path =>
                 new Promise(resolve => {
                     const img = new Image();
@@ -755,6 +755,36 @@ class Player {
                 magicvideo,
             });
 
+            // Set some listeners.
+            this.player.on('ready', () => {
+                // Start transition towards showing the player.
+                if (this.options.lottie) {
+                    this.animationElement.classList.toggle('tubia__active');
+                } else {
+                    this.transitionElement.classList.toggle('tubia__active');
+                }
+                
+                setTimeout(() => {
+                    // Hide our spinner loader.
+                    this.hexagonLoader.classList.toggle('tubia__active');
+                }, this.transitionSpeed / 2);
+
+                
+                // Return ready callback for our clients.
+                try {
+                    parent.postMessage({ name: 'onReady' }, this.origin);
+                } catch (postMessageError) {
+                    console.error(postMessageError);
+                }
+
+                // Record Tubia "Video Play" event in Tunnl.
+                (new Image()).src = `https://ana.tunnl.com/event?tub_id=${this.videoId}&eventtype=1&page_url=${encodeURIComponent(this.options.url)}`;
+            });
+
+            this.player.on('error', (error) => {
+                this.onError('loadPlyr player', error);
+            });
+
             this.player.on('adsclick', () => {
                 try {
                     /* eslint-disable */
@@ -794,52 +824,6 @@ class Player {
                 } catch (error) {
                     // No need to throw an error or log. It's just Lotame.
                 }
-            });
-
-            // Set some listeners.
-            this.player.on('ready', () => {
-                // Start transition towards showing the player.
-                if (this.options.lottie) {
-                    this.animationElement.classList.toggle('tubia__active');
-                } else {
-                    this.transitionElement.classList.toggle('tubia__active');
-                }
-                
-                setTimeout(() => {
-                    // Hide our spinner loader.
-                    this.hexagonLoader.classList.toggle('tubia__active');
-                }, this.transitionSpeed / 2);
-
-                setTimeout(() => {
-                    // Show the player.
-                    this.player.elements.container.classList.toggle('tubia__active');
-                    
-                    if (this.options.lottie) {
-                        // Hide transition.
-                        this.animationElement.classList.toggle('tubia__active');
-                        // Permanently hide the transition.
-                        this.animationElement.style.opacity = 0;
-                        this.posterPosterElement.style.display = 'none';
-                    } else {
-                        // Hide transition.
-                        this.transitionElement.classList.toggle('tubia__active');
-                        // Permanently hide the transition.
-                        this.transitionElement.style.display = 'none';
-                    }
-                    
-                    // Return ready callback for our clients.
-                    try {
-                        parent.postMessage({ name: 'onReady' }, this.origin);
-                    } catch (postMessageError) {
-                        console.error(postMessageError);
-                    }
-                }, this.transitionSpeed / 1.5);
-
-                // Record Tubia "Video Play" event in Tunnl.
-                (new Image()).src = `https://ana.tunnl.com/event?tub_id=${this.videoId}&eventtype=1&page_url=${encodeURIComponent(this.options.url)}`;
-            });
-            this.player.on('error', (error) => {
-                this.onError('loadPlyr player', error);
             });
         }).catch(error => {
             this.onError('loadPlyr videoDataPromise', error);

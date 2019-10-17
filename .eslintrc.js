@@ -12,6 +12,7 @@ module.exports = {
         'jQuery': false,
         'google': false,
         'Honeybadger': false,
+        'Player': false,
     },
     'rules': {
         'no-param-reassign': ["error", { "props": false }],

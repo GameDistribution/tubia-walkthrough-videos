@@ -468,38 +468,45 @@ const defaults = {
             {
                 eventlisteners: true,
                 container: 'plyr--share-button',
+                cdn: 'https://cdn.tubia.com/media/animations/ui/plyr--share-button.json',
             },
         morevideos:
             {
                 eventlisteners: true,
                 container: 'plyr--bar-morevideos',
                 speed: 2.5,
+                cdn: 'https://cdn.tubia.com/media/animations/ui/plyr--bar-morevideos.json',
             },
         fullscreen:
             {
                 eventlisteners: true,
                 container: 'plyr--button-fullscreen',
+                cdn: 'https://cdn.tubia.com/media/animations/ui/plyr--button-fullscreen.json',
             },
         levels:
             {
                 eventlisteners: true,
                 container: 'plyr--bar-playlist',
+                cdn: 'https://cdn.tubia.com/media/animations/ui/plyr--bar-playlist.json',
             },
-        magicspace:
-            {
-                container: 'magic-space',
-                loop: true,
-            },
-        magiclock:
-            {
-                eventlisteners: true,
-                container: 'magic-lock',
-                playWhenHover: true,
-                onMouseOver: 'magic-space',
-            },
+        // magicspace:
+        //     {
+        //         container: 'magic-space',
+        //         loop: true,
+        //         cdn: 'https://cdn.tubia.com/media/animations/ui/magic-space.json',
+        //     },
+        // magiclock:
+        //     {
+        //         eventlisteners: true,
+        //         container: 'magic-lock',
+        //         playWhenHover: true,
+        //         onMouseOver: 'magic-space',
+        //         cdn: 'https://cdn.tubia.com/media/animations/ui/magic-lock.json',
+        //     },
         magictimer:
             {
                 container: 'magic-timer',
+                cdn: 'https://cdn.tubia.com/media/animations/ui/magic-timer.json',
             },
         cryingcharacter: {
             container: 'crying-character',

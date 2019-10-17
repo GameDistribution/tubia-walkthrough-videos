@@ -2184,6 +2184,39 @@ const controls = {
             });
         }
     },
+    hideLoader() {
+        // Show the player.
+
+        const self = Player;
+        
+        self.player.elements.container.classList.toggle('tubia__active');
+        let animationElement = null; 
+        let transitionElement = null;
+
+        if (self.options.lottie) {
+            animationElement = document.getElementById('loader__animation');
+        } else {
+            transitionElement = document.getElementById('loader__transition');
+        }
+        const posterPosterElement = document.getElementById('tubia__poster');
+
+        if (self.options.lottie) {
+            // Hide transition.
+            if (!utils.is.nullOrUndefined(animationElement)) {
+                animationElement.classList.toggle('tubia__active');
+                // Permanently hide the transition.
+                animationElement.style.opacity = 0;
+            }
+            if (!utils.is.nullOrUndefined(posterPosterElement)) {
+                posterPosterElement.style.display = 'none';
+            }
+        } else if (!utils.is.nullOrUndefined(transitionElement)) {
+            // Hide transition.
+            transitionElement.classList.toggle('tubia__active');
+            // Permanently hide the transition.
+            transitionElement.style.display = 'none';
+        }
+    },
 };
 
 export default controls;

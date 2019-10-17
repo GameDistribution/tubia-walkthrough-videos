@@ -169,17 +169,15 @@ class CarouselTwo {
             vidEl.addEventListener('loadeddata', () => {
                 utils.toggleHidden(this.player.elements.volume, false);
                 utils.toggleHidden(this.player.elements.buttons.mute, false);
+                const {player} = this;
+                const self = player;
                 const video = document.querySelector('video');
                 async function playMedia() {
                     try {
                         await video.play();
-                        const {forcePauseContent} = this.player.media.plyr.ads;
-                        if (forcePauseContent) {
-                            video.pause();
-                        }
-                    } catch (err) {
-                        this.debug.error(`Video playing error: ${err}`);
-                    }
+                        controls.hideLoader(self, player);
+                    // eslint-disable-next-line no-empty
+                    } catch (err) {}
                 }
                 
                 playMedia();
