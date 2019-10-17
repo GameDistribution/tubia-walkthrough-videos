@@ -46,7 +46,7 @@ class Tubia {
         let url = 'https://player.tubia.com/index.html?';
         if (domain === 'localhost:8081') {
             url = '/test/index.html?';
-        } else if (domain === 'test.spele.nl') {
+        } else if (this.options.debug) {
             url = 'https://player.tubia.com/test/index.html?';
         }
 

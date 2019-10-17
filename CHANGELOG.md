@@ -1,6 +1,7 @@
 # Changelog
 ## v2.0.23.12
 - Reduce videoplay performance
+- Serve files from test url when debug mode is on
 
 ## v2.0.23.11
 - Move magic video button to safe area for small screens
