@@ -1,4 +1,7 @@
 # Changelog
+## v2.0.23.13
+-Fix not working fullscreen button for ios safari browsers
+
 ## v2.0.23.12
 - Reduce videoplay performance
 - Serve files from test url when debug mode is on

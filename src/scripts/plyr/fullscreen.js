@@ -170,6 +170,10 @@ class Fullscreen {
 
         // iOS native fullscreen doesn't need the request step
         if (browser.isIos && this.player.config.fullscreen.iosNative) {
+            const video = document.querySelector('video');
+            if (!utils.is.nullOrUndefined(video)) {
+                video.webkitSetPresentationMode('fullscreen');
+            }
             if (this.player.playing) {
                 this.target.webkitEnterFullscreen();
             }
