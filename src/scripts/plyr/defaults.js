@@ -313,7 +313,7 @@ const defaults = {
         container: '.plyr',
         videContainer : '#tubia-container',
         playerVideo :'#plyr__tubia',
-        playerSource:'#plyr__tubia source',
+        playerSource:'#plyr__tubia.source',
         playerTitle : '.plyr__title',
         controls: {
             container: null,

@@ -649,6 +649,8 @@ const controls = {
             if(!json) return;
 
             controls.ClearAllLevels.call(this);
+            controls.CreateProgressLevel.call(this, document.querySelector('.plyr__progress'));
+            
             const { url } = JSON.parse(json);
             const { videoTitle } = JSON.parse(json);
             const source = document.querySelector(defaults.selectors.playerSource);
@@ -2188,8 +2190,9 @@ const controls = {
         // Show the player.
 
         const self = Player;
-        
-        self.player.elements.container.classList.toggle('tubia__active');
+        if (!self.player.elements.container.classList.contains('tubia__active')) {
+            self.player.elements.container.classList.add('tubia__active');
+        } 
         let animationElement = null; 
         let transitionElement = null;
 

@@ -632,6 +632,7 @@ class Player {
             videoElement.setAttribute('playsinline', 'true');
             videoElement.setAttribute('type', (json.files && json.files.length > 0) ? json.files[json.files.length - 1].type : 'video/mp4');
             videoElement.setAttribute('autoplay', 'true');
+            videoElement.setAttribute('class', 'source');
             videoElement.poster = this.posterUrl;
             videoElement.id = 'plyr__tubia';
             
