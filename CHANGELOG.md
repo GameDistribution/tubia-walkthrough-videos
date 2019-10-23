@@ -6,6 +6,7 @@
 - Send slots as an array and hide top banner when clicking to nextvideo button
 - Make share button more visible
 - Show level button when go back to default video
+- Reduce level button functionality
 
 ## v2.0.23.13
 - Fix not working fullscreen button for ios safari browsers

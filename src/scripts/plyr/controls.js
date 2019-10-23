@@ -1540,10 +1540,15 @@ const controls = {
             class: counter === '01' ? 'active' : '',
         });
 
-        // Jump to the time we want.
-        utils.on(item, 'click', () => {
-            // Todo: we want to set the current active class based on seekTime.
+        item.addEventListener('click', () => {
             this.jumpTo(cue);
+            const parent = item.parentElement;
+            Array.prototype.forEach.call(parent.children, child => {
+                if (child.classList.contains('active')) {
+                    child.classList.remove('active');
+                }
+            });
+            item.classList.add('active');
         });
 
         label.insertAdjacentHTML('beforeend', title);

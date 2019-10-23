@@ -5,8 +5,10 @@
     opacity: 0;
     transition: opacity .3s ease-in-out;
     cursor: pointer;
+    visibility: hidden;
 
     &.active {
+        visibility: visible;
         opacity: 1;
         transition: opacity .15s ease-in-out;
         cursor: pointer;
