@@ -309,7 +309,7 @@ const ui = {
     // Handle time change event
     timeUpdate(event) {
 
-        // Toggle next video button when the time remains 20 sec
+        // Toggle next video button when the time remains 30 sec
         const remainingTime = Math.floor(this.duration) - Math.floor(this.currentTime);
         const nextVideoButton = document.getElementById('plyr__nextvideo-button');
         const rtSpan = document.getElementById('plyr__nextvideo-remainingtime');
@@ -331,7 +331,7 @@ const ui = {
         }
 
 
-        if (remainingTime <= 10) {
+        if (remainingTime <= 30) {
             if (!utils.is.nullOrUndefined(rtSpan)) {
                 rtSpan.innerText = remainingTime;
             }

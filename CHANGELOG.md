@@ -1,6 +1,7 @@
 # Changelog
 ## v2.0.23.14
 -Add source class to player source and fix reloading cuepoints for default video
+-Show next video button in the last 30sec
 
 ## v2.0.23.13
 -Fix not working fullscreen button for ios safari browsers
