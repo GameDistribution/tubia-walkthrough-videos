@@ -212,6 +212,10 @@ class CarouselTwo {
         
         if (typeof (this.nextVideoButton) !== 'undefined' && this.nextVideoButton !== null) {
             this.nextVideoButton.addEventListener('click', () => {
+                const tda = document.getElementById('tubia__banner-ad2');
+                if (!utils.is.nullOrUndefined(tda)) {
+                    tda.classList.remove('last30SecShown');
+                }
                 this.player.playNext = true;
                 CarouselTwo.loadNextVideo.call(this, this.modes.related);                
             });

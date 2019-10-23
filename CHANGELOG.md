@@ -3,6 +3,7 @@
 -Add source class to player source and fix reloading cuepoints for default video
 -Show next video button in the last 30sec
 -Request a display ad in the last 30sec
+-Send slots as an array and hide top banner when clicking to nextvideo button
 
 ## v2.0.23.13
 -Fix not working fullscreen button for ios safari browsers

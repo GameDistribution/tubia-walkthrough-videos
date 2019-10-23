@@ -345,7 +345,7 @@ const ui = {
                     // So they will interpret and apply proper consent rules based on this string.
                     // window.idhb.setDefaultGdprConsentString('BOWJjG9OWJjG9CLAAAENBx-AAAAiDAAA');
                     window.idhb.requestAds({
-                        slotIds: Player.displayAds.slots.top,
+                        slotIds: [Player.displayAds.slots.top],
                         callback: (response) => {
                             
                             if (this.options.debug) {
