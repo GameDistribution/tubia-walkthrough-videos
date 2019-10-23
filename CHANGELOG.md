@@ -4,6 +4,7 @@
 -Show next video button in the last 30sec
 -Request a display ad in the last 30sec
 -Send slots as an array and hide top banner when clicking to nextvideo button
+-Make share button more visible
 
 ## v2.0.23.13
 -Fix not working fullscreen button for ios safari browsers

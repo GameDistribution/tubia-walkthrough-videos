@@ -28,13 +28,14 @@
 
     .plyr--share-button .plyr--share-title {
       transition: top 0.4s ease-in-out;
-      background: rgba(0, 0, 0, 0.50);
+      background: rgba(255, 255, 255, 1);
       top: 55px;      
       position: absolute;
       padding: .2vw .7vw;
       border-radius: 2vw;
       left: 0;
       font-size: 1.1em;
+      color: #101010;
       font-family: 'gaegubold', sans-serif;
       width: 100%;
       @media (max-width: $plyr-bp-sm) {
