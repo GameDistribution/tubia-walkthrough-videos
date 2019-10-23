@@ -668,7 +668,7 @@ const controls = {
                 });
             }
 
-            const {ads} = this.player.media.plyr;
+            const {ads} = this.media.plyr;
             ads.clearSafetyTimer('ready()');
             ads.ready();
 
@@ -677,6 +677,11 @@ const controls = {
             }
             document.getElementById('videoTitle').style.display = 'block';
             document.getElementById('btnloadDefault').style.display = 'none';
+
+            const levelsButton = document.querySelector('.plyr--playlist-button');
+            if (!utils.is.nullOrUndefined(levelsButton)) {
+                levelsButton.style.display = 'block';
+            }
         });
         
         title.appendChild(btnloadDefault);

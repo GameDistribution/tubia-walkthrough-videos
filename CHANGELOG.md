@@ -1,13 +1,14 @@
 # Changelog
 ## v2.0.23.14
--Add source class to player source and fix reloading cuepoints for default video
--Show next video button in the last 30sec
--Request a display ad in the last 30sec
--Send slots as an array and hide top banner when clicking to nextvideo button
--Make share button more visible
+- Add source class to player source and fix reloading cuepoints for default video
+- Show next video button in the last 30sec
+- Request a display ad in the last 30sec
+- Send slots as an array and hide top banner when clicking to nextvideo button
+- Make share button more visible
+- Show level button when go back to default video
 
 ## v2.0.23.13
--Fix not working fullscreen button for ios safari browsers
+- Fix not working fullscreen button for ios safari browsers
 
 ## v2.0.23.12
 - Reduce videoplay performance
