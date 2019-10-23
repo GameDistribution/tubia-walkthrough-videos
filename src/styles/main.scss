@@ -51,6 +51,9 @@
     &.tubia__started {
         .tubia__banner {
             visibility: hidden;
+            &.last30SecShown {
+                visibility: visible !important;
+            }
         }
     }
     &.tubia__error {

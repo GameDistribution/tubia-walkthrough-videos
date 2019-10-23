@@ -332,6 +332,29 @@ const ui = {
 
 
         if (remainingTime <= 30) {
+            const dis = Player.displayIsShown;
+            if (!dis) {
+                // Load the ad.
+                Player.displayIsShown = true;
+                const tda = document.getElementById('tubia__banner-ad2');
+                if (!utils.is.nullOrUndefined(tda)) {
+                    tda.classList.add('last30SecShown');
+                }
+                window.idhb.que.push(() => {
+                    // Pass on the IAB CMP euconsent string. Most SSP's are part of the IAB group.
+                    // So they will interpret and apply proper consent rules based on this string.
+                    // window.idhb.setDefaultGdprConsentString('BOWJjG9OWJjG9CLAAAENBx-AAAAiDAAA');
+                    window.idhb.requestAds({
+                        slotIds: Player.displayAds.slots.top,
+                        callback: (response) => {
+                            
+                            if (this.options.debug) {
+                                console.info('window.idhbtubia.requestAds callback returned:', response);
+                            }
+                        },
+                    });
+                });
+            }
             if (!utils.is.nullOrUndefined(rtSpan)) {
                 rtSpan.innerText = remainingTime;
             }
@@ -344,6 +367,10 @@ const ui = {
             }
             if (remainingTime === 1) {
                 // Load Next Video
+                const tda = document.getElementById('tubia__banner-ad2');
+                if (!utils.is.nullOrUndefined(tda)) {
+                    tda.classList.remove('last30SecShown');
+                }
                 nextVideoButton.click();
             }
         } else if (!utils.is.nullOrUndefined(nextVideoButton) && !nextVideoButton.classList.contains('hidden')) {

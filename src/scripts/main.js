@@ -115,6 +115,13 @@ class Player {
         this.hoverPlyrHandler = this.hoverPlyr.bind(this);
         this.player = null;
         this.nextCuePoint = null;
+        this.displayAds = {
+            slots: {
+                top: 'tubia__banner-ad2',
+                bottom: 'tubia__banner-ad',
+            },
+        };
+        this.displayIsShown = false;
 
         // Set the proper origin URL for postMessage requests.
         this.origin = document.location.origin;
@@ -413,10 +420,8 @@ class Player {
             document.head.appendChild(headerLiftJs);
 
             // Create a display advertisement which will reside on top of the poster image.
-            const slotId = 'tubia__banner-ad';
-            const slotId2 = 'tubia__banner-ad2';
-            const slotElement = document.getElementById(slotId);
-            const slotElement2 = document.getElementById(slotId2);
+            const slotElement = document.getElementById(this.displayAds.slots.bottom);
+            const slotElement2 = document.getElementById(this.displayAds.slots.top);
             const displayIgnoreDomains = [
                 '1001spiele.de',
                 '1001hry.cz',
@@ -444,6 +449,7 @@ class Player {
                 '1001games.co.uk',
                 'wuki.com',
             ];
+        
             if (slotElement
                 && displayIgnoreDomains.indexOf(this.options.domain.replace(/^(?:https?:\/\/)?(?:\/\/)?(?:www\.)?/i, '').split('/')[0]) === -1) {
                 
@@ -468,14 +474,14 @@ class Player {
                     slotElement.classList.add('half-banner');
                     slotElement2.classList.add('half-banner');
                 }
-                const slots = [ slotId ];
+                const slots = [ this.displayAds.slots.bottom ];
                 if (this.container.offsetHeight < 220) {
                     const topBanner = document.getElementById('tubia__banner-ad2');
                     if (!utils.is.nullOrUndefined(topBanner)) {
                         topBanner.style.visibility = 'hidden';
                     }
                 } else {
-                    slots.push(slotId2);
+                    slots.push(this.displayAds.slots.top);
                 }
                 // Set header bidding name space.
                 window.idhb = window.idhb || {};
@@ -489,6 +495,7 @@ class Player {
                     window.idhb.requestAds({
                         slotIds: slots,
                         callback: (response) => {
+                            this.displayIsShown = true;
                             if (this.options.debug) {
                                 console.info('window.idhbtubia.requestAds callback returned:', response);
                             }
@@ -580,6 +587,7 @@ class Player {
 
         // Add started class to handle display banners hide/show
         this.container.classList.add('tubia__started');
+        this.displayIsShown = false;
 
         // Call Google Analytics and Death Star.
         this.analytics();
