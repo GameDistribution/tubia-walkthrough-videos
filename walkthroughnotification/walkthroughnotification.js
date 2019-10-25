@@ -37,9 +37,9 @@ class WalkthroughNotification {
         const iframeList = document.querySelectorAll('iframe');
         iframeList.forEach(element => {
             if (element.hasAttribute('src')) {
-                // if (element.src.indexOf('player.tubia.com') > -1) {
-                element.setAttribute('tubia-walkthrough', true);
-                // }
+                if (element.src.indexOf('player.tubia.com') > -1) {
+                    element.setAttribute('tubia-walkthrough', true);
+                }
             }
         });
 
