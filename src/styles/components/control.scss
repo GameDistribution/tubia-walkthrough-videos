@@ -13,7 +13,7 @@
         overflow: visible; // IE11
         padding: $plyr-control-padding;
         position: relative;
-        transition: all 0.15s cubic-bezier(0.4, 0.0, 1, 1);
+        // transition: all 0.15s cubic-bezier(0.4, 0.0, 1, 1);
         min-width: auto;
         min-height: auto;
 
@@ -161,6 +161,7 @@
     text-align: left;
     opacity: 1;
     transition: all .2s cubic-bezier(.4,0,1,1);
+    overflow: visible;
     &:hover {
         background: #000;
         cursor: pointer;
