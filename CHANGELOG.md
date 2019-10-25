@@ -1,4 +1,7 @@
 # Changelog
+## v2.0.23.15
+- Reduce progress bar, and fix it for IE11
+
 ## v2.0.23.14
 - Add source class to player source and fix reloading cuepoints for default video
 - Show next video button in the last 30sec
