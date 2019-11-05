@@ -1,4 +1,7 @@
 # Changelog
+## v2.1.0.0
+- Change uix of related videos carousel
+
 ## v2.0.23.15
 - Reduce progress bar, and fix it for IE11
 - Fix image overflow issue on next video button

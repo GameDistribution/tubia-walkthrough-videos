@@ -87,7 +87,7 @@ class CarouselTwo {
             class: this.classes.closeButton,
         });
 
-        closeButton.insertAdjacentHTML('afterbegin', '<span class="icon-close"></span><span class="text">CLOSE</span>');
+        closeButton.insertAdjacentHTML('afterbegin', '<span class="icon-close"></span>');
 
         closeButton.addEventListener('click', () => {
             controls.hideInterestingVideos();
@@ -107,7 +107,6 @@ class CarouselTwo {
             CarouselTwo.createTitle.call(this, this.modes.insane);
             CarouselTwo.createThumbnails.call(this, this.modes.insane);
             CarouselTwo.createHexagon.call(this, this.modes.insane);
-            CarouselTwo.createScrews.call(this, this.modes.insane);
             this.modes.insane.section.addEventListener('mouseenter', CarouselTwo.hoverGifAnimateEvent);
             this.modes.insane.section.addEventListener('mouseleave', CarouselTwo.hoverGifAnimateEvent);
             relatedVideosWrapper.appendChild(this.modes.insane.section);
@@ -116,7 +115,6 @@ class CarouselTwo {
             CarouselTwo.createTitle.call(this, this.modes.best);
             CarouselTwo.createThumbnails.call(this, this.modes.best);
             CarouselTwo.createHexagon.call(this, this.modes.best);
-            CarouselTwo.createScrews.call(this, this.modes.best);
             this.modes.best.section.addEventListener('mouseenter', CarouselTwo.hoverGifAnimateEvent);
             this.modes.best.section.addEventListener('mouseleave', CarouselTwo.hoverGifAnimateEvent);
             relatedVideosWrapper.appendChild(this.modes.best.section);
@@ -125,7 +123,6 @@ class CarouselTwo {
             this.player.hasMagicVideo = true;
             if (this.showMagicInCarousel) {
                 CarouselTwo.createTitle.call(this, this.modes.magic);
-                CarouselTwo.createScrews.call(this, this.modes.magic);
                 CarouselTwo.createMagicAnimations.call(this, this.modes.magic);
 
                 if (!this.openedMagic) {
@@ -156,7 +153,6 @@ class CarouselTwo {
             CarouselTwo.createTitle.call(this, element);
             CarouselTwo.createThumbnails.call(this, element);
             CarouselTwo.createHexagon.call(this, element);
-            CarouselTwo.createScrews.call(this, element);
             element.section.addEventListener('mouseenter', CarouselTwo.hoverGifAnimateEvent);
             element.section.addEventListener('mouseleave', CarouselTwo.hoverGifAnimateEvent);
             relatedVideosWrapper.appendChild(element.section);
@@ -436,18 +432,6 @@ class CarouselTwo {
         const { section, title } = mode;
         const titleEl = utils.createElement('div', { class: this.classes.modeTitle }, title);
         section.appendChild(titleEl);
-    }
-
-    static createScrews(mode) {
-        const { section } = mode;
-        const secrewLeft = `
-            <i class="screw left"></i>
-        `;
-        const secrewRight = `
-            <i class="screw right"></i>
-        `;
-        section.insertAdjacentHTML('afterbegin', secrewLeft);
-        section.insertAdjacentHTML('beforeend', secrewRight);
     }
 
     static createControls(container) {
