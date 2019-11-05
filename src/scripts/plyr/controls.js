@@ -621,6 +621,7 @@ const controls = {
             lotties.reversePlayLottie('plyr--bar-morevideos');
             moreVideosButton.classList.add('hide');
         }
+        Player.player.play();
     },
 
     // Create title
