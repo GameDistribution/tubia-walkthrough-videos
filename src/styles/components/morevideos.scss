@@ -73,12 +73,12 @@
                 }
                 &::before { 
                 transform: rotate(45deg);
-                height: 2px;
+                height: 3px;
                 margin-top: -3px;
                 }
                 &::after {
                     transform: rotate(-45deg);
-                    height: 2px;
+                    height: 3px;
                     margin-top: -3px;
                 }
             }
