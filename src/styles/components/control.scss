@@ -16,6 +16,7 @@
         // transition: all 0.15s cubic-bezier(0.4, 0.0, 1, 1);
         min-width: auto;
         min-height: auto;
+        z-index: 99;
 
         svg {
             display: inline-block;
@@ -39,7 +40,7 @@
     .plyr__control[lottie-class] {
         display: flex;
         align-items: center;
-        max-width: 38px;
+        max-width: 44px;
         padding: 3px;
         margin-bottom: 3px;
         svg.icon--pressed,
@@ -56,8 +57,8 @@
     }
     .plyr__controls-right {
         .plyr__control[lottie-class] {
-            width: 40px;
-            height: 40px;
+            width: 44px;
+            height: 44px;
         }
     }
 

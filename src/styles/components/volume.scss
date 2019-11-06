@@ -19,6 +19,9 @@
         @media (min-width: $plyr-bp-md) {
             max-width: 80px;
         }
+        &.hidden {
+            visibility: hidden;
+        }
     }
 
     // Hide sound controls on iOS

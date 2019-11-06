@@ -266,6 +266,20 @@ class CarouselTwo {
                 magicImage.style.visibility = 'hidden';
             }
         }
+        const muteButton = document.querySelector('button[data-plyr="mute"]');
+        if (!utils.is.nullOrUndefined(this.magicVideoButton)) {
+            const volumeBar = document.getElementById('volumeBar');
+            muteButton.addEventListener('mouseover', () => {
+                if (volumeBar.classList.contains('hidden')) {
+                    volumeBar.classList.remove('hidden');
+                }
+            });
+            muteButton.addEventListener('mouseout', () => {
+                if (!volumeBar.classList.contains('hidden')) {
+                    volumeBar.classList.add('hidden');
+                }
+            });
+        }
     }
 
     static toggleMagicVideoLoader(magicVideoContainerClass) {

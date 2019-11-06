@@ -1801,7 +1801,19 @@ const controls = {
         // Volume range control
         if (this.config.controls.includes('volume')) {
             const volume = utils.createElement('div', {
-                class: 'plyr__volume',
+                class: 'plyr__volume hidden',
+                id: 'volumeBar',
+            });
+
+            volume.addEventListener('mouseover', () => {
+                if (volume.classList.contains('hidden')) {
+                    volume.classList.remove('hidden');
+                }
+            });
+            volume.addEventListener('mouseout', () => {
+                if (!volume.classList.contains('hidden')) {
+                    volume.classList.add('hidden');
+                }
             });
 
             // Set the attributes
