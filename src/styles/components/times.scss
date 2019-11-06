@@ -6,7 +6,17 @@
     .plyr__time {
         font-size: $plyr-font-size-time;
         padding: 0 $plyr-control-padding;
+        &.duration
+        { 
+            display: none;
+        }
+        &.currentTime {
+            right: 25px;
+            position: absolute;
+            margin-top: -47px;
+        }
     }
+    
 
     // Media duration hidden on small screens
     .plyr__time + .plyr__time {

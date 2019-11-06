@@ -10,8 +10,9 @@
 
         position: absolute;
         bottom: $plyr-control-spacing * 4.5;
-        width: 100%;
+        width: 93%;
         height: $plyr-range-track-height;
+        margin: 0 2% 15px;
 
         // Seek tooltip to show time
         .plyr__tooltip {

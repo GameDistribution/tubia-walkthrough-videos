@@ -441,8 +441,9 @@ const controls = {
 
     // Create time display
     createTime(type) {
+
         const container = utils.createElement('div', {
-            class: 'plyr__time',
+            class: `plyr__time ${type}` ,
         });
 
         container.appendChild(
@@ -1828,7 +1829,7 @@ const controls = {
 
         // Media current time display
         if (this.config.controls.includes('current-time')) {
-            containerLeft.appendChild(
+            containerRight.appendChild(
                 controls.createTime.call(this, 'currentTime')
             );
         }
