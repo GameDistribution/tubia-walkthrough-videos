@@ -3,8 +3,10 @@
 // ==========================================================================
 
 $plyr-control-icon-size: 18px !default;
-$plyr-control-icon-size-large: 20px !default;
-$plyr-control-icon-size-huge: 30px !default;
+$plyr-control-icon-size-large: 24px !default;
+$plyr-control-icon-size-huge: 28px !default;
+$plyr-control-lottie-icon-size: 36px !default;
+$plyr-control-lottie-icon-size-large: 44px !default;
 $plyr-control-spacing: 9px !default;
 $plyr-control-padding: ($plyr-control-spacing * 0.7) !default;
 $plyr-control-radius: 1px !default;
@@ -22,3 +24,11 @@ $plyr-audio-control-color-hover: #fff !default;
 $plyr-audio-control-bg-hover: $plyr-color-main !default;
 
 $related-videos-padding-between-videos: 2vw !default;
+$related-videos-item-height: 16vw;
+$related-videos-item-height-large: 24vw;
+$related-videos-img-width: 26vw;
+$related-videos-img-width-large: 40vw;
+
+$plyr-text-small-size: 1.2vw;
+$plyr-text-normal-size: 1.3vw;
+$plyr-text-large-size: 1.4vw;

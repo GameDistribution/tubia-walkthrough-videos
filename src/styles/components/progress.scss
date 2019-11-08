@@ -6,8 +6,7 @@
     .plyr__progress {
         display: flex;
         flex: 1;
-        //position: relative;
-
+        border-radius: $plyr-range-track-height;
         position: absolute;
         bottom: $plyr-control-spacing * 4.5;
         width: 93%;
@@ -20,7 +19,13 @@
             font-size: $plyr-font-size-time;
             left: 0;
         }
-        
+        @media only screen and (min-width : 320px) {
+          width: 86%;
+          margin-left: 20px;
+        }
+        @media (min-width: 768px) {
+          width: 95%;
+        }
     }
 
     &.plyr--full-ui .plyr__progress {
@@ -35,7 +40,7 @@
             }
           &::-webkit-slider-runnable-track {
             width: 100%;
-            height: 2px;
+            height: 3px;
             cursor: pointer;
             animation: 0.2s;
             border-radius: 1.3px;
@@ -51,10 +56,9 @@
           }
         }
         input[type=range] {
-        
             &::-moz-range-track {
             width: 100%;
-            height: 2px;
+            height: 3px;
             cursor: pointer;
             animation: 0.2s;
             border-radius: 1.3px;
@@ -69,7 +73,7 @@
           }
           &::-ms-track {
             width: 100%;
-            height: 2px;
+            height: 3px;
             cursor: pointer;
             animation: 0.2s;
             background: transparent;
@@ -92,46 +96,6 @@
             margin-top: 0px;
           }
         }
-        
-          
-        // input[type='range'] {
-        //     // position: absolute;
-        //     // bottom: 0;
-        //     // z-index: 1;
-        //     // height: 42px;
-        //     // display: flex;
-        //     z-index: 1;
-        //     height: $plyr-range-track-height;
-
-
-        //     &::-webkit-slider-runnable-track {
-        //         flex: 1;
-        //         margin-top: auto;
-        //         width: 10px;
-        //         height: 10px;
-        //     }
-
-        //     &::-webkit-slider-thumb {
-        //         -webkit-appearance: none;
-        //     }
-
-        //     &::-moz-range-track,
-        //     &::-moz-range-thumb,
-        //     &::-moz-range-progress {
-        //         flex: 1;
-        //         margin-top: auto;
-        //         transform: translateY(17px);
-        //     }
-
-        //     &::-ms-track,
-        //     &::-ms-fill-upper,
-        //     &::-ms-fill-lower,
-        //     &::-ms-thumb{
-        //         flex: 1;
-        //         margin-top: auto;
-        //         // transform: translateY(17px);
-        //     }
-        // }
     }
 
     .plyr__progress--buffer {

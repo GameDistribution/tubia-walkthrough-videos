@@ -486,7 +486,7 @@ const controls = {
                 </svg>
             `;
         const container = utils.createElement('span', {
-            class: 'plyr__logo plyr__logo-top',
+            class: 'plyr__logo plyr__logo-top hidden',
         });
         container.insertAdjacentHTML('beforeend', svg);
 
@@ -687,13 +687,6 @@ const controls = {
         });
         
         title.appendChild(btnloadDefault);
-
-        const text = utils.createElement('span', {
-            class: 'plyr__title',
-            id: 'videoTitle',
-        }, this.config.title);
-        title.appendChild(text);
-        
         return container;
 
     },

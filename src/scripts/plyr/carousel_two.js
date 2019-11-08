@@ -280,6 +280,12 @@ class CarouselTwo {
                 }
             });
         }
+        const controlsLeft = document.querySelector('.plyr__controls-left');
+        const text = utils.createElement('span', {
+            class: 'plyr__title',
+            id: 'videoTitle',
+        }, this.player.config.title);
+        controlsLeft.appendChild(text);
     }
 
     static toggleMagicVideoLoader(magicVideoContainerClass) {

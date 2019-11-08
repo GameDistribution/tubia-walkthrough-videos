@@ -21,9 +21,13 @@
         svg {
             display: inline-block;
             fill: currentColor;
-            height: $plyr-control-icon-size;
+            height: $plyr-control-icon-size-large;
             pointer-events: none;
-            width: $plyr-control-icon-size;
+            width: $plyr-control-icon-size-large;
+            @media (max-width: $plyr-bp-sm) {
+                width: $plyr-control-icon-size;
+                height: $plyr-control-icon-size;
+            }
         }
 
         // Default focus
@@ -40,7 +44,7 @@
     .plyr__control[lottie-class] {
         display: flex;
         align-items: center;
-        max-width: 44px;
+        max-width: $plyr-control-lottie-icon-size-large;
         padding: 3px;
         margin-bottom: 3px;
         svg.icon--pressed,
@@ -49,16 +53,29 @@
         span.label--not-pressed {
             display: none !important;
         }
+        @media (max-width: $plyr-bp-sm) {
+            max-width: $plyr-control-lottie-icon-size;
+        }
         &.plyr--bar-morevideos {
             @media (max-width: $plyr-bp-sm) {
                 display: none;
             }
         }
-    }
+    }   
     .plyr__controls-right {
         .plyr__control[lottie-class] {
-            width: 44px;
-            height: 44px;
+            width: $plyr-control-lottie-icon-size-large;
+            height: $plyr-control-lottie-icon-size-large;
+            @media (max-width: $plyr-bp-sm) {
+                width: $plyr-control-lottie-icon-size;
+                height: $plyr-control-lottie-icon-size;
+            }
+            svg {
+                max-width: $plyr-control-lottie-icon-size-large;
+                @media (max-width: $plyr-bp-sm) {
+                    max-width: $plyr-control-lottie-icon-size;
+                }
+            }
         }
     }
 
@@ -262,7 +279,10 @@
     background: #101010;
     outline: none;
     border: none;
-    font-size: 1.4em;
+    font-size: $plyr-text-normal-size;
+    @media only screen and (min-width : 320px) {
+        font-size: $plyr-text-small-size;
+    }
     padding: 0 0 0 20px;
     box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.29);
     color: #fff;
@@ -341,7 +361,6 @@
             opacity: 0;
             visibility: hidden;
         }
-        
         #plyr__magicvideo-button {
             #plyr__magicvideo-image {
                 width: 80px;

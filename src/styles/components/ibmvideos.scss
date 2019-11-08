@@ -33,7 +33,10 @@
 
         >div.mode {
             width: auto;
-            height: 16vw;
+            height: $related-videos-item-height;
+            @media (max-width: $plyr-bp-sm) {
+                height: $related-videos-item-height-large;
+            }
             float: left;
             margin-right: $related-videos-padding-between-videos;
             position: relative;
@@ -122,13 +125,14 @@
 
             .related--videos-mode-title {
                 position: absolute;
-                top: calc(100% + .7vw);
+                top: 100%;
                 width: 100%;
-                height: 2vw;
+                padding-top: 10px;
+                height: auto;
                 color: #fff;
                 display: flex;
                 font-weight: 700;
-                font-size: 1.3vw;
+                font-size: $plyr-text-normal-size;
                 letter-spacing: .05vw;
                 z-index: 1;
                 align-content: center;
@@ -140,11 +144,17 @@
                 text-overflow: ellipsis;
                 display: block;
                 overflow: hidden;
+                @media (min-width: $plyr-bp-sm) {
+                    font-size: $plyr-text-large-size;
+                }
             }
 
             img {
-                width: 26vw;
+                width: $related-videos-img-width;
                 height: 100%;
+                @media (max-width: $plyr-bp-sm) {
+                    width: $related-videos-img-width-large;
+                }
             }
         }
     }

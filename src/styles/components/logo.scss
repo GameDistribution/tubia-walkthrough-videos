@@ -15,6 +15,9 @@
         &.plyr__logo-top{
             top: -4px;
         }
+        &.hidden {
+            visibility: hidden;
+        }
     }
 
     &.plyr--video:not(.plyr--hide-controls) {
