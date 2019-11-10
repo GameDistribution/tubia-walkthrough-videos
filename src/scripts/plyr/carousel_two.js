@@ -89,9 +89,7 @@ class CarouselTwo {
 
         closeButton.insertAdjacentHTML('afterbegin', '<span class="icon-close"></span>');
 
-        closeButton.addEventListener('click', () => {
-            controls.hideInterestingVideos();
-        });
+        closeButton.addEventListener('click', () => CarouselTwo.closeInterestingVideosContainer.call(this));
 
         closeButton.setAttribute('data-plyr', 'moreVideosCloseButton');
 
@@ -318,6 +316,13 @@ class CarouselTwo {
             CarouselTwo.toggleMagicVideoLoader.call(this, magicVideoContainerClass);
         }
 
+    }
+
+    static closeInterestingVideosContainer() {
+        // Clear timeout to request a new display ad
+        clearTimeout(this.player.timers.requestDisplayAd);
+        controls.hideDisplayBanners();
+        controls.hideInterestingVideos();
     }
 
     static loadNextVideo(relatedVideos) {

@@ -593,6 +593,10 @@ const controls = {
     showInterestingVideos(forcePauseContent) {
         if (forcePauseContent) return;
         
+        Player.player.timers.requestDisplayAd = setTimeout(() => {
+            controls.requestDisplayBanner([Player.displayAds.slots.top]);
+        }, 10000);
+
         const playButton = document.querySelector('.plyr__control--overlaid');
         const moreVideosButton = document.querySelector('.plyr__morevideos');
         
@@ -624,7 +628,7 @@ const controls = {
         }
         Player.player.play();
     },
-
+    
     // Create title
     createTitle() {
        
@@ -2235,6 +2239,37 @@ const controls = {
             transitionElement.classList.toggle('tubia__active');
             // Permanently hide the transition.
             transitionElement.style.display = 'none';
+        }
+    },
+    requestDisplayBanner(slotIDs) {
+        const dis = Player.displayIsShown;
+        if (!dis) {
+            // Load the ad.
+            Player.displayIsShown = true;
+            const tda = document.getElementById('tubia__banner-ad2');
+            if (!utils.is.nullOrUndefined(tda)) {
+                tda.classList.add('displayShown');
+            }
+            window.idhb.que.push(() => {
+                // Pass on the IAB CMP euconsent string. Most SSP's are part of the IAB group.
+                // So they will interpret and apply proper consent rules based on this string.
+                // window.idhb.setDefaultGdprConsentString('BOWJjG9OWJjG9CLAAAENBx-AAAAiDAAA');
+                window.idhb.requestAds({
+                    slotIds: slotIDs,
+                    callback: (response) => {
+                        
+                        if (this.options.debug) {
+                            console.info('window.idhbtubia.requestAds callback returned:', response);
+                        }
+                    },
+                });
+            });
+        }
+    },
+    hideDisplayBanners() {
+        const tda = document.querySelectorAll('displayShown');
+        if (!utils.is.nullOrUndefined(tda)) {
+            tda.classList.remove('displayShown');
         }
     },
 };
