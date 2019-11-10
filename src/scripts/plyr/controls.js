@@ -2269,7 +2269,9 @@ const controls = {
     hideDisplayBanners() {
         const tda = document.querySelectorAll('displayShown');
         if (!utils.is.nullOrUndefined(tda)) {
-            tda.classList.remove('displayShown');
+            if (tda.classList.contains('displayShown')) {
+                tda.classList.remove('displayShown');
+            }
         }
     },
 };
