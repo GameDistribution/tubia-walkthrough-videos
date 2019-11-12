@@ -55,6 +55,7 @@ class Player {
         const category = utils.parseJson(params.category);
         const keys = utils.parseJson(params.keys);
         const magicvideo = typeof params.magicvideo !== 'undefined' && params.magicvideo !== '' ? parseInt(params.magicvideo, 10) : true;
+        const moremenu = true;
 
         // Set the URL's based on given (legacy) parameters.
         // Receiving a proper pageurl parameter is mandatory. We either get it directly from the iframe URL,
@@ -85,6 +86,7 @@ class Player {
             keys,
             lottie: true,
             magicvideo,
+            moremenu,
         };
 
         // Honeybadger Code Monitoring
@@ -716,7 +718,7 @@ class Player {
                 controls.push('morevideos');
             }
 
-            const {magicvideo} = this.options;
+            const {magicvideo, moremenu} = this.options;
 
 
             // Create the Plyr instance.
@@ -762,6 +764,7 @@ class Player {
                 share: true,
                 controls,
                 magicvideo,
+                moremenu,
             });
 
             // Set some listeners.

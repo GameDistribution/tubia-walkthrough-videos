@@ -4,6 +4,7 @@
 
 import utils from './utils';
 import CarouselTwo from './carousel_two';
+import MoreMenu from './more';
 
 const morevideos = {
 
@@ -57,6 +58,9 @@ const morevideos = {
         morevideos.show.call(this);
         // Set available videos in list
         // controls.setmoreVideoList.call(this);
+
+        // enable more menu
+        this.moreMenu = new MoreMenu(this);
     },
 
     // Get the playlist data

@@ -593,6 +593,13 @@ const controls = {
     showInterestingVideos(forcePauseContent) {
         if (forcePauseContent) return;
         
+        const controlsDiv = document.querySelector('.plyr__controls');
+        if (!utils.is.nullOrUndefined(controlsDiv)) {
+            if (!controlsDiv.classList.contains('plyr--related-videos-active')) {
+                controlsDiv.classList.add('plyr--related-videos-active');
+            }
+        }
+
         Player.player.timers.requestDisplayAd = setTimeout(() => {
             controls.requestDisplayBanner([Player.displayAds.slots.top]);
         }, 10000);
@@ -618,6 +625,13 @@ const controls = {
         const playButton = document.querySelector('.plyr__control--overlaid');
         const moreVideosButton = document.querySelector('.plyr__morevideos');
         
+        const controlsDiv = document.querySelector('.plyr__controls');
+        if (!utils.is.nullOrUndefined(controlsDiv)) {
+            if (controlsDiv.classList.contains('plyr--related-videos-active')) {
+                controlsDiv.classList.remove('plyr--related-videos-active');
+            }
+        }
+
         if(typeof(playButton) !== 'undefined' && playButton !== null){
             playButton.style.visibility = 'show';
         }
@@ -2268,7 +2282,7 @@ const controls = {
     },
     hideDisplayBanners() {
         const tda = document.querySelectorAll('displayShown');
-        if (!utils.is.nullOrUndefined(tda)) {
+        if (tda.length) {
             if (tda.classList.contains('displayShown')) {
                 tda.classList.remove('displayShown');
             }

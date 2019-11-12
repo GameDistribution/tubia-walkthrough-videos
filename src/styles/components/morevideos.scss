@@ -18,6 +18,7 @@
     }
     
     .plyr__morevideos {
+        transition: all .2s cubic-bezier(.4,0,1,1);
         position: absolute;
         z-index: 9;
         bottom: 0;
@@ -54,7 +55,10 @@
             color: #fff;
             top: 1vw;
             line-height: 27px;
+            transition: all .2s cubic-bezier(.4,0,1,1);
             font-family: 'nunitobold', sans-serif;
+            top: 10px;
+            padding-right: 10px;
             .icon-close {
                 width: 26px;
                 height: 26px;
@@ -67,7 +71,7 @@
                     height: 20px;
                     left: 5px;
                     @media only screen and (min-width : 320px) {
-                        width: 21px;
+                        width: 25px;
                     }
                     background: #fff;
                 }
@@ -83,11 +87,11 @@
                 }
             }
             &:hover {
-                color: #ECC546;
+                color: #d6d6d6;
                 cursor: pointer;
                 .icon-close {
                     &::before, &::after {
-                        background: #ECC546;
+                        background: #d6d6d6;
                         cursor: pointer;
                     }
                 }

@@ -33,22 +33,27 @@ class Share {
         // Inject the container into the controls container
         if (!utils.is.element(this.player.elements.share)) {
             this.player.elements.share = utils.createElement('div', utils.getAttributesFromSelector(this.player.config.selectors.share));
-            document.querySelector('.plyr--share-button').appendChild(utils.createElement('span', {
+            const shareButton = document.querySelector('.plyr--share-button');
+            shareButton.setAttribute('id', 'shareButton');
+            shareButton.appendChild(utils.createElement('span', {
                 class: 'plyr--share-title', 
             }, 'Share'));
             this.player.elements.controls.appendChild(this.player.elements.share);
         }
 
         // Enable UI
-        Share.show.call(this);
+        Share.set.call(this);
 
         const shareScreenWrapper = document.querySelector('.plyr');
 
-        const shareScreen = utils.createElement('div', {
+        this.shareScreen = utils.createElement('div', {
             class: 'plyr--share-fullscreen',
         });
 
         document.querySelector('.plyr--share-button').addEventListener('click', () => {
+            
+            if (this.shareScreen.classList.contains('active')) return;
+            
             let json = null;
             if (this.player.storage.supported) {
                 json = localStorage.getItem('defaultVideo');
@@ -62,7 +67,10 @@ class Share {
                 const { gameUrl } = JSON.parse(json);
                 shareLink = gameUrl;
             }
-            shareScreen.classList.toggle('active');
+
+            Share.show.call(this);
+        
+            this.shareScreen.classList.add('active');
 
             const shareScreenContent = `
             <div>
@@ -97,8 +105,18 @@ class Share {
             </div>
             `;
 
-            shareScreen.innerHTML = shareScreenContent;
-            shareScreenWrapper.insertBefore(shareScreen, shareScreenWrapper.firstChild);
+            this.shareScreen.innerHTML = shareScreenContent;
+            shareScreenWrapper.insertBefore(this.shareScreen, shareScreenWrapper.firstChild);
+
+            this.closeButton = utils.createElement('button', {
+                class: 'share-close-button',
+            });
+    
+            this.closeButton.insertAdjacentHTML('afterbegin', '<span class="icon-close"></span>');
+            this.closeButton.addEventListener('click', () => Share.hide.call(this));
+            this.closeButton.setAttribute('data-plyr', 'moreVideosCloseButton');
+            
+            shareScreenWrapper.appendChild(this.closeButton);
             
             document.querySelector('#shareInput').addEventListener('click', (e) => {
                 document.getElementById(e.target.id).select();
@@ -113,11 +131,19 @@ class Share {
     }
 
     static hide() {
-        utils.toggleClass(this.player.elements.container, this.player.config.classNames.share.active, false);
-        utils.toggleState(this.player.elements.buttons.share, false);
+        this.shareScreen.classList.remove('active');
+        this.closeButton.remove();
+        this.player.config.classNames.share.active = false;
+        this.player.elements.buttons.share = false;
+        const controlsDiv = document.querySelector('.plyr__controls');
+        if (!utils.is.nullOrUndefined(controlsDiv)) {
+            if (controlsDiv.classList.contains('plyr--share-active')) {
+                controlsDiv.classList.remove('plyr--share-active');
+            }
+        }
     }
 
-    static show() {
+    static set() {
         // Try to load the value from storage
         let active = false;
         // Otherwise fall back to the default config
@@ -126,10 +152,17 @@ class Share {
         } else {
             this.player.share.active = active;
         }
+    }
 
-        if (active) {
-            utils.toggleClass(this.player.elements.container, this.player.config.classNames.share.active, true);
-            utils.toggleState(this.player.elements.buttons.share, true);
+    static show() {
+        this.player.config.classNames.share.active = true;
+        this.player.elements.buttons.share = true;
+
+        const controlsDiv = document.querySelector('.plyr__controls');
+        if (!utils.is.nullOrUndefined(controlsDiv)) {
+            if (!controlsDiv.classList.contains('plyr--share-active')) {
+                controlsDiv.classList.add('plyr--share-active');
+            }
         }
     }
 };

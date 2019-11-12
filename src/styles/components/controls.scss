@@ -170,6 +170,65 @@
             }
         }
 
+        .plyr__controls-top {
+            position: absolute;
+            z-index: 9;
+            top: 0px;
+            right: 15px;
+            @media only screen and (max-width : 320px) {
+                right: 15px !important;
+            }
+            @media only screen and (min-width : 321px) {
+                right: 10px !important;
+            }
+            .more-menu-container {
+                position: absolute;
+                transition: all .2s cubic-bezier(.4,0,1,1);
+                .more-menu-items {
+                    position: absolute;
+                    top: 30px;
+                    background: rgba(0, 0, 0, 0.70);
+                    right: 0;
+                    text-align: left;
+                    padding: 10px 20px;
+                    min-width: 185px;
+                    border-radius: 5px;
+                    padding-bottom: 20px;
+                    li {
+                        list-style: none;
+                        color: #fff;
+                        display: block;
+                        padding: 10px 5px 0px;
+                        text-decoration: none;
+                        a {
+                            display: block;
+                            color: #fff;
+                            padding: 0;
+                            text-decoration: none;
+                        }
+                    }
+                    &.hide {
+                        visibility: hidden;
+                    }
+                }
+                .more-button {
+                    padding: 5px;
+                    outline: none;
+                    background: none;
+                    border: none;
+                    width: 55px;
+                    right: 0;
+                    position: absolute;
+                    z-index: 9;
+                    svg {
+                        width: 100%;
+                    }
+                }
+            }
+            
+        }
+        
+
         .plyr__controls-right {
             left: inherit;
             right: 30px;
@@ -209,6 +268,14 @@
             &[aria-expanded='true'] {
                 // background: $plyr-video-control-bg-hover;
                 color: $plyr-video-control-color-hover;
+            }
+        }
+        &.plyr--related-videos-active,
+        &.plyr--share-active { 
+            .plyr__controls-top {
+                .more-menu-container {
+                    right: 40px;
+                }
             }
         }
     }

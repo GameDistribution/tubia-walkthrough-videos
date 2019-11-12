@@ -3,6 +3,7 @@
 - Change uix of related videos carousel
 - Implement nunito font and remove unused font files
 - When user pause the video show display ad after 10 sec
+- Add more menu
 
 ## v2.0.23.15
 - Reduce progress bar, and fix it for IE11
