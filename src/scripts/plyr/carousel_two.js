@@ -19,6 +19,7 @@ class CarouselTwo {
         
         lotties.createAnimations();
         this.magicVideoClasses = this.player.config.classNames.magicvideo;
+        this.videoInfoClasses = this.player.config.classNames.videoinfo;
         
         if (this.storage.supported) {
             this.openedMagic = this.player.storage.get('openedMagic') || false;
@@ -37,6 +38,7 @@ class CarouselTwo {
         this.player.magicPlayed = false;
         this.player.magicSkipped = false;
         this.player.magicActive = false;
+        this.player.infoVideoActive = false;
         this.player.hasMagicVideo = false;
         this.showMagicInCarousel = false;
         this.classes = {
@@ -232,40 +234,33 @@ class CarouselTwo {
             this.playerContainer = document.querySelector('.plyr');
 
             if ((!utils.is.nullOrUndefined(this.playerContainer))) {
-                this.playerContainer.appendChild(controls.createMagicVideoButton.call(this, 'magicVideoButton'));
+                this.playerContainer.appendChild(controls.createNewVideoInfo.call(this, 'newVideoInfo'));
             }
 
-            this.magicVideoContainer = document.getElementById(this.magicVideoClasses.container);
-            Player.magicVideoContainer = this.magicVideoClasses.container;
-            this.magicVideoButton = document.getElementById(this.magicVideoClasses.button);
-            this.magicVideoClose = document.getElementById(this.magicVideoClasses.close);
+            this.videoInfoContainer = document.getElementById(this.videoInfoClasses.container);
+            Player.videoInfoContainer = this.videoInfoClasses.container;
+            this.videoInfoButton = document.getElementById(this.videoInfoClasses.container);
 
-            if (!utils.is.nullOrUndefined(this.magicVideoClose)) {
-                this.magicVideoClose.addEventListener('click', () => {
-                    CarouselTwo.magicVideoPopup.call(this.player, 'hide');
-                    this.player.magicSkipped = true;
-                });
-            }
 
             // eslint-disable-next-line no-prototype-builtins
-            if (!utils.is.nullOrUndefined(this.magicVideoButton) && this.modes.magic.hasOwnProperty('data') && !this.player.magicPlayed && !this.player.magicSkipped) {
-                this.magicVideoButton.addEventListener('click', () => { CarouselTwo.loadMagicVideo.call(self, this.modes.magic); });
-            } else if (utils.is.nullOrUndefined(this.magicVideoButton)) {
+            if (!utils.is.nullOrUndefined(this.videoInfoButton) && this.modes.magic.hasOwnProperty('data') && !this.player.magicPlayed && !this.player.magicSkipped) {
+                this.videoInfoButton.addEventListener('click', () => { CarouselTwo.loadMagicVideo.call(self, this.modes.magic); });
+            } else if (utils.is.nullOrUndefined(this.videoInfoButton)) {
                 console.error('Make sure the iframe has a button with the setting: "id:plyr__nextvideo-button"');
             } else {
                 console.warn("There's no magic video assigned to this video.");
             }
 
-            const magicImage = document.getElementById(this.magicVideoClasses.image);
+            // const magicImage = document.getElementById(this.magicVideoClasses.image);
 
-            if (!utils.is.nullOrUndefined(magicImage)) {
-                magicImage.src = this.modes.related[this.willbePlayed].data.picture.link;
-            } else {
-                magicImage.style.visibility = 'hidden';
-            }
+            // if (!utils.is.nullOrUndefined(magicImage)) {
+            //     magicImage.src = this.modes.related[this.willbePlayed].data.picture.link;
+            // } else {
+            //     magicImage.style.visibility = 'hidden';
+            // }
         }
         const muteButton = document.querySelector('button[data-plyr="mute"]');
-        if (!utils.is.nullOrUndefined(this.magicVideoButton)) {
+        if (!utils.is.nullOrUndefined(this.videoInfoButton)) {
             const volumeBar = document.getElementById('volumeBar');
             muteButton.addEventListener('mouseover', () => {
                 if (volumeBar.classList.contains('hidden')) {
@@ -286,12 +281,53 @@ class CarouselTwo {
         controlsLeft.appendChild(text);
     }
 
+    static showInfoVideo(infoVideoContainerClass) {
+        const container = document.getElementById(infoVideoContainerClass);
+        if (container.classList.contains('hide')) {
+            container.classList.remove('hide');
+        } else {
+            container.classList.add('hide');
+        }
+    }
+
+    static hideInfoVideo(infoVideoClass) {
+        const container = document.getElementById(infoVideoClass);
+        if (container.classList.contains('hide')) {
+            container.classList.remove('hide');
+        } else {
+            container.classList.add('hide');
+        }
+    }
+
+
     static toggleMagicVideoLoader(magicVideoContainerClass) {
         const container = document.getElementById(magicVideoContainerClass);
         if (!container.classList.contains('hidden')) {
             container.classList.add('hidden');
         } else {
             container.classList.remove('hidden');
+        }
+    }
+    
+    static videoInfoPopup(action) {
+        let hideInfoVideoTimer = null;
+        
+        if (action === 'show') {
+            if (!utils.is.nullOrUndefined(this.newVideoInfoContainer)) {
+                CarouselTwo.showInfoVideo.call(this, this.config.classNames.videoinfo.container);
+                this.infoVideoActive = true;
+                hideInfoVideoTimer = setInterval(() => {
+                    if (!this.magicSkipped && !this.magicPlayed) {
+                        CarouselTwo.hideInfoVideo.call(this, this.config.classNames.videoinfo.info);
+                        this.infoVideoActive = false;
+                        clearInterval(hideInfoVideoTimer);
+                    }
+                }, 10000);
+            }
+        } else if (action === 'hide') {
+            clearInterval(hideInfoVideoTimer);
+            this.infoVideoActive = false;
+            CarouselTwo.hideInfoVideo.call(this, this.config.classNames.videoinfo.info);
         }
     }
 
@@ -380,14 +416,16 @@ class CarouselTwo {
         const {ads} = this.player.media.plyr;
         ads.clearSafetyTimer('ready()');
         ads.ready();
-
+        
+        document.getElementById('plyr__videoinfo-container').classList.add('hide');
+        
         if (this.player.config.controls.includes('logo')) {
             document.querySelector('.plyr__logo-top').style.display = 'none';
         }
         document.getElementById('videoTitle').style.display = 'none';
         document.getElementById('btnloadDefault').style.display = 'block';
 
-        CarouselTwo.magicVideoPopup.call(this.player, 'hide');
+        CarouselTwo.videoInfoPopup.call(this.player, 'hide');
         
         controls.ClearAllLevels.call(this);
 
@@ -402,24 +440,22 @@ class CarouselTwo {
         } else {
             image.style.visibility = 'hidden';
         }
-
-        if (!utils.is.nullOrUndefined(this.magicVideoButton)) {
-            document.querySelector('#videoTitle').innerText = videoTitle;
-            source.setAttribute('src',  url);
-            const magicVideo = document.querySelector('video');
-            try {
-                magicVideo.load();
-                if (!this.magicVideoButton.classList.contains('hidden')) {
-                    this.magicVideoButton.classList.add('hidden');
-                }
-                const levelsButton = document.querySelector('.plyr--playlist-button');
-                if (!utils.is.nullOrUndefined(levelsButton)) {
-                    levelsButton.style.visibility = 'hidden';
-                }
+        
+        document.querySelector('#videoTitle').innerText = videoTitle;
+        source.setAttribute('src',  url);
+        const magicVideo = document.querySelector('video');
+        try {
+            magicVideo.load();
+            if (!this.magicVideoButton.classList.contains('hidden')) {
+                this.magicVideoButton.classList.add('hidden');
             }
-            catch(err) {
-                this.debug.warn('Magic video could not be loaded successfully.');
+            const levelsButton = document.querySelector('.plyr--playlist-button');
+            if (!utils.is.nullOrUndefined(levelsButton)) {
+                levelsButton.style.visibility = 'hidden';
             }
+        }
+        catch(err) {
+            this.debug.warn('Magic video could not be loaded successfully.');
         }
     }
 

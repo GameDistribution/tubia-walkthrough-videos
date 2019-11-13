@@ -429,6 +429,11 @@ const defaults = {
             image: 'plyr__magicvideo-image',
             close: 'plyr__magicvideo-close',
         },
+        videoinfo: {
+            container: 'plyr__videoinfo-container',
+            info: 'plyr__videoinfo',
+            icon: 'plyr__videoinfo-button',
+        },
     },
     
 

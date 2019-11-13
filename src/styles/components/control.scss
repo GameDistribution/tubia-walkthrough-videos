@@ -347,6 +347,58 @@
     }
 } 
 
+#plyr__videoinfo-container {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    top: 0;
+    height: 50px;
+    width: 250px;
+    transition: all .2s cubic-bezier(.4,0,1,1);
+    &.hide {
+        visibility: hidden;
+        .new-video-info {
+            display: none;
+            margin-left: -100%;
+        }
+        .new-video-icon {
+            opacity: 0;
+        }
+    }
+    .new-video-info {
+        position: absolute;
+        width: 260px;
+        height: 100%;
+        color: #fff;
+        display: block;
+        padding: 15px 15px 15px 65px;
+        background: rgba(0, 0, 0, 0.74);
+        border-radius: 5px;
+        transition: all .5s cubic-bezier(.4,0,1,1);
+        &.hide {
+            opacity: 0;
+        }
+    }
+    .new-video-icon {
+        position: absolute;
+        z-index: 88;
+        margin-left: 10px;
+        background: none;
+        border-radius: 50%;
+        border: none;
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        opacity: 1;
+        outline: none;
+        transition: all .2s cubic-bezier(.4,0,1,1);
+        svg {
+            width: 100%;
+            height: auto;
+        } 
+    }
+}
+
 @media only screen and (max-width: 600px) {
     #plyr__magicvideo-container {
         font-size: 1em;

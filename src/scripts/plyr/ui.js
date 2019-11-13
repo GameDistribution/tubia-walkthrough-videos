@@ -316,16 +316,18 @@ const ui = {
 
 
         if (Math.floor(this.currentTime) >= 45 && Math.floor(this.currentTime) % 45 === 0) {
-            const mp = this.magicPlayed;
-            const ms = this.magicSkipped;
-            const ma = this.magicActive;
+            // const mp = this.magicPlayed;
+            // const ms = this.magicSkipped;
+            // const ma = this.magicActive;
             const hmv = this.hasMagicVideo;
+            const iva = this.infoVideoActive;
 
-            if (!mp && !ms && !ma && hmv) {
-                this.magicVideoContainer = document.getElementById(this.config.classNames.magicvideo.container);
-
-                if (!utils.is.nullOrUndefined(this.magicVideoContainer)) {
-                    CarouselTwo.magicVideoPopup.call(this, 'show');
+            if (!iva && hmv) {
+                // this.magicVideoContainer = document.getElementById(this.config.classNames.magicvideo.container);
+                this.newVideoInfoContainer = document.getElementById(this.config.classNames.videoinfo.container);
+                
+                if (!utils.is.nullOrUndefined(this.newVideoInfoContainer)) {
+                    CarouselTwo.videoInfoPopup.call(this, 'show');
                 }
             }
         }
