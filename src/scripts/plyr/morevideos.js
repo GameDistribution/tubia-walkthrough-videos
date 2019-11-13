@@ -5,6 +5,7 @@
 import utils from './utils';
 import CarouselTwo from './carousel_two';
 import MoreMenu from './more';
+import ReportPlayer from './report';
 
 const morevideos = {
 
@@ -61,6 +62,9 @@ const morevideos = {
 
         // enable more menu
         this.moreMenu = new MoreMenu(this);
+
+        // enable report
+        this.report = new ReportPlayer(this);
     },
 
     // Get the playlist data

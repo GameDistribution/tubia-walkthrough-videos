@@ -13,6 +13,7 @@ class MoreMenu {
     }
 
     static createMoreMenu() {
+        const items = [];
         const moreMenuContainer = utils.createElement('div', {
             class: 'more-menu-container',
         });
@@ -21,17 +22,24 @@ class MoreMenu {
             class: 'more-menu-items hide',
             id: 'moreMenu',
         });
-        
-        const aboutTubiaPlayer = utils.createElement('li');
-        aboutTubiaPlayer.insertAdjacentHTML('afterbegin', '<a href="https://tubia.com/" target="_blank">About Tubia Player</a>');
+
+        if (this.player.config.report.active) {
+            const sendReport = utils.createElement('li');
+            sendReport.insertAdjacentHTML('afterbegin', '<span>Send Report</span>');
+            sendReport.addEventListener('click', () => MoreMenu.showReportScreen.call(this));
+            items.push(sendReport);
+        }
 
         const shareThisVideo = utils.createElement('li');
         shareThisVideo.insertAdjacentHTML('afterbegin', '<span>Share this video</span>');
         shareThisVideo.addEventListener('click', () => MoreMenu.openShareContainer.call(this));
+        items.push(shareThisVideo);
         
-        moreMenu.appendChild(shareThisVideo);
-        moreMenu.appendChild(aboutTubiaPlayer);
-        
+        const aboutTubiaPlayer = utils.createElement('li');
+        aboutTubiaPlayer.insertAdjacentHTML('afterbegin', '<a href="https://tubia.com/" target="_blank">About Tubia Player</a>');
+        items.push(aboutTubiaPlayer);
+
+        utils.appendChildren(moreMenu, items);
         moreMenuContainer.appendChild(moreMenu);
 
         const moreButton = utils.createElement('button', {
@@ -78,6 +86,16 @@ class MoreMenu {
         const shareButton = document.getElementById('shareButton');
         MoreMenu.toggleMoreMenu.call(this);
         shareButton.click();
+    }
+
+    static showReportScreen() {
+        MoreMenu.toggleMoreMenu.call(this);
+        const reportContainer = document.querySelector('.plyr-report');
+        if (!utils.is.nullOrUndefined(reportContainer)) {
+            if (reportContainer.classList.contains('hide')) {
+                reportContainer.classList.remove('hide');
+            }
+        }
     }
 }
 export default MoreMenu;

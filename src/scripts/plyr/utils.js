@@ -1011,6 +1011,12 @@ const utils = {
         }
         /* eslint-enable */
     },
+
+    appendChildren(container, items) {
+        items.forEach((item) => {
+            container.appendChild(item);
+        });
+    },
 };
 
 export default utils;

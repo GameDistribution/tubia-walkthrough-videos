@@ -765,6 +765,9 @@ class Player {
                 controls,
                 magicvideo,
                 moremenu,
+                report: {
+                    active: false,
+                },
             });
 
             // Set some listeners.
