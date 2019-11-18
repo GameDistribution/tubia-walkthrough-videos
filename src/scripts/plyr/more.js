@@ -1,4 +1,5 @@
 import utils from './utils';
+import controls from './controls';
 
 class MoreMenu {
     constructor(p) {
@@ -83,9 +84,15 @@ class MoreMenu {
     }
 
     static openShareContainer() {
-        const shareButton = document.getElementById('shareButton');
-        MoreMenu.toggleMoreMenu.call(this);
-        shareButton.click();
+        const controlsDiv = document.querySelector('.plyr__controls');
+        if (!utils.is.nullOrUndefined(controlsDiv)) {
+            if (controlsDiv.classList.contains('plyr--related-videos-active')) {
+                controls.hideInterestingVideos();
+                const shareButton = document.getElementById('shareButton');
+                MoreMenu.toggleMoreMenu.call(this);
+                shareButton.click();
+            }
+        }
     }
 
     static showReportScreen() {

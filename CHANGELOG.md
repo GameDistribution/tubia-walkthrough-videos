@@ -1,4 +1,7 @@
 # Changelog
+## v2.1.0.1
+- Hide carousel when user clicks to share button
+
 ## v2.1.0.0
 - Change uix of related videos carousel
 - Implement nunito font and remove unused font files
