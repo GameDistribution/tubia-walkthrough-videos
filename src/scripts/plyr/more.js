@@ -88,11 +88,15 @@ class MoreMenu {
         if (!utils.is.nullOrUndefined(controlsDiv)) {
             if (controlsDiv.classList.contains('plyr--related-videos-active')) {
                 controls.hideInterestingVideos();
-                const shareButton = document.getElementById('shareButton');
-                MoreMenu.toggleMoreMenu.call(this);
-                shareButton.click();
             }
         }
+        MoreMenu.showShareScreen.call(this);
+    }
+
+    static showShareScreen() {
+        const shareButton = document.getElementById('shareButton');
+        MoreMenu.toggleMoreMenu.call(this);
+        shareButton.click();
     }
 
     static showReportScreen() {
