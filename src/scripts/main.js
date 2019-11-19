@@ -652,6 +652,7 @@ class Player {
             const sourceUrl = source.replace(/^http:\/\//i, 'https://');
             const sourceType = videoElement.type;
             const gameUrl = this.options.url;
+            const gameHref = this.options.href;
 
             videoElement.src = sourceUrl;
 
@@ -662,7 +663,8 @@ class Player {
                     url: sourceUrl,
                     type: sourceType,
                     videoTitle: detail[0].title,
-                    gameUrl }));
+                    gameUrl,
+                    gameHref }));
             }
             
 
