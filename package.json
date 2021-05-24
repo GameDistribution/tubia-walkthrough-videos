@@ -17,7 +17,7 @@
     },
     "dependencies": {
         "babel-polyfill": "^6.26.0",
-        "browserslist": "^4.6.6",
+        "browserslist": "^4.16.5",
         "cheerio": "^1.0.0-rc.3",
         "custom-event-polyfill": "^1.0.6",
         "es6-promise": "^4.2.5",
