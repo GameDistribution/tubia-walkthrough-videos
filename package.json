@@ -54,7 +54,7 @@
         "grunt-replace": "^1.0.1",
         "grunt-sass": "^3.0.2",
         "grunt-svgstore": "^2.0.0",
-        "node-sass": "^4.12.0"
+        "node-sass": "^7.0.0"
     },
     "engines": {
         "node": ">= 10.15.0",
